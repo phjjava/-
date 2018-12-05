@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.BranchphotoMapper" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.Branchphoto" >
+    <id column="imgid" property="imgid" jdbcType="VARCHAR" />
+    <result column="branchid" property="branchid" jdbcType="VARCHAR" />
+    <result column="albumid" property="albumid" jdbcType="VARCHAR" />
+    <result column="smallimgurl" property="smallimgurl" jdbcType="VARCHAR" />
+    <result column="imgurl" property="imgurl" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="deleteflag" property="deleteflag" jdbcType="INTEGER" />
+    <result column="createid" property="createid" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="updateid" property="updateid" jdbcType="VARCHAR" />
+    <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      imgid, branchid, albumid, smallimgurl, imgurl, description, deleteflag, createid, 
+      createtime, updateid, updatetime
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.BranchphotoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_branchphoto
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    imgid,branchid,albumid,smallimgurl,imgurl,description,deleteflag,createid,createtime,updateid,updatetime
+    from jp_branchphoto
+    where imgid = #{imgid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from jp_branchphoto
+    where imgid = #{imgid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.BranchphotoExample" >
+    delete from jp_branchphoto
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.Branchphoto" >
+    insert into jp_branchphoto (imgid, branchid, albumid, 
+      smallimgurl, imgurl, description, 
+      deleteflag, createid, createtime, 
+      updateid, updatetime)
+    values (#{imgid,jdbcType=VARCHAR}, #{branchid,jdbcType=VARCHAR}, #{albumid,jdbcType=VARCHAR}, 
+      #{smallimgurl,jdbcType=VARCHAR}, #{imgurl,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{deleteflag,jdbcType=INTEGER}, #{createid,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}, 
+      #{updateid,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.Branchphoto" >
+    insert into jp_branchphoto
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="imgid != null" >
+        imgid,
+      </if>
+      <if test="branchid != null" >
+        branchid,
+      </if>
+      <if test="albumid != null" >
+        albumid,
+      </if>
+      <if test="smallimgurl != null" >
+        smallimgurl,
+      </if>
+      <if test="imgurl != null" >
+        imgurl,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag,
+      </if>
+      <if test="createid != null" >
+        createid,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="updateid != null" >
+        updateid,
+      </if>
+      <if test="updatetime != null" >
+        updatetime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="imgid != null" >
+        #{imgid,jdbcType=VARCHAR},
+      </if>
+      <if test="branchid != null" >
+        #{branchid,jdbcType=VARCHAR},
+      </if>
+      <if test="albumid != null" >
+        #{albumid,jdbcType=VARCHAR},
+      </if>
+      <if test="smallimgurl != null" >
+        #{smallimgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="imgurl != null" >
+        #{imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteflag != null" >
+        #{deleteflag,jdbcType=INTEGER},
+      </if>
+      <if test="createid != null" >
+        #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateid != null" >
+        #{updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.BranchphotoExample" resultType="java.lang.Integer" >
+    select count(*) from jp_branchphoto
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_branchphoto
+    <set >
+      <if test="record.imgid != null" >
+        imgid = #{record.imgid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.branchid != null" >
+        branchid = #{record.branchid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.albumid != null" >
+        albumid = #{record.albumid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.smallimgurl != null" >
+        smallimgurl = #{record.smallimgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.imgurl != null" >
+        imgurl = #{record.imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.description != null" >
+        description = #{record.description,jdbcType=VARCHAR},
+      </if>
+      <if test="record.deleteflag != null" >
+        deleteflag = #{record.deleteflag,jdbcType=INTEGER},
+      </if>
+      <if test="record.createid != null" >
+        createid = #{record.createid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createtime != null" >
+        createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateid != null" >
+        updateid = #{record.updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updatetime != null" >
+        updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_branchphoto
+    set imgid = #{record.imgid,jdbcType=VARCHAR},
+      branchid = #{record.branchid,jdbcType=VARCHAR},
+      albumid = #{record.albumid,jdbcType=VARCHAR},
+      smallimgurl = #{record.smallimgurl,jdbcType=VARCHAR},
+      imgurl = #{record.imgurl,jdbcType=VARCHAR},
+      description = #{record.description,jdbcType=VARCHAR},
+      deleteflag = #{record.deleteflag,jdbcType=INTEGER},
+      createid = #{record.createid,jdbcType=VARCHAR},
+      createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      updateid = #{record.updateid,jdbcType=VARCHAR},
+      updatetime = #{record.updatetime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.Branchphoto" >
+    update jp_branchphoto
+    <set >
+      <if test="branchid != null" >
+        branchid = #{branchid,jdbcType=VARCHAR},
+      </if>
+      <if test="albumid != null" >
+        albumid = #{albumid,jdbcType=VARCHAR},
+      </if>
+      <if test="smallimgurl != null" >
+        smallimgurl = #{smallimgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="imgurl != null" >
+        imgurl = #{imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag = #{deleteflag,jdbcType=INTEGER},
+      </if>
+      <if test="createid != null" >
+        createid = #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateid != null" >
+        updateid = #{updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where imgid = #{imgid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.Branchphoto" >
+    update jp_branchphoto
+    set branchid = #{branchid,jdbcType=VARCHAR},
+      albumid = #{albumid,jdbcType=VARCHAR},
+      smallimgurl = #{smallimgurl,jdbcType=VARCHAR},
+      imgurl = #{imgurl,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      deleteflag = #{deleteflag,jdbcType=INTEGER},
+      createid = #{createid,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=TIMESTAMP},
+      updateid = #{updateid,jdbcType=VARCHAR},
+      updatetime = #{updatetime,jdbcType=TIMESTAMP}
+    where imgid = #{imgid,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- 自写方法 -->
+   <insert id="insertBranchPhoto">
+	     insert into jp_branchphoto (branchid,albumid,imgid,smallimgurl,imgurl,description,createid,createtime,deleteflag)
+	     values
+	     <foreach collection="list" item="item" index="index" separator=",">
+			(#{item.branchid},#{item.albumid},#{item.imgid},#{item.smallimgurl},#{item.imgurl},#{item.description},
+			#{item.createid},#{item.createtime},#{item.deleteflag}
+			)
+		</foreach>
+  </insert>
+   <select id="selectByBranch" resultType="com.jp.entity.Branchphoto">
+	    select imgurl , description from jp_branchphoto where
+	    <foreach collection="list" item="item" index="index" open="branchid in (" separator="," close=")">
+		#{item}
+	</foreach>
+  </select>
+</mapper>

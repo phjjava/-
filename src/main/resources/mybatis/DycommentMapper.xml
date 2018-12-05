@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.DycommentDao" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.Dycomment" >
+    <id column="commentid" property="commentid" jdbcType="VARCHAR" />
+    <id column="dyid" property="dyid" jdbcType="VARCHAR" />
+    <id column="branchid" property="branchid" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="deleteflag" property="deleteflag" jdbcType="TINYINT" />
+    <result column="imgurl" property="imgurl" jdbcType="VARCHAR" />
+    <result column="createname" property="createname" jdbcType="VARCHAR" />
+    <result column="isreply" property="isreply" jdbcType="VARCHAR" />
+    <result column="topparentid" property="topparentid" jdbcType="VARCHAR" />
+    <result column="reluserid" property="reluserid" jdbcType="VARCHAR" />
+    <result column="relusername" property="relusername" jdbcType="VARCHAR" />
+    <result column="createid" property="createid" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.jp.entity.Dycomment" extends="BaseResultMap" >
+    <result column="commentcontent" property="commentcontent" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      commentid, dyid, branchid, createtime, deleteflag, imgurl, createname, isreply, topparentid, 
+      reluserid, relusername, createid
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <sql id="Blob_Column_List" >
+    commentcontent
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.jp.entity.DycommentQuery" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from jp_dycomment
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.DycommentQuery" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_dycomment
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="com.jp.entity.DycommentKey" >
+    select 
+    commentid,dyid,branchid,createtime,deleteflag,imgurl,createname,isreply,topparentid,reluserid,relusername,createid,commentcontent
+    ,
+    <include refid="Blob_Column_List" />
+    from jp_dycomment
+    where commentid = #{commentid,jdbcType=VARCHAR}
+      and dyid = #{dyid,jdbcType=VARCHAR}
+      and branchid = #{branchid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.jp.entity.DycommentKey" >
+    delete from jp_dycomment
+    where commentid = #{commentid,jdbcType=VARCHAR}
+      and dyid = #{dyid,jdbcType=VARCHAR}
+      and branchid = #{branchid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.DycommentQuery" >
+    delete from jp_dycomment
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.Dycomment" >
+    insert into jp_dycomment (commentid, dyid, branchid, 
+      createtime, deleteflag, imgurl, 
+      createname, isreply, topparentid, 
+      reluserid, relusername, createid, 
+      commentcontent)
+    values (#{commentid,jdbcType=VARCHAR}, #{dyid,jdbcType=VARCHAR}, #{branchid,jdbcType=VARCHAR}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{deleteflag,jdbcType=TINYINT}, #{imgurl,jdbcType=VARCHAR}, 
+      #{createname,jdbcType=VARCHAR}, #{isreply,jdbcType=VARCHAR}, #{topparentid,jdbcType=VARCHAR}, 
+      #{reluserid,jdbcType=VARCHAR}, #{relusername,jdbcType=VARCHAR}, #{createid,jdbcType=VARCHAR}, 
+      #{commentcontent,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.Dycomment" >
+    insert into jp_dycomment
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="commentid != null" >
+        commentid,
+      </if>
+      <if test="dyid != null" >
+        dyid,
+      </if>
+      <if test="branchid != null" >
+        branchid,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag,
+      </if>
+      <if test="imgurl != null" >
+        imgurl,
+      </if>
+      <if test="createname != null" >
+        createname,
+      </if>
+      <if test="isreply != null" >
+        isreply,
+      </if>
+      <if test="topparentid != null" >
+        topparentid,
+      </if>
+      <if test="reluserid != null" >
+        reluserid,
+      </if>
+      <if test="relusername != null" >
+        relusername,
+      </if>
+      <if test="createid != null" >
+        createid,
+      </if>
+      <if test="commentcontent != null" >
+        commentcontent,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="commentid != null" >
+        #{commentid,jdbcType=VARCHAR},
+      </if>
+      <if test="dyid != null" >
+        #{dyid,jdbcType=VARCHAR},
+      </if>
+      <if test="branchid != null" >
+        #{branchid,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteflag != null" >
+        #{deleteflag,jdbcType=TINYINT},
+      </if>
+      <if test="imgurl != null" >
+        #{imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="createname != null" >
+        #{createname,jdbcType=VARCHAR},
+      </if>
+      <if test="isreply != null" >
+        #{isreply,jdbcType=VARCHAR},
+      </if>
+      <if test="topparentid != null" >
+        #{topparentid,jdbcType=VARCHAR},
+      </if>
+      <if test="reluserid != null" >
+        #{reluserid,jdbcType=VARCHAR},
+      </if>
+      <if test="relusername != null" >
+        #{relusername,jdbcType=VARCHAR},
+      </if>
+      <if test="createid != null" >
+        #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="commentcontent != null" >
+        #{commentcontent,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.DycommentQuery" resultType="java.lang.Integer" >
+    select count(*) from jp_dycomment
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_dycomment
+    <set >
+      <if test="record.commentid != null" >
+        commentid = #{record.commentid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dyid != null" >
+        dyid = #{record.dyid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.branchid != null" >
+        branchid = #{record.branchid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createtime != null" >
+        createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.deleteflag != null" >
+        deleteflag = #{record.deleteflag,jdbcType=TINYINT},
+      </if>
+      <if test="record.imgurl != null" >
+        imgurl = #{record.imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createname != null" >
+        createname = #{record.createname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isreply != null" >
+        isreply = #{record.isreply,jdbcType=VARCHAR},
+      </if>
+      <if test="record.topparentid != null" >
+        topparentid = #{record.topparentid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.reluserid != null" >
+        reluserid = #{record.reluserid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.relusername != null" >
+        relusername = #{record.relusername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createid != null" >
+        createid = #{record.createid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.commentcontent != null" >
+        commentcontent = #{record.commentcontent,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update jp_dycomment
+    set commentid = #{record.commentid,jdbcType=VARCHAR},
+      dyid = #{record.dyid,jdbcType=VARCHAR},
+      branchid = #{record.branchid,jdbcType=VARCHAR},
+      createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      deleteflag = #{record.deleteflag,jdbcType=TINYINT},
+      imgurl = #{record.imgurl,jdbcType=VARCHAR},
+      createname = #{record.createname,jdbcType=VARCHAR},
+      isreply = #{record.isreply,jdbcType=VARCHAR},
+      topparentid = #{record.topparentid,jdbcType=VARCHAR},
+      reluserid = #{record.reluserid,jdbcType=VARCHAR},
+      relusername = #{record.relusername,jdbcType=VARCHAR},
+      createid = #{record.createid,jdbcType=VARCHAR},
+      commentcontent = #{record.commentcontent,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_dycomment
+    set commentid = #{record.commentid,jdbcType=VARCHAR},
+      dyid = #{record.dyid,jdbcType=VARCHAR},
+      branchid = #{record.branchid,jdbcType=VARCHAR},
+      createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      deleteflag = #{record.deleteflag,jdbcType=TINYINT},
+      imgurl = #{record.imgurl,jdbcType=VARCHAR},
+      createname = #{record.createname,jdbcType=VARCHAR},
+      isreply = #{record.isreply,jdbcType=VARCHAR},
+      topparentid = #{record.topparentid,jdbcType=VARCHAR},
+      reluserid = #{record.reluserid,jdbcType=VARCHAR},
+      relusername = #{record.relusername,jdbcType=VARCHAR},
+      createid = #{record.createid,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.Dycomment" >
+    update jp_dycomment
+    <set >
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag = #{deleteflag,jdbcType=TINYINT},
+      </if>
+      <if test="imgurl != null" >
+        imgurl = #{imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="createname != null" >
+        createname = #{createname,jdbcType=VARCHAR},
+      </if>
+      <if test="isreply != null" >
+        isreply = #{isreply,jdbcType=VARCHAR},
+      </if>
+      <if test="topparentid != null" >
+        topparentid = #{topparentid,jdbcType=VARCHAR},
+      </if>
+      <if test="reluserid != null" >
+        reluserid = #{reluserid,jdbcType=VARCHAR},
+      </if>
+      <if test="relusername != null" >
+        relusername = #{relusername,jdbcType=VARCHAR},
+      </if>
+      <if test="createid != null" >
+        createid = #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="commentcontent != null" >
+        commentcontent = #{commentcontent,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where commentid = #{commentid,jdbcType=VARCHAR}
+      and dyid = #{dyid,jdbcType=VARCHAR}
+      and branchid = #{branchid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.jp.entity.Dycomment" >
+    update jp_dycomment
+    set createtime = #{createtime,jdbcType=TIMESTAMP},
+      deleteflag = #{deleteflag,jdbcType=TINYINT},
+      imgurl = #{imgurl,jdbcType=VARCHAR},
+      createname = #{createname,jdbcType=VARCHAR},
+      isreply = #{isreply,jdbcType=VARCHAR},
+      topparentid = #{topparentid,jdbcType=VARCHAR},
+      reluserid = #{reluserid,jdbcType=VARCHAR},
+      relusername = #{relusername,jdbcType=VARCHAR},
+      createid = #{createid,jdbcType=VARCHAR},
+      commentcontent = #{commentcontent,jdbcType=LONGVARCHAR}
+    where commentid = #{commentid,jdbcType=VARCHAR}
+      and dyid = #{dyid,jdbcType=VARCHAR}
+      and branchid = #{branchid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.Dycomment" >
+    update jp_dycomment
+    set createtime = #{createtime,jdbcType=TIMESTAMP},
+      deleteflag = #{deleteflag,jdbcType=TINYINT},
+      imgurl = #{imgurl,jdbcType=VARCHAR},
+      createname = #{createname,jdbcType=VARCHAR},
+      isreply = #{isreply,jdbcType=VARCHAR},
+      topparentid = #{topparentid,jdbcType=VARCHAR},
+      reluserid = #{reluserid,jdbcType=VARCHAR},
+      relusername = #{relusername,jdbcType=VARCHAR},
+      createid = #{createid,jdbcType=VARCHAR}
+    where commentid = #{commentid,jdbcType=VARCHAR}
+      and dyid = #{dyid,jdbcType=VARCHAR}
+      and branchid = #{branchid,jdbcType=VARCHAR}
+  </update>
+</mapper>

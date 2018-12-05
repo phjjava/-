@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.SysFamilyDao" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.SysFamily" >
+    <id column="familyid" property="familyid" jdbcType="VARCHAR" />
+    <result column="familycode" property="familycode" jdbcType="VARCHAR" />
+    <result column="familyname" property="familyname" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="createid" property="createid" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="updateid" property="updateid" jdbcType="VARCHAR" />
+    <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="version" property="version" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      familyid, familycode, familyname, remark, status, createid, createtime, updateid, 
+      updatetime, version
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.SysFamilyQuery" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_sys_family
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    familyid,familycode,familyname,remark,status,createid,createtime,updateid,updatetime,version
+    from jp_sys_family
+    where familyid = #{familyid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from jp_sys_family
+    where familyid = #{familyid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.SysFamilyQuery" >
+    delete from jp_sys_family
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.SysFamily" >
+    insert into jp_sys_family (familyid, familycode, familyname, 
+      remark, status, createid, 
+      createtime, updateid, updatetime, 
+      version)
+    values (#{familyid,jdbcType=VARCHAR}, #{familycode,jdbcType=VARCHAR}, #{familyname,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{createid,jdbcType=VARCHAR}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{updateid,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP}, 
+      #{version,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.SysFamily" >
+    insert into jp_sys_family
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="familyid != null" >
+        familyid,
+      </if>
+      <if test="familycode != null" >
+        familycode,
+      </if>
+      <if test="familyname != null" >
+        familyname,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createid != null" >
+        createid,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="updateid != null" >
+        updateid,
+      </if>
+      <if test="updatetime != null" >
+        updatetime,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="familyid != null" >
+        #{familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="familycode != null" >
+        #{familycode,jdbcType=VARCHAR},
+      </if>
+      <if test="familyname != null" >
+        #{familyname,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="createid != null" >
+        #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateid != null" >
+        #{updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.SysFamilyQuery" resultType="java.lang.Integer" >
+    select count(*) from jp_sys_family
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_sys_family
+    <set >
+      <if test="record.familyid != null" >
+        familyid = #{record.familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.familycode != null" >
+        familycode = #{record.familycode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.familyname != null" >
+        familyname = #{record.familyname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null" >
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.createid != null" >
+        createid = #{record.createid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createtime != null" >
+        createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateid != null" >
+        updateid = #{record.updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updatetime != null" >
+        updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.version != null" >
+        version = #{record.version,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_sys_family
+    set familyid = #{record.familyid,jdbcType=VARCHAR},
+      familycode = #{record.familycode,jdbcType=VARCHAR},
+      familyname = #{record.familyname,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=TINYINT},
+      createid = #{record.createid,jdbcType=VARCHAR},
+      createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      updateid = #{record.updateid,jdbcType=VARCHAR},
+      updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+      version = #{record.version,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.SysFamily" >
+    update jp_sys_family
+    <set >
+      <if test="familycode != null" >
+        familycode = #{familycode,jdbcType=VARCHAR},
+      </if>
+      <if test="familyname != null" >
+        familyname = #{familyname,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="createid != null" >
+        createid = #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateid != null" >
+        updateid = #{updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where familyid = #{familyid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.SysFamily" >
+    update jp_sys_family
+    set familycode = #{familycode,jdbcType=VARCHAR},
+      familyname = #{familyname,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      createid = #{createid,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=TIMESTAMP},
+      updateid = #{updateid,jdbcType=VARCHAR},
+      updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      version = #{version,jdbcType=VARCHAR}
+    where familyid = #{familyid,jdbcType=VARCHAR}
+  </update>
+  <select id="selectFamilyList" resultType="com.jp.entity.SysFamily" parameterType="com.jp.entity.SysFamily" >
+    select 
+    family.familyid,family.familycode,family.familyname,family.remark,family.status,family.createid,family.createtime,family.updateid,family.updatetime,family.version
+    ,version.versionname from jp_sys_family family inner join jp_sys_version version where family.version = version.versionid
+    order by family.createtime asc
+  </select>
+  <insert id="insertFunction">
+      insert into jp_function (functionid, functionname, parentid, 
+      functionurl, description, sort, icon,familyid) select 
+
+      functionid, functionname, parentid, 
+      functionurl, description, sort, icon,#{familyid,jdbcType=VARCHAR}
+
+     from jp_sys_function where functionid in(select functionid from jp_sys_func_version where versionid = #{versionid,jdbcType=VARCHAR})
+  </insert>
+  <delete id="deleteFunction">
+      delete from  jp_function  where familyid = #{familyid,jdbcType=VARCHAR}
+  </delete>
+  <update id="changeStatus" parameterType="com.jp.entity.SysFamily" >
+    update jp_sys_family
+      set 
+       status = #{status,jdbcType=TINYINT},
+       updateid = #{updateid,jdbcType=VARCHAR},
+       updatetime = #{updatetime,jdbcType=TIMESTAMP}
+    where familyid = #{familyid,jdbcType=VARCHAR}
+  </update>
+   <select id="selectFamilyVersionNum" resultType="com.jp.entity.SysFamily" parameterType="java.lang.String" >
+    select count(u.userid) as aleardyUserCount,f.familyid,v.usercount as usercount
+		from jp_sys_family f 
+		inner join jp_user u on f.familyid = u.familyid
+		inner join jp_sys_version v on f.version = v.versionid
+		where f.familyid = #{familyid,jdbcType=VARCHAR}
+  </select>
+    <select id="countIndex" resultType="com.jp.entity.Indexcount">
+    <![CDATA[ 
+	    select 
+	sum(IFNULL(temp.applycount,0)) applycount,
+	sum(IFNULL(temp.usercount,0)) usercount,
+	sum(IFNULL(temp.shicount,0)) shicount,
+	sum(IFNULL(temp.branchcount,0)) branchcount
+	from (
+	select  null  applycount, count(*) usercount,null shicount,null branchcount, null rolecount from jp_user `user` where `user`.`status` = 0 and `user`.familyid = #{familyid,jdbcType=VARCHAR} 
+	union all
+	select null applycount , null usercount, max(`user`.genlevel) shicount,null branchcount, null rolecount from jp_user `user` where `user`.familyid = #{familyid,jdbcType=VARCHAR}
+	union all
+	select null applycount , null usercount,null shicount, count(*) branchcount, null rolecount from jp_branch branch where branch.familyid = #{familyid,jdbcType=VARCHAR}
+	union all
+	select 
+	count(*) applycount, null usercount,null shicount,null branchcount, null rolecount
+	from jp_user `user` where `user`.`status` <> 0 and `user`.familyid = #{familyid,jdbcType=VARCHAR}
+	 ]]>
+	 <foreach collection="list" item="item" index="index" open="and `user`.branchid in (" separator="," close=")">
+	   #{item}
+     </foreach>
+	<!-- UNION all
+	select null applycount , null usercount,null shicount,null branchcount, count(*) rolecount from jp_userrole  -->
+	) temp
+ </select>
+</mapper>

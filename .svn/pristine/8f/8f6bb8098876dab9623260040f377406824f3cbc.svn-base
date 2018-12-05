@@ -1,0 +1,45 @@
+package com.jp.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.jp.entity.Branch;
+import com.jp.entity.BranchKey;
+import com.jp.entity.BranchQuery;
+
+public interface BranchDao {
+    int countByExample(BranchQuery example);
+
+    int deleteByExample(BranchQuery example);
+
+    int deleteByPrimaryKey(BranchKey key);
+
+    int insert(Branch record);
+
+    int insertSelective(Branch record);
+
+    List<Branch> selectByExample(BranchQuery example);
+
+    Branch selectByPrimaryKey(BranchKey key);
+
+    int updateByExampleSelective(@Param("record") Branch record, @Param("example") BranchQuery example);
+
+    int updateByExample(@Param("record") Branch record, @Param("example") BranchQuery example);
+
+    int updateByPrimaryKeySelective(Branch record);
+    
+    int updateByPrimaryKey(Branch record);
+    
+    List<Branch> selectBranchList(Branch record);
+    
+    List<Branch> selectBranchListByFamilyAndUserid(@Param("familyid")String familyid, @Param("userid")String userid,@Param("branchname")String branchname);
+
+    int updateByBranchidSelective(Branch record);
+    
+    int validateBranchname(Branch record);
+
+	List<String> selectByFamilyid(String familyid);
+
+	List<Branch> getBranchsByFamilyAndUserid(@Param("familyid")String familyid, @Param("userid")String userid,@Param("branchname")String branchname);
+}

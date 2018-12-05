@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.PlatformDao" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.Platform" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="versionName" property="versionName" jdbcType="VARCHAR" />
+    <result column="versionNo" property="versionNo" jdbcType="INTEGER" />
+    <result column="downloadUrl" property="downloadUrl" jdbcType="VARCHAR" />
+    <result column="fileType" property="fileType" jdbcType="INTEGER" />
+  </resultMap>
+  <select id="selecPlatformList" resultMap="BaseResultMap" parameterType="com.jp.entity.Platform" >
+    select
+    *
+    from jp_platform
+    where fileType = #{platform.fileType,jdbcType=INTEGER} 
+    <if test="platform.versionName != null" >
+        and versionName like '%${platform.versionName}%'
+    </if>
+    order by versionNo desc
+  </select>
+  <delete id="deleteVersion">
+    delete from jp_platform where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="save" parameterType="com.jp.entity.Platform">
+    insert into jp_platform (versionName,versionNo,minUpdateVersion,filetype,fileRealName,downloadUrl,uploadTime,upgradeDes)
+    values(
+     #{platform.versionName},#{platform.versionNo},#{platform.minUpdateVersion},#{platform.fileType},#{platform.fileRealName},
+     #{platform.downloadUrl},#{platform.uploadTime},#{platform.upgradeDes}
+    )
+  </insert>
+  <update id="update" parameterType="com.jp.entity.Platform">
+    update jp_platform set versionName = #{platform.versionName},versionNo = #{platform.versionNo},
+    minUpdateVersion = #{platform.minUpdateVersion},upgradeDes = #{platform.upgradeDes}
+    <if test="platform.fileRealName != null" >
+       ,fileRealName = #{platform.fileRealName}
+     </if>
+     ,downloadUrl = #{platform.downloadUrl}
+     where id = #{platform.id}
+  </update>
+  <select id="selectone" resultType="com.jp.entity.Platform">
+  select*from jp_platform where id = #{id} 
+  </select>
+  <update id="isOpen">
+    update jp_platform set isUsed = #{isUsed}
+     where id = #{id}
+  </update>
+  <update id="closeAllVersion">
+    update jp_platform
+    set isUsed = 0
+    where fileType = #{fileType,jdbcType=INTEGER} 
+  </update>
+</mapper>

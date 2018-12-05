@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.RoleDao" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.Role" >
+    <id column="roleid" property="roleid" jdbcType="VARCHAR" />
+    <result column="rolename" property="rolename" jdbcType="VARCHAR" />
+    <result column="roledesc" property="roledesc" jdbcType="VARCHAR" />
+    <result column="familyid" property="familyid" jdbcType="VARCHAR" />
+    <result column="funcgroupid" property="funcgroupid" jdbcType="VARCHAR" />
+    <result column="ismanager" property="ismanager" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      roleid, rolename, roledesc, familyid, funcgroupid, ismanager, type
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.RoleQuery" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_role
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    roleid,rolename,roledesc,familyid,funcgroupid,ismanager,type
+    from jp_role
+    where roleid = #{roleid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from jp_role
+    where roleid = #{roleid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.RoleQuery" >
+    delete from jp_role
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.Role" >
+    insert into jp_role (roleid, rolename, roledesc, 
+      familyid, funcgroupid, ismanager, 
+      type)
+    values (#{roleid,jdbcType=VARCHAR}, #{rolename,jdbcType=VARCHAR}, #{roledesc,jdbcType=VARCHAR}, 
+      #{familyid,jdbcType=VARCHAR}, #{funcgroupid,jdbcType=VARCHAR}, #{ismanager,jdbcType=INTEGER}, 
+      #{type,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.Role" >
+    insert into jp_role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="roleid != null" >
+        roleid,
+      </if>
+      <if test="rolename != null" >
+        rolename,
+      </if>
+      <if test="roledesc != null" >
+        roledesc,
+      </if>
+      <if test="familyid != null" >
+        familyid,
+      </if>
+      <if test="funcgroupid != null" >
+        funcgroupid,
+      </if>
+      <if test="ismanager != null" >
+        ismanager,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="roleid != null" >
+        #{roleid,jdbcType=VARCHAR},
+      </if>
+      <if test="rolename != null" >
+        #{rolename,jdbcType=VARCHAR},
+      </if>
+      <if test="roledesc != null" >
+        #{roledesc,jdbcType=VARCHAR},
+      </if>
+      <if test="familyid != null" >
+        #{familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="funcgroupid != null" >
+        #{funcgroupid,jdbcType=VARCHAR},
+      </if>
+      <if test="ismanager != null" >
+        #{ismanager,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.RoleQuery" resultType="java.lang.Integer" >
+    select count(*) from jp_role
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_role
+    <set >
+      <if test="record.roleid != null" >
+        roleid = #{record.roleid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.rolename != null" >
+        rolename = #{record.rolename,jdbcType=VARCHAR},
+      </if>
+      <if test="record.roledesc != null" >
+        roledesc = #{record.roledesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.familyid != null" >
+        familyid = #{record.familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.funcgroupid != null" >
+        funcgroupid = #{record.funcgroupid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.ismanager != null" >
+        ismanager = #{record.ismanager,jdbcType=INTEGER},
+      </if>
+      <if test="record.type != null" >
+        type = #{record.type,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_role
+    set roleid = #{record.roleid,jdbcType=VARCHAR},
+      rolename = #{record.rolename,jdbcType=VARCHAR},
+      roledesc = #{record.roledesc,jdbcType=VARCHAR},
+      familyid = #{record.familyid,jdbcType=VARCHAR},
+      funcgroupid = #{record.funcgroupid,jdbcType=VARCHAR},
+      ismanager = #{record.ismanager,jdbcType=INTEGER},
+      type = #{record.type,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.Role" >
+    update jp_role
+    <set >
+      <if test="rolename != null" >
+        rolename = #{rolename,jdbcType=VARCHAR},
+      </if>
+      <if test="roledesc != null" >
+        roledesc = #{roledesc,jdbcType=VARCHAR},
+      </if>
+      <if test="familyid != null" >
+        familyid = #{familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="funcgroupid != null" >
+        funcgroupid = #{funcgroupid,jdbcType=VARCHAR},
+      </if>
+      <if test="ismanager != null" >
+        ismanager = #{ismanager,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+    </set>
+    where roleid = #{roleid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.Role" >
+    update jp_role
+    set rolename = #{rolename,jdbcType=VARCHAR},
+      roledesc = #{roledesc,jdbcType=VARCHAR},
+      familyid = #{familyid,jdbcType=VARCHAR},
+      funcgroupid = #{funcgroupid,jdbcType=VARCHAR},
+      ismanager = #{ismanager,jdbcType=INTEGER},
+      type = #{type,jdbcType=INTEGER}
+    where roleid = #{roleid,jdbcType=VARCHAR}
+  </update>
+  <!-- 获取当前用户所对应的角色信息 -->
+  <select id="selectRoleByUserid" resultType="com.jp.entity.Role">
+  	select role.* from jp_user u 
+	inner join jp_userrole userrole on u.userid = userrole.userid
+	inner join jp_role role on userrole.roleid = role.roleid
+	where role.familyid =  #{familyid,jdbcType=VARCHAR}
+	and u.userid =  #{userid,jdbcType=VARCHAR}
+  
+  </select>
+  <select id="selectByFamilyid" resultType="com.jp.entity.Role"  parameterType="String" >
+  SELECT
+*
+FROM
+	jp_role
+WHERE
+	familyid = #{familyid,jdbcType=VARCHAR}
+AND roleid NOT IN (
+	SELECT
+		roleid
+	FROM
+		jp_role
+	WHERE
+		ismanager = 1
+	AND type = 1
+	AND familyid =  #{familyid,jdbcType=VARCHAR}
+)
+  
+  </select>
+</mapper>

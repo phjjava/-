@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.SysFunctionDao" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.SysFunction" >
+    <id column="functionid" property="functionid" jdbcType="VARCHAR" />
+    <result column="functionname" property="functionname" jdbcType="VARCHAR" />
+    <result column="parentid" property="parentid" jdbcType="VARCHAR" />
+    <result column="functionurl" property="functionurl" jdbcType="VARCHAR" />
+    <result column="createid" property="createid" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="DATE" />
+    <result column="updatetime" property="updatetime" jdbcType="DATE" />
+    <result column="updateid" property="updateid" jdbcType="VARCHAR" />
+    <result column="icon" property="icon" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      functionid, functionname, parentid, functionurl, createid, createtime, updatetime, 
+      updateid, icon, status, sort, description
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.SysFunctionQuery" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_sys_function
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    functionid,functionname,parentid,functionurl,createid,createtime,updatetime,updateid,icon,status,sort,description
+    from jp_sys_function
+    where functionid = #{functionid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from jp_sys_function
+    where functionid = #{functionid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.SysFunctionQuery" >
+    delete from jp_sys_function
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.SysFunction" >
+    insert into jp_sys_function (functionid, functionname, parentid, 
+      functionurl, createid, createtime, 
+      updatetime, updateid, icon, 
+      status, sort, description
+      )
+    values (#{functionid,jdbcType=VARCHAR}, #{functionname,jdbcType=VARCHAR}, #{parentid,jdbcType=VARCHAR}, 
+      #{functionurl,jdbcType=VARCHAR}, #{createid,jdbcType=VARCHAR}, #{createtime,jdbcType=DATE}, 
+      #{updatetime,jdbcType=DATE}, #{updateid,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.SysFunction" >
+    insert into jp_sys_function
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="functionid != null" >
+        functionid,
+      </if>
+      <if test="functionname != null" >
+        functionname,
+      </if>
+      <if test="parentid != null" >
+        parentid,
+      </if>
+      <if test="functionurl != null" >
+        functionurl,
+      </if>
+      <if test="createid != null" >
+        createid,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="updatetime != null" >
+        updatetime,
+      </if>
+      <if test="updateid != null" >
+        updateid,
+      </if>
+      <if test="icon != null" >
+        icon,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="functionid != null" >
+        #{functionid,jdbcType=VARCHAR},
+      </if>
+      <if test="functionname != null" >
+        #{functionname,jdbcType=VARCHAR},
+      </if>
+      <if test="parentid != null" >
+        #{parentid,jdbcType=VARCHAR},
+      </if>
+      <if test="functionurl != null" >
+        #{functionurl,jdbcType=VARCHAR},
+      </if>
+      <if test="createid != null" >
+        #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=DATE},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=DATE},
+      </if>
+      <if test="updateid != null" >
+        #{updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null" >
+        #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.SysFunctionQuery" resultType="java.lang.Integer" >
+    select count(*) from jp_sys_function
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_sys_function
+    <set >
+      <if test="record.functionid != null" >
+        functionid = #{record.functionid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.functionname != null" >
+        functionname = #{record.functionname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.parentid != null" >
+        parentid = #{record.parentid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.functionurl != null" >
+        functionurl = #{record.functionurl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createid != null" >
+        createid = #{record.createid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createtime != null" >
+        createtime = #{record.createtime,jdbcType=DATE},
+      </if>
+      <if test="record.updatetime != null" >
+        updatetime = #{record.updatetime,jdbcType=DATE},
+      </if>
+      <if test="record.updateid != null" >
+        updateid = #{record.updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.icon != null" >
+        icon = #{record.icon,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.sort != null" >
+        sort = #{record.sort,jdbcType=INTEGER},
+      </if>
+      <if test="record.description != null" >
+        description = #{record.description,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_sys_function
+    set functionid = #{record.functionid,jdbcType=VARCHAR},
+      functionname = #{record.functionname,jdbcType=VARCHAR},
+      parentid = #{record.parentid,jdbcType=VARCHAR},
+      functionurl = #{record.functionurl,jdbcType=VARCHAR},
+      createid = #{record.createid,jdbcType=VARCHAR},
+      createtime = #{record.createtime,jdbcType=DATE},
+      updatetime = #{record.updatetime,jdbcType=DATE},
+      updateid = #{record.updateid,jdbcType=VARCHAR},
+      icon = #{record.icon,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=INTEGER},
+      sort = #{record.sort,jdbcType=INTEGER},
+      description = #{record.description,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.SysFunction" >
+    update jp_sys_function
+    <set >
+      <if test="functionname != null" >
+        functionname = #{functionname,jdbcType=VARCHAR},
+      </if>
+      <if test="parentid != null" >
+        parentid = #{parentid,jdbcType=VARCHAR},
+      </if>
+      <if test="functionurl != null" >
+        functionurl = #{functionurl,jdbcType=VARCHAR},
+      </if>
+      <if test="createid != null" >
+        createid = #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=DATE},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=DATE},
+      </if>
+      <if test="updateid != null" >
+        updateid = #{updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null" >
+        icon = #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where functionid = #{functionid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.SysFunction" >
+    update jp_sys_function
+    set functionname = #{functionname,jdbcType=VARCHAR},
+      parentid = #{parentid,jdbcType=VARCHAR},
+      functionurl = #{functionurl,jdbcType=VARCHAR},
+      createid = #{createid,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=DATE},
+      updatetime = #{updatetime,jdbcType=DATE},
+      updateid = #{updateid,jdbcType=VARCHAR},
+      icon = #{icon,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      sort = #{sort,jdbcType=INTEGER},
+      description = #{description,jdbcType=VARCHAR}
+    where functionid = #{functionid,jdbcType=VARCHAR}
+  </update>
+  <!-- 根据版本id查询 功能列表 -->
+  <select id="selectFunctionListByVersionid" parameterType="java.lang.String" resultType="com.jp.entity.SysFunction">
+  	select 
+	function.functionid, functionname, parentid, functionurl, createid, createtime, updatetime, 
+	updateid, icon, status, sort, description,func_version.functionid as isfunctionid
+	from jp_sys_function function
+	left join jp_sys_func_version func_version on function.functionid = func_version.functionid
+	<if test="versionid != null" >
+        and func_version.versionid = #{versionid,jdbcType=VARCHAR}
+    </if>
+    <if test="versionid == null" >
+        and 1=2
+    </if>
+  
+	where function.status = 0 order by function.sort desc
+  </select>
+</mapper>

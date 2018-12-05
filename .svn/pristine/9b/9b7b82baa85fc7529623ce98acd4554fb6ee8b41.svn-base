@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.BranchDao" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.Branch" >
+    <id column="branchid" property="branchid" jdbcType="VARCHAR" />
+    <id column="familyid" property="familyid" jdbcType="VARCHAR" />
+    <result column="branchname" property="branchname" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="area" property="area" jdbcType="VARCHAR" />
+    <result column="areacode" property="areacode" jdbcType="VARCHAR" />
+    <result column="beginuserid" property="beginuserid" jdbcType="VARCHAR" />
+    <result column="beginname" property="beginname" jdbcType="VARCHAR" />
+    <result column="parentid" property="parentid" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="VARCHAR" />
+    <result column="citycode" property="citycode" jdbcType="VARCHAR" />
+    <result column="cityname" property="cityname" jdbcType="VARCHAR" />
+    <result column="xcode" property="xcode" jdbcType="VARCHAR" />
+    <result column="xname" property="xname" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR"/>
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="createid" property="createid" jdbcType="VARCHAR" />
+    <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="updateid" property="updateid" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      branchid, familyid, branchname, status, area, areacode, beginuserid, beginname, parentid, 
+      sort, citycode, cityname, xcode, xname, address,createtime, createid, updatetime, updateid
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.BranchQuery" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_branch
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.jp.entity.BranchKey" >
+    select 
+    branchid,familyid,branchname,status,area,areacode,beginuserid,beginname,parentid,sort,citycode,cityname,xcode,xname,address,createtime,createid,updatetime,updateid
+    from jp_branch
+    where branchid = #{branchid,jdbcType=VARCHAR}
+      and familyid = #{familyid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.jp.entity.BranchKey" >
+    delete from jp_branch
+    where branchid = #{branchid,jdbcType=VARCHAR}
+      and familyid = #{familyid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.BranchQuery" >
+    delete from jp_branch
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.Branch" >
+    insert into jp_branch (branchid, familyid, branchname, 
+      status, area, areacode, 
+      beginuserid, beginname, parentid, 
+      sort, citycode, cityname, 
+      xcode, xname,address, createtime, 
+      createid, updatetime, updateid
+      )
+    values (#{branchid,jdbcType=VARCHAR}, #{familyid,jdbcType=VARCHAR}, #{branchname,jdbcType=VARCHAR}, 
+      #{status,jdbcType=TINYINT}, #{area,jdbcType=VARCHAR}, #{areacode,jdbcType=VARCHAR}, 
+      #{beginuserid,jdbcType=VARCHAR}, #{beginname,jdbcType=VARCHAR}, #{parentid,jdbcType=VARCHAR}, 
+      #{sort,jdbcType=VARCHAR}, #{citycode,jdbcType=VARCHAR}, #{cityname,jdbcType=VARCHAR}, 
+      #{xcode,jdbcType=VARCHAR}, #{xname,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR},#{createtime,jdbcType=TIMESTAMP}, 
+      #{createid,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP}, #{updateid,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.Branch" >
+    insert into jp_branch
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="branchid != null" >
+        branchid,
+      </if>
+      <if test="familyid != null" >
+        familyid,
+      </if>
+      <if test="branchname != null" >
+        branchname,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="area != null" >
+        area,
+      </if>
+      <if test="areacode != null" >
+        areacode,
+      </if>
+      <if test="beginuserid != null" >
+        beginuserid,
+      </if>
+      <if test="beginname != null" >
+        beginname,
+      </if>
+      <if test="parentid != null" >
+        parentid,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="citycode != null" >
+        citycode,
+      </if>
+      <if test="cityname != null" >
+        cityname,
+      </if>
+      <if test="xcode != null" >
+        xcode,
+      </if>
+      <if test="xname != null" >
+        xname,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="createid != null" >
+        createid,
+      </if>
+      <if test="updatetime != null" >
+        updatetime,
+      </if>
+      <if test="updateid != null" >
+        updateid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="branchid != null" >
+        #{branchid,jdbcType=VARCHAR},
+      </if>
+      <if test="familyid != null" >
+        #{familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="branchname != null" >
+        #{branchname,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="area != null" >
+        #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="areacode != null" >
+        #{areacode,jdbcType=VARCHAR},
+      </if>
+      <if test="beginuserid != null" >
+        #{beginuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="beginname != null" >
+        #{beginname,jdbcType=VARCHAR},
+      </if>
+      <if test="parentid != null" >
+        #{parentid,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=VARCHAR},
+      </if>
+      <if test="citycode != null" >
+        #{citycode,jdbcType=VARCHAR},
+      </if>
+      <if test="cityname != null" >
+        #{cityname,jdbcType=VARCHAR},
+      </if>
+      <if test="xcode != null" >
+        #{xcode,jdbcType=VARCHAR},
+      </if>
+      <if test="xname != null" >
+        #{xname,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createid != null" >
+        #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateid != null" >
+        #{updateid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.BranchQuery" resultType="java.lang.Integer" >
+    select count(*) from jp_branch
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_branch
+    <set >
+      <if test="record.branchid != null" >
+        branchid = #{record.branchid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.familyid != null" >
+        familyid = #{record.familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.branchname != null" >
+        branchname = #{record.branchname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.area != null" >
+        area = #{record.area,jdbcType=VARCHAR},
+      </if>
+      <if test="record.areacode != null" >
+        areacode = #{record.areacode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.beginuserid != null" >
+        beginuserid = #{record.beginuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.beginname != null" >
+        beginname = #{record.beginname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.parentid != null" >
+        parentid = #{record.parentid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sort != null" >
+        sort = #{record.sort,jdbcType=VARCHAR},
+      </if>
+      <if test="record.citycode != null" >
+        citycode = #{record.citycode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cityname != null" >
+        cityname = #{record.cityname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.xcode != null" >
+        xcode = #{record.xcode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.xname != null" >
+        xname = #{record.xname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.address != null" >
+        xname = #{record.address,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createtime != null" >
+        createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createid != null" >
+        createid = #{record.createid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updatetime != null" >
+        updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateid != null" >
+        updateid = #{record.updateid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_branch
+    set branchid = #{record.branchid,jdbcType=VARCHAR},
+      familyid = #{record.familyid,jdbcType=VARCHAR},
+      branchname = #{record.branchname,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=TINYINT},
+      area = #{record.area,jdbcType=VARCHAR},
+      areacode = #{record.areacode,jdbcType=VARCHAR},
+      beginuserid = #{record.beginuserid,jdbcType=VARCHAR},
+      beginname = #{record.beginname,jdbcType=VARCHAR},
+      parentid = #{record.parentid,jdbcType=VARCHAR},
+      sort = #{record.sort,jdbcType=VARCHAR},
+      citycode = #{record.citycode,jdbcType=VARCHAR},
+      cityname = #{record.cityname,jdbcType=VARCHAR},
+      xcode = #{record.xcode,jdbcType=VARCHAR},
+      xname = #{record.xname,jdbcType=VARCHAR},
+      address = #{record.address,jdbcType=VARCHAR},
+      createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      createid = #{record.createid,jdbcType=VARCHAR},
+      updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+      updateid = #{record.updateid,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.Branch" >
+    update jp_branch
+    <set >
+      <if test="branchname != null" >
+        branchname = #{branchname,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="area != null" >
+        area = #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="areacode != null" >
+        areacode = #{areacode,jdbcType=VARCHAR},
+      </if>
+      <if test="beginuserid != null" >
+        beginuserid = #{beginuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="beginname != null" >
+        beginname = #{beginname,jdbcType=VARCHAR},
+      </if>
+      <if test="parentid != null" >
+        parentid = #{parentid,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=VARCHAR},
+      </if>
+      <if test="citycode != null" >
+        citycode = #{citycode,jdbcType=VARCHAR},
+      </if>
+      <if test="cityname != null" >
+        cityname = #{cityname,jdbcType=VARCHAR},
+      </if>
+      <if test="xcode != null" >
+        xcode = #{xcode,jdbcType=VARCHAR},
+      </if>
+      <if test="xname != null" >
+        xname = #{xname,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createid != null" >
+        createid = #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateid != null" >
+        updateid = #{updateid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where branchid = #{branchid,jdbcType=VARCHAR}
+      and familyid = #{familyid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.Branch" >
+    update jp_branch
+    set branchname = #{branchname,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      area = #{area,jdbcType=VARCHAR},
+      areacode = #{areacode,jdbcType=VARCHAR},
+      beginuserid = #{beginuserid,jdbcType=VARCHAR},
+      beginname = #{beginname,jdbcType=VARCHAR},
+      parentid = #{parentid,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=VARCHAR},
+      citycode = #{citycode,jdbcType=VARCHAR},
+      cityname = #{cityname,jdbcType=VARCHAR},
+      xcode = #{xcode,jdbcType=VARCHAR},
+      xname = #{xname,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=TIMESTAMP},
+      createid = #{createid,jdbcType=VARCHAR},
+      updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      updateid = #{updateid,jdbcType=VARCHAR}
+    where branchid = #{branchid,jdbcType=VARCHAR}
+      and familyid = #{familyid,jdbcType=VARCHAR}
+  </update>
+  
+ 
+  
+  <!-- 自写方法 -->
+  <select id="selectByFamilyid" parameterType="java.lang.String" resultType="java.lang.String">
+  	select branchid from jp_branch where familyid = #{familyid,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getBranchsByFamilyAndUserid" resultType="com.jp.entity.Branch">
+  	SELECT
+	b.* 
+FROM
+	jp_branch b
+	INNER JOIN ( SELECT m.CODE,m.familyid FROM jp_editorial_board m, jp_user_manager n WHERE m.id = n.ebid AND n.userid = #{userid} ) t ON b.areacode = t.CODE and b.familyid = t.familyid 
+	UNION
+SELECT
+	b.* 
+FROM
+	jp_branch b
+	INNER JOIN ( SELECT m.CODE,m.familyid FROM jp_editorial_board m, jp_user_manager n WHERE m.id = n.ebid AND n.userid = #{userid}) t ON b.citycode = t.CODE and b.familyid = t.familyid
+	UNION
+SELECT
+	b.* 
+FROM
+	jp_branch b
+	INNER JOIN ( SELECT m.CODE,m.familyid FROM jp_editorial_board m, jp_user_manager n WHERE m.id = n.ebid AND n.userid = #{userid}) t ON b.xcode = t.CODE and b.familyid = t.familyid
+	UNION
+SELECT
+	b.* 
+FROM
+	jp_branch b
+	INNER JOIN ( SELECT m.CODE,m.familyid FROM jp_editorial_board m, jp_user_manager n WHERE m.id = n.ebid AND n.userid = #{userid}) t ON b.branchid = t.CODE and b.familyid = t.familyid
+  	
+  </select>
+  
+   
+  <select id="selectBranchList" parameterType="com.jp.entity.Branch" resultType="com.jp.entity.Branch">
+	SELECT
+	branch.*, (
+		SELECT
+			count(*)
+		FROM
+			jp_user
+		WHERE
+			branchid = branch.branchid
+		AND familyid = #{familyid,jdbcType=VARCHAR}
+		AND deleteflag = 0
+		AND `status` = 0
+	) usercount
+FROM
+	jp_branch branch
+WHERE
+
+ familyid = #{familyid,jdbcType=VARCHAR}
+	<if test="branchid != null and branchid != ''" >
+    	AND branchid = #{branchid,jdbcType=VARCHAR}
+    </if>
+	
+    <if test="branchname != null and branchname != ''" >
+    	 and branchname like binary CONCAT('%', CONCAT(#{branchname}), '%')
+    </if>
+	ORDER BY
+	sort DESC
+   	<!-- <if test="sortOrder != null">
+      order by ${sortOrder} ${sortType}
+    </if> -->
+  </select>
+  <select id="selectBranchListByFamilyAndUserid" resultType="com.jp.entity.Branch">
+  	select distinct 
+	branch.branchid, branch.familyid, branch.branchname, branch.status, branch.area, branch.areacode, 
+	 branch.beginuserid, branch.beginname, branch.parentid, branch.sort, branch.citycode, 
+	 branch.cityname, branch.xcode, branch.xname,branch.address
+  	from jp_branch branch
+  	left join jp_userbranch userbranch on branch.branchid = userbranch.branchid
+  	where 1=1 and 'status'=0
+  	<if test="familyid != null" >
+     and branch.familyid = #{familyid,jdbcType=VARCHAR}
+    </if>
+  	<if test="userid != null">
+     and userbranch.userid = #{userid,jdbcType=VARCHAR}
+    </if>
+  </select>
+  
+  <update id="updateByBranchidSelective" parameterType="com.jp.entity.Branch" >
+    update jp_branch
+    <set >
+      <if test="branchname != null" >
+        branchname = #{branchname,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="area != null" >
+        area = #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="areacode != null" >
+        areacode = #{areacode,jdbcType=VARCHAR},
+      </if>
+      <if test="beginuserid != null" >
+        beginuserid = #{beginuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="beginname != null" >
+        beginname = #{beginname,jdbcType=VARCHAR},
+      </if>
+      <if test="parentid != null" >
+        parentid = #{parentid,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=VARCHAR},
+      </if>
+      <if test="citycode != null" >
+        citycode = #{citycode,jdbcType=VARCHAR},
+      </if>
+      <if test="cityname != null" >
+        cityname = #{cityname,jdbcType=VARCHAR},
+      </if>
+      <if test="xcode != null" >
+        xcode = #{xcode,jdbcType=VARCHAR},
+      </if>
+      <if test="xname != null" >
+        xname = #{xname,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createid != null" >
+        createid = #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateid != null" >
+        updateid = #{updateid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where branchid = #{branchid,jdbcType=VARCHAR}
+  </update>
+</mapper>

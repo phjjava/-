@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.BranchalbumMapper" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.Branchalbum" >
+    <id column="albumid" property="albumid" jdbcType="VARCHAR" />
+    <result column="branchid" property="branchid" jdbcType="VARCHAR" />
+    <result column="familyid" property="familyid" jdbcType="VARCHAR" />
+    <result column="albumname" property="albumname" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="createid" property="createid" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="updateid" property="updateid" jdbcType="VARCHAR" />
+    <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="deleteflag" property="deleteflag" jdbcType="INTEGER" />
+    <result column="branchname" property="branchname" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      albumid, branchid, familyid, albumname, remark, createid, createtime, updateid, updatetime, 
+      deleteflag, branchname, type
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.BranchalbumExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_branchalbum
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    albumid,branchid,familyid,albumname,remark,createid,createtime,updateid,updatetime,deleteflag,branchname,type
+    from jp_branchalbum
+    where albumid = #{albumid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from jp_branchalbum
+    where albumid = #{albumid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.BranchalbumExample" >
+    delete from jp_branchalbum
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.Branchalbum" >
+    insert into jp_branchalbum (albumid, branchid, familyid, 
+      albumname, remark, createid, 
+      createtime, updateid, updatetime, 
+      deleteflag, branchname, type
+      )
+    values (#{albumid,jdbcType=VARCHAR}, #{branchid,jdbcType=VARCHAR}, #{familyid,jdbcType=VARCHAR}, 
+      #{albumname,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{createid,jdbcType=VARCHAR}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{updateid,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP}, 
+      #{deleteflag,jdbcType=INTEGER}, #{branchname,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.Branchalbum" >
+    insert into jp_branchalbum
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="albumid != null" >
+        albumid,
+      </if>
+      <if test="branchid != null" >
+        branchid,
+      </if>
+      <if test="familyid != null" >
+        familyid,
+      </if>
+      <if test="albumname != null" >
+        albumname,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="createid != null" >
+        createid,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="updateid != null" >
+        updateid,
+      </if>
+      <if test="updatetime != null" >
+        updatetime,
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag,
+      </if>
+      <if test="branchname != null" >
+        branchname,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="albumid != null" >
+        #{albumid,jdbcType=VARCHAR},
+      </if>
+      <if test="branchid != null" >
+        #{branchid,jdbcType=VARCHAR},
+      </if>
+      <if test="familyid != null" >
+        #{familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="albumname != null" >
+        #{albumname,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createid != null" >
+        #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateid != null" >
+        #{updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteflag != null" >
+        #{deleteflag,jdbcType=INTEGER},
+      </if>
+      <if test="branchname != null" >
+        #{branchname,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.BranchalbumExample" resultType="java.lang.Integer" >
+    select count(*) from jp_branchalbum
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_branchalbum
+    <set >
+      <if test="record.albumid != null" >
+        albumid = #{record.albumid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.branchid != null" >
+        branchid = #{record.branchid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.familyid != null" >
+        familyid = #{record.familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.albumname != null" >
+        albumname = #{record.albumname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null" >
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createid != null" >
+        createid = #{record.createid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createtime != null" >
+        createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateid != null" >
+        updateid = #{record.updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updatetime != null" >
+        updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.deleteflag != null" >
+        deleteflag = #{record.deleteflag,jdbcType=INTEGER},
+      </if>
+      <if test="record.branchname != null" >
+        branchname = #{record.branchname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.type != null" >
+        type = #{record.type,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_branchalbum
+    set albumid = #{record.albumid,jdbcType=VARCHAR},
+      branchid = #{record.branchid,jdbcType=VARCHAR},
+      familyid = #{record.familyid,jdbcType=VARCHAR},
+      albumname = #{record.albumname,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      createid = #{record.createid,jdbcType=VARCHAR},
+      createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      updateid = #{record.updateid,jdbcType=VARCHAR},
+      updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+      deleteflag = #{record.deleteflag,jdbcType=INTEGER},
+      branchname = #{record.branchname,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.Branchalbum" >
+    update jp_branchalbum
+    <set >
+      <if test="branchid != null" >
+        branchid = #{branchid,jdbcType=VARCHAR},
+      </if>
+      <if test="familyid != null" >
+        familyid = #{familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="albumname != null" >
+        albumname = #{albumname,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createid != null" >
+        createid = #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateid != null" >
+        updateid = #{updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag = #{deleteflag,jdbcType=INTEGER},
+      </if>
+      <if test="branchname != null" >
+        branchname = #{branchname,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+    </set>
+    where albumid = #{albumid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.Branchalbum" >
+    update jp_branchalbum
+    set branchid = #{branchid,jdbcType=VARCHAR},
+      familyid = #{familyid,jdbcType=VARCHAR},
+      albumname = #{albumname,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      createid = #{createid,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=TIMESTAMP},
+      updateid = #{updateid,jdbcType=VARCHAR},
+      updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      deleteflag = #{deleteflag,jdbcType=INTEGER},
+      branchname = #{branchname,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER}
+    where albumid = #{albumid,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- 自写方法 -->
+  
+  <select id="selectByBranchIds" resultType="com.jp.entity.Branchalbum">
+     SELECT
+	  photo.albumNum,album.*
+       FROM
+	   jp_branchalbum album
+    LEFT JOIN (
+	SELECT
+		count(imgurl) AS albumNum,
+		photo.albumid
+	FROM
+		jp_branchphoto photo
+	WHERE
+		photo.deleteflag = 0
+	GROUP BY
+		photo.albumid
+     ) photo ON album.albumid = photo.albumid
+     <foreach collection="list" item="item" index="index" open=" where album.branchid in (" separator="," close=")">
+		#{item}
+	</foreach>
+  </select>
+  
+   <select id="selectBranchAlbumMangeList" resultType="com.jp.entity.Branchalbum" parameterType="com.jp.entity.BranchalbumExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+	      ,
+	  (SELECT 
+	    COUNT(*) 
+	  FROM
+	    jp_branchphoto bp 
+	  WHERE bp.albumid = jp_branchalbum.`albumid` AND bp.deleteflag!=1 ) AS albumNum 
+    from jp_branchalbum
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  
+  <update id="batchDelete">
+      <foreach collection="array" item="item" index="index" separator=";">
+	     update  jp_branchalbum 
+	     set deleteflag = 1
+	     where albumid = #{item,jdbcType=VARCHAR}
+	 </foreach>
+  </update>
+</mapper>

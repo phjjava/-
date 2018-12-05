@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.UserManagerMapper" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.UserManager" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="userid" property="userid" jdbcType="VARCHAR" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="familyid" property="familyid" jdbcType="VARCHAR" />
+    <result column="postid" property="postid" jdbcType="VARCHAR" />
+    <result column="postname" property="postname" jdbcType="VARCHAR" />
+    <result column="ebid" property="ebid" jdbcType="VARCHAR" />
+    <result column="ebname" property="ebname" jdbcType="VARCHAR" />
+    <result column="ebtype" property="ebtype" jdbcType="INTEGER" />
+    <result column="ismanager" property="ismanager" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      id, userid, username, familyid, postid, postname, ebid, ebname, ebtype, ismanager
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.UserManagerExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_user_manager
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    id,userid,username,familyid,postid,postname,ebid,ebname,ebtype,ismanager
+    from jp_user_manager
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from jp_user_manager
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.UserManagerExample" >
+    delete from jp_user_manager
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.UserManager" >
+    insert into jp_user_manager (id, userid, username, 
+      familyid, postid, postname, 
+      ebid, ebname, ebtype, 
+      ismanager)
+    values (#{id,jdbcType=VARCHAR}, #{userid,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
+      #{familyid,jdbcType=VARCHAR}, #{postid,jdbcType=VARCHAR}, #{postname,jdbcType=VARCHAR}, 
+      #{ebid,jdbcType=VARCHAR}, #{ebname,jdbcType=VARCHAR}, #{ebtype,jdbcType=INTEGER}, 
+      #{ismanager,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.UserManager" >
+    insert into jp_user_manager
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="familyid != null" >
+        familyid,
+      </if>
+      <if test="postid != null" >
+        postid,
+      </if>
+      <if test="postname != null" >
+        postname,
+      </if>
+      <if test="ebid != null" >
+        ebid,
+      </if>
+      <if test="ebname != null" >
+        ebname,
+      </if>
+      <if test="ebtype != null" >
+        ebtype,
+      </if>
+      <if test="ismanager != null" >
+        ismanager,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="familyid != null" >
+        #{familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="postid != null" >
+        #{postid,jdbcType=VARCHAR},
+      </if>
+      <if test="postname != null" >
+        #{postname,jdbcType=VARCHAR},
+      </if>
+      <if test="ebid != null" >
+        #{ebid,jdbcType=VARCHAR},
+      </if>
+      <if test="ebname != null" >
+        #{ebname,jdbcType=VARCHAR},
+      </if>
+      <if test="ebtype != null" >
+        #{ebtype,jdbcType=INTEGER},
+      </if>
+      <if test="ismanager != null" >
+        #{ismanager,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.UserManagerExample" resultType="java.lang.Integer" >
+    select count(*) from jp_user_manager
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_user_manager
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userid != null" >
+        userid = #{record.userid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.username != null" >
+        username = #{record.username,jdbcType=VARCHAR},
+      </if>
+      <if test="record.familyid != null" >
+        familyid = #{record.familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.postid != null" >
+        postid = #{record.postid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.postname != null" >
+        postname = #{record.postname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.ebid != null" >
+        ebid = #{record.ebid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.ebname != null" >
+        ebname = #{record.ebname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.ebtype != null" >
+        ebtype = #{record.ebtype,jdbcType=INTEGER},
+      </if>
+      <if test="record.ismanager != null" >
+        ismanager = #{record.ismanager,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_user_manager
+    set id = #{record.id,jdbcType=VARCHAR},
+      userid = #{record.userid,jdbcType=VARCHAR},
+      username = #{record.username,jdbcType=VARCHAR},
+      familyid = #{record.familyid,jdbcType=VARCHAR},
+      postid = #{record.postid,jdbcType=VARCHAR},
+      postname = #{record.postname,jdbcType=VARCHAR},
+      ebid = #{record.ebid,jdbcType=VARCHAR},
+      ebname = #{record.ebname,jdbcType=VARCHAR},
+      ebtype = #{record.ebtype,jdbcType=INTEGER},
+      ismanager = #{record.ismanager,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.UserManager" >
+    update jp_user_manager
+    <set >
+      <if test="userid != null" >
+        userid = #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="familyid != null" >
+        familyid = #{familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="postid != null" >
+        postid = #{postid,jdbcType=VARCHAR},
+      </if>
+      <if test="postname != null" >
+        postname = #{postname,jdbcType=VARCHAR},
+      </if>
+      <if test="ebid != null" >
+        ebid = #{ebid,jdbcType=VARCHAR},
+      </if>
+      <if test="ebname != null" >
+        ebname = #{ebname,jdbcType=VARCHAR},
+      </if>
+      <if test="ebtype != null" >
+        ebtype = #{ebtype,jdbcType=INTEGER},
+      </if>
+      <if test="ismanager != null" >
+        ismanager = #{ismanager,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.UserManager" >
+    update jp_user_manager
+    set userid = #{userid,jdbcType=VARCHAR},
+      username = #{username,jdbcType=VARCHAR},
+      familyid = #{familyid,jdbcType=VARCHAR},
+      postid = #{postid,jdbcType=VARCHAR},
+      postname = #{postname,jdbcType=VARCHAR},
+      ebid = #{ebid,jdbcType=VARCHAR},
+      ebname = #{ebname,jdbcType=VARCHAR},
+      ebtype = #{ebtype,jdbcType=INTEGER},
+      ismanager = #{ismanager,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+    <!-- 自写方法 -->
+  <select id="selectMnangers" parameterType="java.lang.String" resultType="com.jp.entity.UserManager">
+  	select id,userid,username,ebid,ebname,postid,postname,ebtype,ismanager 
+  	from jp_user_manager 
+  	where userid=#{userid,jdbcType=VARCHAR}
+  	order by ebtype desc
+  </select>
+</mapper>

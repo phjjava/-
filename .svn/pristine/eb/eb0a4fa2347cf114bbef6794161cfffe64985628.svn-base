@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.UserphotoDao" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.Userphoto" >
+    <id column="userid" property="userid" jdbcType="VARCHAR" />
+    <id column="albumid" property="albumid" jdbcType="VARCHAR" />
+    <id column="imgid" property="imgid" jdbcType="VARCHAR" />
+    <result column="smallimgurl" property="smallimgurl" jdbcType="VARCHAR" />
+    <result column="imgurl" property="imgurl" jdbcType="VARCHAR" />
+    <result column="deleteflag" property="deleteflag" jdbcType="TINYINT" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="createid" property="createid" jdbcType="VARCHAR" />
+    <result column="updateid" property="updateid" jdbcType="VARCHAR" />
+    <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      userid, albumid, imgid, smallimgurl, imgurl, deleteflag, createtime, description, 
+      sort, createid, updateid, updatetime
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.UserphotoQuery" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_userphoto
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.jp.entity.UserphotoKey" >
+    select 
+    userid,albumid,imgid,smallimgurl,imgurl,deleteflag,createtime,description,sort,createid,updateid,updatetime
+    from jp_userphoto
+    where userid = #{userid,jdbcType=VARCHAR}
+      and albumid = #{albumid,jdbcType=VARCHAR}
+      and imgid = #{imgid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.jp.entity.UserphotoKey" >
+    delete from jp_userphoto
+    where userid = #{userid,jdbcType=VARCHAR}
+      and albumid = #{albumid,jdbcType=VARCHAR}
+      and imgid = #{imgid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.UserphotoQuery" >
+    delete from jp_userphoto
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.Userphoto" >
+    insert into jp_userphoto (userid, albumid, imgid, 
+      smallimgurl, imgurl, deleteflag, 
+      createtime, description, sort, 
+      createid, updateid, updatetime
+      )
+    values (#{userid,jdbcType=VARCHAR}, #{albumid,jdbcType=VARCHAR}, #{imgid,jdbcType=VARCHAR}, 
+      #{smallimgurl,jdbcType=VARCHAR}, #{imgurl,jdbcType=VARCHAR}, #{deleteflag,jdbcType=TINYINT}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{description,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}, 
+      #{createid,jdbcType=VARCHAR}, #{updateid,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.Userphoto" >
+    insert into jp_userphoto
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="albumid != null" >
+        albumid,
+      </if>
+      <if test="imgid != null" >
+        imgid,
+      </if>
+      <if test="smallimgurl != null" >
+        smallimgurl,
+      </if>
+      <if test="imgurl != null" >
+        imgurl,
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="createid != null" >
+        createid,
+      </if>
+      <if test="updateid != null" >
+        updateid,
+      </if>
+      <if test="updatetime != null" >
+        updatetime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="albumid != null" >
+        #{albumid,jdbcType=VARCHAR},
+      </if>
+      <if test="imgid != null" >
+        #{imgid,jdbcType=VARCHAR},
+      </if>
+      <if test="smallimgurl != null" >
+        #{smallimgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="imgurl != null" >
+        #{imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteflag != null" >
+        #{deleteflag,jdbcType=TINYINT},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createid != null" >
+        #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="updateid != null" >
+        #{updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.UserphotoQuery" resultType="java.lang.Integer" >
+    select count(*) from jp_userphoto
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_userphoto
+    <set >
+      <if test="record.userid != null" >
+        userid = #{record.userid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.albumid != null" >
+        albumid = #{record.albumid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.imgid != null" >
+        imgid = #{record.imgid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.smallimgurl != null" >
+        smallimgurl = #{record.smallimgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.imgurl != null" >
+        imgurl = #{record.imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.deleteflag != null" >
+        deleteflag = #{record.deleteflag,jdbcType=TINYINT},
+      </if>
+      <if test="record.createtime != null" >
+        createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.description != null" >
+        description = #{record.description,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sort != null" >
+        sort = #{record.sort,jdbcType=INTEGER},
+      </if>
+      <if test="record.createid != null" >
+        createid = #{record.createid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateid != null" >
+        updateid = #{record.updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updatetime != null" >
+        updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_userphoto
+    set userid = #{record.userid,jdbcType=VARCHAR},
+      albumid = #{record.albumid,jdbcType=VARCHAR},
+      imgid = #{record.imgid,jdbcType=VARCHAR},
+      smallimgurl = #{record.smallimgurl,jdbcType=VARCHAR},
+      imgurl = #{record.imgurl,jdbcType=VARCHAR},
+      deleteflag = #{record.deleteflag,jdbcType=TINYINT},
+      createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      description = #{record.description,jdbcType=VARCHAR},
+      sort = #{record.sort,jdbcType=INTEGER},
+      createid = #{record.createid,jdbcType=VARCHAR},
+      updateid = #{record.updateid,jdbcType=VARCHAR},
+      updatetime = #{record.updatetime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.Userphoto" >
+    update jp_userphoto
+    <set >
+      <if test="smallimgurl != null" >
+        smallimgurl = #{smallimgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="imgurl != null" >
+        imgurl = #{imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag = #{deleteflag,jdbcType=TINYINT},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createid != null" >
+        createid = #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="updateid != null" >
+        updateid = #{updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where userid = #{userid,jdbcType=VARCHAR}
+      and albumid = #{albumid,jdbcType=VARCHAR}
+      and imgid = #{imgid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.Userphoto" >
+    update jp_userphoto
+    set smallimgurl = #{smallimgurl,jdbcType=VARCHAR},
+      imgurl = #{imgurl,jdbcType=VARCHAR},
+      deleteflag = #{deleteflag,jdbcType=TINYINT},
+      createtime = #{createtime,jdbcType=TIMESTAMP},
+      description = #{description,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=INTEGER},
+      createid = #{createid,jdbcType=VARCHAR},
+      updateid = #{updateid,jdbcType=VARCHAR},
+      updatetime = #{updatetime,jdbcType=TIMESTAMP}
+    where userid = #{userid,jdbcType=VARCHAR}
+      and albumid = #{albumid,jdbcType=VARCHAR}
+      and imgid = #{imgid,jdbcType=VARCHAR}
+  </update>
+  <insert id="insertUserPhoto">
+	     insert into jp_userphoto (userid,albumid,imgid,imgurl,deleteflag,createtime,createid,smallimgurl,description)
+	     values
+	     <foreach collection="list" item="item" index="index" separator=",">
+				(#{item.userid},#{item.albumid},#{item.imgid},#{item.imgurl},
+				#{item.deleteflag},#{item.createtime},#{item.createid},#{item.smallimgurl},#{item.description})
+		</foreach>
+  </insert>
+  <select id="selectByAlbumId" parameterType="java.lang.String" resultType="com.jp.entity.Userphoto" >
+    select *from jp_userphoto
+    where albumid = #{albumId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteUserPhoto" parameterType="java.lang.String" >
+    delete from jp_userphoto
+    where 
+    albumid = #{albumid,jdbcType=VARCHAR}
+  </delete>
+</mapper>

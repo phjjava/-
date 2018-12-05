@@ -1,0 +1,216 @@
+package com.jp.entity;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class Dynamic implements Serializable {
+    public String getTobranchid() {
+		return tobranchid;
+	}
+
+	public void setTobranchid(String tobranchid) {
+		this.tobranchid = tobranchid;
+	}
+
+	public Integer getReadNum() {
+		return readNum;
+	}
+
+	public void setReadNum(Integer readNum) {
+		this.readNum = readNum;
+	}
+
+	private String dyid;
+
+    private String branchid;
+
+    private String familyid;
+
+    /**
+     * 0家族动态1分支动态
+     */
+    private Integer dytype;
+
+    private String dytitle;
+
+    private Integer deleteflag;
+
+    private String imgurl;
+
+    private String branchname;
+
+    private String createid;
+
+    private Date createtime;
+    
+    private String createtimeStr;
+
+    private String updateid;
+
+    private Date updatetime;
+
+    private String createname;
+
+    private Integer type;
+
+    private String dycontent;
+    
+    private String tobranchid;
+    private Integer readNum;
+
+    private static final long serialVersionUID = 1L;
+
+    public String getDyid() {
+        return dyid;
+    }
+
+    public void setDyid(String dyid) {
+        this.dyid = dyid == null ? null : dyid.trim();
+    }
+
+    public String getBranchid() {
+        return branchid;
+    }
+
+    public void setBranchid(String branchid) {
+        this.branchid = branchid == null ? null : branchid.trim();
+    }
+
+    public String getFamilyid() {
+        return familyid;
+    }
+
+    public void setFamilyid(String familyid) {
+        this.familyid = familyid == null ? null : familyid.trim();
+    }
+
+    public Integer getDytype() {
+        return dytype;
+    }
+
+    public void setDytype(Integer dytype) {
+        this.dytype = dytype;
+    }
+
+    public String getDytitle() {
+        return dytitle;
+    }
+
+    public void setDytitle(String dytitle) {
+        this.dytitle = dytitle == null ? null : dytitle.trim();
+    }
+
+    public Integer getDeleteflag() {
+        return deleteflag;
+    }
+
+    public void setDeleteflag(Integer deleteflag) {
+        this.deleteflag = deleteflag;
+    }
+
+    public String getImgurl() {
+        return imgurl;
+    }
+
+    public void setImgurl(String imgurl) {
+        this.imgurl = imgurl == null ? null : imgurl.trim();
+    }
+
+    public String getBranchname() {
+        return branchname;
+    }
+
+    public void setBranchname(String branchname) {
+        this.branchname = branchname == null ? null : branchname.trim();
+    }
+
+    public String getCreateid() {
+        return createid;
+    }
+
+    public void setCreateid(String createid) {
+        this.createid = createid == null ? null : createid.trim();
+    }
+
+    public Date getCreatetime() {
+        return createtime;
+    }
+
+    public void setCreatetime(Date createtime) {
+        this.createtime = createtime;
+    }
+
+    public String getUpdateid() {
+        return updateid;
+    }
+
+    public void setUpdateid(String updateid) {
+        this.updateid = updateid == null ? null : updateid.trim();
+    }
+
+    public Date getUpdatetime() {
+        return updatetime;
+    }
+
+    public void setUpdatetime(Date updatetime) {
+        this.updatetime = updatetime;
+    }
+
+    public String getCreatename() {
+        return createname;
+    }
+
+    public void setCreatename(String createname) {
+        this.createname = createname == null ? null : createname.trim();
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public String getDycontent() {
+        return dycontent;
+    }
+
+    public void setDycontent(String dycontent) {
+        this.dycontent = dycontent == null ? null : dycontent.trim();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append(" [");
+        sb.append("Hash = ").append(hashCode());
+        sb.append(", dyid=").append(dyid);
+        sb.append(", branchid=").append(branchid);
+        sb.append(", familyid=").append(familyid);
+        sb.append(", dytype=").append(dytype);
+        sb.append(", dytitle=").append(dytitle);
+        sb.append(", deleteflag=").append(deleteflag);
+        sb.append(", imgurl=").append(imgurl);
+        sb.append(", branchname=").append(branchname);
+        sb.append(", createid=").append(createid);
+        sb.append(", createtime=").append(createtime);
+        sb.append(", updateid=").append(updateid);
+        sb.append(", updatetime=").append(updatetime);
+        sb.append(", createname=").append(createname);
+        sb.append(", type=").append(type);
+        sb.append(", dycontent=").append(dycontent);
+        sb.append(", serialVersionUID=").append(serialVersionUID);
+        sb.append("]");
+        return sb.toString();
+    }
+
+	public String getCreatetimeStr() {
+		return createtimeStr;
+	}
+
+	public void setCreatetimeStr(String createtimeStr) {
+		this.createtimeStr = createtimeStr;
+	}
+}

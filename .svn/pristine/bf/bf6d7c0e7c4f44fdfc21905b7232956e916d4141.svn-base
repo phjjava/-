@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.UserworkexpDao" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.Userworkexp" >
+    <id column="userId" property="userid" jdbcType="VARCHAR" />
+    <id column="workid" property="workid" jdbcType="VARCHAR" />
+    <id column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="company" property="company" jdbcType="VARCHAR" />
+    <result column="position" property="position" jdbcType="VARCHAR" />
+    <result column="datefrom" property="datefrom" jdbcType="DATE" />
+    <result column="dateto" property="dateto" jdbcType="DATE" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.jp.entity.Userworkexp" extends="BaseResultMap" >
+    <result column="workcontent" property="workcontent" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      userId, workid, phone, company, position, datefrom, dateto
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <sql id="Blob_Column_List" >
+    workcontent
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.jp.entity.UserworkexpQuery" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from jp_userworkexp
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.UserworkexpQuery" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_userworkexp
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="com.jp.entity.UserworkexpKey" >
+    select 
+    userId,workid,phone,company,position,datefrom,dateto,workcontent
+    ,
+    <include refid="Blob_Column_List" />
+    from jp_userworkexp
+    where userId = #{userid,jdbcType=VARCHAR}
+      and workid = #{workid,jdbcType=VARCHAR}
+      and phone = #{phone,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.jp.entity.UserworkexpKey" >
+    delete from jp_userworkexp
+    where userId = #{userid,jdbcType=VARCHAR}
+      and workid = #{workid,jdbcType=VARCHAR}
+      and phone = #{phone,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.UserworkexpQuery" >
+    delete from jp_userworkexp
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.Userworkexp" >
+    insert into jp_userworkexp (userId, workid, phone, 
+      company, position, datefrom, 
+      dateto, workcontent)
+    values (#{userid,jdbcType=VARCHAR}, #{workid,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
+      #{company,jdbcType=VARCHAR}, #{position,jdbcType=VARCHAR}, #{datefrom,jdbcType=DATE}, 
+      #{dateto,jdbcType=DATE}, #{workcontent,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.Userworkexp" >
+    insert into jp_userworkexp
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        userId,
+      </if>
+      <if test="workid != null" >
+        workid,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="company != null" >
+        company,
+      </if>
+      <if test="position != null" >
+        position,
+      </if>
+      <if test="datefrom != null" >
+        datefrom,
+      </if>
+      <if test="dateto != null" >
+        dateto,
+      </if>
+      <if test="workcontent != null" >
+        workcontent,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="workid != null" >
+        #{workid,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="company != null" >
+        #{company,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null" >
+        #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="datefrom != null" >
+        #{datefrom,jdbcType=DATE},
+      </if>
+      <if test="dateto != null" >
+        #{dateto,jdbcType=DATE},
+      </if>
+      <if test="workcontent != null" >
+        #{workcontent,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.UserworkexpQuery" resultType="java.lang.Integer" >
+    select count(*) from jp_userworkexp
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_userworkexp
+    <set >
+      <if test="record.userid != null" >
+        userId = #{record.userid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.workid != null" >
+        workid = #{record.workid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.phone != null" >
+        phone = #{record.phone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.company != null" >
+        company = #{record.company,jdbcType=VARCHAR},
+      </if>
+      <if test="record.position != null" >
+        position = #{record.position,jdbcType=VARCHAR},
+      </if>
+      <if test="record.datefrom != null" >
+        datefrom = #{record.datefrom,jdbcType=DATE},
+      </if>
+      <if test="record.dateto != null" >
+        dateto = #{record.dateto,jdbcType=DATE},
+      </if>
+      <if test="record.workcontent != null" >
+        workcontent = #{record.workcontent,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update jp_userworkexp
+    set userId = #{record.userid,jdbcType=VARCHAR},
+      workid = #{record.workid,jdbcType=VARCHAR},
+      phone = #{record.phone,jdbcType=VARCHAR},
+      company = #{record.company,jdbcType=VARCHAR},
+      position = #{record.position,jdbcType=VARCHAR},
+      datefrom = #{record.datefrom,jdbcType=DATE},
+      dateto = #{record.dateto,jdbcType=DATE},
+      workcontent = #{record.workcontent,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_userworkexp
+    set userId = #{record.userid,jdbcType=VARCHAR},
+      workid = #{record.workid,jdbcType=VARCHAR},
+      phone = #{record.phone,jdbcType=VARCHAR},
+      company = #{record.company,jdbcType=VARCHAR},
+      position = #{record.position,jdbcType=VARCHAR},
+      datefrom = #{record.datefrom,jdbcType=DATE},
+      dateto = #{record.dateto,jdbcType=DATE}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.Userworkexp" >
+    update jp_userworkexp
+    <set >
+      <if test="company != null" >
+        company = #{company,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null" >
+        position = #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="datefrom != null" >
+        datefrom = #{datefrom,jdbcType=DATE},
+      </if>
+      <if test="dateto != null" >
+        dateto = #{dateto,jdbcType=DATE},
+      </if>
+      <if test="workcontent != null" >
+        workcontent = #{workcontent,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where userId = #{userid,jdbcType=VARCHAR}
+      and workid = #{workid,jdbcType=VARCHAR}
+      and phone = #{phone,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.jp.entity.Userworkexp" >
+    update jp_userworkexp
+    set company = #{company,jdbcType=VARCHAR},
+      position = #{position,jdbcType=VARCHAR},
+      datefrom = #{datefrom,jdbcType=DATE},
+      dateto = #{dateto,jdbcType=DATE},
+      workcontent = #{workcontent,jdbcType=LONGVARCHAR}
+    where userId = #{userid,jdbcType=VARCHAR}
+      and workid = #{workid,jdbcType=VARCHAR}
+      and phone = #{phone,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.Userworkexp" >
+    update jp_userworkexp
+    set company = #{company,jdbcType=VARCHAR},
+      position = #{position,jdbcType=VARCHAR},
+      datefrom = #{datefrom,jdbcType=DATE},
+      dateto = #{dateto,jdbcType=DATE}
+    where userId = #{userid,jdbcType=VARCHAR}
+      and workid = #{workid,jdbcType=VARCHAR}
+      and phone = #{phone,jdbcType=VARCHAR}
+  </update>
+  <insert id="insertEduExp">
+	    insert into jp_userworkexp (userid,company,position,workid,datefrom,dateto,issecret,workcontent)
+		    values
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.userid},#{item.company},#{item.position},#{item.workid},
+			#{item.datefrom},#{item.dateto},#{item.issecret},#{item.workcontent})
+		</foreach>
+  </insert>
+  <select id="selectByUserId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+     *
+    from jp_userworkexp
+    where userid =  #{userid,jdbcType=VARCHAR}
+  </select>
+</mapper>
