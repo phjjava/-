@@ -86,7 +86,7 @@
   <sql id="Blob_Column_List" >
     content
   </sql>
-  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.jp.entity.UsercontentQuery" >
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.jp.entity.UsercontentExample" >
     select
     <if test="distinct" >
       distinct
@@ -102,7 +102,7 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.UsercontentQuery" >
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.UsercontentExample" >
     select
     <if test="distinct" >
       distinct
@@ -131,7 +131,7 @@
     delete from jp_usercontent
     where userid = #{userid,jdbcType=VARCHAR}
   </delete>
-  <delete id="deleteByExample" parameterType="com.jp.entity.UsercontentQuery" >
+  <delete id="deleteByExample" parameterType="com.jp.entity.UsercontentExample" >
     delete from jp_usercontent
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
@@ -226,7 +226,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.jp.entity.UsercontentQuery" resultType="java.lang.Integer" >
+  <select id="countByExample" parameterType="com.jp.entity.UsercontentExample" resultType="java.lang.Integer" >
     select count(*) from jp_usercontent
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
