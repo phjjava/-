@@ -25,6 +25,8 @@ public class Branchalbum implements Serializable {
     private Integer deleteflag;
 
     private String branchname;
+    
+    private Integer sort;
 
     private Integer type;
     
@@ -157,5 +159,13 @@ public class Branchalbum implements Serializable {
 
 	public void setAlbumNum(Integer albumNum) {
 		this.albumNum = albumNum;
+	}
+
+	public Integer getSort() {
+		return sort;
+	}
+
+	public void setSort(Integer sort) {
+		this.sort = sort;
 	}
 }

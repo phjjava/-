@@ -13,8 +13,6 @@ import com.jp.common.PageModel;
 import com.jp.dao.UserDao;
 import com.jp.dao.UsercontentDao;
 import com.jp.entity.Usercontent;
-import com.jp.entity.UsercontentQuery;
-import com.jp.entity.UsercontentQuery.Criteria;
 import com.jp.service.FamousService;
 
 @Service
@@ -38,11 +36,8 @@ public class FamousServiceImpl implements FamousService {
 
 	@Override
 	public Usercontent get(String userid) {
-		UsercontentQuery ucQuery=new UsercontentQuery();
-		Criteria createCriteria=ucQuery.createCriteria();
-		createCriteria.andUseridEqualTo(userid);
-		List<Usercontent> usercontents= usercontentDao.selectByExample(ucQuery);
-		return usercontents.get(0);
+		
+		return usercontentDao.selectByPrimaryKey(userid);
 	}
 
 	@Override

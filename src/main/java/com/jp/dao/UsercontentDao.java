@@ -1,14 +1,14 @@
 package com.jp.dao;
 
 import com.jp.entity.Usercontent;
-import com.jp.entity.UsercontentQuery;
+import com.jp.entity.UsercontentExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 public interface UsercontentDao {
-    int countByExample(UsercontentQuery example);
+    int countByExample(UsercontentExample example);
 
-    int deleteByExample(UsercontentQuery example);
+    int deleteByExample(UsercontentExample example);
 
     int deleteByPrimaryKey(String userid);
 
@@ -16,17 +16,17 @@ public interface UsercontentDao {
 
     int insertSelective(Usercontent record);
 
-    List<Usercontent> selectByExampleWithBLOBs(UsercontentQuery example);
+    List<Usercontent> selectByExampleWithBLOBs(UsercontentExample example);
 
-    List<Usercontent> selectByExample(UsercontentQuery example);
+    List<Usercontent> selectByExample(UsercontentExample example);
 
     Usercontent selectByPrimaryKey(String userid);
 
-    int updateByExampleSelective(@Param("record") Usercontent record, @Param("example") UsercontentQuery example);
+    int updateByExampleSelective(@Param("record") Usercontent record, @Param("example") UsercontentExample example);
 
-    int updateByExampleWithBLOBs(@Param("record") Usercontent record, @Param("example") UsercontentQuery example);
+    int updateByExampleWithBLOBs(@Param("record") Usercontent record, @Param("example") UsercontentExample example);
 
-    int updateByExample(@Param("record") Usercontent record, @Param("example") UsercontentQuery example);
+    int updateByExample(@Param("record") Usercontent record, @Param("example") UsercontentExample example);
 
     int updateByPrimaryKeySelective(Usercontent record);
 

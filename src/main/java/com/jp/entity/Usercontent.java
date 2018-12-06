@@ -44,7 +44,34 @@ public class Usercontent implements Serializable {
      */
     private Integer readcount;
 
+    
     /**
+     * 排序
+     */
+    private Integer sort;
+
+    /**
+     * 手机端首页展示
+     */
+    private Integer isstick;
+    
+    public Integer getSort() {
+		return sort;
+	}
+
+	public void setSort(Integer sort) {
+		this.sort = sort;
+	}
+
+	public Integer getIsstick() {
+		return isstick;
+	}
+
+	public void setIsstick(Integer isstick) {
+		this.isstick = isstick;
+	}
+
+	/**
      * 家族ID
      */
     private String familyid;

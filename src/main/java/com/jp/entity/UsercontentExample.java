@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class UsercontentQuery {
+public class UsercontentExample {
     protected String orderByClause;
 
     protected boolean distinct;
@@ -19,7 +19,7 @@ public class UsercontentQuery {
 
     protected String fields;
 
-    public UsercontentQuery() {
+    public UsercontentExample() {
         oredCriteria = new ArrayList<Criteria>();
     }
 
@@ -734,6 +734,126 @@ public class UsercontentQuery {
 
         public Criteria andFamilyidNotBetween(String value1, String value2) {
             addCriterion("familyid not between", value1, value2, "familyid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortIsNull() {
+            addCriterion("sort is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortIsNotNull() {
+            addCriterion("sort is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortEqualTo(Integer value) {
+            addCriterion("sort =", value, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortNotEqualTo(Integer value) {
+            addCriterion("sort <>", value, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortGreaterThan(Integer value) {
+            addCriterion("sort >", value, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortGreaterThanOrEqualTo(Integer value) {
+            addCriterion("sort >=", value, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortLessThan(Integer value) {
+            addCriterion("sort <", value, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortLessThanOrEqualTo(Integer value) {
+            addCriterion("sort <=", value, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortIn(List<Integer> values) {
+            addCriterion("sort in", values, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortNotIn(List<Integer> values) {
+            addCriterion("sort not in", values, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortBetween(Integer value1, Integer value2) {
+            addCriterion("sort between", value1, value2, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortNotBetween(Integer value1, Integer value2) {
+            addCriterion("sort not between", value1, value2, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsstickIsNull() {
+            addCriterion("isstick is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsstickIsNotNull() {
+            addCriterion("isstick is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsstickEqualTo(Integer value) {
+            addCriterion("isstick =", value, "isstick");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsstickNotEqualTo(Integer value) {
+            addCriterion("isstick <>", value, "isstick");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsstickGreaterThan(Integer value) {
+            addCriterion("isstick >", value, "isstick");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsstickGreaterThanOrEqualTo(Integer value) {
+            addCriterion("isstick >=", value, "isstick");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsstickLessThan(Integer value) {
+            addCriterion("isstick <", value, "isstick");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsstickLessThanOrEqualTo(Integer value) {
+            addCriterion("isstick <=", value, "isstick");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsstickIn(List<Integer> values) {
+            addCriterion("isstick in", values, "isstick");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsstickNotIn(List<Integer> values) {
+            addCriterion("isstick not in", values, "isstick");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsstickBetween(Integer value1, Integer value2) {
+            addCriterion("isstick between", value1, value2, "isstick");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsstickNotBetween(Integer value1, Integer value2) {
+            addCriterion("isstick not between", value1, value2, "isstick");
             return (Criteria) this;
         }
     }

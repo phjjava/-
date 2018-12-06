@@ -17,14 +17,9 @@ import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentUserContext;
 import com.jp.common.PageModel;
 import com.jp.dao.UsercontentDao;
-import com.jp.entity.Banner;
-import com.jp.entity.Notice;
 import com.jp.entity.Usercontent;
-import com.jp.entity.UsercontentQuery;
-import com.jp.entity.UsercontentQuery.Criteria;
 import com.jp.service.FamousService;
 import com.jp.util.StringTools;
-import com.jp.util.UUIDUtils;
 
 @Controller
 @RequestMapping("famous")
