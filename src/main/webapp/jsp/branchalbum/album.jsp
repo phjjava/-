@@ -51,6 +51,13 @@
 				<textarea  name="remark" class="input-text" style="height:80px;">${branchalbum.remark }</textarea>
 			</div>
 		</div>
+		<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-2">排序：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" oninput = "value=value.replace(/[^\d]/g,'')" value="${branchalbum.sort }"
+						id="sort" name="sort"/>
+				</div>
+		</div>
 		<div class="row cl" id="uploadDiv">
 			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>图片上传：</label>
 			<div class="formControls col-xs-8 col-sm-9">
@@ -143,6 +150,10 @@
 		    if(branchid == ''){
 		    	window.parent.layer.msg('请选择分支!', {icon: 7,time:2000});
 		    	return false;
+		    }
+		    var sort=$("#sort").val();
+		    if(sort==''){
+		    	$("#sort").val(99);
 		    }
 			$.ajax({
 				type:'post',

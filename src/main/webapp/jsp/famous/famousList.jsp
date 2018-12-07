@@ -48,7 +48,8 @@
 				<th width="80">所属世系</th>
 				<th width="80">浏览量</th>
 				<th width="80">缩略图</th>
-				<th width="100">轮播显示</th>
+				<th width="40">排序</th>
+				<th width="70">轮播显示</th>
 				<th width="80">操作</th>
 			</tr>
 		</thead>
@@ -65,6 +66,8 @@
 						<img alt="" src="<%=downLoadUrl%>${usercontent.imgurl}" height="30" width="30" />
 					</a>				
 				</td>
+				<td>${usercontent.sort}</td>
+				
 				<c:if test="${usercontent.issee == 0}">
 				 	<td class="td-status"><span class="label label-success radius">已显示</span></td>
 				</c:if>

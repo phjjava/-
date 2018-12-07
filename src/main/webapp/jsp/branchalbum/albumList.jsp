@@ -46,6 +46,7 @@
 					<th width="150">相册名称</th>
 					<th width="100">所属分支</th>
 					<th width="60">相片张数</th>
+					<th width="60">排序</th>
 					<th width="80">发布日期</th>
 					<th width="40">删除状态</th>
 					<th width="80">操作</th>
@@ -71,6 +72,7 @@
 					</td>
 					
 					<td>${branchalbum.albumNum}张</td>
+					<td>${branchalbum.sort}</td>
 					<td><fmt:formatDate value="${branchalbum.createtime}" pattern="yyyy-MM-dd"/></td>
 					<td class="td-status">
 						<c:if test="${branchalbum.deleteflag == 1}">

@@ -26,6 +26,7 @@
 							<th width="25">序号</th>
 							<th width="100">职务</th>
 							<th width="50">编委会</th>
+							<th width="50">排序</th>
 							<th width="100">描述</th>
 							<th width="100">操作</th>
 						</tr>
@@ -50,6 +51,7 @@
 								    <span>分编会成员<span>	
 								</c:if>
 							</td>
+							<td>${post.sort}</td>
 							<td>${post.roledesc}</td>
 							<td class="td-manage">
 								<a href="javascript:;" onclick="post_edit('编辑编委会','${post.id}','800','400')">编辑</a>&nbsp;|&nbsp;

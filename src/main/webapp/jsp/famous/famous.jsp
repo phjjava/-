@@ -29,12 +29,21 @@
 				</select>
 			</div>
 		</div>
+		
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-2">排序：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" oninput = "value=value.replace(/[^\d]/g,'')" value="${usercontent.sort }"
+					id="sort" name="sort"/>
+			</div>
+		</div>
 	  	<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">群英录：</label>
 			<div class="formControls col-xs-8 col-sm-9"> 
 				<script id="editor" type="text/plain" value=""></script> 
 			</div>
 		</div>
+		
 		<div class="row cl" id="showImg">
 			<label class="form-label col-xs-4 col-sm-2">预览：</label>
 			<div class="formControls col-xs-8 col-sm-9">
