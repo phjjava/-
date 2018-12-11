@@ -105,7 +105,7 @@ function userrolebranch_add(title,url,id,w,h){
 /*编辑
 */
 function userrolebranch_edit(title,id,pid,w,h){
-	console.log(id)
+	//console.log(id)
 	var url = basePath + 'userManager/get?id='+id+'&curSec='+Math.random();
 	layer_show(title,url,w,h);
 }

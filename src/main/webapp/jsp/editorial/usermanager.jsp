@@ -101,6 +101,7 @@
 function save(){
 	
 	var userid = $("#userid").val();
+	console.log(userid);
 	var username = $("#userid option:selected").attr("beginname");
 	//var familyid = $("#userid").attr("familyid");
 	var familyid = $("#userid option:selected").attr("familyid");
@@ -119,11 +120,12 @@ function save(){
 		return false;
 	}
 	var postid = $("#post").val();
-	console.log(postid);
+	
 	if(postid == ""){
 		layer.msg('请选择职务',{icon:7,time:1000});
 		return false;
 	}
+	return;
 	var functionids = new Array();
 	$("input[name='checkedFunction']:checked").each(function(i){
 		functionids.push($(this).val());
@@ -181,10 +183,12 @@ $(function() {
 		url : '<%=basePath%>user/selectUserItemLive?curSec='+Math.random(),
 		success:function(data,status){
 			if(data){
+				
+			
 				var optionStr = "<option value=''>---- 请选择 ----</option>";
 				for(var i = 0; i < data.length; i++){
-					optionStr+="<option familyid="+data[i].familyid+" beginname="+data[i].username+" parentid="+data[i].branchid+" value=" + data[i].userid + ">"
-					+data[i].username+" "+ data[i].phone + " " + data[i].genlevel+"世 ";
+					optionStr+='<option familyid="'+data[i].familyid+'" beginname="'+data[i].username+'" parentid="'+data[i].branchid+'" value="' + data[i].userid + '">'
+					+data[i].username+' '+ data[i].phone + ' ' + data[i].genlevel+'世 ';
 					if(data[i].address){
 						optionStr+= data[i].address;
 					}
@@ -225,10 +229,10 @@ $(function() {
 				
 				var optionStrM = "<option value=''>---- 请选择 ----</option>";
 				var dataval = $('#ebid').attr('data-val');
-				console.log(dataval);
+				
 				//var valArray = dataval.split(",");
 				for(var i = 0; i < data.length; i++){
-					console.log(data[i].id + "_" +data[i].name);
+					
 					//console.log(JSON.stringify(valArray));
 					if(dataval.indexOf(data[i].id + "_" +data[i].name) != -1){
 						optionStrM += "<option selected value='" + data[i].id+"_"+data[i].type+"' >"+data[i].name + "</option>";
@@ -367,7 +371,7 @@ function initPost(type){
 		url : '<%=basePath%>post/selectPostList?curSec='+Math.random(),
 		success:function(data,status){
 			if(data){
-				console.log(data);
+				
 				
 				var optionStrM = "<option value=''>---- 请选择 ----</option>";
 				var dataval = $('#post').attr('data-val');

@@ -104,8 +104,8 @@ $(function() {
 				if(data){
 					var optionStr = "<option value=''>---- 请选择 ----</option>";
 					for(var i = 0; i < data.length; i++){
-						optionStr+="<option familyid="+data[i].familyid+" beginname="+data[i].username+" parentid="+data[i].branchid+" value=" + data[i].userid + ">"
-						+data[i].username+" "+ data[i].phone + " " + data[i].genlevel+"世</option>";
+						optionStr+='<option familyid="'+data[i].familyid+'" beginname="'+data[i].username+'" parentid="'+data[i].branchid+'" value="' + data[i].userid + '">'
+						+data[i].username+' '+ data[i].phone + ' ' + data[i].genlevel+'世</option> ';
 					}
 					$('.user-select').html(optionStr);
 					var dataval = $('#userid').attr('data-val');
