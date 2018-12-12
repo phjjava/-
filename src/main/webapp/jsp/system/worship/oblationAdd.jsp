@@ -115,6 +115,7 @@
 <script type="text/javascript">
 var oblationtypeid = "${oblation.oblationtypeid}";
 var imageServer='http://192.168.0.69:8080/fileupload/jsp/controller.jsp?action=uploadimage&encode=utf-8';
+//var imageServer='http://fileupload.aojiapu.com/jsp/controller.jsp?action=uploadimage&encode=utf-8';
 var imgPreUrl='<%=downloadurl%>'; 
 if(oblationtypeid != null && oblationtypeid != ''){
 	$('#oblationtypeid').val(oblationtypeid);
