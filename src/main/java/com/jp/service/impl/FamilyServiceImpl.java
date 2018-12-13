@@ -14,6 +14,7 @@ import com.github.pagehelper.PageInfo;
 import com.jp.common.CurrentSystemUserContext;
 import com.jp.common.PageModel;
 import com.jp.dao.EditorialBoardMapper;
+import com.jp.dao.PostMapper;
 import com.jp.dao.RoleDao;
 import com.jp.dao.SysFamilyDao;
 import com.jp.dao.SysVersionDao;
@@ -23,13 +24,12 @@ import com.jp.dao.UserinfoDao;
 import com.jp.dao.UserroleDao;
 import com.jp.entity.EditorialBoard;
 import com.jp.entity.Indexcount;
-import com.jp.entity.Role;
+import com.jp.entity.Post;
 import com.jp.entity.SysFamily;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
 import com.jp.entity.UserQuery;
 import com.jp.entity.Userinfo;
-import com.jp.entity.Userrole;
 import com.jp.service.FamilyService;
 import com.jp.util.MD5Util;
 import com.jp.util.PinyinUtil;
@@ -55,6 +55,8 @@ public class FamilyServiceImpl implements FamilyService {
 	private EditorialBoardMapper editorialBoardMapper;
 	@Autowired
 	private UserManagerMapper userManagerMapper;
+	@Autowired
+	private PostMapper postMapper;
 	@Override
     public Result merge(User user, Userinfo userInfo, SysFamily family) throws Exception {
         Result result = new Result();
@@ -121,6 +123,15 @@ public class FamilyServiceImpl implements FamilyService {
                 family.setFamilycode(PinyinUtil.getPinyinFull(family.getFamilyname()));
 
 				// 保存总编委会主任信息 role userrole
+                Post post = new Post();
+				post.setId(UUIDUtils.getUUID());
+				post.setFamilyid(familyId);
+				post.setCreatetime(new Date());
+				post.setIsmanager(1);
+				post.setName("总编委会主任");
+				post.setSort(0);
+				post.setType(1);
+				postMapper.insertSelective(post);
                 EditorialBoard eb = new EditorialBoard();
                 String ebid = UUIDUtils.getUUID();
 				eb.setId(ebid);
@@ -136,12 +147,15 @@ public class FamilyServiceImpl implements FamilyService {
 				manager.setUsername(user.getUsername());
 				manager.setEbid(ebid);
 				manager.setEbname("总编委会");
+				manager.setPostid(post.getId());
+				manager.setPostname(post.getName());
 				manager.setEbtype(1);
 				manager.setIsmanager(1);
 				manager.setFamilyid(familyId);
 				userManagerMapper.insertSelective(manager);
 				sysFamilyDao.insertSelective(family);
 				sysFamilyDao.insertFunction(familyId, family.getVersion());
+				
 			}
 		} catch (Exception e) {
 			result.setStatus(1);
