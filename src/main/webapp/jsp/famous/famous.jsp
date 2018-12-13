@@ -118,6 +118,10 @@ function content_save(){
     var ucontent = ue.getContent();
     ucontent = ucontent.replace(/&/g,"%26");
     formData =formData +"&"+"content="+ucontent;
+    var sort=$("#sort").val();
+    if(sort==''){
+    	$("#sort").val(99);
+    }
  	if($("#famous_edit").valid()){
 		$.ajax({
 			type:'post',
