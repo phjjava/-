@@ -215,6 +215,8 @@
         //,initialFrameHeight:320  //初始化编辑器高度,默认320
 	    ,initialFrameWidth:900  //初始化编辑器宽度,默认1000
 	    ,initialFrameHeight:420  //初始化编辑器高度,默认320
+	  //抓取远程图片是否开启,默认true
+	    ,catchRemoteImageEnable:false
 
         //,readonly : false //编辑器初始化结束后,编辑区域是否是只读的，默认是false
 
