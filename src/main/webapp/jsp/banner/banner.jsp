@@ -108,8 +108,8 @@
 //全局变量后期通过服务器启动来初始化
 /* var imageServer='http://192.168.20.1:8080/fileupload/jsp/controller.jsp?action=uploadimage&encode=utf-8';
 var imgPreUrl='http://192.168.20.1:8080/fileupload';  */
-//var imageServer='http://fileupload.aojiapu.com/jsp/controller.jsp?action=uploadimage&encode=utf-8';
-var imageServer='http://192.168.0.69:8080/fileupload/jsp/controller.jsp?action=uploadimage&encode=utf-8';
+var imageServer='http://59.110.174.146:8081/fileupload/jsp/controller.jsp?action=uploadimage&encode=utf-8';
+//var imageServer='http://192.168.0.69:8080/fileupload/jsp/controller.jsp?action=uploadimage&encode=utf-8';
 //var imgPreUrl='http://192.168.0.69:8080/fileupload/fileupload';  
 var imgPreUrl='<%=downLoadUrl%>';  
 //var fileServer='http://192.168.0.66:8080/fileupload/jsp/controller.jsp';
