@@ -98,8 +98,8 @@
 <script type="text/javascript" src="<%=basePath%>js/amazeui.chosen.min.js"></script>
 <script type="text/javascript" src="<%=basePath%>lib/My97DatePicker/4.8/WdatePicker.js"></script>
 <script type="text/javascript">
-var fileServer='http://192.168.0.69:8080/fileupload/jsp/controller.jsp?action=uploadimage&encode=utf-8';
-//var fileServer='http://fileupload.aojiapu.com/jsp/controller.jsp?action=uploadimage&encode=utf-8';
+//var fileServer='http://192.168.0.69:8080/fileupload/jsp/controller.jsp?action=uploadimage&encode=utf-8';
+var fileServer='http://59.110.174.146:8081/fileupload/jsp/controller.jsp?action=uploadimage&encode=utf-8';
 
 	$("#branchid").change(function(){
 		  $("#branchname").val($("#branchid option:selected").attr("branchname"));
