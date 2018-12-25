@@ -114,7 +114,8 @@
 <script type="text/javascript" src="<%=basePath%>lib/jquery.cookie.js"></script>
 <script type="text/javascript">
 var oblationtypeid = "${oblation.oblationtypeid}";
-var imageServer='http://192.168.0.69:8080/fileupload/jsp/controller.jsp?action=uploadimage&encode=utf-8';
+//var imageServer='http://192.168.0.69:8080/fileupload/jsp/controller.jsp?action=uploadimage&encode=utf-8';
+var imageServer='http://59.110.174.146:8081/fileupload/jsp/controller.jsp?action=uploadimage&encode=utf-8';
 var imgPreUrl='<%=downloadurl%>'; 
 if(oblationtypeid != null && oblationtypeid != ''){
 	$('#oblationtypeid').val(oblationtypeid);

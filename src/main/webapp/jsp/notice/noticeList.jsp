@@ -63,6 +63,16 @@
 					<td>${notice.noticetitle}</td>
 					<td><fmt:formatDate value="${notice.createtime}" pattern="yyyy-MM-dd"/></td>
 					<td>${notice.branchname}</td>
+					<td>
+						<c:choose>
+						    <c:when test="${notice.noticetype == '0'}">
+					       		家族公告
+					    	</c:when>
+					    	<c:otherwise>
+					        	${notice.branchname}
+					    	</c:otherwise>
+						</c:choose>
+					</td>
 					<td>${notice.readCount}</td>
 					<td class="td-status">
 						<c:if test="${notice.deleteflag == 1}">

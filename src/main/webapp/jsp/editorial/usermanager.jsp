@@ -101,7 +101,7 @@
 function save(){
 	
 	var userid = $("#userid").val();
-	console.log(userid);
+	//console.log(userid);
 	var username = $("#userid option:selected").attr("beginname");
 	//var familyid = $("#userid").attr("familyid");
 	var familyid = $("#userid option:selected").attr("familyid");
@@ -125,7 +125,7 @@ function save(){
 		layer.msg('请选择职务',{icon:7,time:1000});
 		return false;
 	}
-	return;
+	
 	var functionids = new Array();
 	$("input[name='checkedFunction']:checked").each(function(i){
 		functionids.push($(this).val());
