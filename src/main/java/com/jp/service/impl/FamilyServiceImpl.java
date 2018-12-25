@@ -1,6 +1,7 @@
 package com.jp.service.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +15,9 @@ import com.github.pagehelper.PageInfo;
 import com.jp.common.CurrentSystemUserContext;
 import com.jp.common.PageModel;
 import com.jp.dao.EditorialBoardMapper;
+import com.jp.dao.IntroduceDao;
+import com.jp.dao.IntroudceTemplateDao;
+import com.jp.dao.IntroudceTemplateDetailDao;
 import com.jp.dao.RoleDao;
 import com.jp.dao.SysFamilyDao;
 import com.jp.dao.SysVersionDao;
@@ -23,6 +27,11 @@ import com.jp.dao.UserinfoDao;
 import com.jp.dao.UserroleDao;
 import com.jp.entity.EditorialBoard;
 import com.jp.entity.Indexcount;
+import com.jp.entity.Introduce;
+import com.jp.entity.IntroudceTemplate;
+import com.jp.entity.IntroudceTemplateDetail;
+import com.jp.entity.IntroudceTemplateDetailExample;
+import com.jp.entity.IntroudceTemplateExample;
 import com.jp.entity.Role;
 import com.jp.entity.SysFamily;
 import com.jp.entity.User;
@@ -55,6 +64,16 @@ public class FamilyServiceImpl implements FamilyService {
 	private EditorialBoardMapper editorialBoardMapper;
 	@Autowired
 	private UserManagerMapper userManagerMapper;
+	
+	@Autowired
+	private IntroudceTemplateDao introudceTemplateDao;
+	@Autowired
+	private IntroudceTemplateDetailDao introudceTemplateDetailDao;
+	@Autowired
+	private IntroduceDao introduceDao;
+	
+	
+	
 	@Override
     public Result merge(User user, Userinfo userInfo, SysFamily family) throws Exception {
         Result result = new Result();
@@ -142,6 +161,34 @@ public class FamilyServiceImpl implements FamilyService {
 				userManagerMapper.insertSelective(manager);
 				sysFamilyDao.insertSelective(family);
 				sysFamilyDao.insertFunction(familyId, family.getVersion());
+				
+				//根据模版创建章节内容
+				IntroudceTemplateExample introudceTemplateExample =new IntroudceTemplateExample();
+				introudceTemplateExample.or().andDeleteflagEqualTo(0);
+				List<IntroudceTemplate> introudceTemplates=introudceTemplateDao.selectByExample(introudceTemplateExample);
+				if(introudceTemplates.size()>0)
+				{
+					IntroudceTemplateDetailExample introudceTemplateDetailExample=new IntroudceTemplateDetailExample();
+					introudceTemplateDetailExample.or().andDeleteflagEqualTo(0).andTemplateidEqualTo(introudceTemplates.get(0).getId());
+					List<IntroudceTemplateDetail> introudceTemplateDetails =introudceTemplateDetailDao.selectByExample(introudceTemplateDetailExample);
+					for (IntroudceTemplateDetail introudceTemplateDetail : introudceTemplateDetails) {
+						Introduce introduce=new Introduce();
+						introduce.setFamilyid(familyId);
+						introduce.setIntroduceid(UUIDUtils.getUUID());
+						introduce.setIntroducetitle(introudceTemplateDetail.getTitle());
+						introduce.setIntroducedetail(introudceTemplateDetail.getContent());
+						introduce.setSort(introudceTemplateDetail.getSort());
+						introduce.setType(introudceTemplateDetail.getType());
+						introduce.setCreateid("admin");
+						introduce.setCreatetime(new Date());
+						introduce.setUpdatetime(new Date());
+						introduce.setUpdateid("admin");
+						introduce.setDeleteflag(0);
+						introduceDao.insert(introduce);
+					}
+					
+				}
+				
 			}
 		} catch (Exception e) {
 			result.setStatus(1);

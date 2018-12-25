@@ -53,8 +53,22 @@ public class Introduce implements Serializable {
      * 介绍详情
      */
     private String introducedetail;
+    
+    /**
+     * 章节类型
+     */
+    private String type;
+     
 
-    private static final long serialVersionUID = 1L;
+    public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	private static final long serialVersionUID = 1L;
 
     public String getIntroduceid() {
         return introduceid;
