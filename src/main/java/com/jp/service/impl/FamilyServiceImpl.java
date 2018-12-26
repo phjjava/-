@@ -169,7 +169,7 @@ public class FamilyServiceImpl implements FamilyService {
 				{
 					IntroudceTemplateDetailExample introudceTemplateDetailExample=new IntroudceTemplateDetailExample();
 					introudceTemplateDetailExample.or().andDeleteflagEqualTo(0).andTemplateidEqualTo(introudceTemplates.get(0).getId());
-					List<IntroudceTemplateDetail> introudceTemplateDetails =introudceTemplateDetailDao.selectByExample(introudceTemplateDetailExample);
+					List<IntroudceTemplateDetail> introudceTemplateDetails =introudceTemplateDetailDao.selectByExampleWithBLOBs(introudceTemplateDetailExample);
 					for (IntroudceTemplateDetail introudceTemplateDetail : introudceTemplateDetails) {
 						Introduce introduce=new Introduce();
 						introduce.setFamilyid(familyId);
