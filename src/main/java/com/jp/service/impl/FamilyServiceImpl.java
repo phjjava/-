@@ -161,32 +161,9 @@ public class FamilyServiceImpl implements FamilyService {
 				sysFamilyDao.insertSelective(family);
 				sysFamilyDao.insertFunction(familyId, family.getVersion());
 				
-				//根据模版创建章节内容
-				IntroudceTemplateExample introudceTemplateExample =new IntroudceTemplateExample();
-				introudceTemplateExample.or().andDeleteflagEqualTo(0);
-				List<IntroudceTemplate> introudceTemplates=introudceTemplateDao.selectByExample(introudceTemplateExample);
-				if(introudceTemplates.size()>0)
-				{
-					IntroudceTemplateDetailExample introudceTemplateDetailExample=new IntroudceTemplateDetailExample();
-					introudceTemplateDetailExample.or().andDeleteflagEqualTo(0).andTemplateidEqualTo(introudceTemplates.get(0).getId());
-					List<IntroudceTemplateDetail> introudceTemplateDetails =introudceTemplateDetailDao.selectByExample(introudceTemplateDetailExample);
-					for (IntroudceTemplateDetail introudceTemplateDetail : introudceTemplateDetails) {
-						Introduce introduce=new Introduce();
-						introduce.setFamilyid(familyId);
-						introduce.setIntroduceid(UUIDUtils.getUUID());
-						introduce.setIntroducetitle(introudceTemplateDetail.getTitle());
-						introduce.setIntroducedetail(introudceTemplateDetail.getContent());
-						introduce.setSort(introudceTemplateDetail.getSort());
-						introduce.setType(introudceTemplateDetail.getType());
-						introduce.setCreateid("admin");
-						introduce.setCreatetime(new Date());
-						introduce.setUpdatetime(new Date());
-						introduce.setUpdateid("admin");
-						introduce.setDeleteflag(0);
-						introduceDao.insert(introduce);
-					}
-					
-				}
+				//创建章节模版
+				createIntroudce(familyId);
+				
 			}
 		} catch (Exception e) {
 			result.setStatus(1);
@@ -203,6 +180,39 @@ public class FamilyServiceImpl implements FamilyService {
         return result;
 	}
 
+	
+	
+	private void  createIntroudce(String familyid) {
+	
+		//根据模版创建章节内容
+		IntroudceTemplateExample introudceTemplateExample =new IntroudceTemplateExample();
+		introudceTemplateExample.or().andDeleteflagEqualTo(0);
+		List<IntroudceTemplate> introudceTemplates=introudceTemplateDao.selectByExample(introudceTemplateExample);
+		if(introudceTemplates.size()>0)
+		{
+			IntroudceTemplateDetailExample introudceTemplateDetailExample=new IntroudceTemplateDetailExample();
+			introudceTemplateDetailExample.or().andDeleteflagEqualTo(0).andTemplateidEqualTo(introudceTemplates.get(0).getId());
+			List<IntroudceTemplateDetail> introudceTemplateDetails =introudceTemplateDetailDao.selectByExampleWithBLOBs(introudceTemplateDetailExample);
+			for (IntroudceTemplateDetail introudceTemplateDetail : introudceTemplateDetails) {
+				Introduce introduce=new Introduce();
+				introduce.setFamilyid(familyid);
+				introduce.setIntroduceid(UUIDUtils.getUUID());
+				introduce.setIntroducetitle(introudceTemplateDetail.getTitle());
+				introduce.setIntroducedetail(introudceTemplateDetail.getContent());
+				introduce.setSort(introudceTemplateDetail.getSort());
+				introduce.setType(introudceTemplateDetail.getType());
+				introduce.setCreateid("admin");
+				introduce.setCreatetime(new Date());
+				introduce.setUpdatetime(new Date());
+				introduce.setUpdateid("admin");
+				introduce.setDeleteflag(0);
+				introduceDao.insert(introduce);
+			}
+			
+		}
+
+	}
+	
 	@Override
 	public PageModel selectFamilyList(PageModel pageModel, SysFamily family) throws Exception {
 
