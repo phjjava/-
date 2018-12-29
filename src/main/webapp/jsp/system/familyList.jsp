@@ -31,6 +31,7 @@
 							<th width="30">序号</th>
 <!-- 							<th width="30">家族编号</th> -->
 							<th width="30">名称</th>
+							<th width="30">姓氏</th>
 							<th width="50">用户权限</th>
 							<th width="50">状态</th>
 							<th width="50">操作</th>
@@ -42,6 +43,7 @@
 							<td>${status.index + 1 }</td>
 <%-- 							<td>${family.familycode }</td> --%>
 							<td>${family.familyname }</td>
+							<td>${family.surname }</td>
 							<td>${family.versionname }</td>
 							<td>
 								<c:if test="${family.status == 1 }">

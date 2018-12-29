@@ -816,6 +816,77 @@ public class SysFamilyQuery {
             addCriterion("version not between", value1, value2, "version");
             return (Criteria) this;
         }
+        
+        ////
+        public Criteria andSurnameIsNull() {
+            addCriterion("surname is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSurnameIsNotNull() {
+            addCriterion("surname is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSurnameEqualTo(String value) {
+            addCriterion("surname =", value, "surname");
+            return (Criteria) this;
+        }
+
+        public Criteria andSurnameNotEqualTo(String value) {
+            addCriterion("surname <>", value, "surname");
+            return (Criteria) this;
+        }
+
+        public Criteria andSurnameGreaterThan(String value) {
+            addCriterion("surname >", value, "surname");
+            return (Criteria) this;
+        }
+
+        public Criteria andSurnameGreaterThanOrEqualTo(String value) {
+            addCriterion("surname >=", value, "surname");
+            return (Criteria) this;
+        }
+
+        public Criteria andSurnameLessThan(String value) {
+            addCriterion("surname <", value, "surname");
+            return (Criteria) this;
+        }
+
+        public Criteria andSurnameLessThanOrEqualTo(String value) {
+            addCriterion("surname <=", value, "surname");
+            return (Criteria) this;
+        }
+
+        public Criteria andSurnameLike(String value) {
+            addCriterion("surname like", value, "surname");
+            return (Criteria) this;
+        }
+
+        public Criteria andSurnameNotLike(String value) {
+            addCriterion("surname not like", value, "surname");
+            return (Criteria) this;
+        }
+
+        public Criteria andSurnameIn(List<String> values) {
+            addCriterion("surname in", values, "surname");
+            return (Criteria) this;
+        }
+
+        public Criteria andSurnameNotIn(List<String> values) {
+            addCriterion("surname not in", values, "surname");
+            return (Criteria) this;
+        }
+
+        public Criteria andSurnameBetween(String value1, String value2) {
+            addCriterion("surname between", value1, value2, "surname");
+            return (Criteria) this;
+        }
+
+        public Criteria andSurnameNotBetween(String value1, String value2) {
+            addCriterion("surname not between", value1, value2, "surname");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {
