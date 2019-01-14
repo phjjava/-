@@ -19,6 +19,13 @@
 			</div>
 		</div>
 		<div class="row cl" id="addNation">
+			<label class="form-label col-xs-4 col-sm-2" style="text-align:right">请选择分支：</label>
+			<div class="formControls col-xs-8 col-sm-8 branchid" >
+				 <select size="1" class="input-text select" data-placeholder="请选择分支" id="branchid" data-val="">
+					</select>
+			</div>
+		</div>
+		<div class="row cl" id="addNation">
 			<label class="form-label col-xs-4 col-sm-2" style="text-align:right">选择文件：</label>
 			<div class="formControls col-xs-8 col-sm-8">
 				<input type="file" name="file" id="myfile" />
@@ -39,9 +46,44 @@
 </article>
 <jsp:include page="../common/basejs.jsp"></jsp:include>
 <script type="text/javascript">
+	$(function(){
+		//初始化分支
+		$.ajax({
+			type:'post',
+			dataType:'json',
+			async: false,
+			url : '<%=basePath%>branch/initBranch?curSec='+Math.random(),
+			success:function(data,status){
+				if(data){
+					var optionStrM = "";
+					var dataval = $('#branchid').attr('data-val');
+					var valArray = dataval.split(",");
+					for(var i = 0; i < data.length; i++){
+						if(valArray.indexOf(data[i].branchid + "_" +data[i].branchname) != -1){
+							optionStrM += "<option selected value='" + data[i].branchid+"' >" +data[i].area + " "+data[i].cityname + " " +data[i].xname + " "+data[i].branchname+"</option>";
+						}else{
+							optionStrM += "<option value='" + data[i].branchid+"' >" +data[i].area + " "+data[i].cityname + " " +data[i].xname + " "+data[i].branchname+"</option>";
+						}
+					}
+					$('#branchid').html(optionStrM);
+					
+				}else{
+					alert("初始化人员失败！");  
+				}
+			},
+			error:function(e) {
+				console.log(e);
+			}
+		});
+		$('#branchid').chosen({
+	  	     search_contains: true,
+	    	 max_selected_options: 1,
+	    	 no_results_text: "没有找到",
+	   });
+	});
      //导入
 	function importData(){
-		var url = basePath + "user/importUser";
+		var url = basePath + "user/importUserNew";
 		var gwy=$("#myfile").val();
 		if(gwy==""){
 			 layer.alert('请选择要导入的文件!', {icon: 5});

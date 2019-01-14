@@ -3,7 +3,6 @@ package com.jp.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,13 +14,10 @@ import com.jp.common.CurrentSystemUserContext;
 import com.jp.common.PageModel;
 import com.jp.dao.EditorialBoardMapper;
 import com.jp.dao.PostMapper;
-import com.jp.dao.RoleDao;
 import com.jp.dao.SysFamilyDao;
-import com.jp.dao.SysVersionDao;
 import com.jp.dao.UserDao;
 import com.jp.dao.UserManagerMapper;
-import com.jp.dao.UserinfoDao;
-import com.jp.dao.UserroleDao;
+import com.jp.dao.UserinfoMapper;
 import com.jp.entity.EditorialBoard;
 import com.jp.entity.Indexcount;
 import com.jp.entity.Post;
@@ -41,16 +37,12 @@ import com.jp.util.UUIDUtils;
 public class FamilyServiceImpl implements FamilyService {
 	@Autowired
 	private SysFamilyDao sysFamilyDao;
-	@Autowired
-	private SysVersionDao sysVersionDao;
+	
 	@Autowired
 	private UserDao userDao;
 	@Autowired
-	private UserinfoDao userInfoDao;
-	@Autowired
-	private RoleDao roleDao;
-	@Autowired
-	private UserroleDao userRoleDao;
+	private UserinfoMapper userInfoDao;
+	
 	@Autowired
 	private EditorialBoardMapper editorialBoardMapper;
 	@Autowired
@@ -93,7 +85,7 @@ public class FamilyServiceImpl implements FamilyService {
                 }
 				String userId = UUIDUtils.getUUID();
 				String familyId = UUIDUtils.getUUID();
-				String roleId = UUIDUtils.getUUID();
+				
 				// user
 				user.setUserid(userId);
 				user.setFamilyid(familyId);

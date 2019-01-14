@@ -122,7 +122,7 @@ public class User implements Serializable {
 	/**
 	 * 离世日期
 	 */
-	private Date dietime;
+	private String dietime;
 	/**
 	 * 离世日期
 	 */
@@ -189,9 +189,15 @@ public class User implements Serializable {
 	/**
 	 * 用户列表查询新增字段
 	 */
+	
+	
+	//自属性
 	private String searchBirthplace;
 	private Date searchBirthday;
 	private String address;//用户所属分支的护体地址
+	private String msg;//导入用户出错提示信息
+	private Integer isnormal;//导入用户是否正常
+	
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -416,11 +422,11 @@ public class User implements Serializable {
 		this.isborn = isborn;
 	}
 
-	public Date getDietime() {
+	public String getDietime() {
 		return dietime;
 	}
 
-	public void setDietime(Date dietime) {
+	public void setDietime(String dietime) {
 		this.dietime = dietime;
 	}
 
@@ -645,5 +651,21 @@ public class User implements Serializable {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	public String getMsg() {
+		return msg;
+	}
+
+	public void setMsg(String msg) {
+		this.msg = msg;
+	}
+
+	public Integer getIsnormal() {
+		return isnormal;
+	}
+
+	public void setIsnormal(Integer isnormal) {
+		this.isnormal = isnormal;
 	}
 }
