@@ -212,5 +212,7 @@ public interface UserService {
 	List<User> selectAllUser(User user);
 
 	Result importUsersNew (MultipartFile file, HttpServletRequest request);
+
+	Integer del(User entity);
 	
 }

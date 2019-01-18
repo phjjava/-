@@ -844,4 +844,16 @@
     from jp_user
     where familyid = #{familyId,jdbcType=VARCHAR}
   </select>
+
+  </update>
+   <update id="delUser" parameterType="com.jp.entity.User">
+	   update jp_user 
+    	set  deleteflag=0,updatetime=now(),#{updateid,jdbcType=VARCHAR}
+    where userid in
+    <foreach collection="list" index="index" item="item" 
+        separator="," open="(" close=")">
+        #{item,jdbcType=BIGINT}
+    </foreach> 
+  </update>
+  
 </mapper>

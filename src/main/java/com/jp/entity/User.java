@@ -2,6 +2,7 @@ package com.jp.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class User implements Serializable {
     /**
@@ -197,6 +198,7 @@ public class User implements Serializable {
 	private String address;//用户所属分支的护体地址
 	private String msg;//导入用户出错提示信息
 	private Integer isnormal;//导入用户是否正常
+	private List<String> userids;//用户id集合   批量操作用户使用
 	
 	private static final long serialVersionUID = 1L;
 
@@ -667,5 +669,13 @@ public class User implements Serializable {
 
 	public void setIsnormal(Integer isnormal) {
 		this.isnormal = isnormal;
+	}
+
+	public List<String> getUserids() {
+		return userids;
+	}
+
+	public void setUserids(List<String> userids) {
+		this.userids = userids;
 	}
 }
