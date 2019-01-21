@@ -585,6 +585,26 @@ public class UserController {
 	}
 
 	/**
+	 * 确认导入
+	 * @param excelid
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/confirmImport", method = RequestMethod.POST)
+	public Result confirmImport(String excelid) {
+		//String result = "";
+		Result result=null;
+		try {
+			result = userService.confirmImport(excelid);
+		} catch (Exception e) {
+			//result = "0";
+			//result.setStatus(0);
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	/**
 	 * @描述 新增用户初始化父亲 和 配偶
 	 * @作者 sj
 	 * @时间 2017年5月5日上午11:03:44

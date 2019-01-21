@@ -845,7 +845,7 @@
     where familyid = #{familyId,jdbcType=VARCHAR}
   </select>
 
-  </update>
+ 
    <update id="delUser" parameterType="com.jp.entity.User">
 	   update jp_user 
     	set  deleteflag=0,updatetime=now(),#{updateid,jdbcType=VARCHAR}

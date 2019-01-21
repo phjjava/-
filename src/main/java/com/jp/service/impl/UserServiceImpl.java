@@ -1930,6 +1930,25 @@ public class UserServiceImpl implements UserService {
 		return userDao.delUser(entity.getUserids());
 	}
 
+	@Override
+	public Result confirmImport(String excelid) {
+		Result result = new Result();
+		if(excelid == null || "".equals(excelid)){
+			result.setStatus(ConstantUtils.RESULT_FAIL);
+			result.setMsg("导入失败！");
+			return result;
+		}
+		//1.查临时表的数据
+		UserQuery example = new UserQuery();
+		example.or().andUseridEqualTo(excelid);
+		List<User> users = userDao.selectByExample(example);
+		//2.将临时表数据插入主表
+		userDao.importUser(users);
+		//3.删除临时表数据（可用可不用）
+		
+		return result;
+	}
+
 	
 	
 }

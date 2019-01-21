@@ -40,29 +40,32 @@ public class BranchServiceImpl implements BranchService {
     private void updateUserBranch(String userid, String branchid, String branchname) {
         // 获取直系起始用户
         User pUser = userDao.selectByPrimaryKey(userid);
-        pUser.setBranchid(branchid);
-        pUser.setBranchname(branchname);
-        userDao.updateByPrimaryKey(pUser);
-        if (pUser.getMateid() != null || !"".equals(pUser.getMateid())) {
-            User pUserMate = userDao.selectByPrimaryKey(pUser.getMateid());
-            if (pUserMate != null) {
-                pUserMate.setBranchid(branchid);
-                pUserMate.setBranchname(branchname);
-                userDao.updateByPrimaryKey(pUserMate);
+        if(pUser!=null && !"".equals(pUser.getUserid())) {
+        	pUser.setBranchid(branchid);
+            pUser.setBranchname(branchname);
+            userDao.updateByPrimaryKey(pUser);
+            if (pUser.getMateid() != null || !"".equals(pUser.getMateid())) {
+                User pUserMate = userDao.selectByPrimaryKey(pUser.getMateid());
+                if (pUserMate != null) {
+                    pUserMate.setBranchid(branchid);
+                    pUserMate.setBranchname(branchname);
+                    userDao.updateByPrimaryKey(pUserMate);
+                }
+            }
+            // 获取孩子节点
+            UserQuery userQuery = new UserQuery();
+            userQuery.or().andPidEqualTo(pUser.getUserid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
+            List<User> children = userDao.selectByExample(userQuery);
+            if (children.size() == 0)
+                return;
+            for (User user : children) {
+                user.setBranchid(branchid);
+                user.setBranchname(branchname);
+                userDao.updateByPrimaryKey(user);
+                updateUserBranch(user.getUserid(), branchid, branchname);
             }
         }
-        // 获取孩子节点
-        UserQuery userQuery = new UserQuery();
-        userQuery.or().andPidEqualTo(pUser.getUserid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
-        List<User> children = userDao.selectByExample(userQuery);
-        if (children.size() == 0)
-            return;
-        for (User user : children) {
-            user.setBranchid(branchid);
-            user.setBranchname(branchname);
-            userDao.updateByPrimaryKey(user);
-            updateUserBranch(user.getUserid(), branchid, branchname);
-        }
+        
     }
 
 
