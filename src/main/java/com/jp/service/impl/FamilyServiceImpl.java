@@ -13,6 +13,9 @@ import com.github.pagehelper.PageInfo;
 import com.jp.common.CurrentSystemUserContext;
 import com.jp.common.PageModel;
 import com.jp.dao.EditorialBoardMapper;
+import com.jp.dao.IntroduceDao;
+import com.jp.dao.IntroudceTemplateDao;
+import com.jp.dao.IntroudceTemplateDetailDao;
 import com.jp.dao.PostMapper;
 import com.jp.dao.SysFamilyDao;
 import com.jp.dao.UserDao;
@@ -20,6 +23,11 @@ import com.jp.dao.UserManagerMapper;
 import com.jp.dao.UserinfoMapper;
 import com.jp.entity.EditorialBoard;
 import com.jp.entity.Indexcount;
+import com.jp.entity.Introduce;
+import com.jp.entity.IntroudceTemplate;
+import com.jp.entity.IntroudceTemplateDetail;
+import com.jp.entity.IntroudceTemplateDetailExample;
+import com.jp.entity.IntroudceTemplateExample;
 import com.jp.entity.Post;
 import com.jp.entity.SysFamily;
 import com.jp.entity.User;
@@ -48,7 +56,14 @@ public class FamilyServiceImpl implements FamilyService {
 	@Autowired
 	private UserManagerMapper userManagerMapper;
 	@Autowired
+	private IntroudceTemplateDao introudceTemplateDao;
+	@Autowired
+	private IntroudceTemplateDetailDao introudceTemplateDetailDao;
+	@Autowired
+	private IntroduceDao introduceDao;
+	@Autowired
 	private PostMapper postMapper;
+	
 	@Override
     public Result merge(User user, Userinfo userInfo, SysFamily family) throws Exception {
         Result result = new Result();
@@ -148,6 +163,9 @@ public class FamilyServiceImpl implements FamilyService {
 				sysFamilyDao.insertSelective(family);
 				sysFamilyDao.insertFunction(familyId, family.getVersion());
 				
+				//创建章节模版
+				createIntroudce(familyId);
+				
 			}
 		} catch (Exception e) {
 			result.setStatus(1);
@@ -164,6 +182,39 @@ public class FamilyServiceImpl implements FamilyService {
         return result;
 	}
 
+	
+	
+	private void  createIntroudce(String familyid) {
+	
+		//根据模版创建章节内容
+		IntroudceTemplateExample introudceTemplateExample =new IntroudceTemplateExample();
+		introudceTemplateExample.or().andDeleteflagEqualTo(0);
+		List<IntroudceTemplate> introudceTemplates=introudceTemplateDao.selectByExample(introudceTemplateExample);
+		if(introudceTemplates.size()>0)
+		{
+			IntroudceTemplateDetailExample introudceTemplateDetailExample=new IntroudceTemplateDetailExample();
+			introudceTemplateDetailExample.or().andDeleteflagEqualTo(0).andTemplateidEqualTo(introudceTemplates.get(0).getId());
+			List<IntroudceTemplateDetail> introudceTemplateDetails =introudceTemplateDetailDao.selectByExampleWithBLOBs(introudceTemplateDetailExample);
+			for (IntroudceTemplateDetail introudceTemplateDetail : introudceTemplateDetails) {
+				Introduce introduce=new Introduce();
+				introduce.setFamilyid(familyid);
+				introduce.setIntroduceid(UUIDUtils.getUUID());
+				introduce.setIntroducetitle(introudceTemplateDetail.getTitle());
+				introduce.setIntroducedetail(introudceTemplateDetail.getContent());
+				introduce.setSort(introudceTemplateDetail.getSort());
+				introduce.setType(introudceTemplateDetail.getType());
+				introduce.setCreateid("admin");
+				introduce.setCreatetime(new Date());
+				introduce.setUpdatetime(new Date());
+				introduce.setUpdateid("admin");
+				introduce.setDeleteflag(0);
+				introduceDao.insert(introduce);
+			}
+			
+		}
+
+	}
+	
 	@Override
 	public PageModel selectFamilyList(PageModel pageModel, SysFamily family) throws Exception {
 

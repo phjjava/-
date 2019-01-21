@@ -36,6 +36,12 @@ class="form form-horizontal" id="form-family-add">
 			<input type="text" class="input-text" value="${family.familyname}" name="familyname">
 		</div>
 	</div>
+	<div class="row cl">
+		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>家族姓氏：</label>
+		<div class="formControls col-xs-8 col-sm-6">
+			<input type="text" class="input-text" value="${family.surname}" name="surname">
+		</div>
+	</div>
 <%-- 	<div class="row cl">
 		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>家族编码：</label>
 		<div class="formControls col-xs-8 col-sm-6">
