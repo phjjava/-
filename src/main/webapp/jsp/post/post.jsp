@@ -40,18 +40,26 @@
 				<div class="formControls col-xs-8 col-sm-8">
 					<select id='ismanager' class="select input-text">
 						<option value="" selected>---- 请选择 ----</option>
-						<option value="1"<c:if test="${post.ismanager==0}">selected</c:if> >主任</option>
-						<option value="0"<c:if test="${post.ismanager==1}">selected</c:if> >成员</option>
+						<option value="1"<c:if test="${post.ismanager==1}">selected</c:if> >主任</option>
+						<option value="0"<c:if test="${post.ismanager==0}">selected</c:if> >成员</option>
 					</select>
 				</div>
 			</div>
+			
 			<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-3">描述：</label>
-			<div class="formControls col-xs-8 col-sm-8">
-				<input type="text" class="input-text" value="${post.roledesc }"
-					id="roledesc" name="roledesc">
+				<label class="form-label col-xs-4 col-sm-3">描述：</label>
+				<div class="formControls col-xs-8 col-sm-8">
+					<input type="text" class="input-text" value="${post.roledesc }"
+						id="roledesc" name="roledesc">
+				</div>
 			</div>
-		</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">排序：</label>
+				<div class="formControls col-xs-8 col-sm-8">
+					<input type="text" class="input-text" oninput = "value=value.replace(/[^\d]/g,'')" value="${post.sort }"
+						id="sort" name="sort"/>
+				</div>
+			</div>
 		</div>
 	<!-- 
 		<div class="row cl">
@@ -126,6 +134,10 @@ function save(){
 			});
 			return;
 		}
+		var sort =$("#sort").val();
+		if(sort==''){
+			sort = 99;
+		}
 		$.ajax({
 			type:'post',
 			dataType:'text',
@@ -135,6 +147,7 @@ function save(){
 				"id":$("#id").val(),
 				"roledesc":$("#roledesc").val(),
 				"type":type,
+				"sort":sort,
 				"ismanager":ismanager
 				
 			},

@@ -29,12 +29,21 @@
 				</select>
 			</div>
 		</div>
+		
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-2">排序：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" oninput = "value=value.replace(/[^\d]/g,'')" value="${usercontent.sort }"
+					id="sort" name="sort"/>
+			</div>
+		</div>
 	  	<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">群英录：</label>
 			<div class="formControls col-xs-8 col-sm-9"> 
 				<script id="editor" type="text/plain" value=""></script> 
 			</div>
 		</div>
+		
 		<div class="row cl" id="showImg">
 			<label class="form-label col-xs-4 col-sm-2">预览：</label>
 			<div class="formControls col-xs-8 col-sm-9">
@@ -109,6 +118,10 @@ function content_save(){
     var ucontent = ue.getContent();
     ucontent = ucontent.replace(/&/g,"%26");
     formData =formData +"&"+"content="+ucontent;
+    var sort=$("#sort").val();
+    if(sort==''){
+    	$("#sort").val(99);
+    }
  	if($("#famous_edit").valid()){
 		$.ajax({
 			type:'post',
@@ -151,8 +164,8 @@ $(function(){
 					}else{
 						genlevel = data[i].genlevel;
 					}
-					optionStr+="<option familyid="+data[i].familyid+" beginname="+data[i].username+" value="+data[i].userid+" >"
-					+data[i].username+" "+ data[i].phone + " " + genlevel +"世 ";
+					optionStr+='<option familyid="'+data[i].familyid+'" beginname="'+data[i].username+'" parentid="'+data[i].branchid+'" value="' + data[i].userid + '">'
+					+data[i].username+' '+ data[i].phone + ' ' + data[i].genlevel+'世 ';
 					if(data[i].address){
 						optionStr+= data[i].address;
 					}

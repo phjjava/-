@@ -69,7 +69,17 @@
 						    <img src="<%=downLoadUrl%>${dynamic.imgurl}" style="width:190px;height:150px;background-color:#f8f8f8;margin:15px 7px 0 7px;" >
 						</td>
 						<td><fmt:formatDate value="${dynamic.createtime}" pattern="yyyy-MM-dd"/></td>
-						<td>${dynamic.branchname}</td>
+						
+						<td>
+							<c:choose>
+							    <c:when test="${dynamic.dytype == '0'}">
+						       		家族动态
+						    	</c:when>
+						    	<c:otherwise>
+						        	${dynamic.branchname}
+						    	</c:otherwise>
+								</c:choose>
+						</td>
 						<td>${dynamic.readNum}</td>
 						<%-- <td class="td-status">
 							<c:if test="${dynamic.deleteflag == 0}">

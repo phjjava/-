@@ -796,66 +796,7 @@ public class UsercontentExample {
             addCriterion("sort not between", value1, value2, "sort");
             return (Criteria) this;
         }
-
-        public Criteria andIsstickIsNull() {
-            addCriterion("isstick is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsstickIsNotNull() {
-            addCriterion("isstick is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsstickEqualTo(Integer value) {
-            addCriterion("isstick =", value, "isstick");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsstickNotEqualTo(Integer value) {
-            addCriterion("isstick <>", value, "isstick");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsstickGreaterThan(Integer value) {
-            addCriterion("isstick >", value, "isstick");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsstickGreaterThanOrEqualTo(Integer value) {
-            addCriterion("isstick >=", value, "isstick");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsstickLessThan(Integer value) {
-            addCriterion("isstick <", value, "isstick");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsstickLessThanOrEqualTo(Integer value) {
-            addCriterion("isstick <=", value, "isstick");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsstickIn(List<Integer> values) {
-            addCriterion("isstick in", values, "isstick");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsstickNotIn(List<Integer> values) {
-            addCriterion("isstick not in", values, "isstick");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsstickBetween(Integer value1, Integer value2) {
-            addCriterion("isstick between", value1, value2, "isstick");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsstickNotBetween(Integer value1, Integer value2) {
-            addCriterion("isstick not between", value1, value2, "isstick");
-            return (Criteria) this;
-        }
+       
     }
 
     public static class Criteria extends GeneratedCriteria {

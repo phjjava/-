@@ -3,8 +3,13 @@ package com.jp.controller;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -159,7 +164,7 @@ public class UserController {
 				userInfo = userInfoService.selectByPrimaryKey(userid);
 				if (userInfo != null) {
 					if (userInfo.getBirthday() != null) {
-						userInfo.setBirthdayStr(sdfd.format(userInfo.getBirthday()));
+						userInfo.setBirthdayStr(userInfo.getBirthday());
 					}
 				}
 				if (userInfo != null) {
@@ -1055,4 +1060,36 @@ public class UserController {
 		}
 		return result;
 	}
+	
+	/**
+	 * 
+	 * @描述 批量导入用户
+	 * @作者 chenxiaobing
+	 * @时间 2018年12月21日下午2:24:07
+	 * @参数 @param user
+	 * @参数 @param userInfo
+	 * @参数 @param userEdu
+	 * @参数 @param model
+	 * @参数 @return
+	 * @return String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/importUserNew", method = RequestMethod.POST,produces = { "application/json;charset=UTF-8" })
+	public String importUserNew(PageModel<User> pageModel,MultipartFile file, HttpServletRequest request,ModelMap model) {
+		//String result = "";
+		Result result=new Result();
+		try {
+			result = userService.importUsersNew(file, request);
+			//result = res;
+			model.put("pageModel", pageModel);
+			model.put("result", result);
+		} catch (Exception e) {
+			//result = "0";
+			result.setStatus(0);
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		return "user/userList";
+	}
+	
 }

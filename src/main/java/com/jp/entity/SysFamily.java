@@ -28,7 +28,10 @@ public class SysFamily implements Serializable {
      * 家族使用状态
      */
     private Integer status;
-
+    /**
+     * 姓氏
+     */
+    private String surname;
     /**
      * 创建者
      */
@@ -66,8 +69,18 @@ public class SysFamily implements Serializable {
      */
     private Integer usercount;
     private static final long serialVersionUID = 1L;
+    
+    
 
-    public String getFamilyid() {
+    public String getSurname() {
+		return surname;
+	}
+
+	public void setSurname(String surname) {
+		this.surname = surname;
+	}
+
+	public String getFamilyid() {
         return familyid;
     }
 

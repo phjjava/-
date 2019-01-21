@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.jp.dao.UsercontentDao" >
-  <resultMap id="BaseResultMap" type="com.jp.entity.Usercontent" >
-    <id column="userid" property="userid" jdbcType="VARCHAR" />
+<mapper namespace="com.jp.dao.IntroudceTemplateDetailDao" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.IntroudceTemplateDetail" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="templateid" property="templateid" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
     <result column="createid" property="createid" jdbcType="VARCHAR" />
-    <result column="updateid" property="updateid" jdbcType="VARCHAR" />
     <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="updateid" property="updateid" jdbcType="VARCHAR" />
     <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
-    <result column="imgurl" property="imgurl" jdbcType="VARCHAR" />
-    <result column="issee" property="issee" jdbcType="INTEGER" />
-    <result column="readcount" property="readcount" jdbcType="INTEGER" />
+    <result column="deleteflag" property="deleteflag" jdbcType="INTEGER" />
     <result column="sort" property="sort" jdbcType="INTEGER" />
-    <result column="familyid" property="familyid" jdbcType="VARCHAR" />
   </resultMap>
-  <resultMap id="ResultMapWithBLOBs" type="com.jp.entity.Usercontent" extends="BaseResultMap" >
+  <resultMap id="ResultMapWithBLOBs" type="com.jp.entity.IntroudceTemplateDetail" extends="BaseResultMap" >
     <result column="content" property="content" jdbcType="LONGVARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
@@ -75,17 +75,13 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    <if test="fields == null" >
-      userid,content, createid, updateid, createtime, updatetime, imgurl, issee, readcount,sort, familyid
-    </if>
-    <if test="fields != null" >
-      ${fields}
-    </if>
+    id, templateid, type, title, createid, createtime, updateid, updatetime, deleteflag, 
+    sort
   </sql>
   <sql id="Blob_Column_List" >
     content
   </sql>
-  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.jp.entity.UsercontentExample" >
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.jp.entity.IntroudceTemplateDetailExample" >
     select
     <if test="distinct" >
       distinct
@@ -93,7 +89,7 @@
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
-    from jp_usercontent
+    from jp_introducetemplate_detail
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
@@ -101,162 +97,159 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.UsercontentExample" >
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.IntroudceTemplateDetailExample" >
     select
     <if test="distinct" >
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from jp_usercontent
+    from jp_introducetemplate_detail
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
     <if test="orderByClause != null" >
       order by ${orderByClause}
-    </if>
-    <if test="startRow != null" >
-      limit #{startRow} , #{pageSize}
     </if>
   </select>
   <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
     select 
-    userid,createid,updateid,createtime,updatetime,imgurl,issee,readcount,sort,familyid,content
+    <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
-    from jp_usercontent
-    where userid = #{userid,jdbcType=VARCHAR}
+    from jp_introducetemplate_detail
+    where id = #{id,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
-    delete from jp_usercontent
-    where userid = #{userid,jdbcType=VARCHAR}
+    delete from jp_introducetemplate_detail
+    where id = #{id,jdbcType=VARCHAR}
   </delete>
-  <delete id="deleteByExample" parameterType="com.jp.entity.UsercontentExample" >
-    delete from jp_usercontent
+  <delete id="deleteByExample" parameterType="com.jp.entity.IntroudceTemplateDetailExample" >
+    delete from jp_introducetemplate_detail
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.jp.entity.Usercontent" >
-    insert into jp_usercontent (userid, createid, updateid, 
-      createtime, updatetime, imgurl, 
-      issee, readcount, sort,familyid, 
-      content)
-    values (#{userid,jdbcType=VARCHAR}, #{createid,jdbcType=VARCHAR}, #{updateid,jdbcType=VARCHAR}, 
-      #{createtime,jdbcType=TIMESTAMP}, #{updatetime,jdbcType=TIMESTAMP}, #{imgurl,jdbcType=VARCHAR}, 
-      #{issee,jdbcType=INTEGER}, #{readcount,jdbcType=INTEGER},#{sort,jdbcType=INTEGER}, #{familyid,jdbcType=VARCHAR}, 
-      #{content,jdbcType=LONGVARCHAR})
+  <insert id="insert" parameterType="com.jp.entity.IntroudceTemplateDetail" >
+    insert into jp_introducetemplate_detail (id, templateid, type, 
+      title, createid, createtime, 
+      updateid, updatetime, deleteflag, 
+      sort, content)
+    values (#{id,jdbcType=VARCHAR}, #{templateid,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
+      #{title,jdbcType=VARCHAR}, #{createid,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}, 
+      #{updateid,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP}, #{deleteflag,jdbcType=INTEGER}, 
+      #{sort,jdbcType=INTEGER}, #{content,jdbcType=LONGVARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.jp.entity.Usercontent" >
-    insert into jp_usercontent
+  <insert id="insertSelective" parameterType="com.jp.entity.IntroudceTemplateDetail" >
+    insert into jp_introducetemplate_detail
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="userid != null" >
-        userid,
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="templateid != null" >
+        templateid,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="title != null" >
+        title,
       </if>
       <if test="createid != null" >
         createid,
       </if>
-      <if test="updateid != null" >
-        updateid,
-      </if>
       <if test="createtime != null" >
         createtime,
+      </if>
+      <if test="updateid != null" >
+        updateid,
       </if>
       <if test="updatetime != null" >
         updatetime,
       </if>
-      <if test="imgurl != null" >
-        imgurl,
-      </if>
-      <if test="issee != null" >
-        issee,
-      </if>
-      <if test="readcount != null" >
-        readcount,
+      <if test="deleteflag != null" >
+        deleteflag,
       </if>
       <if test="sort != null" >
         sort,
-      </if>
-      <if test="familyid != null" >
-        familyid,
       </if>
       <if test="content != null" >
         content,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="userid != null" >
-        #{userid,jdbcType=VARCHAR},
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="templateid != null" >
+        #{templateid,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
       </if>
       <if test="createid != null" >
         #{createid,jdbcType=VARCHAR},
       </if>
-      <if test="updateid != null" >
-        #{updateid,jdbcType=VARCHAR},
-      </if>
       <if test="createtime != null" >
         #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateid != null" >
+        #{updateid,jdbcType=VARCHAR},
       </if>
       <if test="updatetime != null" >
         #{updatetime,jdbcType=TIMESTAMP},
       </if>
-      <if test="imgurl != null" >
-        #{imgurl,jdbcType=VARCHAR},
-      </if>
-      <if test="issee != null" >
-        #{issee,jdbcType=INTEGER},
-      </if>
-      <if test="readcount != null" >
-        #{readcount,jdbcType=INTEGER},
+      <if test="deleteflag != null" >
+        #{deleteflag,jdbcType=INTEGER},
       </if>
       <if test="sort != null" >
         #{sort,jdbcType=INTEGER},
-      </if>
-      <if test="familyid != null" >
-        #{familyid,jdbcType=VARCHAR},
       </if>
       <if test="content != null" >
         #{content,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.jp.entity.UsercontentExample" resultType="java.lang.Integer" >
-    select count(*) from jp_usercontent
+  <select id="countByExample" parameterType="com.jp.entity.IntroudceTemplateDetailExample" resultType="java.lang.Integer" >
+    select count(*) from jp_introducetemplate_detail
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map" >
-    update jp_usercontent
+    update jp_introducetemplate_detail
     <set >
-      <if test="record.userid != null" >
-        userid = #{record.userid,jdbcType=VARCHAR},
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.templateid != null" >
+        templateid = #{record.templateid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.type != null" >
+        type = #{record.type,jdbcType=VARCHAR},
+      </if>
+      <if test="record.title != null" >
+        title = #{record.title,jdbcType=VARCHAR},
       </if>
       <if test="record.createid != null" >
         createid = #{record.createid,jdbcType=VARCHAR},
       </if>
-      <if test="record.updateid != null" >
-        updateid = #{record.updateid,jdbcType=VARCHAR},
-      </if>
       <if test="record.createtime != null" >
         createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateid != null" >
+        updateid = #{record.updateid,jdbcType=VARCHAR},
       </if>
       <if test="record.updatetime != null" >
         updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.imgurl != null" >
-        imgurl = #{record.imgurl,jdbcType=VARCHAR},
+      <if test="record.deleteflag != null" >
+        deleteflag = #{record.deleteflag,jdbcType=INTEGER},
       </if>
-      <if test="record.issee != null" >
-        issee = #{record.issee,jdbcType=INTEGER},
-      </if>
-      <if test="record.readcount != null" >
-        readcount = #{record.readcount,jdbcType=INTEGER},
-      </if>
-       <if test="record.sort != null" >
+      <if test="record.sort != null" >
         sort = #{record.sort,jdbcType=INTEGER},
-      </if>
-      <if test="record.familyid != null" >
-        familyid = #{record.familyid,jdbcType=VARCHAR},
       </if>
       <if test="record.content != null" >
         content = #{record.content,jdbcType=LONGVARCHAR},
@@ -267,99 +260,99 @@
     </if>
   </update>
   <update id="updateByExampleWithBLOBs" parameterType="map" >
-    update jp_usercontent
-    set userid = #{record.userid,jdbcType=VARCHAR},
+    update jp_introducetemplate_detail
+    set id = #{record.id,jdbcType=VARCHAR},
+      templateid = #{record.templateid,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=VARCHAR},
+      title = #{record.title,jdbcType=VARCHAR},
       createid = #{record.createid,jdbcType=VARCHAR},
-      updateid = #{record.updateid,jdbcType=VARCHAR},
       createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      updateid = #{record.updateid,jdbcType=VARCHAR},
       updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
-      imgurl = #{record.imgurl,jdbcType=VARCHAR},
-      issee = #{record.issee,jdbcType=INTEGER},
-      readcount = #{record.readcount,jdbcType=INTEGER},
+      deleteflag = #{record.deleteflag,jdbcType=INTEGER},
       sort = #{record.sort,jdbcType=INTEGER},
-      familyid = #{record.familyid,jdbcType=VARCHAR},
       content = #{record.content,jdbcType=LONGVARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
   <update id="updateByExample" parameterType="map" >
-    update jp_usercontent
-    set userid = #{record.userid,jdbcType=VARCHAR},
+    update jp_introducetemplate_detail
+    set id = #{record.id,jdbcType=VARCHAR},
+      templateid = #{record.templateid,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=VARCHAR},
+      title = #{record.title,jdbcType=VARCHAR},
       createid = #{record.createid,jdbcType=VARCHAR},
-      updateid = #{record.updateid,jdbcType=VARCHAR},
       createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      updateid = #{record.updateid,jdbcType=VARCHAR},
       updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
-      imgurl = #{record.imgurl,jdbcType=VARCHAR},
-      issee = #{record.issee,jdbcType=INTEGER},
-      readcount = #{record.readcount,jdbcType=INTEGER},
-      sort = #{record.sort,jdbcType=INTEGER},
-      familyid = #{record.familyid,jdbcType=VARCHAR}
+      deleteflag = #{record.deleteflag,jdbcType=INTEGER},
+      sort = #{record.sort,jdbcType=INTEGER}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.Usercontent" >
-    update jp_usercontent
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.IntroudceTemplateDetail" >
+    update jp_introducetemplate_detail
     <set >
+      <if test="templateid != null" >
+        templateid = #{templateid,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
       <if test="createid != null" >
         createid = #{createid,jdbcType=VARCHAR},
-      </if>
-      <if test="updateid != null" >
-        updateid = #{updateid,jdbcType=VARCHAR},
       </if>
       <if test="createtime != null" >
         createtime = #{createtime,jdbcType=TIMESTAMP},
       </if>
+      <if test="updateid != null" >
+        updateid = #{updateid,jdbcType=VARCHAR},
+      </if>
       <if test="updatetime != null" >
         updatetime = #{updatetime,jdbcType=TIMESTAMP},
       </if>
-      <if test="imgurl != null" >
-        imgurl = #{imgurl,jdbcType=VARCHAR},
-      </if>
-      <if test="issee != null" >
-        issee = #{issee,jdbcType=INTEGER},
-      </if>
-      <if test="readcount != null" >
-        readcount = #{readcount,jdbcType=INTEGER},
+      <if test="deleteflag != null" >
+        deleteflag = #{deleteflag,jdbcType=INTEGER},
       </if>
       <if test="sort != null" >
         sort = #{sort,jdbcType=INTEGER},
-      </if>
-      <if test="familyid != null" >
-        familyid = #{familyid,jdbcType=VARCHAR},
       </if>
       <if test="content != null" >
         content = #{content,jdbcType=LONGVARCHAR},
       </if>
     </set>
-    where userid = #{userid,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.jp.entity.Usercontent" >
-    update jp_usercontent
-    set createid = #{createid,jdbcType=VARCHAR},
-      updateid = #{updateid,jdbcType=VARCHAR},
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.jp.entity.IntroudceTemplateDetail" >
+    update jp_introducetemplate_detail
+    set templateid = #{templateid,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      createid = #{createid,jdbcType=VARCHAR},
       createtime = #{createtime,jdbcType=TIMESTAMP},
+      updateid = #{updateid,jdbcType=VARCHAR},
       updatetime = #{updatetime,jdbcType=TIMESTAMP},
-      imgurl = #{imgurl,jdbcType=VARCHAR},
-      issee = #{issee,jdbcType=INTEGER},
-      readcount = #{readcount,jdbcType=INTEGER},
+      deleteflag = #{deleteflag,jdbcType=INTEGER},
       sort = #{sort,jdbcType=INTEGER},
-      familyid = #{familyid,jdbcType=VARCHAR},
       content = #{content,jdbcType=LONGVARCHAR}
-    where userid = #{userid,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.jp.entity.Usercontent" >
-    update jp_usercontent
-    set createid = #{createid,jdbcType=VARCHAR},
-      updateid = #{updateid,jdbcType=VARCHAR},
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.IntroudceTemplateDetail" >
+    update jp_introducetemplate_detail
+    set templateid = #{templateid,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      createid = #{createid,jdbcType=VARCHAR},
       createtime = #{createtime,jdbcType=TIMESTAMP},
+      updateid = #{updateid,jdbcType=VARCHAR},
       updatetime = #{updatetime,jdbcType=TIMESTAMP},
-      imgurl = #{imgurl,jdbcType=VARCHAR},
-      issee = #{issee,jdbcType=INTEGER},
-      readcount = #{readcount,jdbcType=INTEGER},
-      sort = #{sort,jdbcType=INTEGER},
-      familyid = #{familyid,jdbcType=VARCHAR}
-    where userid = #{userid,jdbcType=VARCHAR}
+      deleteflag = #{deleteflag,jdbcType=INTEGER},
+      sort = #{sort,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

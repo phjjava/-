@@ -50,10 +50,6 @@ public class Usercontent implements Serializable {
      */
     private Integer sort;
 
-    /**
-     * 手机端首页展示
-     */
-    private Integer isstick;
     
     public Integer getSort() {
 		return sort;
@@ -63,13 +59,7 @@ public class Usercontent implements Serializable {
 		this.sort = sort;
 	}
 
-	public Integer getIsstick() {
-		return isstick;
-	}
-
-	public void setIsstick(Integer isstick) {
-		this.isstick = isstick;
-	}
+	
 
 	/**
      * 家族ID
