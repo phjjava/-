@@ -20,7 +20,7 @@ import com.jp.dao.PostMapper;
 import com.jp.dao.SysFamilyDao;
 import com.jp.dao.UserDao;
 import com.jp.dao.UserManagerMapper;
-import com.jp.dao.UserinfoDao;
+import com.jp.dao.UserinfoMapper;
 import com.jp.entity.EditorialBoard;
 import com.jp.entity.Indexcount;
 import com.jp.entity.Introduce;
@@ -45,10 +45,12 @@ import com.jp.util.UUIDUtils;
 public class FamilyServiceImpl implements FamilyService {
 	@Autowired
 	private SysFamilyDao sysFamilyDao;
+	
 	@Autowired
 	private UserDao userDao;
 	@Autowired
-	private UserinfoDao userInfoDao;
+	private UserinfoMapper userInfoDao;
+	
 	@Autowired
 	private EditorialBoardMapper editorialBoardMapper;
 	@Autowired
@@ -98,7 +100,7 @@ public class FamilyServiceImpl implements FamilyService {
                 }
 				String userId = UUIDUtils.getUUID();
 				String familyId = UUIDUtils.getUUID();
-//				String roleId = UUIDUtils.getUUID();
+				
 				// user
 				user.setUserid(userId);
 				user.setFamilyid(familyId);

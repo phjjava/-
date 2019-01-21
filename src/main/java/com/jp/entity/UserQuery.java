@@ -1677,65 +1677,65 @@ public class UserQuery {
             return (Criteria) this;
         }
 
-        public Criteria andDietimeIsNull() {
-            addCriterion("dietime is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andDietimeIsNotNull() {
-            addCriterion("dietime is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andDietimeEqualTo(Date value) {
-            addCriterion("dietime =", value, "dietime");
-            return (Criteria) this;
-        }
-
-        public Criteria andDietimeNotEqualTo(Date value) {
-            addCriterion("dietime <>", value, "dietime");
-            return (Criteria) this;
-        }
-
-        public Criteria andDietimeGreaterThan(Date value) {
-            addCriterion("dietime >", value, "dietime");
-            return (Criteria) this;
-        }
-
-        public Criteria andDietimeGreaterThanOrEqualTo(Date value) {
-            addCriterion("dietime >=", value, "dietime");
-            return (Criteria) this;
-        }
-
-        public Criteria andDietimeLessThan(Date value) {
-            addCriterion("dietime <", value, "dietime");
-            return (Criteria) this;
-        }
-
-        public Criteria andDietimeLessThanOrEqualTo(Date value) {
-            addCriterion("dietime <=", value, "dietime");
-            return (Criteria) this;
-        }
-
-        public Criteria andDietimeIn(List<Date> values) {
-            addCriterion("dietime in", values, "dietime");
-            return (Criteria) this;
-        }
-
-        public Criteria andDietimeNotIn(List<Date> values) {
-            addCriterion("dietime not in", values, "dietime");
-            return (Criteria) this;
-        }
-
-        public Criteria andDietimeBetween(Date value1, Date value2) {
-            addCriterion("dietime between", value1, value2, "dietime");
-            return (Criteria) this;
-        }
-
-        public Criteria andDietimeNotBetween(Date value1, Date value2) {
-            addCriterion("dietime not between", value1, value2, "dietime");
-            return (Criteria) this;
-        }
+//        public Criteria andDietimeIsNull() {
+//            addCriterion("dietime is null");
+//            return (Criteria) this;
+//        }
+//
+//        public Criteria andDietimeIsNotNull() {
+//            addCriterion("dietime is not null");
+//            return (Criteria) this;
+//        }
+//
+//        public Criteria andDietimeEqualTo(Date value) {
+//            addCriterion("dietime =", value, "dietime");
+//            return (Criteria) this;
+//        }
+//
+//        public Criteria andDietimeNotEqualTo(Date value) {
+//            addCriterion("dietime <>", value, "dietime");
+//            return (Criteria) this;
+//        }
+//
+//        public Criteria andDietimeGreaterThan(Date value) {
+//            addCriterion("dietime >", value, "dietime");
+//            return (Criteria) this;
+//        }
+//
+//        public Criteria andDietimeGreaterThanOrEqualTo(Date value) {
+//            addCriterion("dietime >=", value, "dietime");
+//            return (Criteria) this;
+//        }
+//
+//        public Criteria andDietimeLessThan(Date value) {
+//            addCriterion("dietime <", value, "dietime");
+//            return (Criteria) this;
+//        }
+//
+//        public Criteria andDietimeLessThanOrEqualTo(Date value) {
+//            addCriterion("dietime <=", value, "dietime");
+//            return (Criteria) this;
+//        }
+//
+//        public Criteria andDietimeIn(List<Date> values) {
+//            addCriterion("dietime in", values, "dietime");
+//            return (Criteria) this;
+//        }
+//
+//        public Criteria andDietimeNotIn(List<Date> values) {
+//            addCriterion("dietime not in", values, "dietime");
+//            return (Criteria) this;
+//        }
+//
+//        public Criteria andDietimeBetween(Date value1, Date value2) {
+//            addCriterion("dietime between", value1, value2, "dietime");
+//            return (Criteria) this;
+//        }
+//
+//        public Criteria andDietimeNotBetween(Date value1, Date value2) {
+//            addCriterion("dietime not between", value1, value2, "dietime");
+//            return (Criteria) this;
+//        }
 
         public Criteria andFixplaceIsNull() {
             addCriterion("fixplace is null");
