@@ -44,6 +44,7 @@
 		</div>
 	</form>
 </article>
+
 <jsp:include page="../common/basejs.jsp"></jsp:include>
 <script type="text/javascript">
 	$(function(){
@@ -81,6 +82,13 @@
 	    	 no_results_text: "没有找到",
 	   });
 	});
+	//回显页面
+	function userShow(title,userid,id,w,h){
+		var w = 750;
+		var h = 500;
+		var url = basePath + 'jsp/user/userShow.jsp';
+		layer_show(title,url,w,h);
+	}
      //导入
 	function importData(){
 		var url = basePath + "user/importUserNew";
@@ -93,7 +101,9 @@
 			 layer.alert('只能导入EXCEL数据文件!', {icon: 5});
 			return;	
 		}
-		layer.confirm('确认要导入吗？',function(index){
+		//layer_close();
+		userShow('确认要导入吗？','','1')
+		/*layer.confirm('确认要导入吗？',function(index){
 
 	         var formData = new FormData($("#user-import")[0]);
 	         $.ajax({
@@ -126,7 +136,7 @@
 	                }
 	            });
 			
-		});
+		});  */
 		//if(confirm("确认导入吗？")){
 		//}
 	}
