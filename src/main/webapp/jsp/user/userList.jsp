@@ -9,6 +9,7 @@
 %>
 <link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui_select.css" />
 <link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.chosen.css" />
+<link rel="stylesheet" type="text/css" href="<%=basePath%>css/base.css" />
 <script type="text/javascript">
 	/*成员添加
 	*/
@@ -123,8 +124,9 @@
 		<div class="cl pd-5 bg-1 bk-gray mt-20" style="margin-top:50px;">
 		    <span class="l">
 		        <a class="btn btn-primary radius" href="javascript:;" onclick="member_edit('新增成员','','1')"><i class="Hui-iconfont">&#xe600;</i> 新增成员</a>&nbsp;&nbsp;
-	            <a href="javascript:;" onclick="importUser('导入用户','','1')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe645;</i> 导入用户</a>&nbsp;&nbsp;
-	            <a href="javascript:;" onclick="importUsermates('导入配偶','','1')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe645;</i> 导入配偶</a>
+	            <a href="javascript:;" id="btn_show_dialog" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe645;</i> 导入用户</a>&nbsp;&nbsp;
+	            <a href="javascript:;" id="btn_show_dialog1" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe645;</i> 导入配偶</a>
+	            <!-- <a href="javascript:;" onclick="importUsermates('导入配偶','','1')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe645;</i> 导入配偶</a> -->
 		</span>
 		</div>
 		<div class="mt-10">
@@ -196,7 +198,127 @@
 		</div>
 	</article>
 </div>
+
+<!--导入用户弹出框-->
+    <div id="dialog" class="dialog hide" minheight="320" minwidth="660">
+        <div id="dlg_top" class="dlg_top">
+                <label class="dlg_title">导入用户</label>                
+                <input class="dlg_btn_close dlg_btn_ico layui-layer-ico layui-layer-close1" id="hide" type="button"/>                
+                <input class="dlg_btn_ico layui-layer-ico layui-layer-max dlg_btn_max_top" id="maxShow" type="button"/>
+        </div>
+        <div class="dlg_content page-container">
+            <form action="" method="post" class="form form-horizontal" id="user-import" enctype="multipart/form-data">
+				<div class="row cl" id="addNation">
+					<label class="form-label col-xs-4 col-sm-3" style="text-align:right">模板下载：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<a href="<%=basePath%>static/excel/导入直系用户模板.xls">点击下载导入用户模板XLS</a><br />
+						<%-- <a href="<%=basePath%>static/excel/导入直系用户模板.xlsx">点击下载导入用户模板XLSX</a> --%>
+					</div>
+				</div>
+				<div class="row cl" id="addNation">
+					<label class="form-label col-xs-4 col-sm-3" style="text-align:right">请选择分支：</label>
+					<div class="formControls col-xs-8 col-sm-9 branchid" >
+						 <select size="1" class="input-text select" data-placeholder="请选择分支" id="branchid1" data-val="" style="display:block;">
+							</select>
+					</div>
+				</div>
+				<div class="row cl" id="addNation">
+					<label class="form-label col-xs-4 col-sm-3" style="text-align:right">选择文件：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="file" name="file" id="myfile" />
+					</div>
+				</div>
+				<!-- 	<div class="row cl" id="addNation">
+					<label class="form-label col-xs-4 col-sm-4" id="result" style="color:red"></label>
+				</div> -->
+				<div class="row cl">
+					<div style="text-align: center;margin-top:40px;">
+						<input class="btn btn-primary radius" id="dlg_submit" type="button" value="&nbsp;&nbsp;上传&nbsp;&nbsp;">
+						<input class="btn btn-primary radius dlg_btn_close" id="btn_close" type="button" value="&nbsp;&nbsp;关闭&nbsp;&nbsp;">
+					</div>
+				</div>
+			</form>
+        </div>
+    </div>
+    
+    <!--回显导入用户弹出框-->
+    <div id="usershow" class="dialog hide" minheight="1000" minwidth="1000">
+        <div id="dlg_top" class="dlg_top">
+                <label class="dlg_title">请确认是否导入</label>                
+                <input class="dlg_btn_close dlg_btn_ico layui-layer-ico layui-layer-close1" id="hide1" type="button"/>                
+                <input class="dlg_btn_ico layui-layer-ico layui-layer-max dlg_btn_max_top1" id="maxShow1"  type="button"/>
+        </div>
+        <div class="dlg_content page-container">
+            <form action="" method="post" class="form form-horizontal" id="user-import" enctype="multipart/form-data">
+				<div class="row cl">
+					<div style="text-align: center;margin-top:40px;">
+						<input class="btn btn-primary radius" id="dlg_submit" type="button" value="&nbsp;&nbsp;导入&nbsp;&nbsp;">
+						<input class="btn btn-primary radius dlg_btn_close" id="btn_close1" type="button" value="&nbsp;&nbsp;关闭&nbsp;&nbsp;">
+					</div>
+				</div>
+			</form>
+        </div>
+    </div>
+    
+    <!--导入配偶弹出框-->
+    <div id="dialog1" class="dialog hide" minheight="320" minwidth="660">
+        <div class="dlg_top">
+                <label class="dlg_title">导入配偶</label>                
+                <input class="dlg_btn_close dlg_btn_ico layui-layer-ico layui-layer-close1" id="hide2" type="button"/>                
+                <input class="dlg_btn_ico layui-layer-ico layui-layer-max dlg_btn_max_top" id="maxShow2" type="button"/>
+        </div>
+        <div class="dlg_content page-container">
+            <form action="" method="post" class="form form-horizontal" id="user-import" enctype="multipart/form-data">
+		<div class="row cl" id="addNation">
+			<label class="form-label col-xs-4 col-sm-4" style="text-align:right">模板下载：</label> 
+			<div class="formControls col-xs-8 col-sm-8">
+				<a href="<%=basePath%>static/excel/导入配偶模板.xls">点击下载导入配偶模板XLS</a><br/>
+				<%-- <a href="<%=basePath%>static/excel/导入配偶模板(新).xlsx">点击下载导入配偶模板XLSX</a> --%>
+			</div>
+		</div>	
+		<div class="row cl" id="addNation">
+			<label class="form-label col-xs-4 col-sm-4" style="text-align:right">选择文件：</label>
+			<div class="formControls col-xs-8 col-sm-8">
+				<input type="file" name="file" id="myfile1"/>
+			</div>
+		</div>
+		<div class="row cl" id="addNation">
+			<label class="form-label col-xs-4 col-sm-4" id="result"></label>
+		</div>
+		<div class="row cl">
+			<div style="text-align: center;margin-top:40px;">
+				<!-- <input class="btn btn-primary radius" type="button" onclick="importData();" value="&nbsp;&nbsp;上传&nbsp;&nbsp;"> -->
+				<input class="btn btn-primary radius" id="dlg_submit1" type="button" value="&nbsp;&nbsp;上传&nbsp;&nbsp;">
+				<input class="btn btn-primary radius dlg_btn_close" id="btn_close2" type="button" onclick="layer_close();" value="&nbsp;&nbsp;关闭&nbsp;&nbsp;">
+			</div>
+	    </div>
+	</form>
+        </div>
+    </div>
+    
+    <!--回显导入配偶弹出框-->
+    <div id="usershow1" class="dialog hide" minheight="1000" minwidth="1000">
+        <div id="dlg_top" class="dlg_top">
+                <label class="dlg_title">请确认是否导入</label>                
+                <input class="dlg_btn_close dlg_btn_ico layui-layer-ico layui-layer-close1" id="hide3" type="button"/>                
+                <input class="dlg_btn_ico layui-layer-ico layui-layer-max dlg_btn_max_top1" id="maxShow3"  type="button"/>
+        </div>
+        <div class="dlg_content page-container">
+            <form action="" method="post" class="form form-horizontal" id="user-import1" enctype="multipart/form-data">
+				<div class="row cl">
+					<div style="text-align: center;margin-top:40px;">
+						<input class="btn btn-primary radius" id="dlg_submit" type="button" value="&nbsp;&nbsp;导入&nbsp;&nbsp;">
+						<input class="btn btn-primary radius dlg_btn_close" id="btn_close1" type="button" value="&nbsp;&nbsp;关闭&nbsp;&nbsp;">
+					</div>
+				</div>
+			</form>
+        </div>
+    </div>
+    
+    <div id="half"></div>
 <script type="text/javascript" src="<%=basePath%>js/amazeui.chosen.min.js"></script>
+<%-- <script type="text/javascript" src="<%=basePath%>js/jquery-1.11.0.min.js"></script> --%>
+<script type="text/javascript" src="<%=basePath%>js/main.js"></script>
 
 <script type="text/javascript">
 $(function(){
@@ -212,7 +334,137 @@ $(function(){
 	var status = '${user.status}';
 	$("#status").val(status);
 	
+		//初始化导入用户分支
+		$.ajax({
+			type:'post',
+			dataType:'json',
+			async: false,
+			url : '<%=basePath%>branch/initBranch?curSec='+Math.random(),
+			success:function(data,status){
+				if(data){
+					var optionStrM = "";
+					var dataval = $('#branchid1').attr('data-val');
+					var valArray = dataval.split(",");
+					for(var i = 0; i < data.length; i++){
+						if(valArray.indexOf(data[i].branchid + "_" +data[i].branchname) != -1){
+							optionStrM += "<option selected value='" + data[i].branchid+"' >" +data[i].area + " "+data[i].cityname + " " +data[i].xname + " "+data[i].branchname+"</option>";
+						}else{
+							optionStrM += "<option value='" + data[i].branchid+"' >" +data[i].area + " "+data[i].cityname + " " +data[i].xname + " "+data[i].branchname+"</option>";
+						}
+					}
+					$('#branchid1').html(optionStrM);
+					
+				}else{
+					alert("初始化人员失败！");  
+				}
+			},
+			error:function(e) {
+				console.log(e);
+			}
+		});
+		$('#branchid1').chosen({
+	  	     search_contains: true,
+	    	 max_selected_options: 1,
+	    	 no_results_text: "没有找到",
+	   });
+		$("#branchid1_chosen").css("width","90%");
+	
 });
+
+$("#dlg_submit").click(function(){
+	var url = basePath + "user/importUserNew";
+	var myfile = $("#myfile").val();
+     if (myfile == "") {
+    	 layer.alert('请选择要导入的文件!', {icon: 5});
+         return false
+     }else {
+         //检验文件类型是否正确
+         var exec = (/[.]/.exec(myfile)) ? /[^.]+$/.exec(myfile.toLowerCase()) : '';
+         if (exec != "xlsx"&& exec != "xls") {
+        	 layer.alert('只能导入EXCEL数据文件!', {icon: 5});
+             return false;
+         }
+     }
+     var formData = new FormData($("#user-import")[0]);
+     $.ajax({
+            cache: true,
+            type: "POST",
+            url:url,
+            processData : false, 
+			// 告诉jQuery不要去设置Content-Type请求头
+			contentType : false,
+            data: formData,
+            async: false,
+            error: function(request) {
+                layer.alert('请求失败，请稍后再试', {icon: 5});
+            },
+            success: function(data) {
+              if(data.status == 1){
+            	  {
+            		  window.parent.searchs();
+            		  window.parent.layer.msg(data.data1, {icon: 6,time:5000});
+            		  $("#dialog").hide();
+            		  $("#usershow").show();
+            	  }
+                 }else if(data.status == 2){
+                	 window.parent.layer.msg('导入用户数超过版本最高用户数!', {icon: 5,time:2000});
+                 }else if(data.status == 500){
+                	 window.parent.layer.msg(data.data1,{icon:5,time:5000});
+                 }else{
+                	 window.parent.layer.msg('导入用户失败，请联系管理员!', {icon: 5,time:2000});
+                 }
+              
+            }
+        });
+})
+
+$("#dlg_submit1").click(function(){
+	var url = basePath + "user/importUsermates";
+	var myfile1 = $("#myfile1").val();
+     if (myfile1 == "") {
+    	 layer.alert('请选择要导入的文件!', {icon: 5});
+         return false
+     }else {
+         //检验文件类型是否正确
+         var exec = (/[.]/.exec(myfile1)) ? /[^.]+$/.exec(myfile1.toLowerCase()) : '';
+         if (exec != "xlsx"&& exec != "xls") {
+        	 layer.alert('只能导入EXCEL数据文件!', {icon: 5});
+             return false;
+         }
+     }
+     var formData = new FormData($("#user-import1")[0]);
+     $.ajax({
+            cache: true,
+            type: "POST",
+            url:url,
+            processData : false, 
+			// 告诉jQuery不要去设置Content-Type请求头
+			contentType : false,
+            data: formData,
+            async: false,
+            error: function(request) {
+                layer.alert('请求失败，请稍后再试', {icon: 5});
+            },
+            success: function(data) {
+              if(data.status == 1){
+            	  {
+            		  window.parent.searchs();
+            		  window.parent.layer.msg(data.data1, {icon: 6,time:5000});
+            		  $("#dialog1").hide();
+            		  $("#usershow1").show();
+            	  }
+                 }else if(data.status == 2){
+                	 window.parent.layer.msg('导入用户数超过版本最高用户数!', {icon: 5,time:2000});
+                 }else if(data.status == 500){
+                	 window.parent.layer.msg(data.data1,{icon:5,time:5000});
+                 }else{
+                	 window.parent.layer.msg('导入用户失败，请联系管理员!', {icon: 5,time:2000});
+                 }
+              
+            }
+        });
+})
+
 //查询方法
 function searchs(pageNoTemp) {
 	var sortType = $("#sortType").val();

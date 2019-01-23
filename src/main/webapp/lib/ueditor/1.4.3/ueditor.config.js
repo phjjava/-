@@ -30,8 +30,7 @@
         UEDITOR_HOME_URL: URL
 
         // 服务器统一请求接口路径 
-        , serverUrl:  "http://filetest.aojiapu.com/fileupload/jsp/controller.jsp"
-        //, serverUrl:  "http://59.110.174.146:8081/fileupload/jsp/controller.jsp"
+        , serverUrl:  "http://192.168.0.69:8080/fileupload/jsp/controller.jsp"
 
         //工具栏上的所有的功能按钮和下拉框，可以在new编辑器的实例时选择自己需要的从新定义
         //功能注释
@@ -216,7 +215,7 @@
         //,initialFrameHeight:320  //初始化编辑器高度,默认320
 	    ,initialFrameWidth:900  //初始化编辑器宽度,默认1000
 	    ,initialFrameHeight:420  //初始化编辑器高度,默认320
-	    //抓取远程图片是否开启,默认true
+	  	//抓取远程图片是否开启,默认true
 	    ,catchRemoteImageEnable:false
 
         //,readonly : false //编辑器初始化结束后,编辑区域是否是只读的，默认是false
