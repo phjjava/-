@@ -85,7 +85,6 @@ public class FamilyController {
 	public String editFamily(HttpServletRequest request,ModelMap modelMap)  {
 		try{
 			SysFamily family = null;
-		
 			User user = null;
 			String familyid = request.getParameter("familyid");
 			if(StringTools.trimNotEmpty(familyid)){
