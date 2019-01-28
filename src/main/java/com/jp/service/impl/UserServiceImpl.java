@@ -36,6 +36,8 @@ import com.jp.dao.BranchDao;
 import com.jp.dao.LoginThirdMapper;
 import com.jp.dao.SysFamilyDao;
 import com.jp.dao.UserDao;
+import com.jp.dao.UserImportMapper;
+import com.jp.dao.UserInfoImportMapper;
 import com.jp.dao.UseralbumDao;
 import com.jp.dao.UsereduDao;
 import com.jp.dao.UserinfoMapper;
@@ -78,6 +80,10 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserinfoMapper userInfoDao;
 	@Autowired
+	private UserImportMapper userImportMapper;
+	@Autowired
+	private UserInfoImportMapper userInfoImportMapper;
+	@Autowired
 	private UsereduDao userEduDao;
 	@Autowired
 	private UserworkexpDao userworkDao;
@@ -93,6 +99,7 @@ public class UserServiceImpl implements UserService {
 	private LoginThirdMapper loginThirdMapper;
 	@Autowired
 	private BranchDao branchDao;	
+	
 	
 	//导入用户时重复的用户
 	private ArrayList<String> userStringList;
@@ -394,6 +401,7 @@ public class UserServiceImpl implements UserService {
 		NumberFormat nf = new DecimalFormat("#");
 		// 获取文件名称
 		String name = file.getOriginalFilename();
+		String excelid = UUIDUtils.getUUID();
 		if (name.indexOf(".xlsx") != -1) {
 			XSSFWorkbook wb = new XSSFWorkbook(file.getInputStream());
 			// 循环三sheet
@@ -447,6 +455,7 @@ public class UserServiceImpl implements UserService {
 					String remark = xssfRow.getCell(17).getStringCellValue().trim();// 备注
 					String userId = UUIDUtils.getUUID();
 					user = new User();
+					user.setExcelid(excelid);
 					user.setUserid(userId);
 					user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 					user.setFamilyname(CurrentUserContext.getCurrentFamilyName());
@@ -558,10 +567,10 @@ public class UserServiceImpl implements UserService {
 				}
 			}
 			if (userList != null && userList.size() > 0) {
-				userDao.importUser(userList);
+				userImportMapper.importUser(userList);
 			}
 			if (userInfoList != null && userInfoList.size() > 0) {
-				userInfoDao.importUser(userInfoList);
+				userInfoImportMapper.importUser(userInfoList);
 			}
 			// }
 			wb.close();
@@ -616,6 +625,7 @@ public class UserServiceImpl implements UserService {
 					Integer genlevel = Integer.parseInt(genlevelstr);
 					String userId = UUIDUtils.getUUID();
 					user = new User();
+					user.setExcelid(excelid);
 					user.setUserid(userId);
 					user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 					user.setFamilyname(CurrentUserContext.getCurrentFamilyName());
@@ -724,10 +734,10 @@ public class UserServiceImpl implements UserService {
 				}
 			}
 			if (userList != null && userList.size() > 0) {
-				userDao.importUser(userList);
+				userImportMapper.importUser(userList);
 			}
 			if (userInfoList != null && userInfoList.size() > 0) {
-				userInfoDao.importUser(userInfoList);
+				userInfoImportMapper.importUser(userInfoList);
 			}
 
 		}
@@ -742,6 +752,7 @@ public class UserServiceImpl implements UserService {
 			String userString = GsonUtil.GsonString(userStringList);
 			result.setData(userList);
 			result.setData1(userString);
+			result.setData2(userList.get(0).getExcelid());
 		}
 	//	result.setMsg("本次共导入用户" + userList.size() + "人");
 		return result;
@@ -1781,7 +1792,7 @@ public class UserServiceImpl implements UserService {
 			userStringList = new ArrayList<String>();
 			for (int i = 1; i < lastRowNum + 1; i++) {
 				if (sheet.getRow(i) != null) {
-					
+					System.out.println(sheet.getRow(i));
 					String isdireect = eutil.toDecimalFormat(eutil.getCellContent(sheet.getRow(i).getCell(0)).trim());// 直系/配偶
 					
 					
@@ -1922,6 +1933,31 @@ public class UserServiceImpl implements UserService {
 	//	result.setMsg("本次共导入用户" + userList.size() + "人");
 		return result;
 	
+	}
+
+	@Override
+	public Integer del(User entity) {
+		
+		return userDao.delUser(entity.getUserids());
+	}
+
+	@Override
+	public Result confirmImport(String excelid) {
+		Result result = new Result();
+		if(excelid == null || "".equals(excelid)){
+			result.setStatus(ConstantUtils.RESULT_FAIL);
+			result.setMsg("导入失败！");
+			return result;
+		}
+		//1.查临时表的数据
+		UserQuery example = new UserQuery();
+		example.or().andUseridEqualTo(excelid);
+		List<User> users = userDao.selectByExample(example);
+		//2.将临时表数据插入主表
+		userDao.importUser(users);
+		//3.删除临时表数据（可用可不用）
+		
+		return result;
 	}
 
 	

@@ -1,15 +1,11 @@
+
 package com.jp.controller;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -131,6 +127,32 @@ public class UserController {
 		return result;
 	}
 
+	
+	/**
+	 * 
+	 * @描述 逻辑删除用户
+	 * @作者 chenxiaobing
+	 * @时间 2019年1月15日下午2:24:07
+	 * @参数 @param user
+	 * @参数 @return
+	 * @return String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/del", method = RequestMethod.POST)
+	public String deleteUser(User entity) {
+		Integer result=0;
+		try {
+			result =userService.del(entity);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+			
+			
+		}
+		return result+"";
+	}
+	
 	/**
 	 * 
 	 * @描述 去新增修改界面
@@ -562,6 +584,26 @@ public class UserController {
 		return result;
 	}
 
+	/**
+	 * 确认导入
+	 * @param excelid
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/confirmImport", method = RequestMethod.POST)
+	public Result confirmImport(String excelid) {
+		//String result = "";
+		Result result=null;
+		try {
+			result = userService.confirmImport(excelid);
+		} catch (Exception e) {
+			//result = "0";
+			//result.setStatus(0);
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 	/**
 	 * @描述 新增用户初始化父亲 和 配偶
 	 * @作者 sj

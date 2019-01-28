@@ -22,12 +22,10 @@ import com.jp.entity.SysVersion;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
 import com.jp.entity.Userinfo;
-import com.jp.entity.Userrole;
 import com.jp.service.FamilyService;
 import com.jp.service.SysVersionService;
 import com.jp.service.UserManagerService;
 import com.jp.service.UserService;
-import com.jp.service.UserroleService;
 import com.jp.util.Result;
 import com.jp.util.StringTools;
 
@@ -39,8 +37,6 @@ public class FamilyController {
 	private FamilyService familyService;
 	@Autowired
 	private SysVersionService sysVersionService;
-	@Autowired
-	private UserroleService userroleService;
 	@Autowired
 	private UserService userService;
 	@Autowired
@@ -89,7 +85,6 @@ public class FamilyController {
 	public String editFamily(HttpServletRequest request,ModelMap modelMap)  {
 		try{
 			SysFamily family = null;
-			UserManager userRole = null;
 			User user = null;
 			String familyid = request.getParameter("familyid");
 			if(StringTools.trimNotEmpty(familyid)){

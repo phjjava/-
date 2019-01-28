@@ -1439,58 +1439,62 @@ public class DateUtils {
 	 * @return Date
 	 */
 	public static boolean isDate(String strDate,String regex) {
-		boolean flag = true;
-		try {
-			String[] arr = strDate.split(regex);
-			int year = 0,month = 0,day = 0;
-			
-			for(int i=0;i<arr.length;i++) {
+		boolean flag = false;
+		if(strDate!=null && !"".equals(strDate)) {
+			try {
+				flag = true;
+				String[] arr = strDate.split(regex);
+				int year = 0,month = 0,day = 0;
 				
-				switch(i) {
-					case 0:
-						year = Integer.parseInt(arr[0]);
-						if(year<=0 || year>=10000) {
-							return false;
-						}
-						break;
-					case 1:
-						month = Integer.parseInt(arr[1]);
-						if(month<=0 || month>=13) {
-							return false;
-						}
-						break;
-					case 2:
-						day = Integer.parseInt(arr[2]);
-						if(run(year)) {
-							if (arr[1].matches("0[2]||2")) {// 这里是闰年的2月
-				                 if (!arr[2].matches("0[1-9]||[1-9]||1[0-9]||2[0-9]")) {
-				                    return false; 
-				                 }
+				for(int i=0;i<arr.length;i++) {
+					
+					switch(i) {
+						case 0:
+							year = Integer.parseInt(arr[0]);
+							if(year<=0 || year>=10000) {
+								return false;
 							}
-						}else {
-							if (arr[1].matches("0[2]||2")) {// 这里是平年的2月
-				                if (!arr[2].matches("0[1-9]||[1-9]||1[0-9]||2[0-8]")) {
-				                    return false;
-				                }
-				            }
-						}
-						// 下面判断除了2月份的大小月天数
-				        if (arr[1].matches("0[13578]||[13578]||1[02]")) {// 这里是大月
-				            if (!arr[2].matches("0[1-9]||[1-9]||[12][0-9]||3[01]")) {
-				                return false;
-				            }
-				        } else if (arr[1].matches("0[469]||[469]||11")) {// 这里是小月
-				            if (!arr[2].matches("0[1-9]||[1-9]||[12][0-9]||30")) {
-				                return false;
-				            }
-				        }
-						break;
+							break;
+						case 1:
+							month = Integer.parseInt(arr[1]);
+							if(month<=0 || month>=13) {
+								return false;
+							}
+							break;
+						case 2:
+							day = Integer.parseInt(arr[2]);
+							if(run(year)) {
+								if (arr[1].matches("0[2]||2")) {// 这里是闰年的2月
+					                 if (!arr[2].matches("0[1-9]||[1-9]||1[0-9]||2[0-9]")) {
+					                    return false; 
+					                 }
+								}
+							}else {
+								if (arr[1].matches("0[2]||2")) {// 这里是平年的2月
+					                if (!arr[2].matches("0[1-9]||[1-9]||1[0-9]||2[0-8]")) {
+					                    return false;
+					                }
+					            }
+							}
+							// 下面判断除了2月份的大小月天数
+					        if (arr[1].matches("0[13578]||[13578]||1[02]")) {// 这里是大月
+					            if (!arr[2].matches("0[1-9]||[1-9]||[12][0-9]||3[01]")) {
+					                return false;
+					            }
+					        } else if (arr[1].matches("0[469]||[469]||11")) {// 这里是小月
+					            if (!arr[2].matches("0[1-9]||[1-9]||[12][0-9]||30")) {
+					                return false;
+					            }
+					        }
+							break;
+					}
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				flag = false;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			flag = false;
 		}
+		
 		
 		return flag;
     }

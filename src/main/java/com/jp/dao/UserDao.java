@@ -83,6 +83,8 @@ public interface UserDao {
 	List<User> selectUserByFamilyId(@Param("familyId") String familyId);
 
 	List<User> selectUserItemLive(User user);
+
+	Integer delUser(@Param("list")List<String> userids);
 	
 	
 	

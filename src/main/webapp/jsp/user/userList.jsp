@@ -249,8 +249,24 @@
                 <input class="dlg_btn_ico layui-layer-ico layui-layer-max dlg_btn_max_top1" id="maxShow1"  type="button"/>
         </div>
         <div class="dlg_content page-container">
+        <input type="hidden" class="input-text" id="excelid">
             <form action="" method="post" class="form form-horizontal" id="user-import" enctype="multipart/form-data">
 				<div class="row cl">
+				<div>
+					<table class="table table-border table-bordered table-hover table-bg" id="content">
+						<thead>
+							<tr class="text-c">
+								<th width="30">序号</th>
+								<th width="30">姓名</th>
+								<th width="30">性别</th>
+								<th width="40">世系</th>
+								<th width="110">隶属分支</th>
+								<th width="40">状态</th>
+							</tr>
+						</thead>
+						
+					</table>
+				</div>
 					<div style="text-align: center;margin-top:40px;">
 						<input class="btn btn-primary radius" id="dlg_submit" type="button" value="&nbsp;&nbsp;导入&nbsp;&nbsp;">
 						<input class="btn btn-primary radius dlg_btn_close" id="btn_close1" type="button" value="&nbsp;&nbsp;关闭&nbsp;&nbsp;">
@@ -372,7 +388,7 @@ $(function(){
 });
 
 $("#dlg_submit").click(function(){
-	var url = basePath + "user/importUserNew";
+	var url = basePath + "user/importUser";
 	var myfile = $("#myfile").val();
      if (myfile == "") {
     	 layer.alert('请选择要导入的文件!', {icon: 5});
@@ -386,6 +402,8 @@ $("#dlg_submit").click(function(){
          }
      }
      var formData = new FormData($("#user-import")[0]);
+     formData.append("branchid",$("#branchid1").val());
+   
      $.ajax({
             cache: true,
             type: "POST",
@@ -400,12 +418,31 @@ $("#dlg_submit").click(function(){
             },
             success: function(data) {
               if(data.status == 1){
-            	  {
-            		  window.parent.searchs();
-            		  window.parent.layer.msg(data.data1, {icon: 6,time:5000});
-            		  $("#dialog").hide();
-            		  $("#usershow").show();
+            	  var  data = data.data;
+            	  var html = '<tbody>';
+            	  for(var i =0 ; i < data.length ; i++){
+            		  html += '<td>'+(i+1)+'</td>';
+            		  html += '<td>'+data[i].username+'</td>';
+            		  if(data[i].sex==1){
+            			  html += '<td>男</td>';
+            		  }else{
+            			  html += '<td>女</td>';
+            		  }
+            		  
+            		  html += '<td>'+data[i].genlevel+'世</td>';
+            		  html += '<td>'+data[i].branchname+'</td>';
+            		  if(data[i].msg){
+            			  html += '<td>'+data[i].msg+'</td>';
+            		  }
+            		  
             	  }
+            	  html += '</tbody>';
+            	  $("#content").append(html);
+            	  $("#excelid").val(data.data2);
+            	      //window.parent.searchs();
+            		  //window.parent.layer.msg(data.data1, {icon: 6,time:5000});
+            		  $("#dialog").hide();
+            		  $("#usershow").css("display","block");
                  }else if(data.status == 2){
                 	 window.parent.layer.msg('导入用户数超过版本最高用户数!', {icon: 5,time:2000});
                  }else if(data.status == 500){
