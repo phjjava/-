@@ -199,6 +199,7 @@ public class User implements Serializable {
 	private String msg;//导入用户出错提示信息
 	private Integer isnormal;//导入用户是否正常
 	private List<String> userids;//用户id集合   批量操作用户使用
+	private String excelid;
 	
 	private static final long serialVersionUID = 1L;
 
@@ -677,5 +678,13 @@ public class User implements Serializable {
 
 	public void setUserids(List<String> userids) {
 		this.userids = userids;
+	}
+
+	public String getExcelid() {
+		return excelid;
+	}
+
+	public void setExcelid(String excelid) {
+		this.excelid = excelid;
 	}
 }

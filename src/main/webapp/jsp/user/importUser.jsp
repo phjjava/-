@@ -91,7 +91,7 @@
 	}
      //导入
 	function importData(){
-		var url = basePath + "user/importUserNew";
+		var url = basePath + "user/importUser";
 		var gwy=$("#myfile").val();
 		if(gwy==""){
 			 layer.alert('请选择要导入的文件!', {icon: 5});
