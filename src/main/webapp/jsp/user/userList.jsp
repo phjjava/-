@@ -253,7 +253,7 @@
             <form action="" method="post" class="form form-horizontal" id="user-import" enctype="multipart/form-data">
 				<div class="row cl">
 				<div>
-					<table class="table table-border table-bordered table-hover table-bg" id="content">
+					<table class="table table-border table-bordered table-hover table-bg" >
 						<thead>
 							<tr class="text-c">
 								<th width="30">序号</th>
@@ -264,11 +264,13 @@
 								<th width="40">状态</th>
 							</tr>
 						</thead>
+						<tbody id="content">
 						
+						</tbody>
 					</table>
 				</div>
 					<div style="text-align: center;margin-top:40px;">
-						<input class="btn btn-primary radius" id="dlg_submit" type="button" value="&nbsp;&nbsp;导入&nbsp;&nbsp;">
+						<input class="btn btn-primary radius" id="importUser" type="button" value="&nbsp;&nbsp;导入&nbsp;&nbsp;">
 						<input class="btn btn-primary radius dlg_btn_close" id="btn_close1" type="button" value="&nbsp;&nbsp;关闭&nbsp;&nbsp;">
 					</div>
 				</div>
@@ -387,6 +389,36 @@ $(function(){
 	
 });
 
+$("#importUser").click(function(){
+	var excelid = $("#excelid").val();
+	console.log(excelid);
+	var url = basePath + "user/confirmImport";
+	
+	$.ajax({
+		type:'post',
+		dataType:'json',
+        url:url,
+		// 告诉jQuery不要去设置Content-Type请求头
+		
+        data: {
+        	"excelid":excelid
+        },
+        success: function(data) {
+        	  if(data.status==1){
+        		  window.parent.searchs();
+        		  window.parent.layer.msg(data.msg, {icon: 6,time:5000});
+        	  }else{
+        		  window.parent.layer.msg(data.msg, {icon: 5,time:2000});
+        	  }
+          
+        },
+        error: function(request) {
+            layer.alert('请求失败，请稍后再试', {icon: 5});
+        },
+    });
+})
+
+
 $("#dlg_submit").click(function(){
 	var url = basePath + "user/importUser";
 	var myfile = $("#myfile").val();
@@ -417,10 +449,13 @@ $("#dlg_submit").click(function(){
                 layer.alert('请求失败，请稍后再试', {icon: 5});
             },
             success: function(data) {
+              
               if(data.status == 1){
+            	  var excelid = data.data2;
             	  var  data = data.data;
-            	  var html = '<tbody>';
+            	  var html = '';
             	  for(var i =0 ; i < data.length ; i++){
+            		  html += '<tr>';
             		  html += '<td>'+(i+1)+'</td>';
             		  html += '<td>'+data[i].username+'</td>';
             		  if(data[i].sex==1){
@@ -434,11 +469,11 @@ $("#dlg_submit").click(function(){
             		  if(data[i].msg){
             			  html += '<td>'+data[i].msg+'</td>';
             		  }
-            		  
+            		  html += '</tr>';
             	  }
-            	  html += '</tbody>';
-            	  $("#content").append(html);
-            	  $("#excelid").val(data.data2);
+            	  
+            	  $("#content").html(html);
+            	  $("#excelid").val(excelid);
             	      //window.parent.searchs();
             		  //window.parent.layer.msg(data.data1, {icon: 6,time:5000});
             		  $("#dialog").hide();

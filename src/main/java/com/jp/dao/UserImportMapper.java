@@ -17,7 +17,7 @@ public interface UserImportMapper {
 
     int insertSelective(UserImport record);
 
-    List<UserImport> selectByExample(UserImportExample example);
+    List<User> selectByExample(UserImportExample example);
 
     UserImport selectByPrimaryKey(String userid);
 
