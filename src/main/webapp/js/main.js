@@ -42,6 +42,7 @@ function rebackDialog() {
 
     $(this).blur();
     $(this).removeClass("dlg_btn_reback_top").addClass("dlg_btn_max_top");
+    $(this).removeClass("layui-layer-maxmin").addClass("layui-layer-max");
     $(".dlg_btn_max_top").unbind("click").bind("click", maxDialog);
 }
 function rebackDialog1() {
@@ -54,6 +55,7 @@ function rebackDialog1() {
 
     $(this).blur();
     $(this).removeClass("dlg_btn_reback_top1").addClass("dlg_btn_max_top1");
+    $(this).removeClass("layui-layer-maxmin1").addClass("layui-layer-max1");
     $(".dlg_btn_max_top1").unbind("click").bind("click", maxDialog1);
 }
 function rebackDialog2() {
@@ -66,6 +68,7 @@ function rebackDialog2() {
 
     $(this).blur();
     $(this).removeClass("dlg_btn_reback_top2").addClass("dlg_btn_max_top2");
+    $(this).removeClass("layui-layer-maxmin2").addClass("layui-layer-max2");
     $(".dlg_btn_max_top2").unbind("click").bind("click", maxDialog2);
 }
 function rebackDialog3() {
@@ -78,6 +81,7 @@ function rebackDialog3() {
 
     $(this).blur();
     $(this).removeClass("dlg_btn_reback_top3").addClass("dlg_btn_max_top3");
+    $(this).removeClass("layui-layer-maxmin3").addClass("layui-layer-max3");
     $(".dlg_btn_max_top3").unbind("click").bind("click", maxDialog3);
 }
 // 最大化
@@ -92,6 +96,7 @@ function maxDialog() {
     el_dialog.style.top = 0 + "px";
     el_dialog.style.width = window.innerWidth - 205 + "px";
     el_dialog.style.height = window.innerHeight - 5 + "px";
+    
     $(this).blur();
     $(this).removeClass("dlg_btn_max_top").addClass("layui-layer-maxmin"); 
     $(".layui-layer-maxmin").unbind("click").bind("click", rebackDialog);  

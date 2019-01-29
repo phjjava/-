@@ -45,10 +45,11 @@ img {
     border: 1px solid #eec;
 }
 #usershow,#usershow1{
-	width: 1300px;
+	width: 1000px;
 	top: 10%;
-    left: 0px;
-    height:100%;
+    left: 5%;
+    max-height:80%;
+    overflow-y: auto;
 }
 /* 弹窗上部 */
 .dlg_top {
@@ -85,7 +86,7 @@ img {
 /* 最大化 */
 /* .dlg_btn_max_top {
     background-image: url(../images/ico_max.png);
-} */
+} */ 
 /* 还原 */
 .dlg_btn_reback_top,.dlg_btn_reback_top1,.dlg_btn_reback_top2,.dlg_btn_reback_top3 {
     background-image: url(../images/ico_reback.png);
@@ -113,7 +114,7 @@ img {
     position: relative;
     min-height: 300px;
     overflow-y: auto;
-    margin-right: 4px;
+   /*  margin-right: 4px; */
 }
 /* 弹窗底部 */
 .dlg_bottom {
@@ -193,4 +194,10 @@ img {
     -moz-opacity: 0.5;
     display: none;
     z-index: 1000;
+}
+.individual{
+margin-left: 15px!important;
+}
+.individual table td{
+	text-align: center;
 }
