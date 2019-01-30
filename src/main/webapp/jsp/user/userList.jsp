@@ -96,6 +96,7 @@
 		<div class="text-c" style=" text-align:left">
 		    
 			<span class="col-xs-6" style="padding:0;">
+				<input type="hidden" class="input-text" id="excelid">
 				<input type="text" class="input-text" style="width:20%" placeholder="姓名" id="username" value="${user.username }">
 			    <input type="text" class="input-text" style="width:20%" placeholder="世系" id="genlevel" value="${user.genlevel }">
 				<span class="select-box" style="width:25%">
@@ -208,21 +209,21 @@
         </div>
         <div class="dlg_content page-container">
             <form action="" method="post" class="form form-horizontal" id="user-import" enctype="multipart/form-data">
-				<div class="row cl" id="addNation">
+				<div class="row cl">
 					<label class="form-label col-xs-4 col-sm-3" style="text-align:right">模板下载：</label>
 					<div class="formControls col-xs-8 col-sm-9">
 						<a href="<%=basePath%>static/excel/导入直系用户模板.xls">点击下载导入用户模板XLS</a><br />
 						<%-- <a href="<%=basePath%>static/excel/导入直系用户模板.xlsx">点击下载导入用户模板XLSX</a> --%>
 					</div>
 				</div>
-				<div class="row cl" id="addNation">
+				<div class="row cl">
 					<label class="form-label col-xs-4 col-sm-3" style="text-align:right">请选择分支：</label>
 					<div class="formControls col-xs-8 col-sm-9 branchid" >
 						 <select size="1" class="input-text select" data-placeholder="请选择分支" id="branchid1" data-val="" style="display:block;">
 							</select>
 					</div>
 				</div>
-				<div class="row cl" id="addNation">
+				<div class="row cl">
 					<label class="form-label col-xs-4 col-sm-3" style="text-align:right">选择文件：</label>
 					<div class="formControls col-xs-8 col-sm-9">
 						<input type="file" name="file" id="myfile" />
@@ -249,7 +250,7 @@
                 <input class="dlg_btn_ico layui-layer-ico layui-layer-max dlg_btn_max_top1" id="maxShow1"  type="button"/>
         </div>
         <div class="dlg_content page-container">
-        <input type="hidden" class="input-text" id="excelid">
+        
             <form action="" method="post" class="form form-horizontal" id="user-import" enctype="multipart/form-data">
 				<div class="row cl">
 				<div>
@@ -286,30 +287,36 @@
                 <input class="dlg_btn_ico layui-layer-ico layui-layer-max dlg_btn_max_top" id="maxShow2" type="button"/>
         </div>
         <div class="dlg_content page-container">
-            <form action="" method="post" class="form form-horizontal" id="user-import" enctype="multipart/form-data">
-		<div class="row cl" id="addNation">
+            <form action="" method="post" class="form form-horizontal" id="user-import1" enctype="multipart/form-data">
+		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-4" style="text-align:right">模板下载：</label> 
 			<div class="formControls col-xs-8 col-sm-8">
 				<a href="<%=basePath%>static/excel/导入配偶模板.xls">点击下载导入配偶模板XLS</a><br/>
 				<%-- <a href="<%=basePath%>static/excel/导入配偶模板(新).xlsx">点击下载导入配偶模板XLSX</a> --%>
 			</div>
 		</div>	
-		<div class="row cl" id="addNation">
-			<label class="form-label col-xs-4 col-sm-4" style="text-align:right">选择文件：</label>
-			<div class="formControls col-xs-8 col-sm-8">
-				<input type="file" name="file" id="myfile1"/>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3" style="text-align:right">请选择分支：</label>
+				<div class="formControls col-xs-8 col-sm-9 branchid" >
+					<select size="1" class="input-text select" data-placeholder="请选择分支" id="branchid2" data-val="" style="display:block;">
+					</select>
+				</div>
 			</div>
-		</div>
-		<div class="row cl" id="addNation">
-			<label class="form-label col-xs-4 col-sm-4" id="result"></label>
-		</div>
-		<div class="row cl">
-			<div style="text-align: center;margin-top:40px;">
-				<!-- <input class="btn btn-primary radius" type="button" onclick="importData();" value="&nbsp;&nbsp;上传&nbsp;&nbsp;"> -->
-				<input class="btn btn-primary radius" id="dlg_submit1" type="button" value="&nbsp;&nbsp;上传&nbsp;&nbsp;">
-				<input class="btn btn-primary radius dlg_btn_close" id="btn_close2" type="button" onclick="layer_close();" value="&nbsp;&nbsp;关闭&nbsp;&nbsp;">
+			<div class="row cl" id="addNation">
+				<label class="form-label col-xs-4 col-sm-3" style="text-align:right">选择文件：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="file" name="file" id="myfile1" />
+				</div>
 			</div>
-	    </div>
+			<!-- 	<div class="row cl" id="addNation">
+				<label class="form-label col-xs-4 col-sm-4" id="result" style="color:red"></label>
+			</div> -->
+			<div class="row cl">
+				<div style="text-align: center;margin-top:40px;">
+					<input class="btn btn-primary radius" id="dlg_submit1" type="button" value="&nbsp;&nbsp;上传&nbsp;&nbsp;">
+					<input class="btn btn-primary radius dlg_btn_close" id="btn_close" type="button" value="&nbsp;&nbsp;关闭&nbsp;&nbsp;">
+				</div>
+			</div>
 	</form>
         </div>
     </div>
@@ -323,9 +330,29 @@
         </div>
         <div class="dlg_content page-container">
             <form action="" method="post" class="form form-horizontal" id="user-import1" enctype="multipart/form-data">
+				
+				
 				<div class="row cl">
+					<div>
+						<table class="table table-border table-bordered table-hover table-bg" >
+							<thead>
+								<tr class="text-c">
+									<th width="30">序号</th>
+									<th width="30">姓名</th>
+									<th width="30">性别</th>
+									<th width="40">世系</th>
+									<th width="110">隶属分支</th>
+									<th width="40">状态</th>
+								</tr>
+							</thead>
+							<tbody id="content1">
+							
+							</tbody>
+						</table>
+					</div>
+						
 					<div style="text-align: center;margin-top:40px;">
-						<input class="btn btn-primary radius" id="dlg_submit" type="button" value="&nbsp;&nbsp;导入&nbsp;&nbsp;">
+						<input class="btn btn-primary radius" id="importUserMate" type="button" value="&nbsp;&nbsp;导入&nbsp;&nbsp;">
 						<input class="btn btn-primary radius dlg_btn_close" id="btn_close1" type="button" value="&nbsp;&nbsp;关闭&nbsp;&nbsp;">
 					</div>
 				</div>
@@ -371,6 +398,17 @@ $(function(){
 						}
 					}
 					$('#branchid1').html(optionStrM);
+				var optionStrM1 = "";
+					var dataval1 = $('#branchid2').attr('data-val');
+					var valArray1 = dataval1.split(",");
+					for(var i = 0; i < data.length; i++){
+						if(valArray1.indexOf(data[i].branchid + "_" +data[i].branchname) != -1){
+							optionStrM1 += "<option selected value='" + data[i].branchid+"' >" +data[i].area + " "+data[i].cityname + " " +data[i].xname + " "+data[i].branchname+"</option>";
+						}else{
+							optionStrM1 += "<option value='" + data[i].branchid+"' >" +data[i].area + " "+data[i].cityname + " " +data[i].xname + " "+data[i].branchname+"</option>";
+						}
+					}
+					$('#branchid2').html(optionStrM1); 
 					
 				}else{
 					alert("初始化人员失败！");  
@@ -386,14 +424,28 @@ $(function(){
 	    	 no_results_text: "没有找到",
 	   });
 		$("#branchid1_chosen").css("width","90%");
-	
+		$('#branchid2').chosen({
+	  	     search_contains: true,
+	    	 max_selected_options: 1,
+	    	 no_results_text: "没有找到",
+	   });
+		$("#branchid2_chosen").css("width","90%");
+	 
 });
 
 $("#importUser").click(function(){
 	var excelid = $("#excelid").val();
-	console.log(excelid);
 	var url = basePath + "user/confirmImport";
+	importUsers(url,excelid);
 	
+});
+$("#importUserMate").click(function(){
+	var excelid = $("#excelid").val();
+	var url = basePath + "user/confirmImport";
+	importUsers(url,excelid);
+	
+});
+function importUsers(url,excelid){
 	$.ajax({
 		type:'post',
 		dataType:'json',
@@ -416,7 +468,7 @@ $("#importUser").click(function(){
             layer.alert('请求失败，请稍后再试', {icon: 5});
         },
     });
-})
+}
 
 
 $("#dlg_submit").click(function(){
@@ -467,7 +519,9 @@ $("#dlg_submit").click(function(){
             		  html += '<td>'+data[i].genlevel+'世</td>';
             		  html += '<td>'+data[i].branchname+'</td>';
             		  if(data[i].msg){
-            			  html += '<td>'+data[i].msg+'</td>';
+            			  html += '<td style="color:red">'+data[i].msg+'</td>';
+            		  }else{
+            			  html += '<td></td>';
             		  }
             		  html += '</tr>';
             	  }
@@ -481,7 +535,7 @@ $("#dlg_submit").click(function(){
                  }else if(data.status == 2){
                 	 window.parent.layer.msg('导入用户数超过版本最高用户数!', {icon: 5,time:2000});
                  }else if(data.status == 500){
-                	 window.parent.layer.msg(data.data1,{icon:5,time:5000});
+                	 window.parent.layer.msg(data.msg,{icon:5,time:5000});
                  }else{
                 	 window.parent.layer.msg('导入用户失败，请联系管理员!', {icon: 5,time:2000});
                  }
@@ -505,6 +559,7 @@ $("#dlg_submit1").click(function(){
          }
      }
      var formData = new FormData($("#user-import1")[0]);
+     formData.append("branchid",$("#branchid2").val());
      $.ajax({
             cache: true,
             type: "POST",
@@ -518,22 +573,47 @@ $("#dlg_submit1").click(function(){
                 layer.alert('请求失败，请稍后再试', {icon: 5});
             },
             success: function(data) {
-              if(data.status == 1){
-            	  {
-            		  window.parent.searchs();
-            		  window.parent.layer.msg(data.data1, {icon: 6,time:5000});
+            	console.log(data);
+            	  if(data.status == 1){
+                	  var excelid = data.data2;
+                	  var  data = data.data;
+                	  var html = '';
+                	  for(var i =0 ; i < data.length ; i++){
+                		  html += '<tr>';
+                		  html += '<td>'+(i+1)+'</td>';
+                		  html += '<td>'+data[i].username+'</td>';
+                		  if(data[i].sex==1){
+                			  html += '<td>男</td>';
+                		  }else{
+                			  html += '<td>女</td>';
+                		  }
+                		  
+                		  html += '<td>'+data[i].genlevel+'世</td>';
+                		  html += '<td>'+data[i].branchname+'</td>';
+                		  if(data[i].msg){
+                			  html += '<td>'+data[i].msg+'</td>';
+                		  }else{
+                			  html += '<td></td>';
+                		  }
+                		  html += '</tr>';
+                	  }
+                	  
+                	  $("#content1").html(html);
+                	  $("#excelid").val(excelid);
+            	  
             		  $("#dialog1").hide();
             		  $("#usershow1").show();
-            	  }
+            	  
                  }else if(data.status == 2){
                 	 window.parent.layer.msg('导入用户数超过版本最高用户数!', {icon: 5,time:2000});
                  }else if(data.status == 500){
-                	 window.parent.layer.msg(data.data1,{icon:5,time:5000});
+                	 window.parent.layer.msg('不存在符合条件的配偶！',{icon:5,time:5000});
                  }else{
                 	 window.parent.layer.msg('导入用户失败，请联系管理员!', {icon: 5,time:2000});
                  }
               
-            }
+           	}
+            
         });
 })
 

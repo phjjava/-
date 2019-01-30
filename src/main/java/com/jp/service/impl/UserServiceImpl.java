@@ -946,7 +946,7 @@ public class UserServiceImpl implements UserService {
 				NumberFormat nf = new DecimalFormat("#");
 				List<String> userStringList=new ArrayList<String>();
 				//获取导入的分支名字
-				String branchname =  name.substring(0, name.indexOf("世系"));
+				//String branchname =  name.substring(0, name.indexOf("世系"));
 		//
 		//List<String> branchList = CurrentUserContext.getCurrentBranchIds();
 //		Integer type = CurrentUserContext.getUserContext().getUsermanagers().get(0).getEbtype();
@@ -965,6 +965,7 @@ public class UserServiceImpl implements UserService {
 //				userAleardyMap.put(userAleardyList.get(i).getGenlevel() + userAleardyList.get(i).getUsername(), userAleardyList.get(i));
 //			}
 //		}
+		String excelid = UUIDUtils.getUUID();
 		
 		if (name.indexOf(".xlsx") != -1) {
 			XSSFWorkbook wb = new XSSFWorkbook(file.getInputStream());
@@ -1045,6 +1046,7 @@ public class UserServiceImpl implements UserService {
 									user.setUsername(username);
 									user.setUsedname(usedname);
 									user.setIdcard(idCard);
+									user.setExcelid(excelid);
 									if (sex.equals("男")) {
 										user.setSex(1);
 									} else {
@@ -1143,7 +1145,7 @@ public class UserServiceImpl implements UserService {
 				}
 				// 批量导入妻子或丈夫配偶 user
 				if (userList != null && userList.size() > 0) {
-					userDao.importUser(userList);
+					userImportMapper.importUser(userList);
 				}
 
 				// 批量更新 已存在的用户
@@ -1229,7 +1231,7 @@ public class UserServiceImpl implements UserService {
 								}
 							}
 							
-							if(n==1) {
+							
 								User user = new User();
 								user.setUserid(userId);
 								user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
@@ -1240,6 +1242,7 @@ public class UserServiceImpl implements UserService {
 								user.setUsername(username);
 								user.setUsedname(usedname);
 								user.setIdcard(idCard);
+								user.setExcelid(excelid);
 								if (sex.equals("男")) {
 									user.setSex(1);
 								} else {
@@ -1292,9 +1295,13 @@ public class UserServiceImpl implements UserService {
 								} else {
 									userAleardyListUpdate.add(userAl);
 								}
-							}else {
-								msg += username+",";
-							}
+								
+								if(n>1) {
+									user.setMsg("当前用户存在多个同名同世系配偶！");
+								}else {
+								
+								
+								}
 							//if (userAleardyMap.containsKey((int) genlevel + husbandname) && (StringTools.trimNotEmpty(userAleardyMap.get(genlevel + husbandname).getMateid()))) {}
 						}
 					} else {
@@ -1335,7 +1342,7 @@ public class UserServiceImpl implements UserService {
 			}
 			// 批量导入妻子或丈夫配偶 user
 			if (userList != null && userList.size() > 0) {
-				userDao.importUser(userList);
+				userImportMapper.importUser(userList);
 			}
 
 			// 批量更新 已存在的用户
@@ -1357,17 +1364,19 @@ public class UserServiceImpl implements UserService {
 			}else{
 				userMateStringList.add("本次共导入配偶" + userMatesList.size() + "人");
 				String userMatesString = GsonUtil.GsonString(userMateStringList);
+				result.setData(userList);
 				result.setData1(userMatesString);
+				result.setData2(excelid);
 			}
 			String msString="";
-			if(userStringList.size()>0)
-			{
+			if(userStringList.size()>0){
 				for (String ms : userStringList) {
 					msString+=ms+"\r\n,";
 				}
 			}
 			result.setMsg(msString+"本次共导入在世配偶(用户)" + userList.size() + "人,离世配偶" + userMatesList.size() + "人，未导入"+msg);
 		}
+		
 		return result;
 	}
 
