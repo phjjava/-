@@ -202,7 +202,8 @@
 
 <!--导入用户弹出框-->
     <div id="dialog" class="dialog hide" minheight="320" minwidth="660">
-        <div id="dlg_top" class="dlg_top">
+        <div id="
+" class="dlg_top">
                 <label class="dlg_title">导入用户</label>                
                 <input class="dlg_btn_close dlg_btn_ico layui-layer-ico layui-layer-close1" id="hide" type="button"/>                
                 <input class="dlg_btn_ico layui-layer-ico layui-layer-max dlg_btn_max_top" id="maxShow" type="button"/>
@@ -258,11 +259,13 @@
 						<thead>
 							<tr class="text-c">
 								<th width="30">序号</th>
+								<th width="40">状态</th>
 								<th width="30">姓名</th>
 								<th width="30">性别</th>
+								<th width="30">直系用户</th>
 								<th width="40">世系</th>
-								<th width="110">隶属分支</th>
-								<th width="40">状态</th>
+							
+								
 							</tr>
 						</thead>
 						<tbody id="content">
@@ -325,7 +328,7 @@
     <div id="usershow1" class="dialog hide" minheight="1000" minwidth="1000">
         <div id="dlg_top" class="dlg_top">
                 <label class="dlg_title">请确认是否导入</label>                
-                <input class="dlg_btn_close dlg_btn_ico layui-layer-ico layui-layer-close1" id="hide3" type="button"/>                
+                <input class="dlg_btn_close dlg_btn_ico layui-layer-ico layui-layer-close1" id="hide2" type="button"/>                
                 <input class="dlg_btn_ico layui-layer-ico layui-layer-max dlg_btn_max_top1" id="maxShow3"  type="button"/>
         </div>
         <div class="dlg_content page-container">
@@ -337,12 +340,12 @@
 						<table class="table table-border table-bordered table-hover table-bg" >
 							<thead>
 								<tr class="text-c">
-									<th width="30">序号</th>
-									<th width="30">姓名</th>
-									<th width="30">性别</th>
-									<th width="40">世系</th>
-									<th width="110">隶属分支</th>
-									<th width="40">状态</th>
+								<th width="30">序号</th>
+								<th width="40">状态</th>
+								<th width="30">姓名</th>
+								<th width="30">性别</th>
+								<th width="30">直系用户</th>
+								<th width="40">世系</th>
 								</tr>
 							</thead>
 							<tbody id="content1">
@@ -353,7 +356,7 @@
 						
 					<div style="text-align: center;margin-top:40px;">
 						<input class="btn btn-primary radius" id="importUserMate" type="button" value="&nbsp;&nbsp;导入&nbsp;&nbsp;">
-						<input class="btn btn-primary radius dlg_btn_close" id="btn_close1" type="button" value="&nbsp;&nbsp;关闭&nbsp;&nbsp;">
+						<input class="btn btn-primary radius dlg_btn_close" id="btn_close2" type="button" value="&nbsp;&nbsp;关闭&nbsp;&nbsp;">
 					</div>
 				</div>
 			</form>
@@ -509,20 +512,26 @@ $("#dlg_submit").click(function(){
             	  for(var i =0 ; i < data.length ; i++){
             		  html += '<tr>';
             		  html += '<td>'+(i+1)+'</td>';
+            		  if(data[i].msg){
+            			  html += '<td style="color:red">'+data[i].msg+'</td>';
+            		  }else{
+            			  html += '<td></td>';
+            		  }
             		  html += '<td>'+data[i].username+'</td>';
             		  if(data[i].sex==1){
             			  html += '<td>男</td>';
             		  }else{
             			  html += '<td>女</td>';
             		  }
+            		  if(data[i].pname){
+            			  html += '<td>'+data[i].pname+'</td>';
+            		  }else{
+            			  html += '<td>女</td>';
+            		  }
             		  
             		  html += '<td>'+data[i].genlevel+'世</td>';
-            		  html += '<td>'+data[i].branchname+'</td>';
-            		  if(data[i].msg){
-            			  html += '<td style="color:red">'+data[i].msg+'</td>';
-            		  }else{
-            			  html += '<td></td>';
-            		  }
+            		
+            		  
             		  html += '</tr>';
             	  }
             	  
@@ -581,20 +590,25 @@ $("#dlg_submit1").click(function(){
                 	  for(var i =0 ; i < data.length ; i++){
                 		  html += '<tr>';
                 		  html += '<td>'+(i+1)+'</td>';
+                		  if(data[i].msg){
+                			  html += '<td style="color:red">'+data[i].msg+'</td>';
+                		  }else{
+                			  html += '<td></td>';
+                		  }
                 		  html += '<td>'+data[i].username+'</td>';
                 		  if(data[i].sex==1){
                 			  html += '<td>男</td>';
                 		  }else{
                 			  html += '<td>女</td>';
                 		  }
-                		  
-                		  html += '<td>'+data[i].genlevel+'世</td>';
-                		  html += '<td>'+data[i].branchname+'</td>';
-                		  if(data[i].msg){
-                			  html += '<td>'+data[i].msg+'</td>';
+                		  if(data[i].matename){
+                			  html += '<td>'+data[i].matename+'</td>';
                 		  }else{
                 			  html += '<td></td>';
                 		  }
+                		  html += '<td>'+data[i].genlevel+'世</td>';
+                		  
+                		  
                 		  html += '</tr>';
                 	  }
                 	  
@@ -602,7 +616,7 @@ $("#dlg_submit1").click(function(){
                 	  $("#excelid").val(excelid);
             	  
             		  $("#dialog1").hide();
-            		  $("#usershow1").show();
+            		  $("#usershow1").css("display","block");
             	  
                  }else if(data.status == 2){
                 	 window.parent.layer.msg('导入用户数超过版本最高用户数!', {icon: 5,time:2000});

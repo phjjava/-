@@ -22,7 +22,7 @@ public interface UserInfoImportMapper {
 
     List<UserInfoImport> selectByExample(UserInfoImportExample example);
 
-    UserInfoImport selectByPrimaryKey(String userid);
+    Userinfo selectByPrimaryKey(String userid);
 
     int updateByExampleSelective(@Param("record") UserInfoImport record, @Param("example") UserInfoImportExample example);
 

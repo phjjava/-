@@ -52,6 +52,7 @@ import com.jp.entity.LoginThirdExample;
 import com.jp.entity.SysFamily;
 import com.jp.entity.User;
 import com.jp.entity.UserImportExample;
+import com.jp.entity.UserInfoImportExample;
 import com.jp.entity.UserQuery;
 import com.jp.entity.Useralbum;
 import com.jp.entity.Useredu;
@@ -451,6 +452,14 @@ public class UserServiceImpl implements UserService {
 					String background = xssfRow.getCell(10).getStringCellValue().trim();// 背景
 					String idCard = xssfRow.getCell(11).getStringCellValue().trim();// 身份证
 					String education = xssfRow.getCell(11).getStringCellValue().trim();// 学历
+					if(education !=null) {
+						if("大学本科".equals(education) || "大学".equals(education)) {
+							education = "本科";
+						}else if("高中".equals(education) || "中专".equals(education)) {
+							education = "高中(中专)";
+						}
+						
+					}
 					if (StringTools.trimNotEmpty(idCard)) {
 						idCard = nf.format(Double.parseDouble(idCard));
 					}
@@ -966,7 +975,8 @@ public class UserServiceImpl implements UserService {
 //			}
 //		}
 		String excelid = UUIDUtils.getUUID();
-		
+		Userinfo userInfo ;
+		List<Userinfo> userInfoList = new ArrayList<Userinfo>();
 		if (name.indexOf(".xlsx") != -1) {
 			XSSFWorkbook wb = new XSSFWorkbook(file.getInputStream());
 			// 循环三sheet
@@ -1004,12 +1014,20 @@ public class UserServiceImpl implements UserService {
 						String nation = xssfRow.getCell(8).getStringCellValue().trim();// 民族
 						String background = xssfRow.getCell(9).getStringCellValue().trim();// 政治背景
 						String education = xssfRow.getCell(10).getStringCellValue().trim();// 学历
+						if(education !=null) {
+							if("大学本科".equals(education) || "大学".equals(education)) {
+								education = "本科";
+							}else if("高中".equals(education) || "中专".equals(education)) {
+								education = "高中(中专)";
+							}
+							
+						}
 						String idCard = xssfRow.getCell(11).getStringCellValue().trim();// 身份证
 						
 						if (StringTools.trimNotEmpty(idCard)) {
 							idCard = nf.format(Double.parseDouble(idCard));
 						}
-						Date birthday = xssfRow.getCell(12).getDateCellValue();// 生日
+						String birthday = xssfRow.getCell(12).getStringCellValue().trim();// 生日
 						String birthplace = xssfRow.getCell(13).getStringCellValue().trim();// 出生地
 						String homeplace = xssfRow.getCell(14).getStringCellValue().trim();// 常住地
 						String dietime = xssfRow.getCell(15).getStringCellValue().trim();// 去世时间
@@ -1059,7 +1077,7 @@ public class UserServiceImpl implements UserService {
 									if(DateUtils.isDate(dietime, "-"))
 										user.setDietime(dietime);
 									//user.setDietime(dietime);
-									if (liveStatus.equals("在世")) {
+									if ("在世".equals(liveStatus)) {
 										user.setLivestatus(0);
 										// 去除在世用户中手机重复的数据
                                         // if (userPhoneMap.containsKey(user.getPhone())) {
@@ -1067,24 +1085,33 @@ public class UserServiceImpl implements UserService {
                                         // } else {
                                         // userPhoneMap.put(user.getPhone(), user);
                                         // }
-									} else {
+									} else if("离世".equals(liveStatus)){
 										user.setLivestatus(1);
+									}else{
+										user.setLivestatus(2);
 									}
 									user.setFixplace(fixplace);
 									user.setCreatetime(new Date());
 									// 维护当前配偶id
 									
 									
-									if(userAl.getMateid()!=null && !"".equals(userAl.getMateid())) {
+									// 维护当前配偶id
+									if(userAl==null) {
+										user.setIsnormal(0);
+										user.setMsg("请检查配偶姓名！");
+									}else if(userAl.getMateid()!=null && !"".equals(userAl.getMateid())) {
 										
 									}else {
 										userAl.setMateid(userId);
 										userAl.setMatename(username);
+										user.setMateid(userAl.getUserid());
+										
+										user.setBranchid(userAl.getBranchid());
+										user.setBranchname(userAl.getBranchname());
+										userAl.setIsMarry(0);
 									}
-									user.setMateid(userAl.getUserid());
-									user.setMatename(userAl.getUsername());
-									user.setBranchid(userAl.getBranchid());
-									user.setBranchname(userAl.getBranchname());
+									user.setMatename(husbandname);
+									user.setIsMarry(0);
 									user.setPhone(phone);
 									user.setIsdirect(0);
 									user.setDeleteflag(ConstantUtils.DELETE_FALSE);
@@ -1093,6 +1120,7 @@ public class UserServiceImpl implements UserService {
 									user.setCreateid(CurrentUserContext.getCurrentUserId());
 									user.setCreatetime(new Date());
 									userList.add(user);
+									
 //									boolean sameFlag = checkSameUser(user);
 									boolean sameFlag = checkSameMateUser(user,userStringList);	
 									if (sameFlag) {
@@ -1101,6 +1129,31 @@ public class UserServiceImpl implements UserService {
 										
 										userAleardyListUpdate.add(userAl);
 									}
+									userInfo = new Userinfo();
+									userInfo.setUserid(userId);
+									if (StringTools.trimNotEmpty(birthday)) {
+										//userInfo.setBirthday(birthday);
+										if(DateUtils.isDate(birthday,"-")) {
+											userInfo.setBirthday(birthday);
+											int year = Integer.parseInt(birthday.split("-")[0]);
+											userInfo.setZodica(ZodiacUtil.date2Zodica(year));
+											String[] arr = birthday.split("-");
+											if(arr.length==3){
+												userInfo.setConstellation(ZodiacUtil.date2Constellation(birthday));
+											}
+										}
+											
+									}
+									
+									userInfo.setEducation(education);
+									
+									userInfo.setBirthplace(birthplace);
+									userInfo.setHomeplace(homeplace);
+									userInfo.setNation(nation);
+									userInfo.setBackground(background);
+									userInfo.setRemark(remark);
+									
+									userInfoList.add(userInfo);
 								}else {
 									msg += username+",";
 								}
@@ -1125,7 +1178,7 @@ public class UserServiceImpl implements UserService {
 											userMates.setSex(0);
 										}
 										userMates.setNation(nation);
-										userMates.setBirthday(birthday);
+										//userMates.setBirthday(birthday);
 										userMates.setBirthplace(birthplace);
 										userMates.setRemark(remark);
 										// 需要验证
@@ -1157,6 +1210,10 @@ public class UserServiceImpl implements UserService {
 				if (userMatesList != null && userMatesList.size() > 0) {
 					userMatesDao.insertMatesList(userMatesList);
 				}
+				// 批量插入 配偶 表
+				if (userInfoList != null && userInfoList.size() > 0) {
+					userInfoImportMapper.importUser(userInfoList);
+				}
 				// result ="1";
 				result.setStatus(1);
 			}
@@ -1183,32 +1240,42 @@ public class UserServiceImpl implements UserService {
 				
 				if (sheet.getRow(i) != null) {
 					String genlevel = eutil.toDecimalFormat(eutil.getCellContent(sheet.getRow(i).getCell(0)).trim());// 世系
-					String username = eutil.getCellContent(sheet.getRow(i).getCell(1)).trim();
+					String username = eutil.getCellContent(sheet.getRow(i).getCell(1)).trim();//用户名
 					if (!StringTools.trimNotEmpty(username)) {
 						continue;
 					}
-					String sex = eutil.getCellContent(sheet.getRow(i).getCell(2)).trim();
-					String liveStatus = eutil.getCellContent(sheet.getRow(i).getCell(3)).trim();
-					String phone = eutil.getCellContent(sheet.getRow(i).getCell(4)).trim();
+					String sex = eutil.getCellContent(sheet.getRow(i).getCell(2)).trim();//性别
+					String liveStatus = eutil.getCellContent(sheet.getRow(i).getCell(3)).trim();//在世离世
+					String phone = eutil.getCellContent(sheet.getRow(i).getCell(4)).trim();//手机号
 					if (StringTools.trimNotEmpty(phone)) {
 						phone = nf.format(Double.parseDouble(phone));
 					}
-					String husbandname = eutil.getCellContent(sheet.getRow(i).getCell(5)).trim();
-					String ifMates = eutil.getCellContent(sheet.getRow(i).getCell(6)).trim();
-					String usedname = eutil.getCellContent(sheet.getRow(i).getCell(7)).trim();
-					String nation = eutil.getCellContent(sheet.getRow(i).getCell(8)).trim();
-					String background = eutil.getCellContent(sheet.getRow(i).getCell(9)).trim();
-					String idCard = eutil.getCellContent(sheet.getRow(i).getCell(10)).trim();
-					String education = eutil.getCellContent(sheet.getRow(i).getCell(11)).trim();
+					String husbandname = eutil.getCellContent(sheet.getRow(i).getCell(5)).trim();//配偶姓名
+					String ifMates = eutil.getCellContent(sheet.getRow(i).getCell(6)).trim();//关系
+					String usedname = eutil.getCellContent(sheet.getRow(i).getCell(7)).trim();//曾用名
+					String nation = eutil.getCellContent(sheet.getRow(i).getCell(8)).trim();//民族
+					String background = eutil.getCellContent(sheet.getRow(i).getCell(9)).trim();//政治背景
+					String idCard = eutil.getCellContent(sheet.getRow(i).getCell(10)).trim();//身份证号	
+					String education = eutil.getCellContent(sheet.getRow(i).getCell(11)).trim();//学历
+					if(education !=null) {
+						if("大学本科".equals(education) || "大学".equals(education)) {
+							education = "本科";
+						}else if("高中".equals(education) || "中专".equals(education)) {
+							education = "高中(中专)";
+						}
+						
+					}
+					String birthday = eutil.getCellContent(sheet.getRow(i).getCell(12)).trim();//生日
+					
 					if (StringTools.trimNotEmpty(idCard)) {
 						idCard = nf.format(Double.parseDouble(idCard));
 					}
-					String birthday = eutil.getCellContent(sheet.getRow(i).getCell(12)).trim();
-					String birthplace = eutil.getCellContent(sheet.getRow(i).getCell(13)).trim();
-					String homeplace = eutil.getCellContent(sheet.getRow(i).getCell(14)).trim();
-					String dietime = eutil.getCellContent(sheet.getRow(i).getCell(15)).trim();
-					String fixplace = eutil.getCellContent(sheet.getRow(i).getCell(16)).trim();
-					String remark = eutil.getCellContent(sheet.getRow(i).getCell(17)).trim();
+					
+					String birthplace = eutil.getCellContent(sheet.getRow(i).getCell(13)).trim();//出生地
+					String homeplace = eutil.getCellContent(sheet.getRow(i).getCell(14)).trim();//常住地
+					String dietime = eutil.getCellContent(sheet.getRow(i).getCell(15)).trim();//趋势时间
+					String fixplace = eutil.getCellContent(sheet.getRow(i).getCell(16)).trim();//安葬地
+					String remark = eutil.getCellContent(sheet.getRow(i).getCell(17)).trim();//个人简介
 					String userId = UUIDUtils.getUUID();
 					
 					if (ifMates.equals("妻子") || ifMates.equals("丈夫") 
@@ -1243,6 +1310,7 @@ public class UserServiceImpl implements UserService {
 								user.setUsedname(usedname);
 								user.setIdcard(idCard);
 								user.setExcelid(excelid);
+								user.setIsMarry(0);
 								if (sex.equals("男")) {
 									user.setSex(1);
 								} else {
@@ -1255,7 +1323,7 @@ public class UserServiceImpl implements UserService {
 								if(DateUtils.isDate(dietime, "-"))
 									user.setDietime(dietime);
 								//user.setDietime(DateUtils.stringToDate(dietime));
-								if (liveStatus.equals("在世")) {
+								if ("在世".equals(liveStatus)) {
 									user.setLivestatus(0);
 									// 去除在世用户中手机重复的数据
                                     // if (userPhoneMap.containsKey(user.getPhone())) {
@@ -1263,23 +1331,31 @@ public class UserServiceImpl implements UserService {
                                     // } else {
                                     // userPhoneMap.put(user.getPhone(), user);
                                     // }
-								} else {
+								} else if("离世".equals(liveStatus)){
 									user.setLivestatus(1);
+								} else {
+									user.setLivestatus(2);
 								}
 								user.setFixplace(fixplace);
 								user.setCreatetime(new Date());
 								// 维护当前配偶id
-								if(userAl.getMateid()!=null && !"".equals(userAl.getMateid())) {
-									
+								if(userAl==null) {
+									user.setIsnormal(0);
+									user.setMsg("请检查配偶姓名！");
+								}else if(userAl.getMateid()!=null && !"".equals(userAl.getMateid())) {
+									user.setIsnormal(0);
+									user.setMsg("请勿重复导入配偶！");
 								}else {
 									userAl.setMateid(userId);
 									userAl.setMatename(username);
+									user.setMateid(userAl.getUserid());
+									//user.setMatename(userAl.getUsername());
+									user.setBranchid(userAl.getBranchid());
+									user.setBranchname(userAl.getBranchname());
+									userAl.setIsMarry(0);
 								}
 								
-								user.setMateid(userAl.getUserid());
-								user.setMatename(userAl.getUsername());
-								user.setBranchid(userAl.getBranchid());
-								user.setBranchname(userAl.getBranchname());
+								user.setMatename(husbandname);
 								user.setPhone(phone);
 								user.setIsdirect(0);
 								user.setDeleteflag(ConstantUtils.DELETE_FALSE);
@@ -1302,6 +1378,32 @@ public class UserServiceImpl implements UserService {
 								
 								
 								}
+								
+								userInfo = new Userinfo();
+								userInfo.setUserid(userId);
+								if (StringTools.trimNotEmpty(birthday)) {
+									//userInfo.setBirthday(birthday);
+									if(DateUtils.isDate(birthday,"-")) {
+										userInfo.setBirthday(birthday);
+										int year = Integer.parseInt(birthday.split("-")[0]);
+										userInfo.setZodica(ZodiacUtil.date2Zodica(year));
+										String[] arr = birthday.split("-");
+										if(arr.length==3){
+											userInfo.setConstellation(ZodiacUtil.date2Constellation(birthday));
+										}
+									}
+										
+								}
+								
+								userInfo.setEducation(education);
+								
+								userInfo.setBirthplace(birthplace);
+								userInfo.setHomeplace(homeplace);
+								userInfo.setNation(nation);
+								userInfo.setBackground(background);
+								userInfo.setRemark(remark);
+								
+								userInfoList.add(userInfo);
 							//if (userAleardyMap.containsKey((int) genlevel + husbandname) && (StringTools.trimNotEmpty(userAleardyMap.get(genlevel + husbandname).getMateid()))) {}
 						}
 					} else {
@@ -1353,6 +1455,10 @@ public class UserServiceImpl implements UserService {
 			// 批量插入 配偶 表
 			if (userMatesList != null && userMatesList.size() > 0) {
 				userMatesDao.insertMatesList(userMatesList);
+			}
+			// 批量插入info
+			if (userInfoList != null && userInfoList.size() > 0) {
+				userInfoImportMapper.importUser(userInfoList);
 			}
 			// result ="1";
 			result.setStatus(1);
@@ -1691,6 +1797,14 @@ public class UserServiceImpl implements UserService {
 					String nation = xssfRow.getCell(11).getStringCellValue().trim();// 民族
 					String background = xssfRow.getCell(12).getStringCellValue().trim();// 背景
 					String education = xssfRow.getCell(13).getStringCellValue().trim();// 学历
+					if(education !=null) {
+						if("大学本科".equals(education) || "大学".equals(education)) {
+							education = "本科";
+						}else if("高中".equals(education) || "中专".equals(education)) {
+							education = "高中(中专)";
+						}
+						
+					}
 					String idCard = xssfRow.getCell(14).getStringCellValue().trim();// 身份证
 					if (StringTools.trimNotEmpty(idCard)) {
 						idCard = nf.format(Double.parseDouble(idCard));
@@ -1847,6 +1961,14 @@ public class UserServiceImpl implements UserService {
 					String nation = eutil.getCellContent(sheet.getRow(i).getCell(11)).trim();
 					String background = eutil.getCellContent(sheet.getRow(i).getCell(12)).trim();
 					String education = eutil.getCellContent(sheet.getRow(i).getCell(13)).trim();//学历
+					if(education !=null) {
+						if("大学本科".equals(education) || "大学".equals(education)) {
+							education = "本科";
+						}else if("高中".equals(education) || "中专".equals(education)) {
+							education = "高中(中专)";
+						}
+						
+					}
 					String idCard = eutil.getCellContent(sheet.getRow(i).getCell(14)).trim();
 					if (StringTools.trimNotEmpty(idCard)) {
 						idCard = nf.format(Double.parseDouble(idCard));
@@ -1986,6 +2108,12 @@ public class UserServiceImpl implements UserService {
 		List<User> users = userImportMapper.selectByExample(example);
 		//2.将临时表数据插入主表
 		userDao.importUser(users);
+		
+		for(User u : users) {
+			Userinfo info = userInfoImportMapper.selectByPrimaryKey(u.getUserid());
+			userInfoDao.insertSelective(info);
+		}
+		
 		//3.删除临时表数据（可用可不用）（导入配偶后才可删除）
 		//userImportMapper.deleteByExample(example);
 		result.setStatus(ConstantUtils.RESULT_SUCCESS);
