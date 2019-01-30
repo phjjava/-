@@ -11,9 +11,11 @@ $(function () {
     $("#btn_close").bind("click", hideDialog);
     $("#hide").bind("click", hideDialog);
     $("#btn_close1").bind("click", hideDialog1); 
-    $("#btn_close2").bind("click", hideDialog2); 
+    $("#btn_close2").bind("click", hideDialog3);
+    $("#btn_close3").bind("click", hideDialog2);
     $("#hide1").bind("click", hideDialog1);
     $("#hide2").bind("click", hideDialog2);
+    $("#hide3").bind("click", hideDialog3);
    /* $("#dlg_submit").bind("click", submitHandler);
 */
     // 移动
@@ -186,6 +188,10 @@ function hideDialog1() {
 }
 function hideDialog2() {
     $("#dialog1").hide();
+    $("#half").hide();
+}
+function hideDialog3() {
+    $("#usershow1").hide();
     $("#half").hide();
 }
 // 提交事件
