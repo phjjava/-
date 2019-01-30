@@ -253,7 +253,7 @@
         <div class="dlg_content page-container">
         
             <form action="" method="post" class="form form-horizontal" id="user-import" enctype="multipart/form-data">
-				<div class="row cl">
+				<div class="row cl individual">
 				<div>
 					<table class="table table-border table-bordered table-hover table-bg" >
 						<thead>
@@ -317,7 +317,7 @@
 			<div class="row cl">
 				<div style="text-align: center;margin-top:40px;">
 					<input class="btn btn-primary radius" id="dlg_submit1" type="button" value="&nbsp;&nbsp;上传&nbsp;&nbsp;">
-					<input class="btn btn-primary radius dlg_btn_close" id="btn_close" type="button" value="&nbsp;&nbsp;关闭&nbsp;&nbsp;">
+					<input class="btn btn-primary radius dlg_btn_close" id="btn_close3" type="button" value="&nbsp;&nbsp;关闭&nbsp;&nbsp;">
 				</div>
 			</div>
 	</form>
@@ -328,14 +328,14 @@
     <div id="usershow1" class="dialog hide" minheight="1000" minwidth="1000">
         <div id="dlg_top" class="dlg_top">
                 <label class="dlg_title">请确认是否导入</label>                
-                <input class="dlg_btn_close dlg_btn_ico layui-layer-ico layui-layer-close1" id="hide2" type="button"/>                
+                <input class="dlg_btn_close dlg_btn_ico layui-layer-ico layui-layer-close1" id="hide3" type="button"/>                
                 <input class="dlg_btn_ico layui-layer-ico layui-layer-max dlg_btn_max_top1" id="maxShow3"  type="button"/>
         </div>
         <div class="dlg_content page-container">
             <form action="" method="post" class="form form-horizontal" id="user-import1" enctype="multipart/form-data">
 				
 				
-				<div class="row cl">
+				<div class="row cl individual">
 					<div>
 						<table class="table table-border table-bordered table-hover table-bg" >
 							<thead>
