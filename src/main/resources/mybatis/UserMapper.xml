@@ -25,7 +25,7 @@
     <result column="username" property="username" jdbcType="VARCHAR" />
     <result column="idcard" property="idcard" jdbcType="CHAR" />
     <result column="isborn" property="isborn" jdbcType="TINYINT" />
-    <result column="dietime" property="dietime" jdbcType="TIMESTAMP" />
+    <result column="dietime" property="dietime" jdbcType="VARCHAR" />
     <result column="fixplace" property="fixplace" jdbcType="VARCHAR" />
     <result column="isdirect" property="isdirect" jdbcType="TINYINT" />
     <result column="genlevel" property="genlevel" jdbcType="INTEGER" />
@@ -161,7 +161,7 @@
       #{brotherpos,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{logintime,jdbcType=TIMESTAMP}, 
       #{sessionid,jdbcType=VARCHAR}, #{familyid,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, 
       #{deleteflag,jdbcType=TINYINT}, #{imgurl,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
-      #{idcard,jdbcType=CHAR}, #{isborn,jdbcType=TINYINT}, #{dietime,jdbcType=TIMESTAMP}, 
+      #{idcard,jdbcType=CHAR}, #{isborn,jdbcType=TINYINT}, #{dietime,jdbcType=VARCHAR}, 
       #{fixplace,jdbcType=VARCHAR}, #{isdirect,jdbcType=TINYINT}, #{genlevel,jdbcType=INTEGER}, 
       #{familyname,jdbcType=VARCHAR}, #{pinyinfirst,jdbcType=CHAR}, #{pinyinfull,jdbcType=VARCHAR}, 
       #{pname,jdbcType=VARCHAR}, #{mateid,jdbcType=VARCHAR}, #{matename,jdbcType=VARCHAR}, #{matetypeStr,jdbcType=VARCHAR}, 
@@ -350,7 +350,7 @@
         #{isborn,jdbcType=TINYINT},
       </if>
       <if test="dietime != null" >
-        #{dietime,jdbcType=TIMESTAMP},
+        #{dietime,jdbcType=VARCHAR},
       </if>
       <if test="fixplace != null" >
         #{fixplace,jdbcType=VARCHAR},
@@ -469,7 +469,7 @@
         isborn = #{record.isborn,jdbcType=TINYINT},
       </if>
       <if test="record.dietime != null" >
-        dietime = #{record.dietime,jdbcType=TIMESTAMP},
+        dietime = #{record.dietime,jdbcType=VARCHAR},
       </if>
       <if test="record.fixplace != null" >
         fixplace = #{record.fixplace,jdbcType=VARCHAR},
@@ -537,7 +537,7 @@
       username = #{record.username,jdbcType=VARCHAR},
       idcard = #{record.idcard,jdbcType=CHAR},
       isborn = #{record.isborn,jdbcType=TINYINT},
-      dietime = #{record.dietime,jdbcType=TIMESTAMP},
+      dietime = #{record.dietime,jdbcType=VARCHAR},
       fixplace = #{record.fixplace,jdbcType=VARCHAR},
       isdirect = #{record.isdirect,jdbcType=TINYINT},
       genlevel = #{record.genlevel,jdbcType=INTEGER},
@@ -623,7 +623,7 @@
         isborn = #{isborn,jdbcType=TINYINT},
       </if>
       <if test="dietime != null" >
-        dietime = #{dietime,jdbcType=TIMESTAMP},
+        dietime = #{dietime,jdbcType=VARCHAR},
       </if>
       <if test="fixplace != null" >
         fixplace = #{fixplace,jdbcType=VARCHAR},
@@ -688,7 +688,7 @@
       username = #{username,jdbcType=VARCHAR},
       idcard = #{idcard,jdbcType=CHAR},
       isborn = #{isborn,jdbcType=TINYINT},
-      dietime = #{dietime,jdbcType=TIMESTAMP},
+      dietime = #{dietime,jdbcType=VARCHAR},
       fixplace = #{fixplace,jdbcType=VARCHAR},
       isdirect = #{isdirect,jdbcType=TINYINT},
       genlevel = #{genlevel,jdbcType=INTEGER},
@@ -735,14 +735,14 @@
   </update>
   <insert id="importUser">
 	     insert into jp_user (userid,familyid,status,isdirect,genlevel,username,usedname,idcard,brotherpos,pname,livestatus
-	         ,ismarry,fixplace,phone,createtime,pid,password,mateid,matename,deleteflag,sex,familyname,pinyinFirst,pinyinFull,createid,updateid,updatetime,branchid,branchname)
+	         ,ismarry,fixplace,phone,createtime,pid,password,mateid,matename,deleteflag,sex,familyname,dietime,pinyinFirst,pinyinFull,createid,updateid,updatetime,branchid,branchname)
 	     values
 	     <foreach collection="list" item="item" index="index" separator=",">
 				(#{item.userid},#{item.familyid},#{item.status},#{item.isdirect},
 				#{item.genlevel},#{item.username},#{item.usedname},#{item.idcard},
 				#{item.brotherpos},#{item.pname},#{item.livestatus},#{item.isMarry},
 				#{item.fixplace},#{item.phone},#{item.createtime},#{item.pid},#{item.password},
-				#{item.mateid},#{item.matename},#{item.deleteflag},#{item.sex},#{item.familyname},
+				#{item.mateid},#{item.matename},#{item.deleteflag},#{item.sex},#{item.familyname},#{item.dietime},
 				#{item.pinyinfirst},#{item.pinyinfull},#{item.createid},#{item.updateid},#{item.updatetime},#{item.branchid},#{item.branchname})
 		</foreach>
   </insert>

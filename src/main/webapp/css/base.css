@@ -18,7 +18,7 @@ img {
 .left {
     float: left;
 }
-/* 一般按钮 */
+/* 涓�鑸寜閽� */
 .btn {
     cursor: pointer;
     color: #fff;
@@ -33,7 +33,7 @@ img {
     height: 28px;
     line-height: 28px;
 }
-/* 弹窗 */
+/* 寮圭獥 */
 .dialog {
     width: 50%;
     position: absolute;
@@ -51,7 +51,7 @@ img {
     max-height:80%;
     overflow-y: auto;
 }
-/* 弹窗上部 */
+/* 寮圭獥涓婇儴 */
 .dlg_top {
     position: relative;
     height: 42px;
@@ -63,7 +63,7 @@ img {
     border-bottom: 1px solid #eee;
     cursor: move;
 }
-/* 弹窗右上角 ico */
+/* 寮圭獥鍙充笂瑙� ico */
 .dlg_btn_ico {
     float: right;
     /* background: transparent; */
@@ -75,27 +75,27 @@ img {
     margin-top: 15px;
     background-repeat: no-repeat;
 }
-/* 弹窗右上角 ico 鼠标浮上去的样式 */
+/* 寮圭獥鍙充笂瑙� ico 榧犳爣娴笂鍘荤殑鏍峰紡 */
 .dlg_btn_ico:hover {
     background-color: #eee;
 }
-/* 最小化 */
+/* 鏈�灏忓寲 */
 /* .dlg_btn_min_top {
     background-image: url(../images/ico_min.png);
 } */
-/* 最大化 */
+/* 鏈�澶у寲 */
 /* .dlg_btn_max_top {
     background-image: url(../images/ico_max.png);
 } */ 
-/* 还原 */
+/* 杩樺師 */
 .dlg_btn_reback_top,.dlg_btn_reback_top1,.dlg_btn_reback_top2,.dlg_btn_reback_top3 {
     background-image: url(../images/ico_reback.png);
 }
-/* /* 关闭 */
+/* /* 鍏抽棴 */
 .dlg_btn_close_top,.dlg_btn_close_top1,.dlg_btn_close_top2,.dlg_btn_close_top3 {
     background-image: url(../images/ico_close.png);
 } */
-/* 左上角logo */
+/* 宸︿笂瑙抣ogo */
 .dlg_logo {
     margin-left: 5px;
     margin-top: -3px;
@@ -104,19 +104,19 @@ img {
     display: inline-block; 
     vertical-align: middle;
 }
-/* 弹窗标题 */
+/* 寮圭獥鏍囬 */
 .dlg_title {
    /*  line-height: 28px; */
     margin-left: 20px;
 }
-/* 弹窗内容 */
+/* 寮圭獥鍐呭 */
 .dlg_content {
     position: relative;
     min-height: 300px;
     overflow-y: auto;
    /*  margin-right: 4px; */
 }
-/* 弹窗底部 */
+/* 寮圭獥搴曢儴 */
 .dlg_bottom {
     position: absolute;
     height: 35px;
@@ -131,7 +131,7 @@ img {
     border-top: 1px solid #eec;
     text-align: center;
 }
-/* 缩放时右拉块 */
+/* 缂╂斁鏃跺彸鎷夊潡 */
 #dlg_right {
     width: 15px;
     height: 100%;
@@ -144,7 +144,7 @@ img {
     opacity: 0;
     z-index: 3;
 }
-/* 缩放时下拉块 */
+/* 缂╂斁鏃朵笅鎷夊潡 */
 #dlg_bottom {
     width:100%;
     height:15px;
@@ -156,7 +156,7 @@ img {
     opacity:0;
     z-index:3;
 }
-/* 缩放时右下拉块 */
+/* 缂╂斁鏃跺彸涓嬫媺鍧� */
 #dlg_right_bottom{
     width:15px;
     height:15px;
@@ -181,7 +181,7 @@ img {
 .layui-layer-setwin,.layui-layer-maxmin,.layui-layer-maxmin1,.layui-layer-maxmin2,.layui-layer-maxmin3 {
     background-position: -65px -40px;
 }
-.dlg_btn_close,#dlg_submit,#dlg_submit1{height:36px!important;}
+.dlg_btn_close,#dlg_submit,#dlg_submit1,#importUser,#importUserMate{height:36px!important;}
 #half {
     width: 100%;
     height: 100%;

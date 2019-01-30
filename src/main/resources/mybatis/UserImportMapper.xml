@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.jp.dao.UserImportMapper" >
-  <resultMap id="BaseResultMap" type="com.jp.entity.UserImport" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.User" >
     <id column="userid" property="userid" jdbcType="VARCHAR" />
     <result column="phone" property="phone" jdbcType="VARCHAR" />
     <result column="password" property="password" jdbcType="VARCHAR" />
@@ -11,7 +11,7 @@
     <result column="usedname" property="usedname" jdbcType="VARCHAR" />
     <result column="livestatus" property="livestatus" jdbcType="TINYINT" />
     <result column="sex" property="sex" jdbcType="TINYINT" />
-    <result column="ismarry" property="ismarry" jdbcType="INTEGER" />
+    <result column="ismarry" property="isMarry" jdbcType="INTEGER" />
     <result column="mateid" property="mateid" jdbcType="VARCHAR" />
     <result column="matename" property="matename" jdbcType="VARCHAR" />
     <result column="matetypeStr" property="matetypestr" jdbcType="VARCHAR" />
@@ -31,7 +31,7 @@
     <result column="idcard" property="idcard" jdbcType="CHAR" />
     <result column="pinyinFirst" property="pinyinfirst" jdbcType="CHAR" />
     <result column="pinyinFull" property="pinyinfull" jdbcType="VARCHAR" />
-    <result column="dietime" property="dietime" jdbcType="DATE" />
+    <result column="dietime" property="dietime" jdbcType="VARCHAR" />
     <result column="fixplace" property="fixplace" jdbcType="VARCHAR" />
     <result column="remarkelse" property="remarkelse" jdbcType="VARCHAR" />
     <result column="createid" property="createid" jdbcType="VARCHAR" />
@@ -166,7 +166,7 @@
       #{branchname,jdbcType=VARCHAR}, #{isdirect,jdbcType=TINYINT}, #{isborn,jdbcType=TINYINT}, 
       #{genlevel,jdbcType=INTEGER}, #{brotherpos,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, 
       #{deleteflag,jdbcType=TINYINT}, #{imgurl,jdbcType=VARCHAR}, #{idcard,jdbcType=CHAR}, 
-      #{pinyinfirst,jdbcType=CHAR}, #{pinyinfull,jdbcType=VARCHAR}, #{dietime,jdbcType=DATE}, 
+      #{pinyinfirst,jdbcType=CHAR}, #{pinyinfull,jdbcType=VARCHAR}, #{dietime,jdbcType=VARCHAR}, 
       #{fixplace,jdbcType=VARCHAR}, #{remarkelse,jdbcType=VARCHAR}, #{createid,jdbcType=VARCHAR}, 
       #{createtime,jdbcType=TIMESTAMP}, #{updateid,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP}, 
       #{excelid,jdbcType=VARCHAR})
@@ -375,7 +375,7 @@
         #{pinyinfull,jdbcType=VARCHAR},
       </if>
       <if test="dietime != null" >
-        #{dietime,jdbcType=DATE},
+        #{dietime,jdbcType=VARCHAR},
       </if>
       <if test="fixplace != null" >
         #{fixplace,jdbcType=VARCHAR},
@@ -497,7 +497,7 @@
         pinyinFull = #{record.pinyinfull,jdbcType=VARCHAR},
       </if>
       <if test="record.dietime != null" >
-        dietime = #{record.dietime,jdbcType=DATE},
+        dietime = #{record.dietime,jdbcType=VARCHAR},
       </if>
       <if test="record.fixplace != null" >
         fixplace = #{record.fixplace,jdbcType=VARCHAR},
@@ -556,7 +556,7 @@
       idcard = #{record.idcard,jdbcType=CHAR},
       pinyinFirst = #{record.pinyinfirst,jdbcType=CHAR},
       pinyinFull = #{record.pinyinfull,jdbcType=VARCHAR},
-      dietime = #{record.dietime,jdbcType=DATE},
+      dietime = #{record.dietime,jdbcType=VARCHAR},
       fixplace = #{record.fixplace,jdbcType=VARCHAR},
       remarkelse = #{record.remarkelse,jdbcType=VARCHAR},
       createid = #{record.createid,jdbcType=VARCHAR},
@@ -656,7 +656,7 @@
         pinyinFull = #{pinyinfull,jdbcType=VARCHAR},
       </if>
       <if test="dietime != null" >
-        dietime = #{dietime,jdbcType=DATE},
+        dietime = #{dietime,jdbcType=VARCHAR},
       </if>
       <if test="fixplace != null" >
         fixplace = #{fixplace,jdbcType=VARCHAR},
@@ -712,7 +712,7 @@
       idcard = #{idcard,jdbcType=CHAR},
       pinyinFirst = #{pinyinfirst,jdbcType=CHAR},
       pinyinFull = #{pinyinfull,jdbcType=VARCHAR},
-      dietime = #{dietime,jdbcType=DATE},
+      dietime = #{dietime,jdbcType=VARCHAR},
       fixplace = #{fixplace,jdbcType=VARCHAR},
       remarkelse = #{remarkelse,jdbcType=VARCHAR},
       createid = #{createid,jdbcType=VARCHAR},
@@ -726,14 +726,14 @@
   <!-- 自写方法 -->
   <insert id="importUser">
 	     insert into jp_user_import_history (userid,familyid,status,isdirect,genlevel,username,usedname,idcard,brotherpos,pname,livestatus
-	         ,ismarry,fixplace,phone,createtime,pid,password,mateid,matename,deleteflag,sex,familyname,pinyinFirst,pinyinFull,createid,updateid,updatetime,branchid,branchname,excelid)
+	         ,ismarry,fixplace,phone,createtime,pid,password,mateid,matename,deleteflag,sex,familyname,dietime,pinyinFirst,pinyinFull,createid,updateid,updatetime,branchid,branchname,excelid)
 	     values
 	     <foreach collection="list" item="item" index="index" separator=",">
 				(#{item.userid},#{item.familyid},#{item.status},#{item.isdirect},
 				#{item.genlevel},#{item.username},#{item.usedname},#{item.idcard},
 				#{item.brotherpos},#{item.pname},#{item.livestatus},#{item.isMarry},
 				#{item.fixplace},#{item.phone},#{item.createtime},#{item.pid},#{item.password},
-				#{item.mateid},#{item.matename},#{item.deleteflag},#{item.sex},#{item.familyname},
+				#{item.mateid},#{item.matename},#{item.deleteflag},#{item.sex},#{item.familyname},#{item.dietime},
 				#{item.pinyinfirst},#{item.pinyinfull},#{item.createid},#{item.updateid},#{item.updatetime},#{item.branchid},#{item.branchname},#{item.excelid})
 		</foreach>
   </insert>
