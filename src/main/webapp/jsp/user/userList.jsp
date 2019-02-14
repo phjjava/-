@@ -526,7 +526,7 @@ $("#dlg_submit").click(function(){
             		  if(data[i].pname){
             			  html += '<td>'+data[i].pname+'</td>';
             		  }else{
-            			  html += '<td>女</td>';
+            			  html += '<td></td>';
             		  }
             		  
             		  html += '<td>'+data[i].genlevel+'世</td>';

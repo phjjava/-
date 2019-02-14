@@ -737,4 +737,13 @@
 				#{item.pinyinfirst},#{item.pinyinfull},#{item.createid},#{item.updateid},#{item.updatetime},#{item.branchid},#{item.branchname},#{item.excelid})
 		</foreach>
   </insert>
+  <update id="updateAleardyUser" parameterType="com.jp.entity.User" >
+   <foreach collection="list" item="item" index="index" separator=";">
+        update jp_user
+			set mateid = #{item.mateid,jdbcType=VARCHAR},
+	            matename = #{item.matename,jdbcType=VARCHAR}
+        where userid =
+		  #{item.userid}
+	</foreach>
+	</update>
 </mapper>

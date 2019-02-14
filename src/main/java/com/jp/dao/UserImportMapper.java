@@ -19,7 +19,7 @@ public interface UserImportMapper {
 
     List<User> selectByExample(UserImportExample example);
 
-    UserImport selectByPrimaryKey(String userid);
+    User selectByPrimaryKey(String userid);
 
     int updateByExampleSelective(@Param("record") UserImport record, @Param("example") UserImportExample example);
 
@@ -30,4 +30,6 @@ public interface UserImportMapper {
     int updateByPrimaryKey(UserImport record);
 
 	void importUser(List<User> userList);
+
+	void updateAleardyUser(List<User> userAleardyListUpdate);
 }
