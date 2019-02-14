@@ -500,7 +500,9 @@ FROM
 FROM
 	jp_branch branch
 WHERE
-
+ branch.status=0
+ 
+ and 
  familyid = #{familyid,jdbcType=VARCHAR}
 	<if test="branchid != null and branchid != ''" >
     	AND branchid = #{branchid,jdbcType=VARCHAR}

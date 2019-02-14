@@ -821,26 +821,29 @@ public class UserServiceImpl implements UserService {
 			// 离世 不需要判断手机号 使用用户名和父亲名字判断及手机号码判断
 			List<User> searchRt = userDao.selectUserByFamilyId(user.getFamilyid());
 			for (User userf : searchRt) {
-				if (StringUtil.isNotEmpty(userf.getUsername()) && userf.getUsername().equals(user.getUsername())&&userf.getPhone().equals(user.getPhone())&&userf.getGenlevel().equals(user.getGenlevel())) {
-					if (StringUtil.isNotEmpty(userf.getPname()) ) {
-						if(StringUtil.isNotEmpty(user.getPname())&&userf.getPname().equals(user.getPname())){
-						sameFlag = true;
-						userStringList.add("第"+user.getGenlevel()+"世:"+user.getUsername()+"已存在");
-						log_.info("数据库有重复数据无法导入-" + user.toString());
-						System.out.println("数据库有重复数据无法导入-" + user.toString());
-						return sameFlag;
-						}					
-					}
-					if (StringUtil.isEmpty(userf.getPname()) ) {
-						if(StringUtil.isEmpty(user.getPname())&&userf.getGenlevel()==user.getGenlevel()){
+				if (StringUtil.isNotEmpty(userf.getUsername()) && userf.getUsername().equals(user.getUsername())&&userf.getGenlevel().equals(user.getGenlevel())) {
+					if(userf.getPhone() != null && userf.getPhone().equals(user.getPhone())) {
+						if (StringUtil.isNotEmpty(userf.getPname()) ) {
+							if(StringUtil.isNotEmpty(user.getPname())&&userf.getPname().equals(user.getPname())){
 							sameFlag = true;
 							userStringList.add("第"+user.getGenlevel()+"世:"+user.getUsername()+"已存在");
 							log_.info("数据库有重复数据无法导入-" + user.toString());
 							System.out.println("数据库有重复数据无法导入-" + user.toString());
 							return sameFlag;
+							}					
 						}
+						if (StringUtil.isEmpty(userf.getPname()) ) {
+							if(StringUtil.isEmpty(user.getPname())&&userf.getGenlevel()==user.getGenlevel()){
+								sameFlag = true;
+								userStringList.add("第"+user.getGenlevel()+"世:"+user.getUsername()+"已存在");
+								log_.info("数据库有重复数据无法导入-" + user.toString());
+								System.out.println("数据库有重复数据无法导入-" + user.toString());
+								return sameFlag;
+							}
+						}
+	                    sameFlag = false;
 					}
-                    sameFlag = false;
+					
                     // sameFlag = true;
                     // log_.info("数据库有重复数据无法导入-" + user.toString());
                     // System.out.println("数据库有重复数据无法导入-" + user.toString());
@@ -887,6 +890,13 @@ public class UserServiceImpl implements UserService {
 					sameFlag = false;
 				}
 			}
+			UserQuery uq = new UserQuery();
+			uq.or().andUsernameEqualTo(user.getUsername())
+					.andMatenameEqualTo(user.getMatename())
+					.andGenlevelEqualTo(user.getGenlevel())
+					.andBranchidEqualTo(user.getBranchid())
+					.andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
+					
 		return sameFlag;
 	}
 
@@ -1053,6 +1063,7 @@ public class UserServiceImpl implements UserService {
 										}
 									}
 								}
+								
 								if(n==1) {
 									User user = new User();
 									user.setUserid(userId);
@@ -1099,9 +1110,12 @@ public class UserServiceImpl implements UserService {
 									if(userAl==null) {
 										user.setIsnormal(0);
 										user.setMsg("请检查配偶姓名！");
-									}else if(userAl.getMateid()!=null && !"".equals(userAl.getMateid())) {
-										
-									}else {
+									}
+//									else if(userAl.getMateid()!=null && !"".equals(userAl.getMateid())) {
+//										user.setIsnormal(0);
+//										user.setMsg("请勿重复导入配偶！");
+//									}
+									else {
 										userAl.setMateid(userId);
 										userAl.setMatename(username);
 										user.setMateid(userAl.getUserid());
@@ -1124,6 +1138,8 @@ public class UserServiceImpl implements UserService {
 //									boolean sameFlag = checkSameUser(user);
 									boolean sameFlag = checkSameMateUser(user,userStringList);	
 									if (sameFlag) {
+										user.setIsnormal(0);
+										user.setMsg("请勿重复导入配偶！");
 										continue;
 									} else {
 										
@@ -1342,10 +1358,12 @@ public class UserServiceImpl implements UserService {
 								if(userAl==null) {
 									user.setIsnormal(0);
 									user.setMsg("请检查配偶姓名！");
-								}else if(userAl.getMateid()!=null && !"".equals(userAl.getMateid())) {
-									user.setIsnormal(0);
-									user.setMsg("请勿重复导入配偶！");
-								}else {
+								}
+//								else if(userAl.getMateid()!=null && !"".equals(userAl.getMateid())) {
+//									user.setIsnormal(0);
+//									user.setMsg("请勿重复导入配偶！");
+//								}
+								else {
 									userAl.setMateid(userId);
 									userAl.setMatename(username);
 									user.setMateid(userAl.getUserid());
@@ -1367,6 +1385,8 @@ public class UserServiceImpl implements UserService {
 								userList.add(user);
 								boolean sameFlag = checkSameMateUser(user,userStringList);	
 								if (sameFlag) {
+									user.setIsnormal(0);
+									user.setMsg("请勿重复导入配偶！");
 									continue;
 								} else {
 									userAleardyListUpdate.add(userAl);
@@ -1885,13 +1905,13 @@ public class UserServiceImpl implements UserService {
 					userInfo.setNation(nation);
 					userInfo.setBackground(background);
 					userInfo.setRemark(remark);
-					boolean sameFlag = checkSameUser(user);
-					if (sameFlag) {
-						continue;
-					} else {
-						userList.add(user);
-						userInfoList.add(userInfo);
-					}
+//					boolean sameFlag = checkSameUser(user);
+//					if (sameFlag) {
+//						continue;
+//					} else {
+//						userList.add(user);
+//						userInfoList.add(userInfo);
+//					}
 				}
 			}
 			if (userList != null && userList.size() > 0) {
@@ -2110,12 +2130,16 @@ public class UserServiceImpl implements UserService {
 		userDao.importUser(users);
 		
 		for(User u : users) {
+//			if(u.getMateid()!= null || !"".equals(u.getMateid())) {
+//				User uu = userImportMapper.selectByPrimaryKey(u.getMateid());
+//				userDao.updateByPrimaryKey(uu);
+//			}
 			Userinfo info = userInfoImportMapper.selectByPrimaryKey(u.getUserid());
+			if(info!=null)
 			userInfoDao.insertSelective(info);
 		}
 		
-		//3.删除临时表数据（可用可不用）（导入配偶后才可删除）
-		//userImportMapper.deleteByExample(example);
+		
 		result.setStatus(ConstantUtils.RESULT_SUCCESS);
 		result.setMsg("导入成功");
 		return result;
