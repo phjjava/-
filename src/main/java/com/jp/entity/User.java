@@ -194,7 +194,7 @@ public class User implements Serializable {
 	
 	//自属性
 	private String searchBirthplace;
-	private Date searchBirthday;
+	private String searchBirthday;
 	private String address;//用户所属分支的护体地址
 	private String msg;//导入用户出错提示信息
 	private Integer isnormal;//导入用户是否正常
@@ -523,11 +523,11 @@ public class User implements Serializable {
 		this.searchBirthplace = searchBirthplace;
 	}
 
-	public Date getSearchBirthday() {
+	public String getSearchBirthday() {
 		return searchBirthday;
 	}
 
-	public void setSearchBirthday(Date searchBirthday) {
+	public void setSearchBirthday(String searchBirthday) {
 		this.searchBirthday = searchBirthday;
 	}
 

@@ -536,6 +536,7 @@ public class UserServiceImpl implements UserService {
 						}
 						userMap.put((int) genlevel + username, user);
 						//如果父亲名字为空，则为分支起始人
+						branch.setBeginuserid(userId);
 						branch.setBeginname(username);
 						branchDao.updateByBranchidSelective(branch);
 					}else if (userMap.containsKey(key)) {
@@ -716,6 +717,7 @@ public class UserServiceImpl implements UserService {
 						}
 						userMap.put((int) genlevel + username, user);
 						//如果父亲名字为空，则为分支起始人
+						branch.setBeginuserid(userId);
 						branch.setBeginname(username);
 						branchDao.updateByBranchidSelective(branch);
 					}else if (userMap.containsKey(key)) {

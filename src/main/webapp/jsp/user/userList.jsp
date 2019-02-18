@@ -161,7 +161,10 @@
 								<c:if test="${user.sex == 0}">女</c:if>
 								<c:if test="${user.sex == 1}">男</c:if>
 							</td>
-							<td><fmt:formatDate value="${user.searchBirthday}" pattern="yyyy-MM-dd"/></td>
+							<!--  
+							
+							-->
+							<td>${user.searchBirthday}</td>
 							<td>${user.brotherpos }</td>
 							<td>${user.genlevel }</td>
 							<td>${user.branchname }</td>
