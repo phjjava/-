@@ -53,7 +53,7 @@
 		</div>
 	</div>
   <div class="row cl">
-	<label class="form-label col-xs-3 col-sm-3" style="text-align:right"><span class="c-red">*</span>请添加发起人：</label>
+	<label class="form-label col-xs-3 col-sm-3" style="text-align:right">请添加发起人：</label>
 	<div class="formControls col-xs-8 col-sm-6">
 		<select name="beginuserid" id="beginuserid" class="my-select select" data-val="${branch.beginuserid }" >
 		</select>
