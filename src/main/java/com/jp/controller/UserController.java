@@ -180,7 +180,7 @@ public class UserController {
 				user = userService.selectByPrimaryKey(userid);
 				if (user != null) {
 					if (user.getDietime() != null) {
-						user.setDietimeStr(sdfd.format(user.getDietime()));
+						user.setDietimeStr(user.getDietime());
 					}
 				}
 				userInfo = userInfoService.selectByPrimaryKey(userid);
