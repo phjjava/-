@@ -451,7 +451,7 @@ public class UserServiceImpl implements UserService {
 					String nation = xssfRow.getCell(9).getStringCellValue().trim();// 民族
 					String background = xssfRow.getCell(10).getStringCellValue().trim();// 背景
 					String idCard = xssfRow.getCell(11).getStringCellValue().trim();// 身份证
-					String education = xssfRow.getCell(11).getStringCellValue().trim();// 学历
+					String education = xssfRow.getCell(12).getStringCellValue().trim();// 学历
 					if(education !=null) {
 						if("大学本科".equals(education) || "大学".equals(education)) {
 							education = "本科";
@@ -463,12 +463,12 @@ public class UserServiceImpl implements UserService {
 					if (StringTools.trimNotEmpty(idCard)) {
 						idCard = nf.format(Double.parseDouble(idCard));
 					}
-					String birthday = xssfRow.getCell(12).getStringCellValue().trim();// 生日
-					String birthplace = xssfRow.getCell(13).getStringCellValue().trim();// 出生地
-					String homeplace = xssfRow.getCell(14).getStringCellValue().trim();// 常住地
-					String dietime = xssfRow.getCell(15).getStringCellValue().trim();// 离世日期
-					String fixplace = xssfRow.getCell(16).getStringCellValue().trim();// 葬于某地
-					String remark = xssfRow.getCell(17).getStringCellValue().trim();// 备注
+					String birthday = xssfRow.getCell(13).getStringCellValue().trim();// 生日
+					String birthplace = xssfRow.getCell(14).getStringCellValue().trim();// 出生地
+					String homeplace = xssfRow.getCell(15).getStringCellValue().trim();// 常住地
+					String dietime = xssfRow.getCell(16).getStringCellValue().trim();// 离世日期
+					String fixplace = xssfRow.getCell(17).getStringCellValue().trim();// 葬于某地
+					String remark = xssfRow.getCell(18).getStringCellValue().trim();// 备注
 					String userId = UUIDUtils.getUUID();
 					user = new User();
 					user.setExcelid(excelid);
@@ -642,12 +642,22 @@ public class UserServiceImpl implements UserService {
 					if (StringTools.trimNotEmpty(idCard)) {
 						idCard = nf.format(Double.parseDouble(idCard));
 					}
-					String birthday = eutil.getCellContent(sheet.getRow(i).getCell(12)).trim();
-					String birthplace = eutil.getCellContent(sheet.getRow(i).getCell(13)).trim();
-					String homeplace = eutil.getCellContent(sheet.getRow(i).getCell(14)).trim();
-					String dietime = eutil.getCellContent(sheet.getRow(i).getCell(15)).trim();
-					String fixplace = eutil.getCellContent(sheet.getRow(i).getCell(16)).trim();
-					String remark = eutil.getCellContent(sheet.getRow(i).getCell(17)).trim();
+					String education = eutil.getCellContent(sheet.getRow(i).getCell(13)).trim();// 学历
+					if(education !=null) {
+						if("大学本科".equals(education) || "大学".equals(education)) {
+							education = "本科";
+						}else if("高中".equals(education) || "中专".equals(education)) {
+							education = "高中(中专)";
+						}
+						
+					}
+					String birthday = eutil.getCellContent(sheet.getRow(i).getCell(13)).trim();
+					
+					String birthplace = eutil.getCellContent(sheet.getRow(i).getCell(14)).trim();
+					String homeplace = eutil.getCellContent(sheet.getRow(i).getCell(15)).trim();
+					String dietime = eutil.getCellContent(sheet.getRow(i).getCell(16)).trim();
+					String fixplace = eutil.getCellContent(sheet.getRow(i).getCell(17)).trim();
+					String remark = eutil.getCellContent(sheet.getRow(i).getCell(18)).trim();
 					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 					Integer genlevel = Integer.parseInt(genlevelstr);
 					String userId = UUIDUtils.getUUID();
