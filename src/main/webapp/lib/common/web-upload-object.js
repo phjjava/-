@@ -33,6 +33,7 @@
 		 * 创建webuploader对象
 		 */
 		create : function() {
+			
 			var webUploader = WebUploader.create({
 				auto : true,
 				pick : {
@@ -82,7 +83,9 @@
 			bindedObj.on('uploadSuccess', function(file,response) {
 				Feng.success("上传成功");
 				var data = JSON.parse(response._raw);
-				$("#" + me.pictureId).val(data.url);
+				var url = data.url;
+				url = url.split("/fileupload")[1];
+				$("#" + me.pictureId).val(url);
 			});
 
 			// 文件上传失败，显示上传出错。
