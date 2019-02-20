@@ -438,7 +438,15 @@ public class User implements Serializable {
 	}
 
 	public void setFixplace(String fixplace) {
-		this.fixplace = fixplace == null ? null : fixplace.trim();
+		if(fixplace != null) {
+    		this.fixplace=fixplace.trim();
+    		if(fixplace.indexOf("@@")==-1) {
+        		this.fixplace = "@@@@@@"+fixplace.trim();
+    		}
+    	}else {
+    		this.fixplace = null;
+    	}
+		//this.fixplace = fixplace == null ? null : fixplace.trim();
 	}
 
 	
