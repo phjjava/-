@@ -902,12 +902,12 @@ public class UserServiceImpl implements UserService {
 					sameFlag = false;
 				}
 			}
-			UserQuery uq = new UserQuery();
-			uq.or().andUsernameEqualTo(user.getUsername())
-					.andMatenameEqualTo(user.getMatename())
-					.andGenlevelEqualTo(user.getGenlevel())
-					.andBranchidEqualTo(user.getBranchid())
-					.andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
+//			UserQuery uq = new UserQuery();
+//			uq.or().andUsernameEqualTo(user.getUsername())
+//					.andMatenameEqualTo(user.getMatename())
+//					.andGenlevelEqualTo(user.getGenlevel())
+//					.andBranchidEqualTo(user.getBranchid())
+//					.andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
 					
 		return sameFlag;
 	}
@@ -1121,7 +1121,7 @@ public class UserServiceImpl implements UserService {
 									// 维护当前配偶id
 									if(userAl==null) {
 										user.setIsnormal(0);
-										user.setMsg("请检查配偶姓名！");
+										user.setMsg("请检查配偶姓名或世系！");
 									}
 //									else if(userAl.getMateid()!=null && !"".equals(userAl.getMateid())) {
 //										user.setIsnormal(0);
@@ -1132,10 +1132,12 @@ public class UserServiceImpl implements UserService {
 										userAl.setMatename(username);
 										user.setMateid(userAl.getUserid());
 										
-										user.setBranchid(userAl.getBranchid());
-										user.setBranchname(userAl.getBranchname());
+										//user.setBranchid(userAl.getBranchid());
+										//user.setBranchname(userAl.getBranchname());
 										userAl.setIsMarry(0);
 									}
+									user.setBranchid(branchid);
+									user.setBranchname(branch.getBranchname());
 									user.setMatename(husbandname);
 									user.setIsMarry(0);
 									user.setPhone(phone);
@@ -1369,7 +1371,7 @@ public class UserServiceImpl implements UserService {
 								// 维护当前配偶id
 								if(userAl==null) {
 									user.setIsnormal(0);
-									user.setMsg("请检查配偶姓名！");
+									user.setMsg("请检查配偶姓名或世系！");
 								}
 //								else if(userAl.getMateid()!=null && !"".equals(userAl.getMateid())) {
 //									user.setIsnormal(0);
@@ -1380,11 +1382,12 @@ public class UserServiceImpl implements UserService {
 									userAl.setMatename(username);
 									user.setMateid(userAl.getUserid());
 									//user.setMatename(userAl.getUsername());
-									user.setBranchid(userAl.getBranchid());
-									user.setBranchname(userAl.getBranchname());
+									//user.setBranchid(userAl.getBranchid());
+									//user.setBranchname(userAl.getBranchname());
 									userAl.setIsMarry(0);
 								}
-								
+								user.setBranchid(branchid);
+								user.setBranchname(branch.getBranchname());
 								user.setMatename(husbandname);
 								user.setPhone(phone);
 								user.setIsdirect(0);
