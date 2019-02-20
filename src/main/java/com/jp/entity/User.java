@@ -443,6 +443,8 @@ public class User implements Serializable {
     		if(fixplace.indexOf("@@")==-1) {
         		this.fixplace = "@@@@@@"+fixplace.trim();
     		}
+    	}else {
+    		this.fixplace = null;
     	}
 		//this.fixplace = fixplace == null ? null : fixplace.trim();
 	}
