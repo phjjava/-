@@ -1121,7 +1121,7 @@ public class UserServiceImpl implements UserService {
 									// 维护当前配偶id
 									if(userAl==null) {
 										user.setIsnormal(0);
-										user.setMsg("请检查配偶姓名！");
+										user.setMsg("请检查配偶姓名或世系！");
 									}
 //									else if(userAl.getMateid()!=null && !"".equals(userAl.getMateid())) {
 //										user.setIsnormal(0);
@@ -1371,7 +1371,7 @@ public class UserServiceImpl implements UserService {
 								// 维护当前配偶id
 								if(userAl==null) {
 									user.setIsnormal(0);
-									user.setMsg("请检查配偶姓名！");
+									user.setMsg("请检查配偶姓名或世系！");
 								}
 //								else if(userAl.getMateid()!=null && !"".equals(userAl.getMateid())) {
 //									user.setIsnormal(0);
