@@ -902,12 +902,12 @@ public class UserServiceImpl implements UserService {
 					sameFlag = false;
 				}
 			}
-			UserQuery uq = new UserQuery();
-			uq.or().andUsernameEqualTo(user.getUsername())
-					.andMatenameEqualTo(user.getMatename())
-					.andGenlevelEqualTo(user.getGenlevel())
-					.andBranchidEqualTo(user.getBranchid())
-					.andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
+//			UserQuery uq = new UserQuery();
+//			uq.or().andUsernameEqualTo(user.getUsername())
+//					.andMatenameEqualTo(user.getMatename())
+//					.andGenlevelEqualTo(user.getGenlevel())
+//					.andBranchidEqualTo(user.getBranchid())
+//					.andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
 					
 		return sameFlag;
 	}
