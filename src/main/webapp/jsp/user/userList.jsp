@@ -443,12 +443,13 @@ $("#importUser").click(function(){
 	var excelid = $("#excelid").val();
 	var url = basePath + "user/confirmImport";
 	importUsers(url,excelid);
-	
+	$("#myfile").val("");
 });
 $("#importUserMate").click(function(){
 	var excelid = $("#excelid").val();
 	var url = basePath + "user/confirmImport";
 	importUsers(url,excelid);
+	$("#myfile1").val("");
 	
 });
 function importUsers(url,excelid){
