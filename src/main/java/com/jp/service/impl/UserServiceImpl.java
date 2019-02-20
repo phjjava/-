@@ -1132,10 +1132,12 @@ public class UserServiceImpl implements UserService {
 										userAl.setMatename(username);
 										user.setMateid(userAl.getUserid());
 										
-										user.setBranchid(userAl.getBranchid());
-										user.setBranchname(userAl.getBranchname());
+										//user.setBranchid(userAl.getBranchid());
+										//user.setBranchname(userAl.getBranchname());
 										userAl.setIsMarry(0);
 									}
+									user.setBranchid(branchid);
+									user.setBranchname(branch.getBranchname());
 									user.setMatename(husbandname);
 									user.setIsMarry(0);
 									user.setPhone(phone);
@@ -1380,11 +1382,12 @@ public class UserServiceImpl implements UserService {
 									userAl.setMatename(username);
 									user.setMateid(userAl.getUserid());
 									//user.setMatename(userAl.getUsername());
-									user.setBranchid(userAl.getBranchid());
-									user.setBranchname(userAl.getBranchname());
+									//user.setBranchid(userAl.getBranchid());
+									//user.setBranchname(userAl.getBranchname());
 									userAl.setIsMarry(0);
 								}
-								
+								user.setBranchid(branchid);
+								user.setBranchname(branch.getBranchname());
 								user.setMatename(husbandname);
 								user.setPhone(phone);
 								user.setIsdirect(0);
