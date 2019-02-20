@@ -572,9 +572,10 @@ var upAvatarUrl='<%=upAvatarUrl%>';
 					}
 					$('.my-select').html(optionStrP);
 					if(userDType==1){
+						$('.my-select-mate').html(optionStrM);
+					}else{
 						$('.my-select-mate').html(optionStrP);
-					}
-					else{$('.my-select-mate').html(optionStrM);}
+						}
 				}else{
 					alert("初始化人员失败！");
 				}

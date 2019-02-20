@@ -237,7 +237,14 @@ public class Userinfo implements Serializable {
     }
 
     public void setBirthplace(String birthplace) {
-        this.birthplace = birthplace == null ? null : birthplace.trim();
+    	if(birthplace != null) {
+    		this.birthplace=birthplace.trim();
+    		if(homeplace.indexOf("@@")==-1) {
+        		this.birthplace = "@@@@@@"+birthplace.trim();
+    		}
+    	}
+    	
+        //this.birthplace = birthplace == null ? null : "@@@@@@"+birthplace.trim();
     }
 
     public String getHomeplace() {
@@ -245,7 +252,13 @@ public class Userinfo implements Serializable {
     }
 
     public void setHomeplace(String homeplace) {
-        this.homeplace = homeplace == null ? null : homeplace.trim();
+    	if(homeplace != null) {
+    		this.homeplace=homeplace.trim();
+    		if(homeplace.indexOf("@@")==-1) {
+        		this.homeplace = "@@@@@@"+homeplace.trim();
+    		}
+    	}
+        //this.homeplace = homeplace == null ? null : "@@@@@@"+homeplace.trim();
     }
 
     public String getQq() {
