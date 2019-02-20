@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.jp.common.PageModel;
@@ -213,7 +214,7 @@ public interface UserService {
 
 	Result importUsersNew (MultipartFile file, HttpServletRequest request);
 
-	Integer del(User entity);
+	Integer del(@Param("array") String[] userids);
 
 	Result confirmImport(String excelid);
 	
