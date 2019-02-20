@@ -84,7 +84,7 @@ public interface UserDao {
 
 	List<User> selectUserItemLive(User user);
 
-	Integer delUser(@Param("list")List<String> userids);
+	Integer delUser(@Param("array") String userid[]);
 	
 	
 	

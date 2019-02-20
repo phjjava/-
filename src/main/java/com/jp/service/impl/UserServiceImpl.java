@@ -2124,9 +2124,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Integer del(User entity) {
+	public Integer del(String[] userids) {
 		
-		return userDao.delUser(entity.getUserids());
+		return userDao.delUser(userids);
 	}
 
 	@Override

@@ -124,6 +124,9 @@
 		</div>
 		<div class="cl pd-5 bg-1 bk-gray mt-20" style="margin-top:50px;">
 		    <span class="l">
+			    <a href="javascript:;" id="all" onclick="batchdelete();" class="btn btn-danger radius">
+			      <i class="Hui-iconfont">&#xe6e2;</i> 批量删除
+			    </a> &nbsp;&nbsp;
 		        <a class="btn btn-primary radius" href="javascript:;" onclick="member_edit('新增成员','','1')"><i class="Hui-iconfont">&#xe600;</i> 新增成员</a>&nbsp;&nbsp;
 	            <a href="javascript:;" id="btn_show_dialog" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe645;</i> 导入用户</a>&nbsp;&nbsp;
 	            <a href="javascript:;" id="btn_show_dialog1" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe645;</i> 导入配偶</a>
@@ -135,6 +138,7 @@
 				<table class="table table-border table-bordered table-hover table-bg">
 					<thead>
 						<tr class="text-c">
+						<th width="25"><input name="controlAll" id="controlAll" type="checkbox" value="" onclick="checkAll();"></th>
 							<th width="30">序号</th>
 							<th width="30">增加配偶</th>
 							<th width="30">姓名</th>
@@ -150,6 +154,7 @@
 					<tbody>
 					  <c:forEach var="user" items="${pageModel.list}" varStatus="status">
 						<tr class="text-c">
+							<td><input type="checkbox" value="${user.userid }" name="selected"></td>
 							<td>${status.index + 1 }</td>
 							<td>
 							 <c:if test="${user.isdirect == 1 }">
@@ -667,6 +672,55 @@ function searchs(pageNoTemp) {
 		}
 	});
 }
+//全选
+function checkAll() {
+	var checklist = document.getElementsByName ("selected");
+	   if(document.getElementById("controlAll").checked){
+	      for(var i=0;i<checklist.length;i++){
+	      checklist[i].checked = true;
+	   } 
+	 }else{
+	  for(var j=0;j<checklist.length;j++){
+	     checklist[j].checked = false;
+	  }
+	}
+}
 
+//批量删除
+function batchdelete(){
+	//拿到选中的checkbox
+	var userids = "";
+	var ck = $(':input[name=selected]');
+    ck.each(function(){
+      if($(this).is(':checked')){
+    		userids += $(this).val()+ "," ;
+       }
+    })
+    if(userids == null||userids.length==0){
+    	//alert("请至少选择一个删除复选框");
+    	layer.alert('请至少选择一个删除项', {icon: 5});
+    	return false;
+    }
+    $.ajax({
+		type:'post',
+		dataType:'text',
+		async: true,
+		data:{
+			"userids":userids
+		},
+		url : '<%=basePath%>user/del?curSec='+Math.random(),
+		success:function(data,status){
+			if(status == 'success' && data == '1'){
+				searchs();
+				layer.msg('已删除!',{icon: 5,time:1000});
+			}else{
+				layer.msg('未删除!', {icon: 6,time:1000});
+			}
+		},
+		error:function(e) {
+			console.log(e);
+		}
+	});
+}
 
 </script>

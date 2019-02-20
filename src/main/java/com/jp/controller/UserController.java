@@ -139,10 +139,12 @@ public class UserController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/del", method = RequestMethod.POST)
-	public String deleteUser(User entity) {
+	public String deleteUser(String userids) {
 		Integer result=0;
 		try {
-			result =userService.del(entity);
+			String userid = userids.substring(0, userids.length());
+			String useridArray[] = userid.split(",");
+			result =userService.del(useridArray);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
