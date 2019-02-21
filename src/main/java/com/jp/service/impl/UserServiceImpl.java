@@ -465,9 +465,12 @@ public class UserServiceImpl implements UserService {
 					}
 					String birthday = xssfRow.getCell(13).getStringCellValue().trim();// 生日
 					String birthplace = xssfRow.getCell(14).getStringCellValue().trim();// 出生地
+					birthplace = replacePlace(birthplace);
 					String homeplace = xssfRow.getCell(15).getStringCellValue().trim();// 常住地
+					birthplace = replacePlace(homeplace);
 					String dietime = xssfRow.getCell(16).getStringCellValue().trim();// 离世日期
 					String fixplace = xssfRow.getCell(17).getStringCellValue().trim();// 葬于某地
+					birthplace = replacePlace(fixplace);
 					String remark = xssfRow.getCell(18).getStringCellValue().trim();// 备注
 					String userId = UUIDUtils.getUUID();
 					user = new User();
@@ -654,9 +657,12 @@ public class UserServiceImpl implements UserService {
 					String birthday = eutil.getCellContent(sheet.getRow(i).getCell(13)).trim();
 					
 					String birthplace = eutil.getCellContent(sheet.getRow(i).getCell(14)).trim();
+					birthplace = replacePlace(birthplace);
 					String homeplace = eutil.getCellContent(sheet.getRow(i).getCell(15)).trim();
+					birthplace = replacePlace(homeplace);
 					String dietime = eutil.getCellContent(sheet.getRow(i).getCell(16)).trim();
 					String fixplace = eutil.getCellContent(sheet.getRow(i).getCell(17)).trim();
+					birthplace = replacePlace(fixplace);
 					String remark = eutil.getCellContent(sheet.getRow(i).getCell(18)).trim();
 					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 					Integer genlevel = Integer.parseInt(genlevelstr);
@@ -1051,9 +1057,12 @@ public class UserServiceImpl implements UserService {
 						}
 						String birthday = xssfRow.getCell(12).getStringCellValue().trim();// 生日
 						String birthplace = xssfRow.getCell(13).getStringCellValue().trim();// 出生地
+						birthplace = replacePlace(birthplace);
 						String homeplace = xssfRow.getCell(14).getStringCellValue().trim();// 常住地
+						birthplace = replacePlace(homeplace);
 						String dietime = xssfRow.getCell(15).getStringCellValue().trim();// 去世时间
 						String fixplace = xssfRow.getCell(16).getStringCellValue().trim();// 葬于某地
+						birthplace = replacePlace(fixplace);
 						String remark = xssfRow.getCell(17).getStringCellValue().trim();// 简介
 						String userId = UUIDUtils.getUUID();
 						
@@ -1302,9 +1311,12 @@ public class UserServiceImpl implements UserService {
 					}
 					
 					String birthplace = eutil.getCellContent(sheet.getRow(i).getCell(13)).trim();//出生地
+					birthplace = replacePlace(birthplace);
 					String homeplace = eutil.getCellContent(sheet.getRow(i).getCell(14)).trim();//常住地
+					birthplace = replacePlace(homeplace);
 					String dietime = eutil.getCellContent(sheet.getRow(i).getCell(15)).trim();//趋势时间
 					String fixplace = eutil.getCellContent(sheet.getRow(i).getCell(16)).trim();//安葬地
+					birthplace = replacePlace(fixplace);
 					String remark = eutil.getCellContent(sheet.getRow(i).getCell(17)).trim();//个人简介
 					String userId = UUIDUtils.getUUID();
 					
@@ -1846,9 +1858,12 @@ public class UserServiceImpl implements UserService {
 					}
 					String birthday = xssfRow.getCell(15).getStringCellValue().trim();// 出生日期
 					String birthplace = xssfRow.getCell(16).getStringCellValue().trim();// 出生地
+					birthplace = replacePlace(birthplace);
 					String homeplace = xssfRow.getCell(17).getStringCellValue().trim();// 常住地
+					birthplace = replacePlace(homeplace);
 					String dietime = xssfRow.getCell(18).getStringCellValue().trim();// 离世日期
 					String fixplace = xssfRow.getCell(19).getStringCellValue().trim();// 葬于某地
+					birthplace = replacePlace(fixplace);
 					String remark = xssfRow.getCell(20).getStringCellValue().trim();// 个人简介
 					String userId = UUIDUtils.getUUID();
 					user = new User();
@@ -2010,9 +2025,12 @@ public class UserServiceImpl implements UserService {
 					}
 					String birthday = eutil.getCellContent(sheet.getRow(i).getCell(15)).trim();
 					String birthplace = eutil.getCellContent(sheet.getRow(i).getCell(16)).trim();
+					birthplace = replacePlace(birthplace);
 					String homeplace = eutil.getCellContent(sheet.getRow(i).getCell(17)).trim();
+					birthplace = replacePlace(homeplace);
 					String dietime = eutil.getCellContent(sheet.getRow(i).getCell(18)).trim();
 					String fixplace = eutil.getCellContent(sheet.getRow(i).getCell(19)).trim();
+					birthplace = replacePlace(fixplace);
 					String remark = eutil.getCellContent(sheet.getRow(i).getCell(20)).trim();
 					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 					String userId = UUIDUtils.getUUID();
@@ -2160,6 +2178,11 @@ public class UserServiceImpl implements UserService {
 		return result;
 	}
 
-	
+	public String replacePlace(String place) {
+		if(place.indexOf("@@")==-1) {
+			place = "@@@@@@"+place.trim();
+		}
+		return place;
+	}
 	
 }
