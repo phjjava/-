@@ -280,7 +280,7 @@
   </select>
    <!-- 根据角色id与家族id查询 功能列表 -->
   <select id="selectFunctionListByRoleidAndFamilyid" resultType="com.jp.entity.Function">
-  	select 
+  	select DISTINCT
 	`function`.functionid, functionname, parentid, functionurl, icon, sort, description
 	from jp_function `function`
 	inner join jp_func_role func_role on `function`.functionid = func_role.functionid
@@ -292,7 +292,7 @@
   </select>
   
   <select id="selectFunctionByUserid" resultType="com.jp.entity.Function">
-  	select f.functionid,f.functionname,f.parentid,f.functionurl,f.icon,f.sort,f.description
+  	select DISTINCT f.functionid,f.functionname,f.parentid,f.functionurl,f.icon,f.sort,f.description
   	from jp_function f
   	inner join jp_function_role m on f.functionid = m.functionid 
   	where f.familyid =  #{familyid,jdbcType=VARCHAR}

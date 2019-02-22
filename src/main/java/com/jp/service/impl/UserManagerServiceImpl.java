@@ -85,13 +85,16 @@ public class UserManagerServiceImpl implements UserManagerService {
 		entity.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 		if (functionids != null && functionids.length > 0) {
 			FunctionRoleExample example = new FunctionRoleExample();
-			
-			for(String functionid : functionids) {
-				example.or().andUseridEqualTo(entity.getUserid())
-								.andFunctionidEqualTo(functionid)
-								.andEbidEqualTo(entity.getEbid());
-				functionRoleMapper.deleteByExample(example);
-			}
+			//example.clear();
+			example.or().andUseridEqualTo(CurrentUserContext.getCurrentUserId())
+							.andEbidEqualTo(entity.getEbid());
+			functionRoleMapper.deleteByExample(example);
+//			for(String functionid : functionids) {
+//				example.or().andUseridEqualTo(entity.getUserid())
+//								.andFunctionidEqualTo(functionid)
+//								.andEbidEqualTo(entity.getEbid());
+//				functionRoleMapper.deleteByExample(example);
+//			}
 			
 			functionRoleMapper.insertBatch(entity.getUserid(), functionids,entity.getEbid());
 		}
@@ -107,13 +110,17 @@ public class UserManagerServiceImpl implements UserManagerService {
 		entity.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 		if (functionids != null && functionids.length > 0) {
 			FunctionRoleExample example = new FunctionRoleExample();
-			
-			for(String functionid : functionids) {
-				example.or().andUseridEqualTo(CurrentUserContext.getCurrentUserId())
-								.andFunctionidEqualTo(functionid)
-								.andEbidEqualTo(entity.getEbid());
-				functionRoleMapper.deleteByExample(example);
-			}
+			//example.clear();
+			example.or().andUseridEqualTo(CurrentUserContext.getCurrentUserId())
+							.andEbidEqualTo(entity.getEbid());
+			functionRoleMapper.deleteByExample(example);
+//			for(String functionid : functionids) {
+//				example.clear();
+//				example.or().andUseridEqualTo(CurrentUserContext.getCurrentUserId())
+//								.andFunctionidEqualTo(functionid)
+//								.andEbidEqualTo(entity.getEbid());
+//				functionRoleMapper.deleteByExample(example);
+//			}
 			
 			functionRoleMapper.insertBatch(CurrentUserContext.getCurrentUserId(), functionids,entity.getEbid());
 		}
@@ -126,6 +133,14 @@ public class UserManagerServiceImpl implements UserManagerService {
 
 	@Override
 	public int del(String id) {
+		UserManager manager = userManagerMapper.selectByPrimaryKey(id);
+		if(manager != null) {
+			FunctionRoleExample roleEx = new FunctionRoleExample();
+			roleEx.or().andUseridEqualTo(manager.getUserid());
+			functionRoleMapper.deleteByExample(roleEx);
+		}
+			
+		
 		return userManagerMapper.deleteByPrimaryKey(id);
 	}
 
