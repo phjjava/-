@@ -117,7 +117,8 @@ public class BranchController {
 	        List<UserManager> managers = userManagerMapper.selectByExample(example);
 //	        UserQuery ex = new UserQuery();
 	        for(UserManager manager : managers) {
-	        	if(manager.getEbtype() == 1 && manager.getIsmanager() == 1) {
+	        	//if(manager.getEbtype() == 1 && manager.getIsmanager() == 1) {
+	        	if(manager.getEbtype() == 1) {
 	        		branchService.pageQuery(pageModel,branch);
 	        		 
 	        	}else {
