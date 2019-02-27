@@ -74,7 +74,7 @@ function initBranch(){
 			if(data){
 				var option = "<option value=''>---- 请选择分支----</option>";
 				for(var i = 0; i < data.length; i++){
-					option += "<option value="+data[i].branchid + " branchname="+data[i].branchname+">" +data[i].area + " "+data[i].cityname + " " +data[i].xname + " "+data[i].branchname+"</option>";
+					option += "<option value="+data[i].branchid + " branchname="+data[i].branchname+">" +data[i].area + " "+data[i].cityname + " " +data[i].xname + " "+data[i].address+" "+data[i].branchname+"</option>";
 				}
 				
 				$('.branch-select').html(option);
