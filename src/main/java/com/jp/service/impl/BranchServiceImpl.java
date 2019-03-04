@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentUserContext;
 import com.jp.common.PageModel;
 import com.jp.dao.BranchDao;
@@ -109,7 +110,8 @@ public class BranchServiceImpl implements BranchService {
         UserQuery ex = new UserQuery();
         for(Branch b : list) {
          	ex.clear();
-         	ex.or().andBranchidEqualTo(b.getBranchid());
+         	ex.or().andBranchidEqualTo(b.getBranchid())
+         			.andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
          	int num = userDao.countByExample(ex);
          	b.setUsercount(num);
          }

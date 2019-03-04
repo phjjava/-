@@ -48,7 +48,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 		}
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		List<UserManager> list = new ArrayList<UserManager>();
-		List<UserManager> rtnlist = new ArrayList<UserManager>();
+//		List<UserManager> rtnlist = new ArrayList<UserManager>();
 		for(UserManager manager : managers) {
 			example.clear();
 			example.setOrderByClause("ismanager desc");
@@ -57,19 +57,19 @@ public class UserManagerServiceImpl implements UserManagerService {
 				example.or().andIdNotEqualTo(manager.getId()).andFamilyidEqualTo(manager.getFamilyid());
 				
 				
-				list = userManagerMapper.selectByExample(example);
-				rtnlist.addAll(list);
+//				list = userManagerMapper.selectByExample(example);
+//				rtnlist.addAll(list);
 				break;
 			}
 			example.or().andEbidEqualTo(manager.getEbid())
 							.andIdNotEqualTo(manager.getId());
-			list = userManagerMapper.selectByExample(example);
-			rtnlist.addAll(list);
+//			list = userManagerMapper.selectByExample(example);
+//			rtnlist.addAll(list);
 		}
+		list = userManagerMapper.selectByExample(example);
 		
-		
-		pageModel.setList(rtnlist);
-		pageModel.setPageInfo(new PageInfo<UserManager>(rtnlist));
+		pageModel.setList(list);
+		pageModel.setPageInfo(new PageInfo<UserManager>(list));
 
 		return pageModel;
 	}
@@ -86,7 +86,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 		if (functionids != null && functionids.length > 0) {
 			FunctionRoleExample example = new FunctionRoleExample();
 			//example.clear();
-			example.or().andUseridEqualTo(CurrentUserContext.getCurrentUserId())
+			example.or().andUseridEqualTo(entity.getUserid())
 							.andEbidEqualTo(entity.getEbid());
 			functionRoleMapper.deleteByExample(example);
 //			for(String functionid : functionids) {
@@ -111,7 +111,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 		if (functionids != null && functionids.length > 0) {
 			FunctionRoleExample example = new FunctionRoleExample();
 			//example.clear();
-			example.or().andUseridEqualTo(CurrentUserContext.getCurrentUserId())
+			example.or().andUseridEqualTo(entity.getUserid())
 							.andEbidEqualTo(entity.getEbid());
 			functionRoleMapper.deleteByExample(example);
 //			for(String functionid : functionids) {
@@ -122,7 +122,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 //				functionRoleMapper.deleteByExample(example);
 //			}
 			
-			functionRoleMapper.insertBatch(CurrentUserContext.getCurrentUserId(), functionids,entity.getEbid());
+			functionRoleMapper.insertBatch(entity.getUserid(), functionids,entity.getEbid());
 		}
 		Post post = postMapper.selectByPrimaryKey(entity.getPostid());
 		entity.setPostname(post.getName());
