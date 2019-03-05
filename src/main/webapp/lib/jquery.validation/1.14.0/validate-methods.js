@@ -109,9 +109,9 @@ $(function(){
      // 手机号码验证    
     jQuery.validator.addMethod("isMobile", function(value, element) {    
       var length = value.length;    
-      return this.optional(element) || (length == 11 && /^(((13[0-9]{1})|(15[0-35-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/.test(value));    
+      return this.optional(element) || (length == 11 && /^(((1[3-9][0-9]{1}))+\d{8})$/.test(value));
     }, "手机号码格式不正确。");
-
+    
     // 电话号码验证    
     jQuery.validator.addMethod("isPhone", function(value, element) {    
       var tel = /^(\d{3,4}-?)?\d{7,9}$/g;    
@@ -121,7 +121,7 @@ $(function(){
     // 联系电话(手机/电话皆可)验证   
     jQuery.validator.addMethod("isTel", function(value,element) {   
         var length = value.length;   
-        var mobile = /^(((13[0-9]{1})|(15[0-35-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+        var mobile = /^(((1[3-9][0-9]{1}))+\d{8})$/;   // /^(((13[0-9]{1})|(15[0-35-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/
         var tel = /^(\d{3,4}-?)?\d{7,9}$/g;       
         return this.optional(element) || tel.test(value) || (length==11 && mobile.test(value));   
     }, "请输入正确手机号码或电话号码"); 
