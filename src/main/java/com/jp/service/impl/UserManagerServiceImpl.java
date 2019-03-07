@@ -96,7 +96,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 //				functionRoleMapper.deleteByExample(example);
 //			}
 			
-			functionRoleMapper.insertBatch(entity.getUserid(), functionids,entity.getEbid());
+			functionRoleMapper.insertBatch(entity.getUserid(), functionids,entity.getEbid(),entity.getPostid());
 		}
 		Post post = postMapper.selectByPrimaryKey(entity.getPostid());
 		entity.setPostname(post.getName());
@@ -112,7 +112,8 @@ public class UserManagerServiceImpl implements UserManagerService {
 			FunctionRoleExample example = new FunctionRoleExample();
 			//example.clear();
 			example.or().andUseridEqualTo(entity.getUserid())
-							.andEbidEqualTo(entity.getEbid());
+							.andEbidEqualTo(entity.getEbid())
+							.andPostidEqualTo(entity.getPostid());
 			functionRoleMapper.deleteByExample(example);
 //			for(String functionid : functionids) {
 //				example.clear();
@@ -122,7 +123,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 //				functionRoleMapper.deleteByExample(example);
 //			}
 			
-			functionRoleMapper.insertBatch(entity.getUserid(), functionids,entity.getEbid());
+			functionRoleMapper.insertBatch(entity.getUserid(), functionids,entity.getEbid(),entity.getPostid());
 		}
 		Post post = postMapper.selectByPrimaryKey(entity.getPostid());
 		entity.setPostname(post.getName());

@@ -21,5 +21,7 @@ public interface FunctionService {
 
 	List<Function> selectFunctionListByManagerid(String familyid, String userid);
 
+	List<Function> selectFunctionListByEbid(String familyid,String userid,String ebid,String postid);
+
 	
 }

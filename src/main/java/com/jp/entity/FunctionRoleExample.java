@@ -355,6 +355,76 @@ public class FunctionRoleExample {
             addCriterion("ebid not between", value1, value2, "ebid");
             return (Criteria) this;
         }
+
+        public Criteria andPostidIsNull() {
+            addCriterion("postid is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPostidIsNotNull() {
+            addCriterion("postid is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPostidEqualTo(String value) {
+            addCriterion("postid =", value, "postid");
+            return (Criteria) this;
+        }
+
+        public Criteria andPostidNotEqualTo(String value) {
+            addCriterion("postid <>", value, "postid");
+            return (Criteria) this;
+        }
+
+        public Criteria andPostidGreaterThan(String value) {
+            addCriterion("postid >", value, "postid");
+            return (Criteria) this;
+        }
+
+        public Criteria andPostidGreaterThanOrEqualTo(String value) {
+            addCriterion("postid >=", value, "postid");
+            return (Criteria) this;
+        }
+
+        public Criteria andPostidLessThan(String value) {
+            addCriterion("postid <", value, "postid");
+            return (Criteria) this;
+        }
+
+        public Criteria andPostidLessThanOrEqualTo(String value) {
+            addCriterion("postid <=", value, "postid");
+            return (Criteria) this;
+        }
+
+        public Criteria andPostidLike(String value) {
+            addCriterion("postid like", value, "postid");
+            return (Criteria) this;
+        }
+
+        public Criteria andPostidNotLike(String value) {
+            addCriterion("postid not like", value, "postid");
+            return (Criteria) this;
+        }
+
+        public Criteria andPostidIn(List<String> values) {
+            addCriterion("postid in", values, "postid");
+            return (Criteria) this;
+        }
+
+        public Criteria andPostidNotIn(List<String> values) {
+            addCriterion("postid not in", values, "postid");
+            return (Criteria) this;
+        }
+
+        public Criteria andPostidBetween(String value1, String value2) {
+            addCriterion("postid between", value1, value2, "postid");
+            return (Criteria) this;
+        }
+
+        public Criteria andPostidNotBetween(String value1, String value2) {
+            addCriterion("postid not between", value1, value2, "postid");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

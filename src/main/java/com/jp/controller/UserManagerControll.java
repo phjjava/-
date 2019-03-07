@@ -109,13 +109,22 @@ public class UserManagerControll {
 	@RequestMapping(value = "/get", method = RequestMethod.GET)
 	public String get(HttpServletRequest request, ModelMap model) {
 		try {
+			//获取当前管理员的id
 			String id = request.getParameter("id");
+			UserManager manager = null;
 			if(id !=null && !"".equals(id)) {
-				UserManager manager = userManagerService.getUserManager(id);
+				manager = userManagerService.getUserManager(id);
 				model.put("manager", manager);
 			}
 			String familyid = CurrentUserContext.getCurrentFamilyId();
-			List<Function> functionList = functionService.selectFunctionListByRoleid(familyid,"" );
+			List<Function> functionList = new ArrayList<>();
+			if(manager == null || ( manager.getIsmanager()==1 && manager.getEbtype()==1)) {
+				functionList = functionService.selectFunctionListByEbid(familyid,"","","");
+			}else {
+				functionList = functionService.selectFunctionListByEbid(familyid,manager.getUserid(),manager.getEbid(),manager.getPostid());
+			}
+			
+			
 			List<Function> plist = null;
 			List<Function> clist = null;
 			if (functionList != null) {
