@@ -13,6 +13,16 @@ public class FunctionRoleKey implements Serializable {
      */
     private String functionid;
 
+    /**
+     * 编委会id
+     */
+    private String ebid;
+
+    /**
+     * 职务id
+     */
+    private String postid;
+
     private static final long serialVersionUID = 1L;
 
     public String getUserid() {
@@ -31,6 +41,22 @@ public class FunctionRoleKey implements Serializable {
         this.functionid = functionid == null ? null : functionid.trim();
     }
 
+    public String getEbid() {
+        return ebid;
+    }
+
+    public void setEbid(String ebid) {
+        this.ebid = ebid == null ? null : ebid.trim();
+    }
+
+    public String getPostid() {
+        return postid;
+    }
+
+    public void setPostid(String postid) {
+        this.postid = postid == null ? null : postid.trim();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -39,6 +65,8 @@ public class FunctionRoleKey implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", userid=").append(userid);
         sb.append(", functionid=").append(functionid);
+        sb.append(", ebid=").append(ebid);
+        sb.append(", postid=").append(postid);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

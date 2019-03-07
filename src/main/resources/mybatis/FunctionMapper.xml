@@ -278,6 +278,31 @@
     </if>
 	where fk.familyid = #{familyid} order by fk.sort desc
   </select>
+  
+  <!-- 根据角色id查询 功能列表 -->
+  <select id="selectFunctionListByEbid" resultType="com.jp.entity.Function">
+  	select 
+	fk.functionid, functionname, parentid, functionurl,    
+	 icon, sort, description,func_role.functionid as isfunctionid
+	from jp_function fk
+	left join jp_function_role func_role on fk.functionid = func_role.functionid
+	<if test="userid != null" >
+        and func_role.userid = #{userid,jdbcType=VARCHAR}
+    </if>
+    <if test="ebid != null" >
+        and func_role.ebid = #{ebid,jdbcType=VARCHAR}
+    </if>
+    <if test="postid != null" >
+        and func_role.postid = #{postid,jdbcType=VARCHAR}
+    </if>
+    <if test="userid == null" >
+        and 1=2
+    </if>
+	where fk.familyid = #{familyid}
+	
+	order by fk.sort desc
+  </select>
+  
    <!-- 根据角色id与家族id查询 功能列表 -->
   <select id="selectFunctionListByRoleidAndFamilyid" resultType="com.jp.entity.Function">
   	select DISTINCT

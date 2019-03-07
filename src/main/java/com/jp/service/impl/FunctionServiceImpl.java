@@ -97,6 +97,11 @@ public class FunctionServiceImpl implements FunctionService {
 		
 		return rtnlist;
 	}
+
+	@Override
+	public List<Function> selectFunctionListByEbid(String familyid,String userid,String ebid,String postid) {
+		return functionDao.selectFunctionListByEbid(familyid,userid,ebid,postid);
+	}
 	
 
 	
