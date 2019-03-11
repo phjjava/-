@@ -704,7 +704,7 @@
     where userid = #{userid,jdbcType=VARCHAR}
   </update>
    <select id="selectUserItem" resultType="com.jp.entity.User" parameterType="com.jp.entity.User">
-  	select `user`.userid, `user`.username, `user`.genlevel,`user`.phone,`user`.branchname,`user`.branchid,`user`.familyid ,z.address as address
+  	select `user`.userid, `user`.username, `user`.genlevel,`user`.phone,`user`.branchname,`user`.branchid,`user`.familyid ,concat_ws('',z.area,z.cityname,z.xname,ifNULL(z.address,' ')) as address 
 	from jp_user `user` 
 	left join jp_userinfo userInfo on `user`.userid = userInfo.userid left join  jp_branch z on `user`.branchid=z.branchid
 	where `user`.status = 0 and `user`.deleteflag = 0 and `user`.isdirect = 1 
