@@ -165,9 +165,12 @@ $(function(){
 						genlevel = data[i].genlevel;
 					}
 					optionStr+='<option familyid="'+data[i].familyid+'" beginname="'+data[i].username+'" parentid="'+data[i].branchid+'" value="' + data[i].userid + '">'
-					+data[i].username+' '+ data[i].phone + ' ' + data[i].genlevel+'世 ';
+					+data[i].username+ ' ' + data[i].genlevel+'世 ';
+					if(data[i].branchname){
+						optionStr+= ' '+data[i].branchname;
+					}
 					if(data[i].address){
-						optionStr+= data[i].address;
+						optionStr+= ' '+data[i].address;
 					}
 					optionStr+= "</option>";
 				}
