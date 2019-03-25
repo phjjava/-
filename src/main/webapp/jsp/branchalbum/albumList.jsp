@@ -12,7 +12,7 @@
    <span class="c-gray en">&gt;</span> 相册管理 
    <span class="c-gray en">&gt;</span> 相册 
 </nav>
-
+<div class="Hui-article">
 <article class="cl pd-30">
 	<div class="cl pd-5 bg-1 bk-gray"> 
 	 <span class="l">
@@ -101,6 +101,7 @@
 		</div>
 	</div>
 </article>
+</div>
 <script type="text/javascript" src="<%=basePath%>lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="<%=basePath%>js/amazeui.chosen.min.js"></script>
 <script type="text/javascript">
