@@ -245,6 +245,10 @@ $(function() {
 					}
 				}
 				$('#ebid').html(optionStrM);
+				if(dataval != ''){
+			 		$('#ebid').val(dataval);
+			 		initPost(dataval.split("_")[1]);
+			 	}
 				
 			}else{
 				alert("初始编委会失败！");  
@@ -254,7 +258,7 @@ $(function() {
 			console.log(e);
 		}
 	});
-	$("#ebid").change(function(){
+	/* $("#ebid").change(function(){
 		var ebname = $("#ebid").find("option:selected").text();
 		
 		if(ebname=='总编委会'){
@@ -264,7 +268,7 @@ $(function() {
 			
 			$("#ismanager option[value='1']").attr("style","display:block");
 		}
-	});
+	}); */
 	
 	$('#ebid').chosen({
     	search_contains: true,
@@ -389,7 +393,9 @@ function initPost(type){
 					}
 				}
 				$('#post').html(optionStrM);
-				
+				if(dataval != ''){
+			 		$('#post').val(dataval);
+			 	}
 			}else{
 				alert("初始职务失败！");  
 			}
