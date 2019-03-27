@@ -352,7 +352,7 @@
 	sum(IFNULL(temp.shicount,0)) shicount,
 	sum(IFNULL(temp.branchcount,0)) branchcount
 	from (
-	select  null  applycount, count(*) usercount,null shicount,null branchcount, null rolecount from jp_user `user` where `user`.`status` = 0 and `user`.familyid = #{familyid,jdbcType=VARCHAR} 
+	select  null  applycount, count(*) usercount,null shicount,null branchcount, null rolecount from jp_user `user` where `user`.`status` = 0 and `user`.deleteflag = 0 and `user`.familyid = #{familyid,jdbcType=VARCHAR} 
 	union all
 	select null applycount , null usercount, max(`user`.genlevel) shicount,null branchcount, null rolecount from jp_user `user` where `user`.familyid = #{familyid,jdbcType=VARCHAR}
 	union all
@@ -360,7 +360,7 @@
 	union all
 	select 
 	count(*) applycount, null usercount,null shicount,null branchcount, null rolecount
-	from jp_user `user` where `user`.`status` <> 0 and `user`.familyid = #{familyid,jdbcType=VARCHAR}
+	from jp_user `user` where `user`.`status` <> 0 and `user`.deleteflag = 0 and `user`.familyid = #{familyid,jdbcType=VARCHAR} 
 	 ]]>
 	 <foreach collection="list" item="item" index="index" open="and `user`.branchid in (" separator="," close=")">
 	   #{item}
