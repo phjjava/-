@@ -269,14 +269,14 @@
       	no_results_text: "没有找到",
     });
 	//回显副文本编辑器
-        var eWCen = $('#eWCen').html();
-        EWEBEDITOR.SetHtmlAsync("content1", eWCen);
+    var eWCen = $('#eWCen').html();
+    EWEBEDITOR.SetHtmlAsync("content1", eWCen);
         
-		$('.skin-minimal input').iCheck({
-			checkboxClass: 'icheckbox-blue',
-			radioClass: 'iradio-blue',
-			increaseArea: '20%'
-		});
+    $('.skin-minimal input').iCheck({
+        checkboxClass: 'icheckbox-blue',
+        radioClass: 'iradio-blue',
+        increaseArea: '20%'
+    });
 	$('.skin-minimal input').iCheck({
 		checkboxClass: 'icheckbox-blue',
 		radioClass: 'iradio-blue',
