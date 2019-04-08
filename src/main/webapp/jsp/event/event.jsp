@@ -46,7 +46,11 @@
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">内容：</label>
 			<div class="formControls col-xs-8 col-sm-9"> 
-				<script id="editor" value="${event.eventcontent}" name="" type="text/plain" ></script> 
+                <!-- 加载编辑器 -->
+                <div id="eWCen" style="display: none;">${event.eventcontent}</div>
+                <div id="eWebEd" style="border: 1px solid #fefbfb;"></div>
+
+				<!-- <script id="editor" value="${event.eventcontent}" name="" type="text/plain" ></script>  -->
 			</div>
 		</div>
 		<div class="row cl">
@@ -63,11 +67,21 @@
 <script type="text/javascript" src="<%=basePath%>lib/ueditor/1.4.3/ueditor.all.min.js"> </script> 
 <script type="text/javascript" src="<%=basePath%>lib/ueditor/1.4.3/lang/zh-cn/zh-cn.js"></script>
 <script type="text/javascript" src="<%=basePath%>lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="<%=basePath%>/ewebeditor/ewebeditor.js"></script>
 <script type="text/javascript">
+// ------------------------编辑器-------------/------------
+    var eWebEds = '<INPUT type="hidden" name="content1" value="" id="contentId">'
+	eWebEds += '<iframe ID="eWebEditor1" src="<%=basePath%>ewebeditor/ewebeditor.htm?id=content1&style=coolblue"'
+	eWebEds += 'frameborder="0" scrolling="no" width="100%" HEIGHT="350"></iframe>'
+    $('#eWebEd').html(eWebEds);
+// ------------------------编辑器-------------\------------
+
   function eventSave(){
 	  var formData = new FormData($("#event_add")[0]);
-	  var ue = UE.getEditor('editor');
-      var eventcontent = ue.getContent();
+	//   var ue = UE.getEditor('editor');
+    //   var eventcontent = ue.getContent();
+      var eventcontent =  document.getElementById("eWebEditor1").contentWindow.getHTML()
+
 	  formData.append('eventcontent',eventcontent);
 	  $.ajax({
 		 type:"post",
@@ -96,18 +110,15 @@
 		
   $(function(){
 	//回显副文本编辑器
-		var ue = UE.getEditor('editor',{initialFrameWidth :850,
-			initialFrameHeight:350});
-		ue.ready(function(){
-			var eventcontent = '${event.eventcontent}';
-			ue.setContent(eventcontent);
-		});
+   
+    var eWCen = $('#eWCen').html();
+	EWEBEDITOR.SetHtmlAsync("content1", eWCen);
 	 
-		$('.skin-minimal input').iCheck({
-			checkboxClass: 'icheckbox-blue',
-			radioClass: 'iradio-blue',
-			increaseArea: '20%'
-		});
+    $('.skin-minimal input').iCheck({
+        checkboxClass: 'icheckbox-blue',
+        radioClass: 'iradio-blue',
+        increaseArea: '20%'
+    });
 	$('.skin-minimal input').iCheck({
 		checkboxClass: 'icheckbox-blue',
 		radioClass: 'iradio-blue',
@@ -213,7 +224,7 @@
         }
     });
 	
-	var ue = UE.getEditor('editor');
+	// var ue = UE.getEditor('editor');
 	
 });
  

@@ -82,7 +82,11 @@
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>内容：</label>
 			<div class="formControls col-xs-8 col-sm-9"> 
-				<script id="editor" type="text/plain" value="${dynamic.dycontent}"  style="width:100%;height:400px;"></script> 
+                <!-- 加载编辑器 -->
+                <div id="eWCen" style="display: none;">${dynamic.dycontent}</div>
+				<div id="eWebEd" style="border: 1px solid #fefbfb;"></div>
+                    
+				<!-- <script id="editor" type="text/plain" value="${dynamic.dycontent}"  style="width:100%;height:400px;"></script>  -->
 			</div>
 		</div>
 		
@@ -132,7 +136,16 @@
 <script type="text/javascript" src="<%=basePath%>js/distpicker.js"></script>
 <script type="text/javascript" src="<%=basePath%>js/amazeui.chosen.min.js"></script>
 <script type="text/javascript" src="<%=basePath%>lib/My97DatePicker/4.8/WdatePicker.js"></script>
+
+<script type="text/javascript" src="<%=basePath%>/ewebeditor/ewebeditor.js"></script>
 <script type="text/javascript">
+    // ------------------------编辑器-------------/------------
+    var eWebEds = '<INPUT type="hidden" name="content1" value="" id="contentId">'
+	eWebEds += '<iframe ID="eWebEditor1" src="<%=basePath%>ewebeditor/ewebeditor.htm?id=content1&style=coolblue"'
+	eWebEds += 'frameborder="0" scrolling="no" width="100%" HEIGHT="350"></iframe>'
+    $('#eWebEd').html(eWebEds);
+    // ------------------------编辑器-------------\------------
+    
 	$("#branchid").change(function(){
 	 	 $("#branchname").val($("#branchid option:selected").attr("branchname"));
 	});
@@ -153,8 +166,10 @@
   function dy_save(){
 		  var formData = new FormData($("#dy-add")[0]);
 		  
-		  var ue = UE.getEditor('editor');
-		  var dycontent = ue.getContent();
+		//   var ue = UE.getEditor('editor');
+        //   var dycontent = ue.getContent();
+          var dycontent = document.getElementById("eWebEditor1").contentWindow.getHTML()
+
 		  var branchid = $("#branchid").val();
 		  var type = $("#dytype").val();
 		  
@@ -198,7 +213,6 @@
 	  
 	  }
 	  
-  $(function(){
 	$("#dy-add").validate({
 			rules:{
 				branchid:{
@@ -255,16 +269,14 @@
       	no_results_text: "没有找到",
     });
 	//回显副文本编辑器
-	var ue = UE.getEditor('editor');
-	ue.ready(function(){
-		var dycontent = '${dynamic.dycontent}';
-		ue.setContent(dycontent);
-	});
-		$('.skin-minimal input').iCheck({
-			checkboxClass: 'icheckbox-blue',
-			radioClass: 'iradio-blue',
-			increaseArea: '20%'
-		});
+    var eWCen = $('#eWCen').html();
+    EWEBEDITOR.SetHtmlAsync("content1", eWCen);
+        
+    $('.skin-minimal input').iCheck({
+        checkboxClass: 'icheckbox-blue',
+        radioClass: 'iradio-blue',
+        increaseArea: '20%'
+    });
 	$('.skin-minimal input').iCheck({
 		checkboxClass: 'icheckbox-blue',
 		radioClass: 'iradio-blue',
@@ -370,7 +382,7 @@
         }
     });
 	
-	var ue = UE.getEditor('editor');
+	// var ue = UE.getEditor('editor');
 	
 	var ebtype = "${sessionScope.userContext.usermanagers[0].ebtype }";
 	  
@@ -387,7 +399,7 @@
 	  }
 	  
 	
-});
+
  
 </script>
 <script>

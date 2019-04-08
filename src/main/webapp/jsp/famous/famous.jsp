@@ -16,7 +16,7 @@
 <article class="page-container">
 	<form class="form form-horizontal" id="famous_edit" method="post">
 	<code id="testcon" style="display:none;">
-        ${usercontent.content }
+        ${usercontent.content}
     </code>
 	<input type="hidden" id="familyid"  name="familyid" value="${usercontent.familyid}"/>
 	 <%--  <input type="hidden" id="userid" name="userid" value="${usercontent.userid}"/>  --%>
@@ -40,7 +40,11 @@
 	  	<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">群英录：</label>
 			<div class="formControls col-xs-8 col-sm-9"> 
-				<script id="editor" type="text/plain" value=""></script> 
+                <!-- 加载编辑器 -->
+                <div id="eWCen" style="display: none;">${usercontent.content}</div>
+                <div id="eWebEd" style="border: 1px solid #fefbfb;"></div>
+
+				<!-- <script id="editor" type="text/plain" value=""></script>  -->
 			</div>
 		</div>
 		
@@ -91,7 +95,15 @@
 <script type="text/javascript" src="<%=basePath%>lib/ueditor/1.4.3/ueditor.config.js"></script> 
 <script type="text/javascript" src="<%=basePath%>lib/ueditor/1.4.3/ueditor.all.min.js"> </script>
 <script type="text/javascript" src="<%=basePath%>lib/ueditor/1.4.3/lang/zh-cn/zh-cn.js"></script> 
+<script type="text/javascript" src="<%=basePath%>/ewebeditor/ewebeditor.js"></script>
 <script>
+// ------------------------编辑器-------------/------------
+var eWebEds = '<INPUT type="hidden" name="content" value="" id="contentId">'
+	eWebEds += '<iframe ID="eWebEditor1" src="<%=basePath%>ewebeditor/ewebeditor.htm?id=content&style=coolblue"'
+	eWebEds += 'frameborder="0" scrolling="no" width="100%" HEIGHT="350"></iframe>'
+    $('#eWebEd').html(eWebEds);
+// ------------------------编辑器-------------\------------
+
 //图片预览
 $(function(){
 	preShowIMG();
@@ -113,11 +125,12 @@ $("#userid").change(function(){
 	});
 	
 function content_save(){
-	var formData=$("#famous_edit").serialize();
-    var ue = UE.getEditor('editor');
-    var ucontent = ue.getContent();
-    ucontent = ucontent.replace(/&/g,"%26");
-    formData =formData +"&"+"content="+ucontent;
+    $('#contentId').val(document.getElementById("eWebEditor1").contentWindow.getHTML())
+    var formData=$("#famous_edit").serialize();
+   
+
+    console.log(formData,22)
+
     var sort=$("#sort").val();
     if(sort==''){
     	$("#sort").val(99);
@@ -195,22 +208,18 @@ $(function(){
       	no_results_text: "没有找到",
     }); 
 	
-	//初始化富文本编辑器
-	var ue = UE.getEditor('editor',{
-		initialFrameWidth :860,//设置编辑器宽度
-		initialFrameHeight:350,//设置编辑器高度
-		scaleEnabled:true,
-		wordCount:true,
-		elementPathEnabled:false
-		});
-	
-	
-	ue.ready(function(){
-		
-		ue.execCommand('insertHtml', $('#testcon').html());
-	});
-	
-	
+	//回显副文本编辑器
+	// var ue = UE.getEditor('editor');
+	// ue.ready(function(){
+	// 	ue.execCommand('insertHtml', $('#testcon').html());
+	// });
+    var eWCen = $('#eWCen').html();
+    console.log(eWCen,'eWCen')
+	EWEBEDITOR.SetHtmlAsync("content", eWCen);
+    
+
+
+
 	$("#famous_edit").validate({
 		rules:{
 				userid:{
