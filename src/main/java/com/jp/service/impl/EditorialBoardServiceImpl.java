@@ -77,7 +77,7 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 		EditorialBoardExample example = new EditorialBoardExample();
 		for(UserManager manager : managers) {
 			example.clear();
-			if(manager.getIsmanager() == 1 ) {
+			//if(manager.getIsmanager() == 1 ) {
 				//总编委会主任查询所有的编委会列表
 				EditorialBoard eb = editorialBoardMapper.selectByPrimaryKey(manager.getEbid());
 				example.or().andFamilyidEqualTo(eb.getFamilyid());
@@ -85,7 +85,7 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 				List<EditorialBoard> elist = editorialBoardMapper.selectByExample(example);
 				list.addAll(elist);
 				break;
-			}
+			//}
 			
 		}
 		return list;
