@@ -31,14 +31,14 @@
 		</div>
 		
 		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">排序：</label>
+			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>排序值：</label>
 			<div class="formControls col-xs-8 col-sm-9">
 				<input type="text" class="input-text" oninput = "value=value.replace(/[^\d]/g,'')" value="${usercontent.sort }"
-					id="sort" name="sort"/>
+					id="sort" name="sort" placeholder="99" />
 			</div>
 		</div>
 	  	<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">群英录：</label>
+			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>群英录：</label>
 			<div class="formControls col-xs-8 col-sm-9"> 
                 <!-- 加载编辑器 -->
                 <div id="eWCen" style="display: none;">${usercontent.content}</div>
@@ -125,16 +125,28 @@ $("#userid").change(function(){
 	});
 	
 function content_save(){
-    $('#contentId').val(document.getElementById("eWebEditor1").contentWindow.getHTML())
-    var formData=$("#famous_edit").serialize();
-   
-
-    console.log(formData,22)
-
+    // 选择用户
+    var getUserid = $('#userid').val();
+    if(getUserid == "" || getUserid == null){  
+        layer.alert('请选择用户', {icon: 5,time:1000});
+        return;
+    }
+    // 排序值
     var sort=$("#sort").val();
-    if(sort==''){
+    if(sort == '' || sort == null){
     	$("#sort").val(99);
     }
+    // 群英录
+    var getContent = document.getElementById("eWebEditor1").contentWindow.getHTML()
+    if(getContent == "" || getContent == null){  
+        layer.alert('请在群英录输入内容', {icon: 5,time:1000});
+        return;
+    }
+    $('#contentId').val(document.getElementById("eWebEditor1").contentWindow.getHTML())
+
+    var formData=$("#famous_edit").serialize();
+    
+    
  	if($("#famous_edit").valid()){
 		$.ajax({
 			type:'post',

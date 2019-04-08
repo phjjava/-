@@ -14,7 +14,7 @@
 	  <input type="hidden" name="eventid" value="${event.eventid}"/>
 	  <input type="hidden" value="${event.imgurl}" name="imgurl" id="imgurl">
 		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">标题：</label>
+			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>标题：</label>
 			<div class="formControls col-xs-8 col-sm-9">
 				<input type="text" class="input-text" value="${event.eventtitle}" id="eventtitle" name="eventtitle">
 			</div>
@@ -44,7 +44,7 @@
 			</div>
 		</div>
 		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">内容：</label>
+			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>内容：</label>
 			<div class="formControls col-xs-8 col-sm-9"> 
                 <!-- 加载编辑器 -->
                 <div id="eWCen" style="display: none;">${event.eventcontent}</div>
@@ -77,11 +77,22 @@
 // ------------------------编辑器-------------\------------
 
   function eventSave(){
-	  var formData = new FormData($("#event_add")[0]);
-	//   var ue = UE.getEditor('editor');
-    //   var eventcontent = ue.getContent();
-      var eventcontent =  document.getElementById("eWebEditor1").contentWindow.getHTML()
+        // 标题
+        var eventtitle = $('#eventtitle').val();
+        if(eventtitle == "" || eventtitle == null){  
+            layer.alert('标题不能为空', {icon: 5,time:1000});
+            return;
+        }
+         // 内容
+        var eventcontent =  document.getElementById("eWebEditor1").contentWindow.getHTML()
+        if(eventcontent == "" || eventcontent == null){  
+            layer.alert('内容不能为空', {icon: 5,time:1000});
+            return;
+        }
 
+	    var formData = new FormData($("#event_add")[0]);
+        //   var ue = UE.getEditor('editor');
+        //   var eventcontent = ue.getContent();
 	  formData.append('eventcontent',eventcontent);
 	  $.ajax({
 		 type:"post",
