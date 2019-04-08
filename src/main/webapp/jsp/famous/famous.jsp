@@ -31,7 +31,7 @@
 		</div>
 		
 		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">排序：</label>
+			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>排序值：</label>
 			<div class="formControls col-xs-8 col-sm-9">
 				<input type="text" class="input-text" oninput = "value=value.replace(/[^\d]/g,'')" value="${usercontent.sort }"
 					id="sort" name="sort" placeholder="99" />
@@ -131,7 +131,7 @@ function content_save(){
         layer.alert('请选择用户', {icon: 5,time:1000});
         return;
     }
-    // 排序
+    // 排序值
     var sort=$("#sort").val();
     if(sort == '' || sort == null){
     	$("#sort").val(99);

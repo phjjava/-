@@ -10,19 +10,19 @@
    <form action=""class="form form-horizontal" enctype="multipart/form-data" method="post" id="introduce_save">
     <input type="hidden" name="introduceid" value="${introduce.introduceid}"/>
      <div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">标题：</label>
+			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>标题：</label>
 			<div class="formControls col-xs-8 col-sm-9">
 				<input type="text" class="input-text" value="${introduce.introducetitle}" id="introducetitle" name="introducetitle">
 			</div>
 		</div>
 		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">排序值：</label>
+			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>排序值：</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="${introduce.sort}" placeholder="" id="sort" name="sort">
+				<input type="text" class="input-text" value="${introduce.sort}" placeholder="99" id="sort" name="sort"/>
 			</div>
 		</div>
 		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">内容：</label>
+			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>内容：</label>
 			<div class="formControls col-xs-8 col-sm-9"> 
 				<!-- 加载编辑器 -->
 				<div id="eWCen" style="display: none;">${introduce.introducedetail}</div>
@@ -56,10 +56,30 @@
 // ------------------------编辑器-------------\------------
 
 function introduce_save(){
+	// 标题
+    var introducetitle = $('#introducetitle').val();
+    if(introducetitle == "" || introducetitle == null){  
+        layer.alert('标题不能为空', {icon: 5,time:1000});
+        return;
+    }
+    // 排序值
+    var sort=$("#sort").val();
+    if(sort == '' || sort == null){
+    	$("#sort").val(99);
+	}
+	// 内容
+	var introducedetail = document.getElementById("eWebEditor1").contentWindow.getHTML()
+    if(introducedetail == '' || introducedetail == null){
+		layer.alert('内容不能为空', {icon: 5,time:1000});
+        return;
+    }
+
+
+
 	var formData = new FormData($("#introduce_save")[0]);
 	// var ue = UE.getEditor('editor');
 	// var introducedetail = ue.getContent();
-	var introducedetail = document.getElementById("eWebEditor1").contentWindow.getHTML()
+	
 	
 
     formData.append('introducedetail',introducedetail);
