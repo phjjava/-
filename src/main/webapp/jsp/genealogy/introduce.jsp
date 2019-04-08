@@ -5,28 +5,30 @@
 	String path = request.getContextPath();
 	String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
 %>
-
 <jsp:include page="../common/basecss.jsp"></jsp:include>
-
 <article class="page-container">
    <form action=""class="form form-horizontal" enctype="multipart/form-data" method="post" id="introduce_save">
     <input type="hidden" name="introduceid" value="${introduce.introduceid}"/>
      <div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">标题：</label>
+			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>标题：</label>
 			<div class="formControls col-xs-8 col-sm-9">
 				<input type="text" class="input-text" value="${introduce.introducetitle}" id="introducetitle" name="introducetitle">
 			</div>
 		</div>
 		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">排序值：</label>
+			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>排序值：</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="${introduce.sort}" placeholder="" id="sort" name="sort">
+				<input type="text" class="input-text" value="${introduce.sort}" placeholder="99" id="sort" name="sort"/>
 			</div>
 		</div>
 		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">内容：</label>
+			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>内容：</label>
 			<div class="formControls col-xs-8 col-sm-9"> 
-				<script id="editor" type="text/plain" value="${introduce.introducedetail}" ></script> 
+				<!-- 加载编辑器 -->
+				<div id="eWCen" style="display: none;">${introduce.introducedetail}</div>
+				<div id="eWebEd" style="border: 1px solid #fefbfb;"></div>
+
+				<!-- <script id="editor" type="text/plain" value="${introduce.introducedetail}" ></script>  -->
 			</div>
 		</div>
 		<div class="row cl">
@@ -43,11 +45,43 @@
 <script type="text/javascript" src="<%=basePath%>lib/ueditor/1.4.3/ueditor.config.js"></script> 
 <script type="text/javascript" src="<%=basePath%>lib/ueditor/1.4.3/ueditor.all.min.js"> </script> 
 <script type="text/javascript" src="<%=basePath%>lib/ueditor/1.4.3/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript" src="<%=basePath%>/ewebeditor/ewebeditor.js"></script>
 <script type="text/javascript">
+
+  // ------------------------编辑器-------------/------------
+  var eWebEds = '<INPUT type="hidden" name="content1" value="" id="contentId">'
+	eWebEds += '<iframe ID="eWebEditor1" src="<%=basePath%>ewebeditor/ewebeditor.htm?id=content1&style=coolblue"'
+	eWebEds += 'frameborder="0" scrolling="no" width="100%" HEIGHT="350"></iframe>'
+    $('#eWebEd').html(eWebEds);
+// ------------------------编辑器-------------\------------
+
 function introduce_save(){
+	// 标题
+    var introducetitle = $('#introducetitle').val();
+    if(introducetitle == "" || introducetitle == null){  
+        layer.alert('标题不能为空', {icon: 5,time:1000});
+        return;
+    }
+    // 排序值
+    var sort=$("#sort").val();
+    if(sort == '' || sort == null){
+    	$("#sort").val(99);
+	}
+	// 内容
+	var introducedetail = document.getElementById("eWebEditor1").contentWindow.getHTML()
+    if(introducedetail == '' || introducedetail == null){
+		layer.alert('内容不能为空', {icon: 5,time:1000});
+        return;
+    }
+
+
+
 	var formData = new FormData($("#introduce_save")[0]);
-	var ue = UE.getEditor('editor');
-    var introducedetail = ue.getContent();
+	// var ue = UE.getEditor('editor');
+	// var introducedetail = ue.getContent();
+	
+	
+
     formData.append('introducedetail',introducedetail);
 	$.ajax({
 		 type:"post",
@@ -73,19 +107,14 @@ function introduce_save(){
 }
 $(function(){
 	//回显副文本编辑器
-	var ue = UE.getEditor('editor',{initialFrameWidth :860,
-		initialFrameHeight:400});
-	ue.ready(function(){
-		var introducedetail = '${introduce.introducedetail}';
-		ue.setContent(introducedetail);
-	});
+	var eWCen = $('#eWCen').html();
+	EWEBEDITOR.SetHtmlAsync("content1", eWCen);
+	
 	$('.skin-minimal input').iCheck({
 		checkboxClass: 'icheckbox-blue',
 		radioClass: 'iradio-blue',
 		increaseArea: '20%'
 	});
-	
-	
 	$list = $("#fileList"),
 	$btn = $("#btn-star"),
 	state = "pending",
@@ -185,7 +214,7 @@ $(function(){
         }
     });
 	
-	var ue = UE.getEditor('editor');
+	// var ue = UE.getEditor('editor');
 	
 });
 </script>

@@ -53,7 +53,11 @@
 	  <div class="row cl">
 		<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>内容：</label>
 		<div class="formControls col-xs-8 col-sm-9"> 
-			<script id="editor" type="text/plain" value="" style="height:400px;"></script> 
+			 <!-- 加载编辑器 -->
+			 <div id="eWCen" style="display: none;">${notice.noticecontent}</div>
+			 <div id="eWebEd" style="border: 1px solid #fefbfb;"></div>
+
+			<!-- <script id="editor" type="text/plain" value="" style="height:400px;"></script>  -->
 		</div>
 	</div>
 	<!--  
@@ -97,7 +101,18 @@
 <script type="text/javascript" src="<%=basePath%>js/distpicker.js"></script>
 <script type="text/javascript" src="<%=basePath%>js/amazeui.chosen.min.js"></script>
 <script type="text/javascript" src="<%=basePath%>lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="<%=basePath%>/ewebeditor/ewebeditor.js"></script>
 <script type="text/javascript">
+
+  // ------------------------编辑器-------------/------------
+  var eWebEds = '<INPUT type="hidden" name="content1" value="" id="contentId">'
+	eWebEds += '<iframe ID="eWebEditor1" src="<%=basePath%>ewebeditor/ewebeditor.htm?id=content1&style=coolblue"'
+	eWebEds += 'frameborder="0" scrolling="no" width="100%" HEIGHT="350"></iframe>'
+    $('#eWebEd').html(eWebEds);
+// ------------------------编辑器-------------\------------
+
+
+
 //var fileServer='http://192.168.0.69:8080/fileupload/jsp/controller.jsp?action=uploadimage&encode=utf-8';
 var fileServer='http://59.110.174.146:8081/fileupload/jsp/controller.jsp?action=uploadimage&encode=utf-8';
 
@@ -124,8 +139,11 @@ var fileServer='http://59.110.174.146:8081/fileupload/jsp/controller.jsp?action=
 	
   function noticeSave(){
 	  var formData = new FormData($("#notice-add")[0]);
-      var ue = UE.getEditor('editor');
-      var noticecontent = ue.getContent();
+    //   var ue = UE.getEditor('editor');
+	//   var noticecontent = ue.getContent();
+	  var noticecontent = document.getElementById("eWebEditor1").contentWindow.getHTML()
+	  
+
       var branchid = $("#branchid").val();
       var noticetitle=$("input[name='noticetitle']").val();
       formData.append("noticecontent",noticecontent);
@@ -205,11 +223,13 @@ var fileServer='http://59.110.174.146:8081/fileupload/jsp/controller.jsp?action=
 	      	no_results_text: "没有找到",
 	    });
 	//回显副文本编辑器
-	var ue = UE.getEditor('editor');
-	ue.ready(function(){
-		ue.execCommand('insertHtml', $('#testcon').html());
+	// var ue = UE.getEditor('editor');
+	// ue.ready(function(){
+	// 	ue.execCommand('insertHtml', $('#testcon').html());
+	// });
+	var eWCen = $('#eWCen').html();
+	EWEBEDITOR.SetHtmlAsync("content1", eWCen);
 		
-	});
 	$('.skin-minimal input').iCheck({
 		checkboxClass: 'icheckbox-blue',
 		radioClass: 'iradio-blue',
@@ -315,7 +335,7 @@ var fileServer='http://59.110.174.146:8081/fileupload/jsp/controller.jsp?action=
         }
     });
 	
-	var ue = UE.getEditor('editor');
+	// var ue = UE.getEditor('editor');
 	
 	//总编委会/分编为会
 	var ebtype = "${sessionScope.userContext.usermanagers[0].ebtype }";
