@@ -21,7 +21,7 @@
      <input type="hidden" value="${dynamic.imgurl}" name="imgurl" id="imgurl">
      <input type="hidden" id="branchname" value="${dynamic.branchname}" name="branchname">
        <div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">动态标题：</label>
+			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>动态标题：</label>
 			<div class="formControls col-xs-8 col-sm-9">
 				<input id="dytitle" type="text" class="input-text" value="${dynamic.dytitle}"  name="dytitle">
 			</div>
@@ -164,6 +164,13 @@
 		}
 	}
   function dy_save(){
+          // 标题    
+          var getIdidTitle = $('#dytitle').val();  
+          if(getIdidTitle == "" || getIdidTitle == null){  
+            layer.alert('标题不能为空', {icon: 5,time:1000});
+            return;
+		  }
+
 		  var formData = new FormData($("#dy-add")[0]);
 		  
 		//   var ue = UE.getEditor('editor');
@@ -177,10 +184,10 @@
 			  branchid = '0';
 		  }
 		  if($("#dy-add").valid()){
-			  /* if(dycontent == "" || dycontent == null){
+			 if(dycontent == "" || dycontent == null){
 				  layer.alert('请添加动态内容!', {icon: 5,time:1000});
 				  return;
-			  } */
+			  } 
 			  if(branchid == "" || branchid == null){  
 				  layer.alert('请选择所属分支!', {icon: 5,time:1000});
 		    	  return;
