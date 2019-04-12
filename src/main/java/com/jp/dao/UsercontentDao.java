@@ -33,4 +33,6 @@ public interface UsercontentDao {
     int updateByPrimaryKeyWithBLOBs(Usercontent record);
 
     int updateByPrimaryKey(Usercontent record);
+
+	int batchDelete(@Param("array")String[] idArray);
 }

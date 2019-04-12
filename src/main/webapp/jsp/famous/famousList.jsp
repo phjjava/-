@@ -17,11 +17,11 @@
 <div class="Hui-article">
   <article class="cl pd-30">
 	<div class="cl pd-5 bg-1 bk-gray mt-0">
-<!-- 	  <span class="l">
+ 	  <span class="l">
 		  <a href="javascript:;" onclick="batchdelete();" class="btn btn-danger radius">
 		     <i class="Hui-iconfont">&#xe6e2;</i> 批量删除
 		  </a> 
-	  </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
+	  </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
 	  <span class="l" style="margin-left:4px;">
 	    <a title="新增名人录" href="javascript:;" onclick="famous_add('新增名人录','<%=basePath%>/jsp/famous/famous.jsp','500','1200')" class="btn btn-primary radius" style="text-decoration:none">
 	      <i class="Hui-iconfont">&#xe600;</i>新增名人录

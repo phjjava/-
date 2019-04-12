@@ -49,5 +49,14 @@ public class FamousServiceImpl implements FamousService {
 	public int update(Usercontent usercontent) throws Exception {		
 		return usercontentDao.updateByPrimaryKeySelective(usercontent);
 	}
+
+	@Override
+	public int batchDelete(String[] idArray) {
+		int num = usercontentDao.batchDelete(idArray);
+		if(num>=1)
+			return 1;
+		return 0;
+		
+	}
 	
 }

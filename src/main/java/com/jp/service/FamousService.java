@@ -32,4 +32,6 @@ public interface FamousService {
 	 * @return int
 	 */
 	int update (Usercontent usercontent) throws Exception;
+
+	public int batchDelete(String[] idArray);
 }

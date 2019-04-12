@@ -707,7 +707,7 @@
   	select `user`.userid, `user`.username, `user`.genlevel,`user`.phone,`user`.branchname,`user`.branchid,`user`.familyid ,concat_ws('',z.area,z.cityname,z.xname,ifNULL(z.address,' ')) as address 
 	from jp_user `user` 
 	left join jp_userinfo userInfo on `user`.userid = userInfo.userid left join  jp_branch z on `user`.branchid=z.branchid
-	where `user`.status = 0 and `user`.deleteflag = 0 and `user`.isdirect = 1 
+	where `user`.status = 0 and `user`.deleteflag = 0 
   	and `user`.familyid = #{familyid}
   	<if test="ismanager != null" >
   	and `user`.userid not in (select userid from jp_user_manager jpur where jpur.familyid =  #{familyid})

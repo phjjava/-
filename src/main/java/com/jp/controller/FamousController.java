@@ -111,7 +111,7 @@ public class FamousController {
 					usercontent.setUpdateid(CurrentUserContext.getCurrentUserId());
 					usercontent.setUpdatetime(new Date());
 					usercontent.setCreatetime(new Date());
-					usercontent.setIssee(ConstantUtils.ISSEE_DEFAULT);
+					usercontent.setIssee(ConstantUtils.ISSEE_SHOW);
 					result = famousService.insert(usercontent);
 				}
 			} else {
@@ -125,5 +125,23 @@ public class FamousController {
 		}
 		return result + "";
 	}
+	
+	@ResponseBody
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+    public String batchDelete(String userids){
+    	String result=null;
+    	try {
+ 		//a,b,c 
+ 		String id = userids.substring(0, userids.length());
+ 		String dyidArray [] = id.split(",");
+ 		result = famousService.batchDelete(dyidArray)+"";
+ 		//result="1";
+ 	} catch (Exception e) {
+ 		result = "0";
+ 		e.printStackTrace();
+ 		log_.error("[JPSYSTEM]", e);
+ 	}
+    	return result;
+    }
 
 }
