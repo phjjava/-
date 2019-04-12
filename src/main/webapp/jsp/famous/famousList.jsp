@@ -49,7 +49,7 @@
 				<th width="80">浏览量</th>
 				<th width="80">缩略图</th>
 				<th width="40">排序</th>
-				<th width="70">轮播显示</th>
+				<th width="70">首页轮播显示</th>
 				<th width="80">操作</th>
 			</tr>
 		</thead>

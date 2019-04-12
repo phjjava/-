@@ -111,7 +111,7 @@ public class FamousController {
 					usercontent.setUpdateid(CurrentUserContext.getCurrentUserId());
 					usercontent.setUpdatetime(new Date());
 					usercontent.setCreatetime(new Date());
-					usercontent.setIssee(ConstantUtils.ISSEE_SHOW);
+					usercontent.setIssee(ConstantUtils.ISSEE_DEFAULT);
 					result = famousService.insert(usercontent);
 				}
 			} else {
