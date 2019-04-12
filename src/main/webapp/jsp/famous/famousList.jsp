@@ -17,11 +17,11 @@
 <div class="Hui-article">
   <article class="cl pd-30">
 	<div class="cl pd-5 bg-1 bk-gray mt-0">
-<!-- 	  <span class="l">
+ 	  <span class="l">
 		  <a href="javascript:;" onclick="batchdelete();" class="btn btn-danger radius">
 		     <i class="Hui-iconfont">&#xe6e2;</i> 批量删除
 		  </a> 
-	  </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
+	  </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
 	  <span class="l" style="margin-left:4px;">
 	    <a title="新增名人录" href="javascript:;" onclick="famous_add('新增名人录','<%=basePath%>/jsp/famous/famous.jsp','500','1200')" class="btn btn-primary radius" style="text-decoration:none">
 	      <i class="Hui-iconfont">&#xe600;</i>新增名人录
@@ -49,7 +49,7 @@
 				<th width="80">浏览量</th>
 				<th width="80">缩略图</th>
 				<th width="40">排序</th>
-				<th width="70">轮播显示</th>
+				<th width="70">首页轮播显示</th>
 				<th width="80">操作</th>
 			</tr>
 		</thead>

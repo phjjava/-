@@ -362,4 +362,12 @@
       familyid = #{familyid,jdbcType=VARCHAR}
     where userid = #{userid,jdbcType=VARCHAR}
   </update>
+  
+   <update id="batchDelete">
+   delete from  jp_usercontent
+   where userid in
+      <foreach collection="array" item="item" index="index" separator=","  open="(" close=")">
+	     #{item}
+	  </foreach>
+  </update>
 </mapper>

@@ -62,7 +62,7 @@
 					<td>${status.index + 1 }</td>
 					<td>${notice.noticetitle}</td>
 					<td><fmt:formatDate value="${notice.createtime}" pattern="yyyy-MM-dd"/></td>
-					<td>${notice.branchname}</td>
+					<!-- <td>${notice.branchname}</td> -->
 					<td>
 						<c:choose>
 						    <c:when test="${notice.noticetype == '0'}">
@@ -82,7 +82,7 @@
 						    <span class="label label-success radius">已启用</span>
 						</c:if>
 					</td>
-					<td class="td-manage" style="">
+					<td class="td-manage">
 						  <c:if test="${notice.deleteflag == 1 }">
 						  	<a  onClick="notice_recover('${notice.noticeid}')" href="javascript:;" >恢复</a>					    
 						  </c:if>
