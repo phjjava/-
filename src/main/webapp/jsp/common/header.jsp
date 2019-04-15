@@ -63,3 +63,6 @@ function changePwd(title,userid,id,w,h){
 	layer_show(title,url,w,h);
 }
 </script>
+<!-- 选择分支_公共js -->
+<script type="text/javascript" src="<%=basePath%>lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="<%=basePath%>lib/branchInterface.js"></script> 
