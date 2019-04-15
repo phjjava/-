@@ -23,7 +23,7 @@
 		    </a> 
 		  </span>
 		  <span class="l" style="margin-left:4px;">
-		    <a title="新增公告" href="javascript:;" onclick="notice_add('新增公告','<%=basePath%>/jsp/notice/notice.jsp','','1200','800')" class="btn btn-primary radius" style="text-decoration:none">
+		    <a title="新增公告" href="javascript:;" onclick="notice_add('新增公告','<%=basePath%>/jsp/notice/notice.jsp','','1200','550')" class="btn btn-primary radius" style="text-decoration:none">
 		      <i class="Hui-iconfont">&#xe600;</i>新增公告</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		  </span> 
 			<span class="formControls col-xs-8 col-sm-5">

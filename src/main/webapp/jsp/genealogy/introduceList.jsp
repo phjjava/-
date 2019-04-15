@@ -19,7 +19,7 @@
 	     <a href="javascript:;" id="all" onclick="batchdelete()" class="btn btn-danger radius">
 	         <i class="Hui-iconfont">&#xe6e2;</i>批量删除
 	     </a>&nbsp;
-	     <a href="javascript:;" onclick="introduce_add('新增章节','<%=basePath%>jsp/genealogy/introduce.jsp','','1200','800')" class="btn btn-primary radius">
+	     <a href="javascript:;" onclick="introduce_add('新增章节','<%=basePath%>jsp/genealogy/introduce.jsp','','1200','550')" class="btn btn-primary radius">
 	         <i class="Hui-iconfont">&#xe600;</i> 新增章节
 	     </a>
 	  </span> 
