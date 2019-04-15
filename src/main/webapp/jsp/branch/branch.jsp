@@ -12,8 +12,12 @@
 <link rel="stylesheet" type="text/css" href="<%=basePath%>lib/Hui-iconfont/1.0.8/iconfont.css" />
 <link rel="stylesheet" type="text/css" href="<%=basePath%>static/h-ui.admin/skin/default/skin.css" id="skin" />
 <link rel="stylesheet" type="text/css" href="<%=basePath%>static/h-ui.admin/css/style.css" />
-<link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.min.css" />
-<link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.chosen.css" />
+<!-- <link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.min.css" /> -->
+<!-- <link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.chosen.css" /> -->
+<!-- 新版本 -->
+<link rel="stylesheet" type="text/css" href="<%=basePath%>lib/assets/css/amazeui.min.css" />
+
+
 
 <article class="page-container">
 <form action="" method="post" class="form form-horizontal" id="form-branch-add">
@@ -55,7 +59,14 @@
   <div class="row cl">
 	<label class="form-label col-xs-3 col-sm-3" style="text-align:right">请添加发起人：</label>
 	<div class="formControls col-xs-8 col-sm-6">
-		<select name="beginuserid" id="beginuserid" class="my-select select" data-val="${branch.beginuserid }" >
+		<!-- <select name="beginuserid" id="beginuserid" class="my-select select"  data-val="${branch.beginuserid }" >
+		</select> -->
+		<select 
+			name="beginuserid" 
+			id="beginuserid" 
+			class="my-select select"  
+			data-val="${branch.beginuserid }" 
+			data-am-selected="{btnWidth: '100%', searchBox: 1}">
 		</select>
 	</div>
 </div>
@@ -73,13 +84,57 @@
 <script type="text/javascript" src="<%=basePath%>static/h-ui.admin/js/H-ui.admin.page.js"></script>
 <script type="text/javascript" src="<%=basePath%>js/admin.js"></script>
 <script type="text/javascript" src="<%=basePath%>js/distpicker.js"></script>
-<script type="text/javascript" src="<%=basePath%>js/amazeui.chosen.min.js"></script>
+<!-- <script type="text/javascript" src="<%=basePath%>js/amazeui.chosen.min.js"></script> -->
+<!-- 新版本 -->
+<script type="text/javascript" src="<%=basePath%>lib/assets/js/amazeui.min.js"></script>
+
+
 <!--请在下方写此页面业务相关的脚本-->
 <script type="text/javascript" src="<%=basePath%>lib/My97DatePicker/4.8/WdatePicker.js"></script>
 <script type="text/javascript" src="<%=basePath%>lib/jquery.validation/1.14.0/jquery.validate.js"></script> 
 <script type="text/javascript" src="<%=basePath%>lib/jquery.validation/1.14.0/validate-methods.js"></script> 
 <script type="text/javascript" src="<%=basePath%>lib/jquery.validation/1.14.0/messages_zh.js"></script> 
+<!-- <script type="text/javascript" src="<%=basePath%>lib/branchInterface.js"></script>  -->
+
 <script>
+
+
+	// 获取“添加发起人”_数据
+	var data = JSON.parse(localStorage.getItem("website"))
+	var optionStr = "<option value=''>---- 请选择 ----</option>";
+	var genlevel = "";
+	// 初始显示数据条数
+	var forNum = 7;
+	function seleFun(forNum) {
+			for(var i = 0; i < forNum; i++){
+			if( data[i].genlevel == undefined){
+				genlevel = '未知';
+			}else{
+				genlevel = data[i].genlevel;
+			}
+			optionStr+='<option familyid="'+data[i].familyid+'" beginname="'+data[i].username+'" parentid="'+data[i].branchid+'" value="' + data[i].userid + '">'
+			+data[i].username+' '+ data[i].phone + ' ' + data[i].genlevel+'世 ';
+			if(data[i].address){
+				optionStr += " "+data[i].address;
+			}
+			optionStr += "</option>";
+			}
+			$('.my-select').html(optionStr);
+			var dataval = $('#beginuserid').attr('data-val');
+
+			if(dataval != ''){
+			$('#beginuserid').val(dataval);
+			}
+	}
+	seleFun(forNum)
+	// 添加发起人_滑滚动条增加数据
+	function checkscroll() {　
+		forNum += 1;
+		if(data.length > forNum) {
+			seleFun(forNum)
+		}
+	}
+
 var sameBranchFlag=false;
 function save(){
 	//校验分支名称
@@ -126,7 +181,12 @@ $("#xname").change(function(){
 $("#beginuserid").change(function(){
 	//增加对发起人的提示校验
 	var dataUserid=$("#beginuserid option:selected").val();
-	checkBeginer(dataUserid);
+	// 判断dataUserid有无值
+	if(dataUserid.length > 1) {
+		checkBeginer(dataUserid);
+	}
+
+
   $("#beginname").val($("#beginuserid option:selected").attr("beginname"));
 //   $("#parentid").val($("#beginuserid option:selected").attr("parentid"));
   $("#familyid").val($("#beginuserid option:selected").attr("familyid"));
@@ -188,50 +248,6 @@ function validateBranchname(arg0){
 
 
 $(function() {
-	$.ajax({
-		type:'post',
-		dataType:'json',
-		async: false,
-		url : '<%=basePath%>user/selectUserItem?curSec='+Math.random(),
-		success:function(data,status){
-			if(data){
-				var optionStr = "<option value=''>---- 请选择 ----</option>";
-				var genlevel = "";
-				for(var i = 0; i < data.length; i++){
-					if( data[i].genlevel == undefined){
-						genlevel = '未知';
-					}else{
-						genlevel = data[i].genlevel;
-					}
-					//console.log(data[i].address);
-					optionStr+='<option familyid="'+data[i].familyid+'" beginname="'+data[i].username+'" parentid="'+data[i].branchid+'" value="' + data[i].userid + '">'
-					+data[i].username+' '+ data[i].phone + ' ' + data[i].genlevel+'世 ';
-					if(data[i].address){
-						optionStr += " "+data[i].address;
-					}
-					optionStr += "</option>";
-				}
-				$('.my-select').html(optionStr);
-				var dataval = $('#beginuserid').attr('data-val');
-				
-				if(dataval != ''){
-			 		$('#beginuserid').val(dataval);
-			 	}
-			}else{
-				alert("初始化人员失败！");
-			}
-		},
-		error:function(e) {
-			console.log(e);
-		}
-	});
-	
-	$('.my-select').chosen({
-    	search_contains: true,
-      	max_selected_options: 1,
-      	no_results_text: "没有找到",
-    });
-	
 	$("#form-branch-add").validate({
 		rules:{
 			branchname:{
@@ -260,8 +276,8 @@ $(function() {
 		}
 		
 	}); 
-	
-	
-	
 });
 </script>
+
+
+
