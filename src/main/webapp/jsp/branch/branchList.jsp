@@ -16,7 +16,7 @@
 	<article class="cl pd-30">
 		<div class="cl pd-5 bg-1 bk-gray">
 			<span class="l">
-				<a class="btn btn-primary radius" href="javascript:;" onclick="branch_add('新增分支','<%=basePath%>/jsp/branch/branch.jsp','','700','700')"><i class="Hui-iconfont">&#xe600;</i> 新增分支
+				<a class="btn btn-primary radius" href="javascript:;" onclick="branch_add('新增分支','<%=basePath%>/jsp/branch/branch.jsp','','700','550')"><i class="Hui-iconfont">&#xe600;</i> 新增分支
 				</a>
 			</span>
 			<div class="formControls col-xs-4 col-sm-4" style="margin-left:40px;">
