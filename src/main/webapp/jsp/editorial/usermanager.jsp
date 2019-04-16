@@ -266,89 +266,10 @@ function save(){
 $(function() {
 	var editTestData="${manager.id }";
 	var dataUsername="${manager.username }";
-	//如果为编辑不初始化管理员下拉栏
-/*
-	if(editTestData!=null&&editTestData!=''){
-		$("#userid").remove();
-		var htmlStr1='<div hidden><input id="userid"  disabled="disabled"  class="input-text" value="" name="userid" type="text"></div>';
-		var htmlStr2='  '+'<input id="showname"  readonly="readonly"  class="input-text" value="'+dataUsername+'" name="showname" type="text">';
-		$("#useridDiv").append(htmlStr1+htmlStr2);
-	}else{
-		*/
-	/* $.ajax({
-		type:'post',
-		dataType:'json',
-		async: false,
-		//data:{"ismanager" : 1},
-		url : '<%=basePath%>user/selectUserItemLive?curSec='+Math.random(),
-		success:function(data,status){
-			if(data){
-				
-			
-				var optionStr = "<option value=''>---- 请选择 ----</option>";
-				for(var i = 0; i < 10; i++){
-					optionStr+='<option familyid="'+data[i].familyid+'" beginname="'+data[i].username+'" parentid="'+data[i].branchid+'" value="' + data[i].userid + '">'
-					//+data[i].username+' '+ data[i].phone + ' ' + data[i].genlevel+'世 ';
-					+data[i].username+' '+ data[i].genlevel+'世 ';
-					if(data[i].branchname){
-						optionStr+= ' '+data[i].branchname;
-					}
-					if(data[i].address){
-						optionStr+= ' '+data[i].address;
-					}
-					optionStr+= "</option>";
-				}
-				$('.user-select').html(optionStr);
-				var dataval = $('#userid').attr('data-val');
-				
-				if(dataval != ''){
-			 		$('#userid').val(dataval);
-			 	}
-			}else{
-				alert("初始化人员失败！");
-			}
-		},
-		error:function(e) {
-			console.log(e);
-		}
-	}); */
 
-
-
-	
-	$('#userid').chosen({
-    	search_contains: true,
-      	max_selected_options: 1,
-      	no_results_text: "没有找到",
-    });		
 	$(".chosen-search").show();
-	
 
-	
-	
-
-
-	/* $("#ebid").change(function(){
-		var ebname = $("#ebid").find("option:selected").text();
-		
-		if(ebname=='总编委会'){
-			
-			$("#ismanager option[value='1']").attr("style","display:none");
-		}else{
-			
-			$("#ismanager option[value='1']").attr("style","display:block");
-		}
-	}); */
-	
-	$('#ebid').chosen({
-    	search_contains: true,
-      	max_selected_options: 1,
-      	no_results_text: "没有找到",
-    });		
 	$(".chosen-search").show();
-	
-	
-	
 	
 	$('#ebid').change(function(){
 		var ebid = $("#ebid").val();
@@ -364,44 +285,7 @@ $(function() {
 	});
 	
 	
-	
-	
-	//初始化分支
-	
-//	$.ajax({
-//		type:'post',
-//		dataType:'json',
-//		async: false,
-//		url : '<%=basePath%>branch/initBranch?curSec='+Math.random(),
-//		success:function(data,status){
-//			if(data){
-//				var optionStrM = "";
-//				var dataval = $('#branchid').attr('data-val');
-//				var valArray = dataval.split(",");
-//				for(var i = 0; i < data.length; i++){
-//					if(valArray.indexOf(data[i].branchid + "_" +data[i].branchname) != -1){
-//						optionStrM += "<option selected value='" + data[i].branchid + "_" +data[i].branchname+"' >" +data[i].area + " "+data[i].cityname + " " +data[i].xname + " "+data[i].branchname+"</option>";
-//					}else{
-//						optionStrM += "<option value='" + data[i].branchid + "_" +data[i].branchname+"' >" +data[i].area + " "+data[i].cityname + " " +data[i].xname + " "+data[i].branchname+"</option>";
-//					}
-//				}
-//				$('.branch-select').html(optionStrM);
-//				
-//			}else{
-//				alert("初始化分支失败！");  
-//			}
-//		},
-//		error:function(e) {
-//			console.log(e);
-//		}
-//	});
-//	$('.branch-select').chosen({
-//      	search_contains: true,
-//      	no_results_text: "没有找到",
-//    });
-	
-	
-	
+
 	var userid = '${manager.userid}';
 	$("#userid").val(userid);
 	
@@ -449,8 +333,6 @@ function initPost(type){
 		url : '<%=basePath%>post/selectPostList?curSec='+Math.random(),
 		success:function(data,status){
 			if(data){
-				
-				
 				var optionStrM = "<option value=''>---- 请选择 ----</option>";
 				var dataval = $('#post').attr('data-val');
 				var valArray = dataval.split(",");

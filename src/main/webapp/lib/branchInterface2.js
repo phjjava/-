@@ -7,7 +7,6 @@ $(function(){
         async: false,
         url : basePath+'user/selectPnameAndMate?curSec='+Math.random(),
         success:function(data,status){
-            console.log(data)
             localStorage.removeItem('website1')
             localStorage.removeItem('website3')
             localStorage.setItem("website2", JSON.stringify(data));

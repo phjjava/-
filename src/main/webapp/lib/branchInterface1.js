@@ -9,8 +9,6 @@ $(function(){
             // localStorage是全局属性 存储为5MB 超过会报错，存之前需把其他的存储数据删除如“website2”
             localStorage.removeItem('website2')
             localStorage.removeItem('website3')
-            console.log('website1')
-            console.log(data)
             localStorage.setItem("website1", JSON.stringify(data));
         },
         error:function(e) {

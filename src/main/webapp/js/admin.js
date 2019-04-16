@@ -1,5 +1,6 @@
 var appContent= $(".Hui-article-box");
 
+
 //根据传入的页面地址进行跳转
 function pageTurn(url){
 	if(url==undefined || url=="") return;
@@ -63,7 +64,40 @@ function changePageSize(){
 	searchs(1);
 }
 
-
+function initBranch(){
+	$.ajax({
+		type:'post',
+		dataType:'json',
+		async: false,
+		url : basePath + 'common/currentBranchJson?curSec='+Math.random(),
+		success:function(data,status){
+			if(data){
+				var option = "<option value=''>---- 请选择分支----</option>";
+				for(var i = 0; i < data.length; i++){
+					option += "<option value="+data[i].branchid + " branchname="+data[i].branchname+">" +data[i].area + " "+data[i].cityname + " " +data[i].xname + " "+data[i].address+" "+data[i].branchname+"</option>";
+				}
+				
+				$('.branch-select').html(option);
+				var dataval = $('.branch-select').attr('data-val');
+				if(dataval != ''){
+			 		$('.branch-select').val(dataval);
+			 	}
+			}else{
+				alert("初始化分支失败！");
+			}
+		},
+		error:function(e) {
+			console.log(e);
+		}
+	});
+	
+	$('.branch-select').chosen({
+    	search_contains: true,
+      	max_selected_options: 1,
+      	no_results_text: "没有找到",
+    });
+	
+}
 
 function getOption(){
 	var loadOption = $('.loadoption'); //默认将列表中的所有初始化项目获取
@@ -188,9 +222,6 @@ Date.prototype.pattern=function(fmt) {
     }         
     return fmt;         
 }       
-
-
-
 
 /**
 //查看密码
@@ -426,4 +457,5 @@ function getInitPlaceJson(parentId,changeId){
 	    }
 }
 */
+
 
