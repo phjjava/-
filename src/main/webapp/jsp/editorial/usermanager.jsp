@@ -9,8 +9,14 @@
 .chosen-search{display: none;}
 </style>
 <jsp:include page="../common/basecss.jsp"></jsp:include>
-<link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.min.css" />
-<link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.chosen.css" />
+
+<!-- <link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.min.css" /> -->
+<!-- <link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.chosen.css" /> -->
+
+<!-- 新版本 -->
+<link rel="stylesheet" type="text/css" href="<%=basePath%>lib/assets/css/amazeui.min.css" />
+
+
 <article class="cl pd-20">
 	<form action="" method="post" class="form form-horizontal" id="userrolebranch-add">
 	<input type="hidden" value="" name="branchname">
@@ -18,18 +24,32 @@
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>管理员：</label>
 			<div class="formControls col-xs-8 col-sm-9" id="useridDiv">
-				<select id="userid" class="user-select select" name='userid' data-val="${manager.userid }" >
+				<!-- <select id="userid" class="user-select select" name='userid' data-val="${manager.userid }" >
+				</select> -->
+
+				<select 
+					name="userid" 
+					id="userid" 
+					class="user-select select"
+					data-val="${manager.userid }"
+					data-am-selected="{btnWidth: '100%', searchBox: 1}">
 				</select>
+				
 			</div>
 		</div>
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>编委会：</label>
 			<div class="formControls col-xs-8 col-sm-9">
 				
-					<select  id="ebid" class="select" name="ebid" data-val="${manager.ebid}_${manager.ebtype}" >
-						
+					<!-- <select  name="ebid" id="ebid" class="select"  data-val="${manager.ebid}_${manager.ebtype}" >
+					</select> -->
+					<select 
+						name="ebid" 
+						id="ebid" 
+						class="select"
+						data-val="${manager.ebid}_${manager.ebtype}"
+						data-am-selected="{btnWidth: '100%', searchBox: 1}">
 					</select>
-				
 			</div>
 		</div>
 		<div class="row cl">
@@ -93,10 +113,15 @@
 	</form>
 </article>
 <jsp:include page="../common/basejs.jsp"></jsp:include>
-<script type="text/javascript" src="<%=basePath%>amaze/js/amazeui.chosen.min.js"></script>
+<!-- <script type="text/javascript" src="<%=basePath%>amaze/js/amazeui.chosen.min.js"></script> -->
 <script type="text/javascript" src="<%=basePath%>lib/jquery.validation/1.14.0/jquery.validate.js"></script> 
 <script type="text/javascript" src="<%=basePath%>lib/jquery.validation/1.14.0/validate-methods.js"></script> 
 <script type="text/javascript" src="<%=basePath%>lib/jquery.validation/1.14.0/messages_zh.js"></script> 
+
+<script type="text/javascript" src="<%=basePath%>lib/jquery/1.9.1/jquery.min.js"></script> 
+<!-- 新版本 -->
+<script type="text/javascript" src="<%=basePath%>lib/assets/js/amazeui.min.js"></script>
+
 <script type="text/javascript">
 function save(){
 	
@@ -163,65 +188,45 @@ function save(){
 	});
 }
 
-$(function() {
-	var editTestData="${manager.id }";
-	var dataUsername="${manager.username }";
-	//如果为编辑不初始化管理员下拉栏
-/*
-	if(editTestData!=null&&editTestData!=''){
-		$("#userid").remove();
-		var htmlStr1='<div hidden><input id="userid"  disabled="disabled"  class="input-text" value="" name="userid" type="text"></div>';
-		var htmlStr2='  '+'<input id="showname"  readonly="readonly"  class="input-text" value="'+dataUsername+'" name="showname" type="text">';
-		$("#useridDiv").append(htmlStr1+htmlStr2);
-	}else{
-		*/
-	$.ajax({
-		type:'post',
-		dataType:'json',
-		async: false,
-		//data:{"ismanager" : 1},
-		url : '<%=basePath%>user/selectUserItemLive?curSec='+Math.random(),
-		success:function(data,status){
-			if(data){
+
+
+
 				
-			
-				var optionStr = "<option value=''>---- 请选择 ----</option>";
-				for(var i = 0; i < data.length; i++){
-					optionStr+='<option familyid="'+data[i].familyid+'" beginname="'+data[i].username+'" parentid="'+data[i].branchid+'" value="' + data[i].userid + '">'
-					//+data[i].username+' '+ data[i].phone + ' ' + data[i].genlevel+'世 ';
-					+data[i].username+' '+ data[i].genlevel+'世 ';
-					if(data[i].branchname){
-						optionStr+= ' '+data[i].branchname;
-					}
-					if(data[i].address){
-						optionStr+= ' '+data[i].address;
-					}
-					optionStr+= "</option>";
+		// 获取“添加发起人”_数据
+		var data = JSON.parse(localStorage.getItem("website3"))
+		var optionStr = "<option value=''>---- 请选择 ----</option>";
+		var genlevel = "";
+		// 初始显示数据条数
+		var forNum = 7;
+		// 添加发起人_数据添加
+		function seleFun(forNum) {
+				for(var i = 0; i < forNum; i++){
+						optionStr+='<option familyid="'+data[i].familyid+'" beginname="'+data[i].username+'" parentid="'+data[i].branchid+'" value="' + data[i].userid + '">'
+						//+data[i].username+' '+ data[i].phone + ' ' + data[i].genlevel+'世 ';
+						+data[i].username+' '+ data[i].genlevel+'世 ';
+						if(data[i].branchname){
+							optionStr+= ' '+data[i].branchname;
+						}
+						if(data[i].address){
+							optionStr+= ' '+data[i].address;
+						}
+						optionStr+= "</option>";
 				}
 				$('.user-select').html(optionStr);
 				var dataval = $('#userid').attr('data-val');
 				
 				if(dataval != ''){
-			 		$('#userid').val(dataval);
-			 	}
-			}else{
-				alert("初始化人员失败！");
-			}
-		},
-		error:function(e) {
-			console.log(e);
+					$('#userid').val(dataval);
+				}
 		}
-	});
-	
-	$('#userid').chosen({
-    	search_contains: true,
-      	max_selected_options: 1,
-      	no_results_text: "没有找到",
-    });		
-	$(".chosen-search").show();
-	
-
-	
+		seleFun(forNum)
+		// 添加发起人_滑滚动条增加数据
+		function checkscroll() {　
+			forNum += 1;
+			if(data.length > forNum) {
+				seleFun(forNum)
+			}
+	}
 	//初始化编委会
 	$.ajax({
 		type:'post',
@@ -230,7 +235,6 @@ $(function() {
 		url : '<%=basePath%>editorial/selecteditorialBoardList?curSec='+Math.random(),
 		success:function(data,status){
 			if(data){
-				
 				var optionStrM = "<option value=''>---- 请选择 ----</option>";
 				var dataval = $('#ebid').attr('data-val');
 				
@@ -258,27 +262,14 @@ $(function() {
 			console.log(e);
 		}
 	});
-	/* $("#ebid").change(function(){
-		var ebname = $("#ebid").find("option:selected").text();
-		
-		if(ebname=='总编委会'){
-			
-			$("#ismanager option[value='1']").attr("style","display:none");
-		}else{
-			
-			$("#ismanager option[value='1']").attr("style","display:block");
-		}
-	}); */
-	
-	$('#ebid').chosen({
-    	search_contains: true,
-      	max_selected_options: 1,
-      	no_results_text: "没有找到",
-    });		
+
+$(function() {
+	var editTestData="${manager.id }";
+	var dataUsername="${manager.username }";
+
 	$(".chosen-search").show();
-	
-	
-	
+
+	$(".chosen-search").show();
 	
 	$('#ebid').change(function(){
 		var ebid = $("#ebid").val();
@@ -294,44 +285,7 @@ $(function() {
 	});
 	
 	
-	
-	
-	//初始化分支
-	
-//	$.ajax({
-//		type:'post',
-//		dataType:'json',
-//		async: false,
-//		url : '<%=basePath%>branch/initBranch?curSec='+Math.random(),
-//		success:function(data,status){
-//			if(data){
-//				var optionStrM = "";
-//				var dataval = $('#branchid').attr('data-val');
-//				var valArray = dataval.split(",");
-//				for(var i = 0; i < data.length; i++){
-//					if(valArray.indexOf(data[i].branchid + "_" +data[i].branchname) != -1){
-//						optionStrM += "<option selected value='" + data[i].branchid + "_" +data[i].branchname+"' >" +data[i].area + " "+data[i].cityname + " " +data[i].xname + " "+data[i].branchname+"</option>";
-//					}else{
-//						optionStrM += "<option value='" + data[i].branchid + "_" +data[i].branchname+"' >" +data[i].area + " "+data[i].cityname + " " +data[i].xname + " "+data[i].branchname+"</option>";
-//					}
-//				}
-//				$('.branch-select').html(optionStrM);
-//				
-//			}else{
-//				alert("初始化分支失败！");  
-//			}
-//		},
-//		error:function(e) {
-//			console.log(e);
-//		}
-//	});
-//	$('.branch-select').chosen({
-//      	search_contains: true,
-//      	no_results_text: "没有找到",
-//    });
-	
-	
-	
+
 	var userid = '${manager.userid}';
 	$("#userid").val(userid);
 	
@@ -379,8 +333,6 @@ function initPost(type){
 		url : '<%=basePath%>post/selectPostList?curSec='+Math.random(),
 		success:function(data,status){
 			if(data){
-				
-				
 				var optionStrM = "<option value=''>---- 请选择 ----</option>";
 				var dataval = $('#post').attr('data-val');
 				var valArray = dataval.split(",");

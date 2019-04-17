@@ -12,9 +12,13 @@
 	String downAvatarUrl = ConstantUtils.JIAPU_AVATAR_DOWNLOAD_URL;
 %>
 <jsp:include page="../common/basecss.jsp"></jsp:include>
-<link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.min.css" />
-<link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.chosen.css" />
+<!-- <link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.min.css" />
+<link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.chosen.css" /> -->
 <link rel="stylesheet" type="text/css" href="<%=basePath%>lib/webuploader/0.1.5/webuploader.css"  />
+
+<!-- 新版本 -->
+<link rel="stylesheet" type="text/css" href="<%=basePath%>lib/assets/css/amazeui.min.css" />
+
 <style>
 .xuanxiang-tab{overflow:hidden;padding:0;margin:0;background-color:#f5fafe;border-bottom:2px solid #5a98de}
 .xuanxiang-tab li{float:left; width:120px;height:35px;line-height:35px; text-align:center;font-size:16px;cursor:pointer}
@@ -158,9 +162,21 @@
 				<label class="input-title fl">父(母)亲：</label>
 				<div class="formControls col-xs-8 col-sm-2" id="addGenlevel" style="padding-left:19px;">
 				    <!-- <input type="text" class="input-text" value="${user.pname}" placeholder="" id="" name="pname"> -->
-					<select id="pname" class="my-select select" >
-			        </select>
+					<!-- <select id="pname" class="my-select select" >
+					</select> -->
+					<select 
+						id="pname" 
+						class="my-select select"  
+						data-am-selected="{btnWidth: '100%', searchBox: 1}">
+					</select>
 				</div>
+				<div id="shixi">
+					<label class='form-label col-xs-4 col-sm-1'><span class='c-red'>*</span>世系：</label>
+					<div id ='appendShiXiInput' class='formControls col-xs-8 col-sm-2'>
+						<input class='input-text' type='text' value='${user.genlevel}' id='ShiXiInputVal'>
+					</div>
+				</div>
+				
 				
 				<label class="input-title fl">排行：</label>
 				<div class="formControls col-xs-8 col-sm-2">
@@ -185,8 +201,16 @@
 				<label class="input-title fl" style="line-height:36px;">隶属分支：</label>
 				<div class="formControls col-xs-8 col-sm-5">
 					<span class="select-box" style="border:none;">
-						<select size="1" class="branch-select select" data-val="${user.branchid }" name="branchid" id="branchid">
+						<!-- <select size="1" class="branch-select select" data-val="${user.branchid }" name="branchid" id="branchid">
+						</select> -->
+						<select 
+							name="branchid"
+							id="branchid" 
+							class="branch-select select"
+							data-val="${user.branchid }"
+							data-am-selected="{btnWidth: '100%', searchBox: 1}">
 						</select>
+
 					</span>
 				</div>
 			</div>
@@ -243,8 +267,14 @@
 				<label class="input-title fl">配偶：</label>
 				<div class="formControls col-xs-8 col-sm-2" style="padding-left:19px;">
 				    <!--<input type="text" class="input-text" value="${user.matename}" placeholder="" id="" name="matename">  -->
-				    <select name="beginuserid" id="matename" class="my-select-mate select" style="height:28px;">
-			        </select>
+				    <!-- <select name="beginuserid" id="matename" class="my-select-mate select" style="height:28px;">
+					</select> -->
+					<select 
+						name="beginuserid"
+						id="matename" 
+						class="my-select-mate select"
+						data-am-selected="{btnWidth: '100%', searchBox: 1}">
+					</select>
 				</div>
 				<label class="input-title fl">其他配偶：</label>
 				<div class="formControls col-xs-8 col-sm-2" style="padding-left:19px;">
@@ -436,18 +466,320 @@
 	</c:if>
 </article>
 
-<jsp:include page="../common/basejs.jsp"></jsp:include>
+<script type="text/javascript" src="<%=basePath%>lib/jquery/1.9.1/jquery.min.js"></script> 
+<script type="text/javascript" src="<%=basePath%>lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="<%=basePath%>static/h-ui/js/H-ui.js"></script> 
+<script type="text/javascript" src="<%=basePath%>static/h-ui.admin/js/H-ui.admin.page.js"></script>
+<script type="text/javascript" src="<%=basePath%>js/constant.js"></script>
+<script type="text/javascript" src="<%=basePath%>js/distpicker.js"></script>
+<!-- <script type="text/javascript" src="<%=basePath%>js/amazeui.chosen.min.js"></script> -->
+<!-- <script type="text/javascript" src="<%=basePath%>js/admin.js"></script> -->
+
+
 <script type="text/javascript" src="<%=basePath%>lib/jquery.validation/1.14.0/validate-methods.js"></script>
 <script type="text/javascript" src="<%=basePath%>lib/My97DatePicker/4.8/WdatePicker.js"></script>
-<script type="text/javascript" src="<%=basePath%>js/amazeui.chosen.min.js"></script>
 <script type="text/javascript" src="<%=basePath%>lib/jquery.validation/1.14.0/jquery.validate.js"></script> 
 <script type="text/javascript" src="<%=basePath%>lib/jquery.validation/1.14.0/messages_zh.js"></script> 
 <script type="text/javascript" src="<%=basePath%>lib/webuploader/0.1.5/webuploader.min.js"></script> 
 <script type="text/javascript" src="<%=basePath%>lib/common/Feng.js"></script> 
 <script type="text/javascript" src="<%=basePath%>lib/common/web-upload-object.js"></script> 
+
+
+<!-- 新版本 -->
+<script type="text/javascript" src="<%=basePath%>lib/assets/js/amazeui.min.js"></script>
+
 <script type="text/javascript">
 var imgPreUrl='<%=downAvatarUrl%>'; 
 var upAvatarUrl='<%=upAvatarUrl%>'; 
+
+
+
+
+var appContent= $(".Hui-article-box");
+
+
+//根据传入的页面地址进行跳转
+function pageTurn(url){
+	if(url==undefined || url=="") return;
+	pageChange(url);
+}
+//页面跳转
+function pageChange(url){
+	//页面跳转
+	$.ajax({
+		type : 'post',
+		dataType : 'text',
+		url : basePath+url,
+		//async : false,
+		success : function(data) {
+			appContent.html(data); //将链接中的地址替换
+		},
+		error : function() {
+			;
+		}
+	});
+}
+
+function pageToSql(url){
+	var data='<iframe id="sqlFrame" name="sqlFrame"   scrolling="yes" height="100%" frameborder="no" width="100%"></iframe>	';
+	appContent.html(data);
+	window.sqlFrame.location.href=basePath+url;
+}
+
+/*关于分页  所有列表必须有searchs 方法   公用的查询方法*/
+//首页
+function first(){
+	var pageNo = 1;
+	searchs(pageNo);
+}
+//最后一页
+function last(lastPages){
+	var pageNo =lastPages ;
+	searchs(pageNo);
+}
+//上一页
+function pre(){
+	var pageNo = $("#pageNo").val();
+	pageNo--;
+	searchs(pageNo);
+}
+//下一页
+function next(){
+	var pageNo = $("#pageNo").val();
+	pageNo++;
+	searchs(pageNo);
+}
+
+function toPage(pageNo){
+	$("#pageNo").val(pageNo);
+	searchs(pageNo);
+}
+
+function changePageSize(){
+	var pagesize = $('#pagesize option:selected').text();
+	$("#pageSize").val(pagesize); 
+	searchs(1);
+}
+
+function initBranch(){
+	$.ajax({
+		type:'post',
+		dataType:'json',
+		async: false,
+		url : basePath + 'common/currentBranchJson?curSec='+Math.random(),
+		success:function(data,status){
+			if(data){
+				var option = "<option value=''>---- 请选择分支----</option>";
+				for(var i = 0; i < data.length; i++){
+					option += "<option value="+data[i].branchid + " branchname="+data[i].branchname+">" +data[i].area + " "+data[i].cityname + " " +data[i].xname + " "+data[i].address+" "+data[i].branchname+"</option>";
+				}
+				
+				$('.branch-select').html(option);
+				var dataval = $('.branch-select').attr('data-val');
+				if(dataval != ''){
+			 		$('.branch-select').val(dataval);
+			 	}
+			}else{
+				alert("初始化分支失败！");
+			}
+		},
+		error:function(e) {
+			console.log(e);
+		}
+	});
+	
+	
+}
+
+function getOption(){
+	var loadOption = $('.loadoption'); //默认将列表中的所有初始化项目获取
+	//var url ='dictionary/searchByParentId';
+	loadOption.each(function(){ //通过each 循环初始化数据字典项目
+		var parentObj = $(this).attr('data'); //获取data中的父节点ID值
+		var parentId = "";
+		if(parentObj == "brotherposConstant"){
+			var sex = $("#sex").val();
+			if(sex == "0"){
+				parentObj += ".brotherposWomen";
+			}else if(sex == "1"){
+				parentObj += ".brotherposMan";
+			}
+			parentId = eval(parentObj);//将对应的字符串转换成变量
+			//编辑通过ID查询详情时，将默认后台选保存的值先赋值给data-val属性 ，最后通过该值将对应的选项选中
+			var dataval = $(this).attr('data-val');
+			var objthis = $(this);
+		
+			var str = "";
+			var obj = parentId;//公共变量获取对应的数组
+		
+			for(var i=0;i<obj.length;i++){//循环数据字典中的所有制进行拼接
+				str+="<option value="+obj[i].value+">"+obj[i].text+"</option>";
+			}
+			objthis.html(str);
+			if(dataval == ''){
+		 		objthis.val(1);//默认值设置为启用
+		 	}else{
+		 		objthis.val(dataval); //将dataval默认选中值赋值给初始化中的下拉项
+		 	}
+		}else{
+			parentId = eval(parentObj);//将对应的字符串转换成变量
+			//编辑通过ID查询详情时，将默认后台选保存的值先赋值给data-val属性 ，最后通过该值将对应的选项选中
+			var dataval = $(this).attr('data-val');
+			var objthis = $(this);
+		
+			var str = "";
+			var obj = parentId;//公共变量获取对应的数组
+		
+			for(var i=0;i<obj.length;i++){//循环数据字典中的所有制进行拼接
+				str+="<option value="+obj[i].value+">"+obj[i].text+"</option>";
+			}
+			objthis.html(str);
+			if(dataval != ''){
+				objthis.val(dataval); //将dataval默认选中值赋值给初始化中的下拉项
+		 	}
+		}
+	 });
+}
+/**
+ * 初始化排行
+ */
+function getOptionBrotherpos(){
+		var parentObj = $('#brotherposSel').attr('data'); //获取data中的父节点ID值
+		var parentId = "";
+		var sex = $("#sex").val();
+		if(sex == "0"){
+			parentObj += ".brotherposWomen";
+		}else if(sex == "1"){
+			parentObj += ".brotherposMan";
+		}else{
+			return false;
+		}
+		parentId = eval(parentObj);//将对应的字符串转换成变量
+		//编辑通过ID查询详情时，将默认后台选保存的值先赋值给data-val属性 ，最后通过该值将对应的选项选中
+		var dataval = $('#brotherposSel').attr('data-val');
+		var objthis = $('#brotherposSel');
+	
+		var str = "";
+		var obj = parentId;//公共变量获取对应的数组
+	
+		for(var i=0;i<obj.length;i++){//循环数据字典中的所有制进行拼接
+			str+="<option value="+obj[i].value+">"+obj[i].text+"</option>";
+		}
+		objthis.html(str);
+		if(dataval == ''){
+	 		objthis.val(1);//默认值设置为启用
+	 	}else{
+	 		objthis.val(dataval); //将dataval默认选中值赋值给初始化中的下拉项
+	 	}
+}
+
+/** * 对Date的扩展，将 Date 转化为指定格式的String * 月(M)、日(d)、12小时(h)、24小时(H)、分(m)、秒(s)、周(E)、季度(q)
+    可以用 1-2 个占位符 * 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字) * eg: * (new
+    Date()).pattern("yyyy-MM-dd hh:mm:ss.S")==> 2006-07-02 08:09:04.423      
+ * (new Date()).pattern("yyyy-MM-dd E HH:mm:ss") ==> 2009-03-10 二 20:09:04      
+ * (new Date()).pattern("yyyy-MM-dd EE hh:mm:ss") ==> 2009-03-10 周二 08:09:04      
+ * (new Date()).pattern("yyyy-MM-dd EEE hh:mm:ss") ==> 2009-03-10 星期二 08:09:04      
+ * (new Date()).pattern("yyyy-M-d h:m:s.S") ==> 2006-7-2 8:9:4.18      
+ */        
+Date.prototype.pattern=function(fmt) {         
+    var o = {         
+	    "M+" : this.getMonth()+1, //月份         
+	    "d+" : this.getDate(), //日         
+	    "h+" : this.getHours()%12 == 0 ? 12 : this.getHours()%12, //小时         
+	    "H+" : this.getHours(), //小时         
+	    "m+" : this.getMinutes(), //分         
+	    "s+" : this.getSeconds(), //秒         
+	    "q+" : Math.floor((this.getMonth()+3)/3), //季度         
+	    "S" : this.getMilliseconds() //毫秒         
+    };         
+    var week = {         
+	    "0" : "/u65e5",         
+	    "1" : "/u4e00",         
+	    "2" : "/u4e8c",         
+	    "3" : "/u4e09",         
+	    "4" : "/u56db",         
+	    "5" : "/u4e94",         
+	    "6" : "/u516d"        
+    };         
+    if(/(y+)/.test(fmt)){         
+        fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));         
+    }         
+    if(/(E+)/.test(fmt)){         
+        fmt=fmt.replace(RegExp.$1, ((RegExp.$1.length>1) ? (RegExp.$1.length>2 ? "/u661f/u671f" : "/u5468") : "")+week[this.getDay()+""]);         
+    }         
+    for(var k in o){         
+        if(new RegExp("("+ k +")").test(fmt)){         
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));         
+        }         
+    }         
+    return fmt;         
+}  
+
+
+
+
+// -----------------------------------父(母)亲：-------------------------------------------/-----------------
+
+	//初始化父亲 配偶
+	var userDType=$("#userDType").val();
+	// 获取“添加发起人”_数据
+	var data = JSON.parse(localStorage.getItem("website2"))
+	var optionStrP = "<option value='-1'>---- 请选择 ----</option>";
+	var optionStrM = "<option value=''>---- 请选择 ----</option>";
+	var editUserId = $("#userid").val();
+	var genlevel;
+	// 初始显示数据条数
+	var forNum = 7;
+	// 添加发起人_数据添加
+	function seleFun(forNum) {
+			for(var i = 0; i < forNum; i++){
+				if( data[i].genlevel == undefined){
+					genlevel = '未知';
+				}else{
+					genlevel = data[i].genlevel;
+				}
+				if(data[i].isdirect == 1){
+					if(editUserId != ''){
+						if(data[i].userid != editUserId){
+							optionStrP += "<option value=" + data[i].userid + ">"+genlevel+"世_"+data[i].username+"</option>";
+						}
+					}else{
+							optionStrP += "<option value=" + data[i].userid + ">"+genlevel+"世_"+data[i].username+"</option>";
+					}
+				}else{
+					optionStrM += "<option value=" + data[i].userid + ">"+genlevel+"世_"+data[i].username+"</option>";
+				}
+			}
+			$('.my-select').html(optionStrP);
+			if(userDType==1){
+				$('.my-select-mate').html(optionStrM);
+			}else{
+				$('.my-select-mate').html(optionStrP);
+			}		
+	}
+	seleFun(forNum)
+	// 添加发起人_滑滚动条增加数据
+	function checkscroll() {　
+		forNum += 1;
+		if(data.length > forNum) {
+			seleFun(forNum)
+		}
+	}
+	//当父亲没有选择值时，手动输入排多少世
+	$("#pname").on('change', function(e, params) {
+			// 显示隐藏 世系 
+			var pname = $("#pname").val();
+			if(pname.length > 2){
+				$("#ShiXiInputVal").val(""); // 世系为空
+				$('#shixi').hide()
+			} else {
+				$('#shixi').show()
+			}	
+	});
+// -----------------------------------父(母)亲：-------------------------------------------\-----------------
+
+
+
 //显示隐藏在世离世信息
 	function showDP(){
 		document.getElementById('die-date').style.display='block';
@@ -521,69 +853,10 @@ var upAvatarUrl='<%=upAvatarUrl%>';
 			$("#sex").val(sex);
 		}
 		getOption();
-		//世系回显
-		var genlevel = '${user.pid}';
-		if(genlevel == ""){
-			$("#addGenlevel").val("-1");
-			var div = $("div[id='addGenlevel']");
-			var appendShiXiInput = "<label id='appendShiXiInput' class='form-label col-xs-4 col-sm-1'><span class='c-red'>*</span>世系：</label>";
-			appendShiXiInput+= "<div id ='appendShiXiInput' class='formControls col-xs-8 col-sm-2'>";
-			appendShiXiInput+= "<input class='input-text' type='text' value='${user.genlevel}' id='ShiXiInputVal'>";
-			appendShiXiInput+= "</div>";
-			div.after(appendShiXiInput);
-		}else{
-			$("#addGenlevel").val(genlevel);
-		}
-		/* var branchid = '${user.branchid}';
-		$("#branchid").val(branchid); */
+
 		var background = '${userInfo.background}';
 		$("#background").val(background);
-		//初始化父亲 配偶
-		var userDType=$("#userDType").val();
-		$.ajax({
-			type:'post',
-			dataType:'json',
-			async: false,
-			url : '<%=basePath%>user/selectPnameAndMate?curSec='+Math.random(),
-			success:function(data,status){
-				if(data){
-					var optionStrP = "<option value='-1'>---- 请选择 ----</option>";
-					var optionStrM = "<option value=''>---- 请选择 ----</option>";
-					var editUserId = $("#userid").val();
-					var genlevel;
-					for(var i = 0; i < data.length; i++){
-						if( data[i].genlevel == undefined){
-							genlevel = '未知';
-						}else{
-							genlevel = data[i].genlevel;
-						}
-						
-						if(data[i].isdirect == 1){
-							if(editUserId != ''){
-								if(data[i].userid != editUserId){
-									optionStrP += "<option value=" + data[i].userid + ">"+genlevel+"世_"+data[i].username+"</option>";
-								}
-							}else{
-								    optionStrP += "<option value=" + data[i].userid + ">"+genlevel+"世_"+data[i].username+"</option>";
-							}
-						}else{
-							optionStrM += "<option value=" + data[i].userid + ">"+genlevel+"世_"+data[i].username+"</option>";
-						}
-					}
-					$('.my-select').html(optionStrP);
-					if(userDType==1){
-						$('.my-select-mate').html(optionStrM);
-					}else{
-						$('.my-select-mate').html(optionStrP);
-						}
-				}else{
-					alert("初始化人员失败！");
-				}
-			},
-			error:function(e) {
-				console.log(e);
-			}
-		});
+	
 		//配偶回显
 		var mateid = '${user.mateid}';
 		$("#matename").val(mateid);
@@ -591,16 +864,7 @@ var upAvatarUrl='<%=upAvatarUrl%>';
 		var pid = '${user.pid}';
 		$("#pname").val(pid);
 		
-		$('.my-select').chosen({
-	    	search_contains: true,
-	      	max_selected_options: 1,
-	      	no_results_text: "没有找到",
-	        });
-		$('.my-select-mate').chosen({
-	    	search_contains: true,
-	      	max_selected_options: 1,
-	      	no_results_text: "没有找到",
-	    });
+	
 		//回显其他民族
 		var nationSel = $("#nationSel").val();
 		if(nationSel == "其他"){
@@ -610,25 +874,7 @@ var upAvatarUrl='<%=upAvatarUrl%>';
 		}
 		chooseTab('<%=chooseTab%>');//初始化选中tab
 	});
-	//当父亲没有选择值时，手动输入排多少世
-	$("#pname").on('change', function(e, params) {
-			var pname = $("#pname").val();
-			if(pname == "-1"){
-				var div = $("div[id='addGenlevel']");
-				var appendShiXiInput = "<label id='appendShiXiInput' class='form-label col-xs-4 col-sm-1' style='margin-top:10px;'><span class='c-red'>*</span>世系：</label>";
-				appendShiXiInput+= "<div id ='appendShiXiInput' class='formControls col-xs-8 col-sm-2' style='margin-top:10px;'>";
-				appendShiXiInput+= "<input class='input-text' type='text' id='ShiXiInputVal'>";
-				appendShiXiInput+= "</div>";
-				div.after(appendShiXiInput);
-			}else{
-				 var shixiInput = $("#appendShiXiInput")
-				 var shixiInputDiv = $("div[id='appendShiXiInput']");
-				 if(shixiInput != undefined){
-					 shixiInput.remove();
-					 shixiInputDiv.remove();
-				 }
-			}
-	});
+	
 	$(document).ready(function() {	
 		$(document).keyup(function() {
 	    var counter = $(".textarea").val().length; //获取文本域的字符串长度
@@ -717,8 +963,9 @@ var upAvatarUrl='<%=upAvatarUrl%>';
 			}
 			var parentName = "";
 			var genlevelInput =  $("#ShiXiInputVal").val();
+
 			if(genlevelInput != undefined){
-				if(genlevelInput == ""){
+				if($("#pname").val().length == '-1'){
 					//alert("请填写世系");
 					layer.alert('请填写世系', {icon: 7});
 					return false;
@@ -745,18 +992,8 @@ var upAvatarUrl='<%=upAvatarUrl%>';
 				url : '<%=basePath%>user/merge?curSec='+Math.random(),
 				success:function(data,status){
 					if(status == 'success' && data == '1'){
-						//try { 
-						//	window.parent.searchs();
-							window.parent.layer.msg('保存成功!', {icon: 6,time:1000});
-						//	layer_close();
-						//	   } catch (e) { 
-						//		window.parent.layer.msg('保存失败!', {icon: 5,time:1000});
-						//	  } finally{
-						//		layer_close();
-						//	}
-	/* 					window.parent.searchs();
 						window.parent.layer.msg('保存成功!', {icon: 6,time:1000});
-						layer_close(); */
+						// layer_close();
 					}else if(data == '2'){
 						//alert("保存失败，用户数量超过版本最大用户数量");
 						layer.alert('保存失败，用户数量超过版本最大用户数量', {icon: 5});

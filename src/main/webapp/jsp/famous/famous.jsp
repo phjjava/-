@@ -10,9 +10,13 @@
 %>
 
 <jsp:include page="../common/basecss.jsp"></jsp:include>
-<link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.min.css" />
-<link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.chosen.css" />
+<!-- <link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.min.css" />
+<link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.chosen.css" /> -->
 <link rel="stylesheet" type="text/css" href="<%=basePath%>lib/webuploader/0.1.5/webuploader.css"  />
+
+<!-- 新版本 -->
+<link rel="stylesheet" type="text/css" href="<%=basePath%>lib/assets/css/amazeui.min.css" />
+
 <article class="page-container">
 	<form class="form form-horizontal" id="famous_edit" method="post">
 	<code id="testcon" style="display:none;">
@@ -25,8 +29,16 @@
 	    <div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>选择用户：</label>
 			<div class="formControls col-xs-8 col-sm-9">
-				<select name="userid" id="userid" class="my-select select" data-val="${usercontent.userid }" >
-				</select>
+				<!-- <select name="userid" id="userid" class="my-select select" data-val="${usercontent.userid }" >
+                </select> -->
+                
+                <select 
+                    name="userid" 
+                    id="userid" 
+                    class="my-select select"  
+                    data-val="${usercontent.userid }"
+                    data-am-selected="{btnWidth: '100%', searchBox: 1}">
+                </select>
 			</div>
 		</div>
 		
@@ -96,6 +108,13 @@
 <script type="text/javascript" src="<%=basePath%>lib/ueditor/1.4.3/ueditor.all.min.js"> </script>
 <script type="text/javascript" src="<%=basePath%>lib/ueditor/1.4.3/lang/zh-cn/zh-cn.js"></script> 
 <script type="text/javascript" src="<%=basePath%>/ewebeditor/ewebeditor.js"></script>
+
+
+<script type="text/javascript" src="<%=basePath%>lib/jquery/1.9.1/jquery.min.js"></script> 
+<!-- 新版本 -->
+<script type="text/javascript" src="<%=basePath%>lib/assets/js/amazeui.min.js"></script>
+
+
 <script>
 // ------------------------编辑器-------------/------------
 var eWebEds = '<INPUT type="hidden" name="content" value="" id="contentId">'
@@ -172,47 +191,91 @@ function content_save(){
 }
 </script>
 <script type="text/javascript">
+
+
+    // 获取“添加发起人”_数据
+    var data = JSON.parse(localStorage.getItem("website1"))
+    var optionStr = "<option value=''>---- 请选择 ----</option>";
+    var genlevel = "";
+    // 初始显示数据条数
+    var forNum = 7;
+    // 添加发起人_数据添加
+    function seleFun(forNum) {
+        for(var i = 0; i < forNum; i++){
+            if( data[i].genlevel == undefined){
+                genlevel = '未知';
+            }else{
+                genlevel = data[i].genlevel;
+            }
+            optionStr+='<option familyid="'+data[i].familyid+'" beginname="'+data[i].username+'" parentid="'+data[i].branchid+'" value="' + data[i].userid + '">'
+            +data[i].username+ ' ' + data[i].genlevel+'世 ';
+            if(data[i].branchname){
+                optionStr+= ' '+data[i].branchname;
+            }
+            if(data[i].address){
+                optionStr+= ' '+data[i].address;
+            }
+            optionStr+= "</option>";
+        }
+        $('.my-select').html(optionStr);
+        var dataval = $('#userid').attr('data-val');
+        
+        if(dataval != ''){
+            $('#userid').val(dataval);
+        }
+    }
+    seleFun(forNum)
+	// 添加发起人_滑滚动条增加数据
+	function checkscroll() {　
+		forNum += 1;
+		if(data.length > forNum) {
+			seleFun(forNum)
+		}
+	}
+
+
+
 $(function(){
 	//初始化人员下拉栏
-	$.ajax({
-		type:'post',
-		dataType:'json',
-		async: false,
-		url : '<%=basePath%>user/selectUserItem?curSec='+Math.random(),
-		success:function(data,status){
-			if(data){
-				var optionStr = "<option value=''>---- 请选择 ----</option>";
-				var genlevel = "";
-				for(var i = 0; i < data.length; i++){
-					if( data[i].genlevel == undefined){
-						genlevel = '未知';
-					}else{
-						genlevel = data[i].genlevel;
-					}
-					optionStr+='<option familyid="'+data[i].familyid+'" beginname="'+data[i].username+'" parentid="'+data[i].branchid+'" value="' + data[i].userid + '">'
-					+data[i].username+ ' ' + data[i].genlevel+'世 ';
-					if(data[i].branchname){
-						optionStr+= ' '+data[i].branchname;
-					}
-					if(data[i].address){
-						optionStr+= ' '+data[i].address;
-					}
-					optionStr+= "</option>";
-				}
-				$('.my-select').html(optionStr);
-				var dataval = $('#userid').attr('data-val');
+	// $.ajax({
+	// 	type:'post',
+	// 	dataType:'json',
+	// 	async: false,
+	// 	url : '<%=basePath%>user/selectUserItem?curSec='+Math.random(),
+	// 	success:function(data,status){
+	// 		if(data){
+	// 			var optionStr = "<option value=''>---- 请选择 ----</option>";
+	// 			var genlevel = "";
+	// 			for(var i = 0; i < data.length; i++){
+	// 				if( data[i].genlevel == undefined){
+	// 					genlevel = '未知';
+	// 				}else{
+	// 					genlevel = data[i].genlevel;
+	// 				}
+	// 				optionStr+='<option familyid="'+data[i].familyid+'" beginname="'+data[i].username+'" parentid="'+data[i].branchid+'" value="' + data[i].userid + '">'
+	// 				+data[i].username+ ' ' + data[i].genlevel+'世 ';
+	// 				if(data[i].branchname){
+	// 					optionStr+= ' '+data[i].branchname;
+	// 				}
+	// 				if(data[i].address){
+	// 					optionStr+= ' '+data[i].address;
+	// 				}
+	// 				optionStr+= "</option>";
+	// 			}
+	// 			$('.my-select').html(optionStr);
+	// 			var dataval = $('#userid').attr('data-val');
 				
-				if(dataval != ''){
-			 		$('#userid').val(dataval);
-			 	}
-			}else{
-				alert("初始化人员失败！");
-			}
-		},
-		error:function(e) {
-			console.log(e);
-		}
-	});
+	// 			if(dataval != ''){
+	// 		 		$('#userid').val(dataval);
+	// 		 	}
+	// 		}else{
+	// 			alert("初始化人员失败！");
+	// 		}
+	// 	},
+	// 	error:function(e) {
+	// 		console.log(e);
+	// 	}
+	// });
 	
 	$('.my-select').chosen({
     	search_contains: true,
