@@ -724,3 +724,7 @@ function batchdelete(){
 }
 
 </script>
+<!-- 选择分支_js -->
+<script async type="text/javascript" src="<%=basePath%>lib/jquery/1.9.1/jquery.min.js"></script>
+<!-- async 异步加载属性 -->
+<script async type="text/javascript" src="<%=basePath%>lib/branchInterface2.js"></script> 

@@ -12,8 +12,9 @@
 <link rel="stylesheet" type="text/css" href="<%=basePath%>lib/Hui-iconfont/1.0.8/iconfont.css" />
 <link rel="stylesheet" type="text/css" href="<%=basePath%>static/h-ui.admin/skin/default/skin.css" id="skin" />
 <link rel="stylesheet" type="text/css" href="<%=basePath%>static/h-ui.admin/css/style.css" />
-<!-- <link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.min.css" /> -->
-<!-- <link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.chosen.css" /> -->
+
+<!-- <link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.min.css" />
+<link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.chosen.css" /> -->
 <!-- 新版本 -->
 <link rel="stylesheet" type="text/css" href="<%=basePath%>lib/assets/css/amazeui.min.css" />
 
@@ -84,6 +85,7 @@
 <script type="text/javascript" src="<%=basePath%>static/h-ui.admin/js/H-ui.admin.page.js"></script>
 <script type="text/javascript" src="<%=basePath%>js/admin.js"></script>
 <script type="text/javascript" src="<%=basePath%>js/distpicker.js"></script>
+
 <!-- <script type="text/javascript" src="<%=basePath%>js/amazeui.chosen.min.js"></script> -->
 <!-- 新版本 -->
 <script type="text/javascript" src="<%=basePath%>lib/assets/js/amazeui.min.js"></script>
@@ -93,18 +95,18 @@
 <script type="text/javascript" src="<%=basePath%>lib/My97DatePicker/4.8/WdatePicker.js"></script>
 <script type="text/javascript" src="<%=basePath%>lib/jquery.validation/1.14.0/jquery.validate.js"></script> 
 <script type="text/javascript" src="<%=basePath%>lib/jquery.validation/1.14.0/validate-methods.js"></script> 
-<script type="text/javascript" src="<%=basePath%>lib/jquery.validation/1.14.0/messages_zh.js"></script> 
-<!-- <script type="text/javascript" src="<%=basePath%>lib/branchInterface.js"></script>  -->
+
 
 <script>
 
 
 	// 获取“添加发起人”_数据
-	var data = JSON.parse(localStorage.getItem("website"))
+	var data = JSON.parse(localStorage.getItem("website1"))
 	var optionStr = "<option value=''>---- 请选择 ----</option>";
 	var genlevel = "";
 	// 初始显示数据条数
 	var forNum = 7;
+	// 添加发起人_数据添加
 	function seleFun(forNum) {
 			for(var i = 0; i < forNum; i++){
 			if( data[i].genlevel == undefined){

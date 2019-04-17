@@ -223,9 +223,6 @@ Date.prototype.pattern=function(fmt) {
     return fmt;         
 }       
 
-
-
-
 /**
 //查看密码
 function passval(){
@@ -460,4 +457,5 @@ function getInitPlaceJson(parentId,changeId){
 	    }
 }
 */
+
 
