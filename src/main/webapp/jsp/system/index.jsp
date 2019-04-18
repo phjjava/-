@@ -97,6 +97,14 @@ function logout() {
 				</dd>
 			</dl>
 			<dl id="authority-management">
+				<dt><i class="Hui-iconfont">&#xe62d;</i> 功能菜单管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
+				<dd>
+					<ul>
+						<li><a onclick="pageChange('system/functionMenu/list');" href="javascript:;">菜单管理</a></li>
+					</ul>
+				</dd>
+			</dl>
+			<dl id="authority-management">
 				<dt><i class="Hui-iconfont">&#xe62d;</i> 版本发布管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 				<dd>
 					<ul>
