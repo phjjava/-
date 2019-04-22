@@ -3,18 +3,18 @@
 <mapper namespace="com.jp.dao.IndexMapper" >
   <resultMap id="BaseResultMap" type="com.jp.entity.Index" >
     <id column="id" property="id" jdbcType="VARCHAR" />
-    <result column="code" property="code" jdbcType="VARCHAR" />
     <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="sort" property="sort" jdbcType="INTEGER" />
-    <result column="item_type" property="itemType" jdbcType="VARCHAR" />
-    <result column="url" property="url" jdbcType="VARCHAR" />
     <result column="imgurl" property="imgurl" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="param1" property="param1" jdbcType="VARCHAR" />
+    <result column="param2" property="param2" jdbcType="VARCHAR" />
     <result column="createid" property="createid" jdbcType="VARCHAR" />
     <result column="createname" property="createname" jdbcType="VARCHAR" />
     <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
     <result column="updateid" property="updateid" jdbcType="VARCHAR" />
     <result column="updatename" property="updatename" jdbcType="VARCHAR" />
     <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
     <result column="deleteflag" property="deleteflag" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Example_Where_Clause" >
@@ -77,8 +77,8 @@
   </sql>
   <sql id="Base_Column_List" >
     <if test="fields == null" >
-      id, code, name, sort, item_type, url, imgurl, createid, createname, createtime, updateid, 
-      updatename, updatetime, deleteflag
+      id, name, imgurl, code, param1, param2, createid, createname, createtime, updateid, 
+      updatename, updatetime, sort, deleteflag
     </if>
     <if test="fields != null" >
       ${fields}
@@ -103,7 +103,7 @@
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
-    id,code,name,sort,item_type,url,imgurl,createid,createname,createtime,updateid,updatename,updatetime,deleteflag
+    id,name,imgurl,code,param1,param2,createid,createname,createtime,updateid,updatename,updatetime,sort,deleteflag
     from jp_index
     where id = #{id,jdbcType=VARCHAR}
   </select>
@@ -118,16 +118,16 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.jp.entity.Index" >
-    insert into jp_index (id, code, name, 
-      sort, item_type, url, 
-      imgurl, createid, createname, 
-      createtime, updateid, updatename, 
-      updatetime, deleteflag)
-    values (#{id,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
-      #{sort,jdbcType=INTEGER}, #{itemType,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, 
-      #{imgurl,jdbcType=VARCHAR}, #{createid,jdbcType=VARCHAR}, #{createname,jdbcType=VARCHAR}, 
-      #{createtime,jdbcType=TIMESTAMP}, #{updateid,jdbcType=VARCHAR}, #{updatename,jdbcType=VARCHAR}, 
-      #{updatetime,jdbcType=TIMESTAMP}, #{deleteflag,jdbcType=INTEGER})
+    insert into jp_index (id, name, imgurl, 
+      code, param1, param2, 
+      createid, createname, createtime, 
+      updateid, updatename, updatetime, 
+      sort, deleteflag)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{imgurl,jdbcType=VARCHAR}, 
+      #{code,jdbcType=VARCHAR}, #{param1,jdbcType=VARCHAR}, #{param2,jdbcType=VARCHAR}, 
+      #{createid,jdbcType=VARCHAR}, #{createname,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}, 
+      #{updateid,jdbcType=VARCHAR}, #{updatename,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP}, 
+      #{sort,jdbcType=INTEGER}, #{deleteflag,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.jp.entity.Index" >
     insert into jp_index
@@ -135,23 +135,20 @@
       <if test="id != null" >
         id,
       </if>
-      <if test="code != null" >
-        code,
-      </if>
       <if test="name != null" >
         name,
       </if>
-      <if test="sort != null" >
-        sort,
-      </if>
-      <if test="itemType != null" >
-        item_type,
-      </if>
-      <if test="url != null" >
-        url,
-      </if>
       <if test="imgurl != null" >
         imgurl,
+      </if>
+      <if test="code != null" >
+        code,
+      </if>
+      <if test="param1 != null" >
+        param1,
+      </if>
+      <if test="param2 != null" >
+        param2,
       </if>
       <if test="createid != null" >
         createid,
@@ -171,6 +168,9 @@
       <if test="updatetime != null" >
         updatetime,
       </if>
+      <if test="sort != null" >
+        sort,
+      </if>
       <if test="deleteflag != null" >
         deleteflag,
       </if>
@@ -179,23 +179,20 @@
       <if test="id != null" >
         #{id,jdbcType=VARCHAR},
       </if>
-      <if test="code != null" >
-        #{code,jdbcType=VARCHAR},
-      </if>
       <if test="name != null" >
         #{name,jdbcType=VARCHAR},
       </if>
-      <if test="sort != null" >
-        #{sort,jdbcType=INTEGER},
-      </if>
-      <if test="itemType != null" >
-        #{itemType,jdbcType=VARCHAR},
-      </if>
-      <if test="url != null" >
-        #{url,jdbcType=VARCHAR},
-      </if>
       <if test="imgurl != null" >
         #{imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="code != null" >
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="param1 != null" >
+        #{param1,jdbcType=VARCHAR},
+      </if>
+      <if test="param2 != null" >
+        #{param2,jdbcType=VARCHAR},
       </if>
       <if test="createid != null" >
         #{createid,jdbcType=VARCHAR},
@@ -215,6 +212,9 @@
       <if test="updatetime != null" >
         #{updatetime,jdbcType=TIMESTAMP},
       </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
       <if test="deleteflag != null" >
         #{deleteflag,jdbcType=INTEGER},
       </if>
@@ -232,23 +232,20 @@
       <if test="record.id != null" >
         id = #{record.id,jdbcType=VARCHAR},
       </if>
-      <if test="record.code != null" >
-        code = #{record.code,jdbcType=VARCHAR},
-      </if>
       <if test="record.name != null" >
         name = #{record.name,jdbcType=VARCHAR},
       </if>
-      <if test="record.sort != null" >
-        sort = #{record.sort,jdbcType=INTEGER},
-      </if>
-      <if test="record.itemType != null" >
-        item_type = #{record.itemType,jdbcType=VARCHAR},
-      </if>
-      <if test="record.url != null" >
-        url = #{record.url,jdbcType=VARCHAR},
-      </if>
       <if test="record.imgurl != null" >
         imgurl = #{record.imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.code != null" >
+        code = #{record.code,jdbcType=VARCHAR},
+      </if>
+      <if test="record.param1 != null" >
+        param1 = #{record.param1,jdbcType=VARCHAR},
+      </if>
+      <if test="record.param2 != null" >
+        param2 = #{record.param2,jdbcType=VARCHAR},
       </if>
       <if test="record.createid != null" >
         createid = #{record.createid,jdbcType=VARCHAR},
@@ -268,6 +265,9 @@
       <if test="record.updatetime != null" >
         updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.sort != null" >
+        sort = #{record.sort,jdbcType=INTEGER},
+      </if>
       <if test="record.deleteflag != null" >
         deleteflag = #{record.deleteflag,jdbcType=INTEGER},
       </if>
@@ -279,18 +279,18 @@
   <update id="updateByExample" parameterType="map" >
     update jp_index
     set id = #{record.id,jdbcType=VARCHAR},
-      code = #{record.code,jdbcType=VARCHAR},
       name = #{record.name,jdbcType=VARCHAR},
-      sort = #{record.sort,jdbcType=INTEGER},
-      item_type = #{record.itemType,jdbcType=VARCHAR},
-      url = #{record.url,jdbcType=VARCHAR},
       imgurl = #{record.imgurl,jdbcType=VARCHAR},
+      code = #{record.code,jdbcType=VARCHAR},
+      param1 = #{record.param1,jdbcType=VARCHAR},
+      param2 = #{record.param2,jdbcType=VARCHAR},
       createid = #{record.createid,jdbcType=VARCHAR},
       createname = #{record.createname,jdbcType=VARCHAR},
       createtime = #{record.createtime,jdbcType=TIMESTAMP},
       updateid = #{record.updateid,jdbcType=VARCHAR},
       updatename = #{record.updatename,jdbcType=VARCHAR},
       updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+      sort = #{record.sort,jdbcType=INTEGER},
       deleteflag = #{record.deleteflag,jdbcType=INTEGER}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -299,23 +299,20 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.Index" >
     update jp_index
     <set >
-      <if test="code != null" >
-        code = #{code,jdbcType=VARCHAR},
-      </if>
       <if test="name != null" >
         name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="sort != null" >
-        sort = #{sort,jdbcType=INTEGER},
-      </if>
-      <if test="itemType != null" >
-        item_type = #{itemType,jdbcType=VARCHAR},
-      </if>
-      <if test="url != null" >
-        url = #{url,jdbcType=VARCHAR},
-      </if>
       <if test="imgurl != null" >
         imgurl = #{imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="code != null" >
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="param1 != null" >
+        param1 = #{param1,jdbcType=VARCHAR},
+      </if>
+      <if test="param2 != null" >
+        param2 = #{param2,jdbcType=VARCHAR},
       </if>
       <if test="createid != null" >
         createid = #{createid,jdbcType=VARCHAR},
@@ -335,6 +332,9 @@
       <if test="updatetime != null" >
         updatetime = #{updatetime,jdbcType=TIMESTAMP},
       </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
       <if test="deleteflag != null" >
         deleteflag = #{deleteflag,jdbcType=INTEGER},
       </if>
@@ -343,18 +343,18 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.jp.entity.Index" >
     update jp_index
-    set code = #{code,jdbcType=VARCHAR},
-      name = #{name,jdbcType=VARCHAR},
-      sort = #{sort,jdbcType=INTEGER},
-      item_type = #{itemType,jdbcType=VARCHAR},
-      url = #{url,jdbcType=VARCHAR},
+    set name = #{name,jdbcType=VARCHAR},
       imgurl = #{imgurl,jdbcType=VARCHAR},
+      code = #{code,jdbcType=VARCHAR},
+      param1 = #{param1,jdbcType=VARCHAR},
+      param2 = #{param2,jdbcType=VARCHAR},
       createid = #{createid,jdbcType=VARCHAR},
       createname = #{createname,jdbcType=VARCHAR},
       createtime = #{createtime,jdbcType=TIMESTAMP},
       updateid = #{updateid,jdbcType=VARCHAR},
       updatename = #{updatename,jdbcType=VARCHAR},
       updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      sort = #{sort,jdbcType=INTEGER},
       deleteflag = #{deleteflag,jdbcType=INTEGER}
     where id = #{id,jdbcType=VARCHAR}
   </update>

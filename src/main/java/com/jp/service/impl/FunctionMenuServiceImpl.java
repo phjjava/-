@@ -78,7 +78,7 @@ public class FunctionMenuServiceImpl implements FunctionMenuService {
 	@Override
 	public String batchDelete(String[] menuArray) {
 		
-		return indexMapper.batchDelete(menuArray);
+		return "";
 	}
 
 	@Override
