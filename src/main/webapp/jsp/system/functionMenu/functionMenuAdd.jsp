@@ -63,27 +63,23 @@
 			<input type="text" class="input-text" value="${menu.code}" name="code">
 		</div>
 	</div>
-	 <!-- 
+	  
 	<div class="row cl">
-		
+		<label class="form-label col-xs-4 col-sm-2">参数1：</label>
 		<div class="formControls col-xs-8 col-sm-9">
-			<input type="text" class="input-text" value="${menu.itemType}" name="itemType">
+			<input type="text" class="input-text" value="${menu.param1}" name="param1">
 		</div>
-	</div>-->
-	<div class="row cl">
-	     <label class="form-label col-xs-4 col-sm-2">类型：</label>
-         <input class="vm mtb-0 ml-15" type="radio" id="itemType" value="local" name="itemType"  <c:if test='${menu.itemType == "local" }'>checked</c:if>>
-		 <label for="sex-1" class="vm mtb-0">本地应用</label>
-		 <input class="vm mtb-0" type="radio" id="itemType" value="outer" name="itemType" <c:if test='${menu.itemType == "outer" }' >checked</c:if>>
-		 <label for="sex-1" class="vm mtb-0">外部应用</label>
 	</div>
+	<!-- 
+	
+	 -->
 	<!-- 
 	<input type='text' onkeyup="(this.v=function(){this.value=this.value.replace(/[^0-9-]+/,'');}).call(this)" onblur="this.v();" />
 		 -->
 	<div class="row cl">
-		<label class="form-label col-xs-4 col-sm-2">链接：</label>
+		<label class="form-label col-xs-4 col-sm-2">参数2：</label>
 		<div class="formControls col-xs-8 col-sm-9">
-			<input type="text" class="input-text" value="${menu.url}" name="url">
+			<input type="text" class="input-text" value="${menu.param2}" name="param2">
 		</div>
 	</div>
 

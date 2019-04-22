@@ -76,7 +76,7 @@ public class FamilyServiceImpl implements FamilyService {
                 family.setUpdatetime(sdfd.parse(sdfd.format(new Date())));
                 family.setUpdateid("sys_admin");
                 family.setFamilycode(PinyinUtil.getPinyinFull(family.getFamilyname()));
-				user.setPassword(MD5Util.string2MD5(user.getPhone().substring(user.getPhone().length() - 8)));
+				user.setPassword(MD5Util.string2MD5(user.getPhone().substring(user.getPhone().length() - 6)));
 				userDao.updateByPrimaryKeySelective(user);
 				// userInfoDao.updateByPrimaryKeySelective(userInfo);
                 sysFamilyDao.updateByPrimaryKeySelective(family);

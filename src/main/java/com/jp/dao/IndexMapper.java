@@ -27,6 +27,4 @@ public interface IndexMapper {
     int updateByPrimaryKeySelective(Index record);
 
     int updateByPrimaryKey(Index record);
-
-	String batchDelete(@Param("array") String[] menuArray);
 }

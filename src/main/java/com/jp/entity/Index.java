@@ -7,34 +7,29 @@ public class Index implements Serializable {
     private String id;
 
     /**
-     * 识别码，标识菜单
-     */
-    private String code;
-
-    /**
      * 名称
      */
     private String name;
 
     /**
-     * 排序
-     */
-    private Integer sort;
-
-    /**
-     * 类别 local本地应用outer外部应用
-     */
-    private String itemType;
-
-    /**
-     * 节点链接
-     */
-    private String url;
-
-    /**
      * 节点图标
      */
     private String imgurl;
+
+    /**
+     * 识别码，标识菜单
+     */
+    private String code;
+
+    /**
+     * 参数1
+     */
+    private String param1;
+
+    /**
+     * 参数2
+     */
+    private String param2;
 
     /**
      * 创建人id
@@ -67,6 +62,11 @@ public class Index implements Serializable {
     private Date updatetime;
 
     /**
+     * 排序
+     */
+    private Integer sort;
+
+    /**
      * 删除标记
      */
     private Integer deleteflag;
@@ -81,14 +81,6 @@ public class Index implements Serializable {
         this.id = id == null ? null : id.trim();
     }
 
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code == null ? null : code.trim();
-    }
-
     public String getName() {
         return name;
     }
@@ -97,36 +89,36 @@ public class Index implements Serializable {
         this.name = name == null ? null : name.trim();
     }
 
-    public Integer getSort() {
-        return sort;
-    }
-
-    public void setSort(Integer sort) {
-        this.sort = sort;
-    }
-
-    public String getItemType() {
-        return itemType;
-    }
-
-    public void setItemType(String itemType) {
-        this.itemType = itemType == null ? null : itemType.trim();
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url == null ? null : url.trim();
-    }
-
     public String getImgurl() {
         return imgurl;
     }
 
     public void setImgurl(String imgurl) {
         this.imgurl = imgurl == null ? null : imgurl.trim();
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code == null ? null : code.trim();
+    }
+
+    public String getParam1() {
+        return param1;
+    }
+
+    public void setParam1(String param1) {
+        this.param1 = param1 == null ? null : param1.trim();
+    }
+
+    public String getParam2() {
+        return param2;
+    }
+
+    public void setParam2(String param2) {
+        this.param2 = param2 == null ? null : param2.trim();
     }
 
     public String getCreateid() {
@@ -177,6 +169,14 @@ public class Index implements Serializable {
         this.updatetime = updatetime;
     }
 
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
+    }
+
     public Integer getDeleteflag() {
         return deleteflag;
     }
@@ -192,18 +192,18 @@ public class Index implements Serializable {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
-        sb.append(", code=").append(code);
         sb.append(", name=").append(name);
-        sb.append(", sort=").append(sort);
-        sb.append(", itemType=").append(itemType);
-        sb.append(", url=").append(url);
         sb.append(", imgurl=").append(imgurl);
+        sb.append(", code=").append(code);
+        sb.append(", param1=").append(param1);
+        sb.append(", param2=").append(param2);
         sb.append(", createid=").append(createid);
         sb.append(", createname=").append(createname);
         sb.append(", createtime=").append(createtime);
         sb.append(", updateid=").append(updateid);
         sb.append(", updatename=").append(updatename);
         sb.append(", updatetime=").append(updatetime);
+        sb.append(", sort=").append(sort);
         sb.append(", deleteflag=").append(deleteflag);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");

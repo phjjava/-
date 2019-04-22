@@ -34,7 +34,8 @@
 							<th width="30">序号</th>
 							<th width="200">名称</th>
 							<th width="50">识别码</th>
-							<th width="80">类别</th>
+							<th width="80">参数1</th>
+							<th width="80">参数2</th>
 							<th width="80">图标</th>
 							<th width="80">操作</th>
 						</tr>
@@ -45,12 +46,8 @@
 								<td>${status.index + 1 }</td>
 								<td>${menu.name }</td>
 								<td>${menu.code }</td>
-								<td><c:if test='${menu.itemType == "local" }'>
-								    <span class="label label-default radius">本地应用</span>
-								</c:if>
-								<c:if test='${sysFunction.status == "outer" }'>
-									<span class="label label-success radius">外部应用</span>
-								</c:if></td>
+								<td>${menu.param1 }</td>
+								<td>${menu.param2 }</td>
 								<td>
 									<img src="<%=downLoadUrl%>${menu.imgurl}" style="width:190px;height:150px;background-color:#f8f8f8;margin:15px 7px 0 7px;" >
 								</td>

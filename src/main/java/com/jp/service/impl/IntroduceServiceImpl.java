@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentUserContext;
 import com.jp.common.PageModel;
 import com.jp.dao.IntroduceDao;
@@ -75,6 +76,7 @@ public class IntroduceServiceImpl implements IntroduceService {
 				introduce.setDeleteflag(0);
 				Date insertDate=new Date();
 				introduce.setCreatetime(insertDate);
+				introduce.setType("ELSE");
 				itdao.insertSelective(introduce);
 				result = "0";
 
