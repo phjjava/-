@@ -83,4 +83,10 @@ public interface SysFamilyDao {
      */
     Indexcount countIndex(@Param("familyid")String familyid,@Param("list")List<String> branchids);
     
+    /**
+     * 获取家族号
+     * @return
+     */
+    Integer nextVal(); 
+    
 }

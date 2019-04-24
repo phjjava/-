@@ -369,4 +369,8 @@
 	select null applycount , null usercount,null shicount,null branchcount, count(*) rolecount from jp_userrole  -->
 	) temp
  </select>
+ 
+ <select id="nextVal">
+  		SELECT NEXTVAL('item_id')
+  </select>
 </mapper>

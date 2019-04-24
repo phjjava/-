@@ -75,7 +75,7 @@ public class FamilyServiceImpl implements FamilyService {
 				// 重置密码 根据手机号来截取
                 family.setUpdatetime(sdfd.parse(sdfd.format(new Date())));
                 family.setUpdateid("sys_admin");
-                family.setFamilycode(PinyinUtil.getPinyinFull(family.getFamilyname()));
+                //family.setFamilycode(PinyinUtil.getPinyinFull(family.getFamilyname()));
 				user.setPassword(MD5Util.string2MD5(user.getPhone().substring(user.getPhone().length() - 6)));
 				userDao.updateByPrimaryKeySelective(user);
 				// userInfoDao.updateByPrimaryKeySelective(userInfo);
@@ -91,12 +91,15 @@ public class FamilyServiceImpl implements FamilyService {
                         .andDeleteflagEqualTo(0);
                 List<User> users = userDao.selectByExample(userQuery);
                 if (users.size() > 0) {
-                    User user1 = users.get(0);
-                    if (user1.getFamilyname().equals(family.getFamilyname())) {
-                        result.setStatus(1);
-                        result.setMsg("当前用户管理的家族名称已存在，请重试");
-                        return result;
+                    
+                    for(User user1 : users) {
+                    	if (user1.getFamilyname().equals(family.getFamilyname())) {
+                            result.setStatus(1);
+                            result.setMsg("当前用户管理的家族名称已存在，请重试");
+                            return result;
+                        }
                     }
+                    
                 }
 				String userId = UUIDUtils.getUUID();
 				String familyId = UUIDUtils.getUUID();
@@ -127,7 +130,7 @@ public class FamilyServiceImpl implements FamilyService {
 				family.setFamilyid(familyId);
 				family.setStatus(0);
                 family.setCreateid("sys_admin");
-                family.setFamilycode(PinyinUtil.getPinyinFull(family.getFamilyname()));
+                family.setFamilycode(sysFamilyDao.nextVal()+"");
 
 				// 保存总编委会主任信息 role userrole
                 Post post = new Post();
