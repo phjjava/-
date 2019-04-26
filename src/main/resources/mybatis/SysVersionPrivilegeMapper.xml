@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jp.dao.SysVersionPrivilegeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jp.entity.SysVersionPrivilege">
+        <id column="id" property="id" />
+        <result column="versionid" property="versionid" />
+        <result column="versionname" property="versionname" />
+        <result column="privilegecode" property="privilegecode" />
+        <result column="privilegename" property="privilegename" />
+        <result column="privilegevalue" property="privilegevalue" />
+        <result column="sort" property="sort" />
+        <result column="deleteflag" property="deleteflag" />
+        <result column="createtime" property="createtime" />
+        <result column="createby" property="createby" />
+        <result column="updatetime" property="updatetime" />
+        <result column="updateby" property="updateby" />
+    </resultMap>
+    
+    <sql id="Base_Column_List" >
+		id, versionid, versionname, privilegecode, privilegename, privilegevalue, sort, deleteflag, createtime, createby, updatetime, updateby
+  	</sql>
+  	
+  	<select id="selectByRecord" resultMap="BaseResultMap" parameterType="com.jp.entity.SysVersionPrivilege" >
+	    select 
+	    <include refid="Base_Column_List" />
+	    from jp_sys_version_privilege
+	    
+  	</select>
+
+</mapper>
