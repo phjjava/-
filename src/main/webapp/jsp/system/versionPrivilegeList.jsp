@@ -18,7 +18,7 @@
 	<article class="cl pd-20">
 		<div class="cl pd-5 bg-1 bk-gray">
 			<span class="l">
-				<a class="btn btn-primary radius" href="javascript:;" onclick="version_add('新增版本特权','<%=basePath %>system/sysversionauth/get','800')">
+				<a class="btn btn-primary radius" href="javascript:;" onclick="version_add('新增版本特权','<%=basePath %>system/sysversionauth/edit','800')">
 					<i class="Hui-iconfont">&#xe600;</i> 新增版本特权
 				</a>
 			</span>
@@ -28,7 +28,7 @@
 				<table class="table table-border table-bordered table-hover table-bg">
 					<thead>
 						<tr>
-							<th scope="col" colspan="5">版本特权管理</th>
+							<th scope="col" colspan="7">版本特权管理</th>
 						</tr>
 						<tr class="text-c">
 							<th width="30">序号</th>
@@ -97,7 +97,7 @@ function version_add(title,url,id,w,h){
 }
 /*版本编辑*/
 function version_edit(title,versionid,id,w,h){
-	var url = basePath + 'system/sysversion/get?versionid='+versionid+'&curSec='+Math.random();
+	var url = basePath + 'system/sysversionauth/edit?id='+versionid+'&curSec='+Math.random();
 	layer_show(title,url,w,h);
 } 
 /*版本删除*/
@@ -106,8 +106,8 @@ function version_del(versionid){
 		$.ajax({
 			type : 'post',
 			dataType : 'text',
-			data : {"versionid":versionid},
-			url : basePath + 'system/sysversion/delete?curSec=' + Math.random(),
+			data : {"id":versionid},
+			url : basePath + 'system/sysversionauth/delete?curSec=' + Math.random(),
 			//async : false,
 			success : function(data,status) {
 				if(status == 'success' && data == '1'){

@@ -14,5 +14,13 @@ import com.jp.entity.SysVersionPrivilege;
 public interface SysVersionPrivilegeMapper {
 	
 	List<SysVersionPrivilege> selectByRecord(SysVersionPrivilege entity);
+	
+	SysVersionPrivilege selectByPrimaryKey(String id);
+	
+	int insert(SysVersionPrivilege record);
+	
+	int updateByPrimaryKeySelective(SysVersionPrivilege record);
+	
+	int deleteByPrimaryKey(String id);
 
 }

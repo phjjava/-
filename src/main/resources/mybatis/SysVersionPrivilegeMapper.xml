@@ -25,8 +25,61 @@
   	<select id="selectByRecord" resultMap="BaseResultMap" parameterType="com.jp.entity.SysVersionPrivilege" >
 	    select 
 	    <include refid="Base_Column_List" />
-	    from jp_sys_version_privilege
-	    
+	    from jp_sys_version_privilege order by sort asc
   	</select>
+  	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+	    select 
+	    <include refid="Base_Column_List" />
+	    from jp_sys_version_privilege
+	    where id = #{id,jdbcType=VARCHAR}
+  	</select>
+  	<insert id="insert" parameterType="com.jp.entity.SysVersionPrivilege" >
+	    insert into jp_sys_version_privilege (id, versionid, versionname, privilegecode, privilegename, privilegevalue, sort, deleteflag, 
+	    	createtime, createby, updatetime, updateby)
+	    values (
+	    	#{id,jdbcType=VARCHAR},#{versionid,jdbcType=VARCHAR},#{versionname,jdbcType=VARCHAR},#{privilegecode,jdbcType=VARCHAR},
+	    	#{privilegename,jdbcType=VARCHAR},#{privilegevalue,jdbcType=VARCHAR},#{sort,jdbcType=INTEGER},
+	    	#{deleteflag,jdbcType=INTEGER},#{createtime,jdbcType=TIMESTAMP},#{createby,jdbcType=VARCHAR},
+	    	#{updatetime,jdbcType=TIMESTAMP},#{updateby,jdbcType=VARCHAR}
+	    )
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.SysVersionPrivilege" >
+    update jp_sys_version_privilege
+    <set >
+      <if test="versionid != null" >
+      	versionid =  #{versionid,jdbcType=VARCHAR},
+      </if>
+      <if test="versionname != null" >
+        versionname = #{versionname,jdbcType=VARCHAR},
+      </if>
+      <if test="privilegecode != null" >
+        privilegecode = #{privilegecode,jdbcType=VARCHAR},
+      </if>
+      <if test="privilegename != null" >
+        privilegename = #{privilegename,jdbcType=VARCHAR},
+      </if>
+      <if test="privilegevalue != null" >
+        privilegevalue = #{privilegevalue,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag = #{deleteflag,jdbcType=INTEGER},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateby != null" >
+        updateby = #{updateby,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from jp_sys_version_privilege
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
 
 </mapper>
