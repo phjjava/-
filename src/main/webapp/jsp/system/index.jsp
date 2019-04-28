@@ -83,7 +83,7 @@ function logout() {
 					<ul>
 						<li><a onclick="pageChange('system/sysfunction/list');" href="javascript:;">菜单管理</a></li>
 						<li><a onclick="pageChange('system/sysversion/list');" href="javascript:;">版本管理</a></li>
-						
+						<li><a onclick="pageChange('system/sysversionauth/list');" href="javascript:;">版本特权管理</a></li>
 					</ul>
 				</dd>
 			</dl>
