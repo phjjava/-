@@ -152,13 +152,15 @@ function save(){
 			async: true,
 			data:$("#form-branch-add").serialize(),
 			url : '<%=basePath%>branch/save?curSec='+Math.random(),
-			success:function(data,status){
-				if(status == 'success' && data == '1'){
+			success:function(data){
+				if(data == '1'){
 					window.parent.searchs();
-					window.parent.layer.msg('保存成功!', {icon: 6,time:1000});
+					window.parent.layer.msg('保存成功！', {icon: 6,time:1000});
 					layer_close();
+				}if(data == '-1'){
+					window.parent.layer.msg('当前版本不能创建更多分支！请升级家族会员！',{icon:1,time:3000});
 				}else{
-					window.parent.layer.msg('保存失败!',{icon:1,time:1000});
+					window.parent.layer.msg('保存失败！',{icon:1,time:1000});
 				}
 			},
 			error:function(e) {
