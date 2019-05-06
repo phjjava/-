@@ -81,5 +81,11 @@
     delete from jp_sys_version_privilege
     where id = #{id,jdbcType=VARCHAR}
   </delete>
+  <select id="selectByVersionAndCode" resultMap="BaseResultMap" >
+  	select a.* from jp_sys_version_privilege a , jp_sys_family b 
+  	where a.versionid = b.version 
+  	and b.familyid = #{familyid,jdbcType=VARCHAR} 
+  	and a.privilegecode = #{privilegecode,jdbcType=VARCHAR}
+  </select>
 
 </mapper>

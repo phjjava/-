@@ -11,6 +11,28 @@
 <link rel="stylesheet" type="text/css" href="<%=basePath%>amaze/css/amazeui.chosen.css" />
 <link rel="stylesheet" type="text/css" href="<%=basePath%>css/base.css" />
 <script type="text/javascript">
+	/*新增家族成员时判断家族容纳人数时候超出版本限制人数
+	*/
+	function check_familyusercount(){
+		$.ajax({
+			type:'post',
+			dataType:'json',
+			async: false,
+			data:{},
+			url : '<%=basePath%>user/check?curSec='+Math.random(),
+			success:function(data,status){
+				if(status == 'success' && data == '0'){
+					//调用新增成员方法
+					member_edit('新增成员','','1');
+				}else{
+					layer.msg('家族人数已超出家族容纳最大人数!', {icon: 6,time:1000});
+				}
+			},
+			error:function(e) {
+				console.log(e);
+			}
+		});
+	}
 	/*成员添加
 	*/
 	function member_add(title,url,w,h){
@@ -127,7 +149,7 @@
 			    <a href="javascript:;" id="all" onclick="batchdelete();" class="btn btn-danger radius">
 			      <i class="Hui-iconfont">&#xe6e2;</i> 批量删除
 			    </a> &nbsp;&nbsp;
-		        <a class="btn btn-primary radius" href="javascript:;" onclick="member_edit('新增成员','','1')"><i class="Hui-iconfont">&#xe600;</i> 新增成员</a>&nbsp;&nbsp;
+		        <a class="btn btn-primary radius" href="javascript:;" onclick="check_familyusercount()"><i class="Hui-iconfont">&#xe600;</i> 新增成员</a>&nbsp;&nbsp;
 	            <a href="javascript:;" id="btn_show_dialog" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe645;</i> 导入用户</a>&nbsp;&nbsp;
 	            <a href="javascript:;" id="btn_show_dialog1" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe645;</i> 导入配偶</a>
 	            <!-- <a href="javascript:;" onclick="importUsermates('导入配偶','','1')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe645;</i> 导入配偶</a> -->
