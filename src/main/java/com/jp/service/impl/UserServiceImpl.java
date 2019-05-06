@@ -35,6 +35,7 @@ import com.jp.controller.UserController;
 import com.jp.dao.BranchDao;
 import com.jp.dao.LoginThirdMapper;
 import com.jp.dao.SysFamilyDao;
+import com.jp.dao.SysVersionPrivilegeMapper;
 import com.jp.dao.UserDao;
 import com.jp.dao.UserImportMapper;
 import com.jp.dao.UserInfoImportMapper;
@@ -50,6 +51,7 @@ import com.jp.entity.BranchQuery;
 import com.jp.entity.LoginThird;
 import com.jp.entity.LoginThirdExample;
 import com.jp.entity.SysFamily;
+import com.jp.entity.SysVersionPrivilege;
 import com.jp.entity.User;
 import com.jp.entity.UserImportExample;
 import com.jp.entity.UserInfoImportExample;
@@ -101,6 +103,8 @@ public class UserServiceImpl implements UserService {
 	private LoginThirdMapper loginThirdMapper;
 	@Autowired
 	private BranchDao branchDao;	
+	@Autowired
+	private SysVersionPrivilegeMapper sysVersionPrivilegeMapper;
 	
 	
 	//导入用户时重复的用户
@@ -237,7 +241,8 @@ public class UserServiceImpl implements UserService {
 				}
 				result = "1";
 			} else {
-				boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), 1);
+//				boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), 1);
+				boolean flag = checkFamilyUserNumber(1);
 				if (flag == true) {
 					String userId = UUIDUtils.getUUID();
 					user.setUserid(userId);
@@ -422,10 +427,12 @@ public class UserServiceImpl implements UserService {
 			// }
 			int totalRows = xssfSheet.getLastRowNum();
 			// String familyid =
-			boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), totalRows - 1);
+//			boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), totalRows - 1);
+			// 判断家族人数是否超出当前家族容纳人数上限
+			boolean flag = checkFamilyUserNumber(totalRows - 1);
 			if (flag == false) {
-				// result = "2";
 				result.setStatus(2);
+				result.setMsg("导入用户数量超过版本最大用户限制!");
 				return result;
 			}
 			// 读取Row,从第二行开始
@@ -596,6 +603,7 @@ public class UserServiceImpl implements UserService {
 //					}
 				}
 			}
+			
 			if (userList != null && userList.size() > 0) {
 				userImportMapper.importUser(userList);
 			}
@@ -615,10 +623,12 @@ public class UserServiceImpl implements UserService {
 			eutil = new ExcelUtil(wb, sheet);
 			// 获取上传的所有行数
 			int lastRowNum = sheet.getLastRowNum();
-			boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), lastRowNum - 1);
+//			boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), lastRowNum - 1);
+			// 判断家族人数是否超出当前家族容纳人数上限
+			boolean flag = checkFamilyUserNumber(lastRowNum - 1);
 			if (flag == false) {
-				// result = "2";
 				result.setStatus(2);
+				result.setMsg("导入用户数量超过版本最大用户限制!");
 				return result;
 			}
 			userStringList = new ArrayList<String>();
@@ -1014,9 +1024,9 @@ public class UserServiceImpl implements UserService {
 					continue;
 				}
 				int totalRows = xssfSheet.getLastRowNum();
-				boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), totalRows - 1);
+//				boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), totalRows - 1);
+				boolean flag = checkFamilyUserNumber(totalRows - 1);
 				if (flag == false) {
-					// result = "2";
 					result.setStatus(2);
 					result.setMsg("导入配偶数量超过版本最大用户限制!");
 					return result;
@@ -1267,9 +1277,9 @@ public class UserServiceImpl implements UserService {
 			eutil = new ExcelUtil(wb, sheet);
 			// 获取上传的所有行数
 			int lastRowNum = sheet.getLastRowNum();
-			boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), lastRowNum - 1);
+//			boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), lastRowNum - 1);
+			boolean flag = checkFamilyUserNumber(lastRowNum - 1);
 			if (flag == false) {
-				// result = "2";
 				result.setStatus(2);
 				result.setMsg("导入配偶数量超过版本最大用户限制!");
 				return result;
@@ -1573,7 +1583,8 @@ public class UserServiceImpl implements UserService {
 					}
 					userInfoDao.updateByPrimaryKeySelective(userInfo);
 				} else {
-					boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), 1);
+//					boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), 1);
+					boolean flag = checkFamilyUserNumber(1);
 					if (flag == true) {
 						String phone = user.getPhone();
 						User userMmate = new User();
@@ -1812,10 +1823,11 @@ public class UserServiceImpl implements UserService {
 			// }
 			int totalRows = xssfSheet.getLastRowNum();
 			// String familyid =
-			boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), totalRows - 1);
+//			boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), totalRows - 1);
+			boolean flag = checkFamilyUserNumber(totalRows - 1);
 			if (flag == false) {
-				// result = "2";
 				result.setStatus(2);
+				result.setMsg("导入用户数量超过版本最大用户限制!");
 				return result;
 			}
 			// 读取Row,从第二行开始
@@ -1978,10 +1990,11 @@ public class UserServiceImpl implements UserService {
 			eutil = new ExcelUtil(wb, sheet);
 			// 获取上传的所有行数
 			int lastRowNum = sheet.getLastRowNum();
-			boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), lastRowNum - 1);
+//			boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), lastRowNum - 1);
+			boolean flag = checkFamilyUserNumber(lastRowNum - 1);
 			if (flag == false) {
-				// result = "2";
 				result.setStatus(2);
+				result.setMsg("导入用户数量超过版本最大用户限制!");
 				return result;
 			}
 			userStringList = new ArrayList<String>();
@@ -2184,5 +2197,29 @@ public class UserServiceImpl implements UserService {
 		}
 		return place;
 	}
+	
+	public boolean checkFamilyUserNumber(int importCount) {
+		boolean checkResult = false;
+		Integer priValue = 0;		// 最多容纳家族人数
+		SysVersionPrivilege versionP = sysVersionPrivilegeMapper.selectByVersionAndCode(CurrentUserContext.getCurrentFamilyId(), ConstantUtils.VERSION_USERCOUNT);
+		if(versionP != null && versionP.getPrivilegevalue() != null) {
+			if(versionP.getPrivilegevalue().equals(ConstantUtils.VERSION_UNLIMITED)) {
+				// 钻石豪华版容纳家族人数不限
+				checkResult = true;
+				return checkResult;
+			}
+			priValue = Integer.valueOf(versionP.getPrivilegevalue());
+		}
+		// 获取该用户所在家族已有的人数
+		UserQuery userExample = new UserQuery();
+		userExample.or().andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+		int haveUserCount = userDao.countByExample(userExample); 	// 家族已有人数
+		if(priValue > 0 && (priValue - haveUserCount - importCount) >=0 ) {
+			// 导入用户后不超过家族版本容纳人数限制
+			checkResult = true;
+		}
+		return checkResult;
+	}
+	
 	
 }

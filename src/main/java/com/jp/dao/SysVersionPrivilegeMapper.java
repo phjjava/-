@@ -1,6 +1,9 @@
 package com.jp.dao;
 
 import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.jp.entity.SysVersionPrivilege;
 
 /**
@@ -22,5 +25,13 @@ public interface SysVersionPrivilegeMapper {
 	int updateByPrimaryKeySelective(SysVersionPrivilege record);
 	
 	int deleteByPrimaryKey(String id);
+	
+	/**
+	 * 根据版本id和特权code获取对应版本的特权值
+	 * @param familyid 家族id
+	 * @param privilagecode 特权code
+	 * @return
+	 */
+	SysVersionPrivilege selectByVersionAndCode(@Param("familyid") String familyid,@Param("privilegecode") String privilegecode);
 
 }

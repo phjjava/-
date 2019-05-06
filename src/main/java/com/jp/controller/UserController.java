@@ -28,10 +28,12 @@ import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentUserContext;
 import com.jp.common.PageModel;
 import com.jp.dao.BranchDao;
+import com.jp.dao.SysVersionPrivilegeMapper;
 import com.jp.dao.UserDao;
 import com.jp.dao.UserbranchDao;
 import com.jp.dao.UsermatesDao;
 import com.jp.entity.Branch;
+import com.jp.entity.SysVersionPrivilege;
 import com.jp.entity.User;
 import com.jp.entity.UserQuery;
 import com.jp.entity.Useralbum;
@@ -82,6 +84,8 @@ public class UserController {
 	private UserbranchDao userBranchDao;
 	@Autowired
 	private BranchDao branchDao;
+	@Autowired 
+	private SysVersionPrivilegeMapper sysVersionPrivilegeMapper;
 
 	/**
 	 * 
@@ -1134,6 +1138,39 @@ public class UserController {
 			log_.error("[JPSYSTEM]", e);
 		}
 		return "user/userList";
+	}
+	
+	/**
+	 * 新增家族成员时判断家族容纳人数时候超出版本限制人数
+	 * @return 1T0F
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/check", method = RequestMethod.POST)
+	public String checkFamilyUserNumber(HttpServletRequest request) {
+		String checkResult = "1";	// 家族容纳人数是否超出版本限制，1T0F
+		Integer priValue = 0;		// 最多容纳家族人数
+		// 获取该用户所在家族使用的版本特权信息
+		try {
+			SysVersionPrivilege versionP = sysVersionPrivilegeMapper.selectByVersionAndCode(CurrentUserContext.getCurrentFamilyId(), ConstantUtils.VERSION_USERCOUNT);
+			if(versionP != null && versionP.getPrivilegevalue() != null) {
+				if(versionP.getPrivilegevalue().equals(ConstantUtils.VERSION_UNLIMITED)) {
+					checkResult = "0";
+					return checkResult;
+				}
+				priValue = Integer.valueOf(versionP.getPrivilegevalue());
+			}
+			// 获取该用户所在家族已有的人数
+			UserQuery userExample = new UserQuery();
+			userExample.or().andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+			int haveUserCount = userDao.countByExample(userExample); 	// 家族已有人数
+			if(priValue > 0 && priValue > haveUserCount) {
+				checkResult = "0";	//家族人数未超出版本限制最大人数
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		return checkResult;
 	}
 	
 }

@@ -57,6 +57,16 @@ public class ConstantUtils implements Serializable {
 	public static String DEFAULT_NATION_OTHER="其他";//其他民族默认字符串
 	
 	/**
+	 * 家族版本特权code
+	 */
+	public static String VERSION_BRANCH = "branch";			// 分支特权code
+	public static String VERSION_OBLATION = "oblation";		//祭祖祭品特权code
+	public static String VERSION_USERCOUNT = "userCount";	//家族容纳人数特权code
+	public static String VERSION_ALBUMSPACE = "albumSpace";	//家族相册空间特权code
+	public static String VERSION_UNLIMITED = "unlimited";	//不限
+	
+	
+	/**
 	 * @功能 性别
 	 * @作者 wumin
 	 * @时间 2017年4月27日下午12:01:27
