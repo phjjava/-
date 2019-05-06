@@ -134,7 +134,7 @@ public class BranchServiceImpl implements BranchService {
     	//查询家族，获取家族使用的版本
     	SysFamily sysFamily = sysFamilyDao.selectByPrimaryKey(branch.getFamilyid());
     	//查询家族版本特权，获取家族可创建的分支数量
-    	SysVersionPrivilege sysVersionPrivilege = sysVersionPrivilegeMapper.selectVersionValue(sysFamily.getVersion(),"branch");
+    	SysVersionPrivilege sysVersionPrivilege = sysVersionPrivilegeMapper.selectVersionValue(sysFamily.getVersion(),ConstantUtils.VERSION_BRANCH);
     	//查询家族现在已创建的分支数量
     	List<String> branchids = branchDao.selectByFamilyid(branch.getFamilyid());
     	if("1".equals(sysVersionPrivilege.getPrivilegevalue())) {
