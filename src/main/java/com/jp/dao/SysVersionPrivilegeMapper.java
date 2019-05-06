@@ -27,5 +27,13 @@ public interface SysVersionPrivilegeMapper {
 	int deleteByPrimaryKey(String id);
 	
 	SysVersionPrivilege selectVersionValue(@Param("versionid") String versionid,@Param("privilegecode")String privilegecode);
+	
+	/**
+	 * 根据版本id和特权code获取对应版本的特权值
+	 * @param familyid 家族id
+	 * @param privilagecode 特权code
+	 * @return
+	 */
+	SysVersionPrivilege selectByVersionAndCode(@Param("familyid") String familyid,@Param("privilegecode") String privilegecode);
 
 }

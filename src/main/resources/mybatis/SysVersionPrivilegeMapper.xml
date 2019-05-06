@@ -88,5 +88,11 @@
 	    where versionid = #{versionid,jdbcType=VARCHAR}
 	    and privilegecode = #{privilegecode,jdbcType=VARCHAR}
   	</select>
+  <select id="selectByVersionAndCode" resultMap="BaseResultMap" >
+  	select a.* from jp_sys_version_privilege a , jp_sys_family b 
+  	where a.versionid = b.version 
+  	and b.familyid = #{familyid,jdbcType=VARCHAR} 
+  	and a.privilegecode = #{privilegecode,jdbcType=VARCHAR}
+  </select>
 
 </mapper>
