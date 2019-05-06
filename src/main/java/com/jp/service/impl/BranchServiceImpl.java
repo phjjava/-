@@ -12,11 +12,16 @@ import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentUserContext;
 import com.jp.common.PageModel;
 import com.jp.dao.BranchDao;
+import com.jp.dao.SysFamilyDao;
+import com.jp.dao.SysVersionDao;
+import com.jp.dao.SysVersionPrivilegeMapper;
 import com.jp.dao.UserDao;
 import com.jp.dao.UserManagerMapper;
 import com.jp.entity.Branch;
 import com.jp.entity.BranchQuery;
 import com.jp.entity.BranchQuery.Criteria;
+import com.jp.entity.SysFamily;
+import com.jp.entity.SysVersionPrivilege;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
 import com.jp.entity.UserManagerExample;
@@ -32,6 +37,10 @@ public class BranchServiceImpl implements BranchService {
     private UserDao userDao;
     @Autowired
     private UserManagerMapper userManagerMapper;
+    @Autowired
+    private SysFamilyDao sysFamilyDao;
+    @Autowired
+    private SysVersionPrivilegeMapper sysVersionPrivilegeMapper;
     
     /**
      * 从起始人按父子关系，递归更新分支用户（包括配偶）的分支属性
@@ -122,6 +131,24 @@ public class BranchServiceImpl implements BranchService {
 
     @Override
     public int insert(Branch branch) throws Exception {
+    	//查询家族，获取家族使用的版本
+    	SysFamily sysFamily = sysFamilyDao.selectByPrimaryKey(branch.getFamilyid());
+    	//查询家族版本特权，获取家族可创建的分支数量
+    	SysVersionPrivilege sysVersionPrivilege = sysVersionPrivilegeMapper.selectVersionValue(sysFamily.getVersion(),"branch");
+    	//查询家族现在已创建的分支数量
+    	List<String> branchids = branchDao.selectByFamilyid(branch.getFamilyid());
+    	if("1".equals(sysVersionPrivilege.getPrivilegevalue())) {
+    		//普通版只能免费创建分支1个
+    		if(branchids.size()>=1) {
+    			return -1;//暂时返回-1，表示不能创建分支了
+    		}
+    	}
+    	if("5".equals(sysVersionPrivilege.getPrivilegevalue())) {
+    		//旗舰版只能免费创建分支5个
+    		if(branchids.size()>=5) {
+    			return -1;//暂时返回-1，表示不能创建分支了
+    		}
+    	}
         int count = branchDao.insertSelective(branch);
         updateUserBranch(branch.getBeginuserid(), branch.getBranchid(), branch.getBranchname());
         return count;

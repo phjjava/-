@@ -81,5 +81,12 @@
     delete from jp_sys_version_privilege
     where id = #{id,jdbcType=VARCHAR}
   </delete>
+  	<select id="selectVersionValue" resultMap="BaseResultMap" parameterType="java.lang.String" >
+	    select 
+	    <include refid="Base_Column_List" />
+	    from jp_sys_version_privilege
+	    where versionid = #{versionid,jdbcType=VARCHAR}
+	    and privilegecode = #{privilegecode,jdbcType=VARCHAR}
+  	</select>
 
 </mapper>

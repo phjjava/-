@@ -44,7 +44,7 @@
 		private String TOTAL_FILE_DOWNLOAD_URL;
 	 -->
 	
-	<!-- 开启注解   并且配置responsebody 字符集 解决返回值乱发问题-->
+	<!-- 开启注解   并且配置responsebody 字符集 解决返回值乱码问题-->
     <mvc:annotation-driven>
 		<mvc:message-converters register-defaults="true">
 			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
