@@ -2,12 +2,14 @@
 package com.jp.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
@@ -1173,4 +1175,49 @@ public class UserController {
 		return checkResult;
 	}
 	
+	/**
+	 * 新的用户检索接口
+	 * @return
+	 * @throws IOException 
+	 */
+	@RequestMapping(value = "/searchUser", method = RequestMethod.POST)
+	@ResponseBody
+	public String searchUser(PageModel<User> pageModel, User user,ModelMap model) throws IOException {
+		Result result = new Result();
+		String gsonStr = null;
+		try {
+			String userid = CurrentUserContext.getCurrentUserId();
+			UserbranchQuery ex = new UserbranchQuery();
+			ex.or().andUseridEqualTo(userid);
+			List<Userbranch> list = userBranchDao.selectByExample(ex);
+			Branch bran = new Branch();
+			for(Userbranch b : list){
+				bran.setBranchid(b.getBranchid());
+				bran.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				bran = branchDao.selectByPrimaryKey(bran);
+				if(bran.getBranchid()!=null && !"".equals(bran.getBranchid()))
+				user.setBranchid(b.getBranchid());
+			}
+			user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			user.setStatus(0);	//用户状态默认启用
+			List<String> branchList = CurrentUserContext.getCurrentBranchIds();
+			userService.selectUserList(pageModel, user, branchList);
+			if (pageModel.getList() != null) {
+				if (pageModel.getList().size() == 0) {
+					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
+						pageModel.setPageNo(pageModel.getPageNo() - 1);
+						userService.selectUserList(pageModel, user, branchList);
+					}
+				}
+			}
+			result.setStatus(ConstantUtils.RESULT_SUCCESS);
+			result.setData(pageModel.getList());
+			gsonStr = GsonUtil.GsonString(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		return gsonStr;
+	}
+	 
 }
