@@ -32,7 +32,10 @@ public class LoginInterceptor implements HandlerInterceptor {
 		log_.info("requestUri：" + requestUri);
 		log_.info("contextPath：" + contextPath);
 		log_.info("url：" + url);
-
+		response.addHeader("Access-Control-Allow-Origin", "*");
+        response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+        response.addHeader("Access-Control-Max-Age", "1800");
 		if (servletPath.startsWith("/system/")) {//平台系统拦截  （请求地址以system开头的是平台）
 
 			SysUser systemUserContext = CurrentSystemUserContext.getSystemUserContext();
