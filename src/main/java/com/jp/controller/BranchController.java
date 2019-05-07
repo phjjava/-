@@ -66,7 +66,7 @@ public class BranchController {
 				branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 				branch.setCreateid(CurrentUserContext.getCurrentUserId());
 				result = branchService.insert(branch);
-				if(result!=0){
+				if(result>0){
 					//更新session中的分支信息
 					LoginUserInfo userContext = CurrentUserContext.getUserContext();
 					User user = userContext.getUser();
@@ -85,9 +85,9 @@ public class BranchController {
 			}
 
 		} catch (Exception e) {
-			result = 0;
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
+			result = 0;
 		}
 		return result + "";
 	}
