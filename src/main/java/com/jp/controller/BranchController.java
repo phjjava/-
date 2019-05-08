@@ -163,7 +163,7 @@ public class BranchController {
 			User user = userDao.selectByPrimaryKey(branch.getBeginuserid());
 			// 增加返回世系信息
 			if(user != null) {
-				branch.setGenlevel(user.getGenlevel());
+				branch.setGenlevel(user.getGenlevel()+"世");
 			}
 			model.put("branch", branch);
 			
