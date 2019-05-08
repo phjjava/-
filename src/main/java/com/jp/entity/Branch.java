@@ -92,8 +92,21 @@ public class Branch extends BranchKey implements Serializable {
     private Integer usercount;
     
     private String userid;
+    
+    /**
+	 * 第几世
+	 */
+	private Integer genlevel;
+	
+    public Integer getGenlevel() {
+		return genlevel;
+	}
 
-    private static final long serialVersionUID = 1L;
+	public void setGenlevel(Integer genlevel) {
+		this.genlevel = genlevel;
+	}
+
+	private static final long serialVersionUID = 1L;
 
     public String getBranchname() {
         return branchname;
