@@ -96,13 +96,13 @@ public class Branch extends BranchKey implements Serializable {
     /**
 	 * 第几世
 	 */
-	private Integer genlevel;
-	
-    public Integer getGenlevel() {
+	private String genlevel;
+
+	public String getGenlevel() {
 		return genlevel;
 	}
 
-	public void setGenlevel(Integer genlevel) {
+	public void setGenlevel(String genlevel) {
 		this.genlevel = genlevel;
 	}
 
