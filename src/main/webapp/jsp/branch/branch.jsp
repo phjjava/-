@@ -130,7 +130,8 @@
 			async: true,
 			data:{
 				"username": $('#searInput').val(),
-				"isdirect1": '1'
+				"isdirect1": '1',
+				'sex': '男'
 			},
 			url : '<%=basePath%>/user/searchUser?curSec='+Math.random(),
 			success:function(data){
