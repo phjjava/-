@@ -866,4 +866,13 @@
     </foreach> 
   </update>
    -->
+   
+   <select id="getAddressByUserid" resultType="java.lang.String"  parameterType="java.lang.String">
+   		select concat_ws('',z.area,z.cityname,z.xname,ifNULL(z.address,' ')) as address 
+		from jp_user user
+		left join jp_userinfo userInfo on user.userid = userInfo.userid left join  jp_branch z on user.branchid=z.branchid
+		where user.status = 0 and user.deleteflag = 0 
+	  	and user.userid = #{userid,jdbcType=VARCHAR}
+  </select>
+   
 </mapper>
