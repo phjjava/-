@@ -86,6 +86,8 @@ public interface UserDao {
 
 	Integer delUser(@Param("array") String userid[]);
 	
+	String getAddressByUserid(@Param("userid")String userid);
+	
 	
 	
 	

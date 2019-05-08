@@ -1210,8 +1210,16 @@ public class UserController {
 					}
 				}
 			}
+			
+			List<User> userList = new ArrayList<>();
+			// 增加address字段
+			for (Object obj : pageModel.getList()) {
+				User userAddrss = (User) obj;
+				userAddrss.setAddress(userDao.getAddressByUserid(userAddrss.getUserid()));
+				userList.add(userAddrss);
+			}
 			result.setStatus(ConstantUtils.RESULT_SUCCESS);
-			result.setData(pageModel.getList());
+			result.setData(userList);
 			gsonStr = GsonUtil.GsonString(result);
 		} catch (Exception e) {
 			e.printStackTrace();
