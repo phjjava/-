@@ -23,6 +23,9 @@
 <article class="page-container">
 <form action="" method="post" class="form form-horizontal" id="form-branch-add">
 	<input type="hidden" id="branchid" name="branchid" value="${branch.branchid}"/>
+	<!-- 2019/05/08 -->
+	<input type="hidden" id="beginuserid" name="beginuserid" value="${branch.beginuserid}"/>
+
 	<input type="hidden" id="areacode" name="areacode" value="${branch.areacode}"/>
 	<input type="hidden" id="citycode"  name="citycode" value="${branch.citycode}"/>
 	<input type="hidden" id="xcode"  name="xcode" value="${branch.xcode}"/>
@@ -59,19 +62,28 @@
 	</div>
   <div class="row cl">
 	<label class="form-label col-xs-3 col-sm-3" style="text-align:right">请添加发起人：</label>
-	<div class="formControls col-xs-8 col-sm-6">
-		<!-- <select name="beginuserid" id="beginuserid" class="my-select select"  data-val="${branch.beginuserid }" >
+	<div class="formControls col-xs-8 col-sm-6" id="searchSelectBox">
+		<!-- <select name="beginuserid" id="beginuserid" class="my-select select"  data-val="${branch.beginuserid}" >
 		</select> -->
-		<select 
+
+		<!-- <select 
+			style="display:none"
 			name="beginuserid" 
 			id="beginuserid" 
 			class="my-select select"  
-			data-val="${branch.beginuserid }" 
+			data-val="${branch.beginuserid}" 
 			data-am-selected="{btnWidth: '100%', searchBox: 1}">
-		</select>
+		</select> -->
+
+		<input type="text" class="input-text" value="${branch.beginname} ${branch.genlevel} ${branch.area}${branch.cityname}${branch.xname}${branch.address}" placeholder="请输入姓名" style="width: 85%;" id="searInput">
+		<input class="btn btn-primary radius" type="button" style="height: 30px;" value="搜索" id="search" >
+
+		<div id="searchSelect">
+				<div></div>
+		</div>
 	</div>
 </div>
-<div class="row cl">
+<div class="row cl"> 
 	<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
 		<input class="btn btn-primary radius" type="button" onclick="save();" value="&nbsp;&nbsp;&nbsp;&nbsp;提交&nbsp;&nbsp;&nbsp;&nbsp;">
 		<input class="btn btn-primary radius" type="button" onclick="layer_close();" value="&nbsp;&nbsp;&nbsp;&nbsp;取消&nbsp;&nbsp;&nbsp;&nbsp;">
@@ -99,9 +111,76 @@
 
 <script>
 
+	// ----------------------------请添加发起人---------------------------/------------------
+
+
+	// 请添加发起人_搜索功能
+	$('#search').click(function(){
+
+		var searchVal = $('#searInput').val();
+		if(searchVal.length > 10){
+			layer.alert("搜索只写姓名", {icon: 7});
+			return false
+		}
+		$('#searchSelect').show();
+
+		$.ajax({
+			type:'post',
+			dataType:'json',
+			async: true,
+			data:{
+				"username": $('#searInput').val(),
+				"isdirect1": '1'
+			},
+			url : '<%=basePath%>/user/searchUser?curSec='+Math.random(),
+			success:function(data){
+				var data = data.data;
+				if(data.length == 0) {
+					layer.alert("无此人请重新输入", {icon: 7});
+				}
+				
+				var html = '';
+				for(var i=0; i<data.length; i++){
+					html += '<div branchid="'+data[i].branchid+'"  username="'+data[i].username+'" userid="'+data[i].userid+'" familyid="'+data[i].familyid+'" >'+data[i].username+' '+data[i].genlevel+'世'+' '+data[i].address+'</div>'
+				}
+				$('#searchSelect').html(html)
+
+				var SelectDiv = $('#searchSelect div')
+				for(var i=0; i<SelectDiv.length; i++){
+					SelectDiv[i].index = i
+					// 加背景色
+					SelectDiv[i].onmouseover = function () {
+						for(var j=0; j<SelectDiv.length; j++){
+							SelectDiv[j].className = ''
+						}
+						this.className = 'activeBlue'
+					}
+					SelectDiv[i].onclick = function () {
+
+						$('#branchid').val($(this).attr('branchid'))
+						$('#beginname').val($(this).attr('username'))
+						$('#beginuserid').val($(this).attr('userid'))
+						$('#familyid').val($(this).attr('familyid'))
+
+
+						checkBeginer($(this).attr('userid'))
+					// 给input搜索框赋值 branchid
+					$('#searInput').val($(this).html())
+						$('#searchSelect').hide();
+					}
+				}
+			},
+			error:function(e) {
+				console.log(e);
+			}	
+		})
+	})
+
+	// ----------------------------请添加发起人---------------------------\------------------
+
 
 	// 获取“添加发起人”_数据
-	var data = JSON.parse(localStorage.getItem("website1"))
+	/* var data = JSON.parse(localStorage.getItem("website1"))
 	var optionStr = "<option value=''>---- 请选择 ----</option>";
 	var genlevel = "";
 	// 初始显示数据条数
@@ -127,8 +206,8 @@
 			if(dataval != ''){
 			$('#beginuserid').val(dataval);
 			}
-	}
-	seleFun(forNum)
+	} */
+	// seleFun(forNum)
 	// 添加发起人_滑滚动条增加数据
 	function checkscroll() {　
 		forNum += 1;
@@ -146,6 +225,7 @@ function save(){
 	}
 
 	if($("#form-branch-add").valid()){
+		console.log($("#form-branch-add").serialize())
 		$.ajax({
 			type:'post',
 			dataType:'text',
@@ -187,7 +267,7 @@ $("#beginuserid").change(function(){
 	var dataUserid=$("#beginuserid option:selected").val();
 	// 判断dataUserid有无值
 	if(dataUserid.length > 1) {
-		checkBeginer(dataUserid);
+	/* 	checkBeginer(dataUserid); */
 	}
 
 
@@ -197,8 +277,8 @@ $("#beginuserid").change(function(){
 });
 
 //分支名称输入栏绑定失去焦点事件校验重复
-/*
-$("#branchname").blur(function(){
+
+/* $("#branchname").blur(function(){
 	//校验分支名称
 	var checkBranchName=$("input[name='branchname']").val();
 	var rt=validateBranchname(checkBranchName);
@@ -207,7 +287,7 @@ $("#branchname").blur(function(){
 		sameBranchFlag=true;
 	}
 });
-*/
+ */
 
 function checkBeginer(arg0){
 	$.ajax({
@@ -282,6 +362,30 @@ $(function() {
 	}); 
 });
 </script>
+<style>
+	#searchSelectBox {
+		position: relative;
+	}
+	#searchSelect {
+		width: 80%;
+		min-height: 25px;
+		margin-top: 10px;
+		overflow-y: auto;
+		border: 1px solid #ddd;
+	  position: absolute;
+		background: #fff;
+		z-index: 100;
+		max-height: 180px;
+		display: none;
+	}
+	#searchSelect div {
+		cursor: pointer;
+	}
+	.activeBlue {
+		background: #5a98de;
+	}
+
+</style>
 
 
 
