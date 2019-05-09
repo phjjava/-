@@ -274,6 +274,9 @@ public class UserController {
 			}
 			//查询配偶
 			List<Usermates> mateList = userMatesDao.selectmateIdByUserId(userid);
+			// 增加父（母）亲姓名和世系信息回写
+			User puser = userService.selectByPrimaryKey(user.getPid());
+			user.setPgenlevel(puser.getGenlevel()+"世");
 			modelMap.put("user", user);
 			modelMap.put("userInfo", userInfo);
 			modelMap.put("branchList", pageModel.getList());

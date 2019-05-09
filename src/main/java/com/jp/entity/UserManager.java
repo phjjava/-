@@ -6,51 +6,74 @@ public class UserManager implements Serializable {
     private String id;
 
     /**
-     * ÓÃ»§id
+     * ï¿½Ã»ï¿½id
      */
     private String userid;
 
     /**
-     * ĞÕÃû
+     * ï¿½ï¿½ï¿½ï¿½
      */
     private String username;
 
     /**
-     * ¼Ò×åid
+     * ï¿½ï¿½ï¿½ï¿½id
      */
     private String familyid;
 
     /**
-     * Ö°Îñid
+     * Ö°ï¿½ï¿½id
      */
     private String postid;
 
     /**
-     * Ö°ÎñÃû³Æ
+     * Ö°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      */
     private String postname;
 
     /**
-     * ±àÎ¯»áid
+     * ï¿½ï¿½Î¯ï¿½ï¿½id
      */
     private String ebid;
 
     /**
-     * ±àÎ¯»áÃû³Æ
+     * ï¿½ï¿½Î¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      */
     private String ebname;
 
     /**
-     * ±àÎ¯»áÀàĞÍ1×Ü0·Ö
+     * ï¿½ï¿½Î¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½0ï¿½ï¿½
      */
     private Integer ebtype;
 
     /**
-     * ÊÇ·ñÎªÖ÷ÈÎ1ÊÇ0·ñ
+     * ï¿½Ç·ï¿½Îªï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½0ï¿½ï¿½
      */
     private Integer ismanager;
+    
+    /**
+     * è‡ªå†™å±æ€§
+     */
+    private String address;	//åœ°å€
+    
+    private String genlevel;	// ä¸–ç³»
 
-    private static final long serialVersionUID = 1L;
+    public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getGenlevel() {
+		return genlevel;
+	}
+
+	public void setGenlevel(String genlevel) {
+		this.genlevel = genlevel;
+	}
+
+	private static final long serialVersionUID = 1L;
 
     public String getId() {
         return id;
@@ -148,6 +171,8 @@ public class UserManager implements Serializable {
         sb.append(", ebname=").append(ebname);
         sb.append(", ebtype=").append(ebtype);
         sb.append(", ismanager=").append(ismanager);
+        sb.append(", address=").append(address);
+        sb.append(", genlevel=").append(genlevel);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

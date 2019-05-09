@@ -114,6 +114,9 @@ public class UserManagerControll {
 			UserManager manager = null;
 			if(id !=null && !"".equals(id)) {
 				manager = userManagerService.getUserManager(id);
+				if(manager != null) {
+					manager.setGenlevel(manager.getGenlevel()+"世");
+				}
 				model.put("manager", manager);
 			}
 			String familyid = CurrentUserContext.getCurrentFamilyId();
