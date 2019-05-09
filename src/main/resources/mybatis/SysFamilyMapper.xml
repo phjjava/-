@@ -370,7 +370,7 @@
 	) temp
  </select>
  
- <select id="nextVal">
+ <select id="nextVal" resultType="java.lang.Integer" >
   		SELECT NEXTVAL('item_id')
   </select>
 </mapper>
