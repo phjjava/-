@@ -200,7 +200,16 @@ public class User implements Serializable {
 	private Integer isnormal;//导入用户是否正常
 	private List<String> userids;//用户id集合   批量操作用户使用
 	private String excelid;
+	private String pgenlevel;	//父（母）亲的世系
 	
+	public String getPgenlevel() {
+		return pgenlevel;
+	}
+
+	public void setPgenlevel(String pgenlevel) {
+		this.pgenlevel = pgenlevel;
+	}
+
 	private static final long serialVersionUID = 1L;
 
 	/**

@@ -13,6 +13,20 @@
     <result column="ebtype" property="ebtype" jdbcType="INTEGER" />
     <result column="ismanager" property="ismanager" jdbcType="INTEGER" />
   </resultMap>
+  <resultMap id="BaseResultMapForMe" type="com.jp.entity.UserManager" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="userid" property="userid" jdbcType="VARCHAR" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="familyid" property="familyid" jdbcType="VARCHAR" />
+    <result column="postid" property="postid" jdbcType="VARCHAR" />
+    <result column="postname" property="postname" jdbcType="VARCHAR" />
+    <result column="ebid" property="ebid" jdbcType="VARCHAR" />
+    <result column="ebname" property="ebname" jdbcType="VARCHAR" />
+    <result column="ebtype" property="ebtype" jdbcType="INTEGER" />
+    <result column="ismanager" property="ismanager" jdbcType="INTEGER" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="genlevel" property="genlevel" jdbcType="VARCHAR" />
+  </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
       <foreach collection="oredCriteria" item="criteria" separator="or" >
@@ -96,11 +110,15 @@
       limit #{startRow} , #{pageSize}
     </if>
   </select>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select 
+  <select id="selectByPrimaryKey" resultMap="BaseResultMapForMe" parameterType="java.lang.String" >
+    <!-- select 
     id,userid,username,familyid,postid,postname,ebid,ebname,ebtype,ismanager
     from jp_user_manager
-    where id = #{id,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR} -->
+    select m.id,m.userid,m.username,m.familyid,m.postid,m.postname,m.ebid,m.ebname,m.ebtype,m.ismanager,
+	concat_ws('',b.area,b.cityname,b.xname,ifNULL(b.address,' ')) as address,u.genlevel as genlevel
+ 	from jp_user_manager m , jp_user u, jp_branch b where m.userid = u.userid and u.branchid = b.branchid 
+ 	and m.id = #{id,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from jp_user_manager

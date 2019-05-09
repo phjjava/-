@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentUserContext;
 import com.jp.common.PageModel;
+import com.jp.dao.UserDao;
 import com.jp.dao.UsercontentDao;
+import com.jp.entity.User;
 import com.jp.entity.Usercontent;
 import com.jp.service.FamousService;
 import com.jp.util.StringTools;
@@ -29,6 +31,8 @@ public class FamousController {
 	private FamousService famousService;
 	@Autowired
 	private UsercontentDao usercontentDao;
+	@Autowired
+	private UserDao userDao;
 
 	private final Logger log_ = LogManager.getLogger(FamousController.class);
 
@@ -58,8 +62,17 @@ public class FamousController {
 		try {
 			String userid = request.getParameter("userid");
 			Usercontent usercontent = famousService.get(userid);
+			// 增加回写branchid，branchname，address，genlevel，username字段
+			if(usercontent != null) {
+				User user = userDao.selectByPrimaryKey(userid);
+				usercontent.setAddress(userDao.getAddressByUserid(userid));
+				usercontent.setUsername(user.getUsername());
+				usercontent.setGenlevel(user.getGenlevel() + "世");
+				usercontent.setBranchid(user.getBranchid());
+				usercontent.setBranchname(user.getBranchname());
+			}
 			model.put("usercontent", usercontent);
-
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPGL]", e);

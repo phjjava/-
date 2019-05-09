@@ -86,8 +86,48 @@ public class Usercontent implements Serializable {
      */
     private String genlevel;
     
+    /**
+     * 分支id
+     */
+    private String branchid;
+    
+    /**
+     * 分支名称
+     */
+    private String branchname;
+    
+    /**
+     * 地址
+     */
+    private String address;
 
-    private static final long serialVersionUID = 1L;
+    public String getBranchid() {
+		return branchid;
+	}
+
+	public void setBranchid(String branchid) {
+		this.branchid = branchid;
+	}
+
+	public String getBranchname() {
+		return branchname;
+	}
+
+	public void setBranchname(String branchname) {
+		this.branchname = branchname;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+
+
+	private static final long serialVersionUID = 1L;
 
     public String getUserid() {
         return userid;
