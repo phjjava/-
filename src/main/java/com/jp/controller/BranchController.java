@@ -19,6 +19,7 @@ import com.jp.common.CurrentUserContext;
 import com.jp.common.LoginUserInfo;
 import com.jp.common.PageModel;
 import com.jp.dao.BranchDao;
+import com.jp.dao.UserDao;
 import com.jp.dao.UserManagerMapper;
 import com.jp.dao.UserbranchDao;
 import com.jp.entity.Branch;
@@ -51,6 +52,8 @@ public class BranchController {
 	private UserbranchDao userBranchDao;
 	@Autowired
 	private UserManagerMapper userManagerMapper;
+	@Autowired
+	private UserDao userDao;
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public String save(Branch branch, ModelMap model) {
@@ -156,6 +159,12 @@ public class BranchController {
 
 			String branchid = request.getParameter("branchid");
 			Branch branch = branchService.get(branchid);
+			// 根据beginuserid获取世系信息
+			User user = userDao.selectByPrimaryKey(branch.getBeginuserid());
+			// 增加返回世系信息
+			if(user != null) {
+				branch.setGenlevel(user.getGenlevel()+"世");
+			}
 			model.put("branch", branch);
 			
 		} catch (Exception e) {
