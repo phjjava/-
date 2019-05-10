@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.jp.common.JsonResponse;
 import com.jp.common.LoginUserInfo;
+import com.jp.common.MsgConstants;
+import com.jp.common.Result;
 import com.jp.entity.Branch;
 import com.jp.entity.Function;
 import com.jp.entity.Role;
@@ -62,8 +65,10 @@ public class LoginController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "login", method = RequestMethod.POST)
-	public String login(HttpServletRequest request, HttpServletResponse response) {
-			StringBuffer content = new StringBuffer();
+	public JsonResponse login(HttpServletRequest request, HttpServletResponse response) {
+//			StringBuffer content = new StringBuffer();
+		Result result = null;
+		JsonResponse res = null;
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 
@@ -94,8 +99,9 @@ public class LoginController {
 							//Role role = roleService.selectRoleByUserid(user.getFamilyid(), user.getUserid());
 							List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid());
 							if(managers == null || managers.size()==0){
-								content.append("{\"result\":\"false\",\"info\":\"用户无管理员权限！\"}");
-								return content.toString();
+//								content.append("{\"result\":\"false\",\"info\":\"用户无管理员权限！\"}");
+								result = new Result(MsgConstants.LOGIN_NOT_ADMIN);
+								res = new JsonResponse(result);
 							}
 							//userContext.setRole(role);
 							//userContext.setUsermanager(manager);
@@ -123,31 +129,49 @@ public class LoginController {
 							// 创建session
 							request.getSession().setAttribute("userContext", userContext);
 							
-							content.append("{\"result\":\"true\"}");
+//							content.append("{\"result\":\"true\"}");
+							result = new Result(MsgConstants.RESUL_SUCCESS);
+							res = new JsonResponse(result);
+							res.setData(userContext);
 						}else if(userList.size() == 2){
 							
 							request.getSession().setAttribute("loginUserList", userList);
 							
-							content.append("{\"result\":\"trues\" ,\"data\":"+GsonUtil.GsonString(userList)+"}");
+//							content.append("{\"result\":\"trues\" ,\"data\":"+GsonUtil.GsonString(userList)+"}");
+							result = new Result(MsgConstants.LOGIN_USER_CHOOSEFAMILY);
+							res = new JsonResponse(result);
+							res.setData(userList);
 							
 						}else{
-							content.append("{\"result\":\"false\",\"info\":\"用户登录异常,请联系管理员！\"}");
+//							content.append("{\"result\":\"false\",\"info\":\"用户登录异常,请联系管理员！\"}");
+							result = new Result(MsgConstants.LOGIN_ABNORMAL);
+							res = new JsonResponse(result);
 						}
 					} else {
-                        content.append("{\"result\":\"false\",\"info\":\"用户账号、密码不正确！\"}");
+//                        content.append("{\"result\":\"false\",\"info\":\"用户账号、密码不正确！\"}");
+						result = new Result(MsgConstants.LOGIN_USER_WRONG);
+						res = new JsonResponse(result);
 					}
 				} else {
-					content.append("{\"result\":\"false\",\"info\":\"用户账号和密码不能为空.\"}");
+//					content.append("{\"result\":\"false\",\"info\":\"用户账号和密码不能为空.\"}");
+					result = new Result(MsgConstants.LOGIN_USER_NULL);
+					res = new JsonResponse(result);
 				}
 			} else {
-				content.append("{\"result\":\"false\",\"info\":\"验证码不正确.\"}");
+//				content.append("{\"result\":\"false\",\"info\":\"验证码不正确.\"}");
+				result = new Result(MsgConstants.LOGIN_ICODE_WRONG);
+				res = new JsonResponse(result);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[HNFZ_ERROR登录系统失败:]", e);
-			content.append("{\"result\":\"false\",\"info\":\"登录失败，请稍后重试.\"}");
+			result = new Result(MsgConstants.LOGIN_FAIL);
+			res = new JsonResponse(result);
+			
+//			content.append("{\"result\":\"false\",\"info\":\"登录失败，请稍后重试.\"}");
 		}
-		return content.toString();
+//		return content.toString();
+		return res;
 	}
 	
 	//动态登录跳转manager重定向到index
@@ -160,26 +184,34 @@ public class LoginController {
 	
 	@ResponseBody
 	@RequestMapping(value = "/loginout", method = RequestMethod.GET)
-	public String loginout(HttpServletRequest request) {
+	public JsonResponse loginout(HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		session.removeAttribute("userContext");
-		return "success";
+		Result result = new Result(MsgConstants.RESUL_SUCCESS);
+		JsonResponse res = new JsonResponse(result);
+//		return "success";
+		return res;
 	}
 	
 	@RequestMapping(value = "tochoose", method = RequestMethod.GET)
-	public String tochoose(HttpServletRequest request, HttpServletResponse response,ModelMap model) {
+	public JsonResponse tochoose(HttpServletRequest request, HttpServletResponse response,ModelMap model) {
 		HttpSession session = request.getSession();
 		
 		List<User> userList = (List<User>) session.getAttribute("loginUserList");
-		
-		return "choose";
+		Result result = new Result(MsgConstants.RESUL_SUCCESS);
+		JsonResponse res = new JsonResponse(result);
+		res.setData(userList);
+//		return "choose";
+		return res;
 	}
 	
 	
 	@ResponseBody
 	@RequestMapping(value = "choose", method = RequestMethod.POST)
-	public String choose(HttpServletRequest request, HttpServletResponse response) {
+	public JsonResponse choose(HttpServletRequest request, HttpServletResponse response) {
 		StringBuffer content = new StringBuffer();
+		Result result = null;
+		JsonResponse res = null;
 		try {
 			
 			String userid = request.getParameter("userid");
@@ -206,8 +238,11 @@ public class LoginController {
 			
 			List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid());
 			if(managers == null || managers.size()==0){
-				content.append("{\"result\":\"false\",\"info\":\"用户无管理员权限！\"}");
-				return content.toString();
+//				content.append("{\"result\":\"false\",\"info\":\"用户无管理员权限！\"}");
+				result = new Result(MsgConstants.LOGIN_NOT_ADMIN);
+				res = new JsonResponse(result);
+				return res;
+//				return content.toString();
 			}
 			//userContext.setRole(role);
 			//userContext.setUsermanager(manager);
@@ -234,13 +269,19 @@ public class LoginController {
 			userContext.setBranchList(branchList);
 			// 创建session
 			request.getSession().setAttribute("userContext", userContext);
-			content.append("{\"result\":\"true\"}");
+//			content.append("{\"result\":\"true\"}");
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(userContext);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[HNFZ_ERROR登录系统失败:]", e);
-			content.append("{\"result\":\"false\",\"info\":\"登录失败，请稍后重试.\"}");
+//			content.append("{\"result\":\"false\",\"info\":\"登录失败，请稍后重试.\"}");
+			result = new Result(MsgConstants.LOGIN_FAIL);
+			res = new JsonResponse(result);
 		}
-		return content.toString();
+//		return content.toString();
+		return res;
 	}
 
 }
