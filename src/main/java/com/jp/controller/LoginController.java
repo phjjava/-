@@ -65,11 +65,16 @@ public class LoginController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "login", method = RequestMethod.POST)
-	public JsonResponse login(HttpServletRequest request, HttpServletResponse response) {
-//			StringBuffer content = new StringBuffer();
+	public JsonResponse login(HttpSession session, HttpServletRequest request, HttpServletResponse response) {
+		response.setHeader("Access-Control-Allow-Origin",request.getHeader("Origin"));// 支持跨域请求
+		response.setHeader("Access-Control-Allow-Methods", "*");
+        response.setHeader("Access-Control-Allow-Credentials", "true");	// 支持cookie跨域
+        response.setHeader("Access-Control-Allow-Headers", "Authorization,Origin, "
+        		+ "X-Requested-With, Content-Type, Accept,Access-Token");
+        
 		Result result = null;
 		JsonResponse res = null;
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 
 			String phone = request.getParameter("phone");
@@ -79,6 +84,7 @@ public class LoginController {
 
 			
 			Object sessionCode = request.getSession().getAttribute("code");
+			Object cc = session.getAttribute("code");
 			// 验证验证码是否正确
 			if (StringTools.notEmpty(inputCode) && StringTools.notEmpty(sessionCode)
 					&& inputCode.toLowerCase().equals(sessionCode.toString().toLowerCase())) {
@@ -99,7 +105,6 @@ public class LoginController {
 							//Role role = roleService.selectRoleByUserid(user.getFamilyid(), user.getUserid());
 							List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid());
 							if(managers == null || managers.size()==0){
-//								content.append("{\"result\":\"false\",\"info\":\"用户无管理员权限！\"}");
 								result = new Result(MsgConstants.LOGIN_NOT_ADMIN);
 								res = new JsonResponse(result);
 							}
@@ -127,9 +132,8 @@ public class LoginController {
 							userContext.setBranchList(branchList);
 							
 							// 创建session
-							request.getSession().setAttribute("userContext", userContext);
+//							request.getSession().setAttribute("userContext", userContext);
 							
-//							content.append("{\"result\":\"true\"}");
 							result = new Result(MsgConstants.RESUL_SUCCESS);
 							res = new JsonResponse(result);
 							res.setData(userContext);
@@ -137,28 +141,23 @@ public class LoginController {
 							
 							request.getSession().setAttribute("loginUserList", userList);
 							
-//							content.append("{\"result\":\"trues\" ,\"data\":"+GsonUtil.GsonString(userList)+"}");
 							result = new Result(MsgConstants.LOGIN_USER_CHOOSEFAMILY);
 							res = new JsonResponse(result);
 							res.setData(userList);
 							
 						}else{
-//							content.append("{\"result\":\"false\",\"info\":\"用户登录异常,请联系管理员！\"}");
 							result = new Result(MsgConstants.LOGIN_ABNORMAL);
 							res = new JsonResponse(result);
 						}
 					} else {
-//                        content.append("{\"result\":\"false\",\"info\":\"用户账号、密码不正确！\"}");
 						result = new Result(MsgConstants.LOGIN_USER_WRONG);
 						res = new JsonResponse(result);
 					}
 				} else {
-//					content.append("{\"result\":\"false\",\"info\":\"用户账号和密码不能为空.\"}");
 					result = new Result(MsgConstants.LOGIN_USER_NULL);
 					res = new JsonResponse(result);
 				}
 			} else {
-//				content.append("{\"result\":\"false\",\"info\":\"验证码不正确.\"}");
 				result = new Result(MsgConstants.LOGIN_ICODE_WRONG);
 				res = new JsonResponse(result);
 			}
@@ -168,9 +167,7 @@ public class LoginController {
 			result = new Result(MsgConstants.LOGIN_FAIL);
 			res = new JsonResponse(result);
 			
-//			content.append("{\"result\":\"false\",\"info\":\"登录失败，请稍后重试.\"}");
 		}
-//		return content.toString();
 		return res;
 	}
 	
@@ -184,24 +181,23 @@ public class LoginController {
 	
 	@ResponseBody
 	@RequestMapping(value = "/loginout", method = RequestMethod.GET)
-	public JsonResponse loginout(HttpServletRequest request) {
+	public JsonResponse loginout(HttpServletRequest request,HttpServletResponse response) {
+		response.addHeader("Access-Control-Allow-Origin", "*");
 		HttpSession session = request.getSession();
 		session.removeAttribute("userContext");
 		Result result = new Result(MsgConstants.RESUL_SUCCESS);
 		JsonResponse res = new JsonResponse(result);
-//		return "success";
 		return res;
 	}
 	
 	@RequestMapping(value = "tochoose", method = RequestMethod.GET)
 	public JsonResponse tochoose(HttpServletRequest request, HttpServletResponse response,ModelMap model) {
+		response.addHeader("Access-Control-Allow-Origin", "*");
 		HttpSession session = request.getSession();
-		
 		List<User> userList = (List<User>) session.getAttribute("loginUserList");
 		Result result = new Result(MsgConstants.RESUL_SUCCESS);
 		JsonResponse res = new JsonResponse(result);
 		res.setData(userList);
-//		return "choose";
 		return res;
 	}
 	
@@ -209,7 +205,7 @@ public class LoginController {
 	@ResponseBody
 	@RequestMapping(value = "choose", method = RequestMethod.POST)
 	public JsonResponse choose(HttpServletRequest request, HttpServletResponse response) {
-		StringBuffer content = new StringBuffer();
+		response.addHeader("Access-Control-Allow-Origin", "*");
 		Result result = null;
 		JsonResponse res = null;
 		try {
@@ -238,7 +234,6 @@ public class LoginController {
 			
 			List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid());
 			if(managers == null || managers.size()==0){
-//				content.append("{\"result\":\"false\",\"info\":\"用户无管理员权限！\"}");
 				result = new Result(MsgConstants.LOGIN_NOT_ADMIN);
 				res = new JsonResponse(result);
 				return res;
@@ -269,18 +264,15 @@ public class LoginController {
 			userContext.setBranchList(branchList);
 			// 创建session
 			request.getSession().setAttribute("userContext", userContext);
-//			content.append("{\"result\":\"true\"}");
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(userContext);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[HNFZ_ERROR登录系统失败:]", e);
-//			content.append("{\"result\":\"false\",\"info\":\"登录失败，请稍后重试.\"}");
 			result = new Result(MsgConstants.LOGIN_FAIL);
 			res = new JsonResponse(result);
 		}
-//		return content.toString();
 		return res;
 	}
 

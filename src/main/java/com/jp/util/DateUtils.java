@@ -1513,4 +1513,18 @@ public class DateUtils {
              return false;
          }
      }
+ 	
+ 	/**
+	 * 计算两个时间的时间差，返回分钟的差值
+	 * @param closenowtime 接近现在的时间，也可以是大时间
+	 * @param oldtime 老的时间，过去的时间，也就是小时间
+	 * @return long 分钟的差值
+	 */
+	public static long timeDifferenceOfMin(Date closenowtime, Date oldtime) {
+		long timediff = closenowtime.getTime() - oldtime.getTime();
+		long min = timediff/(60*1000);
+		  
+		return min;
+	}
+ 	
 }
