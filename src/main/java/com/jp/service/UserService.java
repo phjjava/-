@@ -7,13 +7,15 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.entity.User;
 import com.jp.entity.Useralbum;
 import com.jp.entity.Useredu;
 import com.jp.entity.Userinfo;
 import com.jp.entity.Userphoto;
-import com.jp.util.Result;
+//import com.jp.util.Result;
 
 public interface UserService {
 	
@@ -33,7 +35,7 @@ public interface UserService {
 	 * @参数 @throws Exception
 	 * @return int
 	 */
-	String merge(User user,Userinfo userinfo,Useredu useredu,String eduExpArray,String workExpArray) throws Exception;
+	Result merge(User user,Userinfo userinfo,Useredu useredu,String eduExpArray,String workExpArray) throws Exception;
 	/**
 	 * 
 	 * @描述 用户列表分页
@@ -80,7 +82,7 @@ public interface UserService {
 	 * @参数 @throws Exception
 	 * @return String
 	 */
-	Result importUsers(MultipartFile file, HttpServletRequest request) throws Exception;
+	JsonResponse importUsers(MultipartFile file, HttpServletRequest request) throws Exception;
 	/**
 	 * 
 	 * @描述 新增用户时初始化 父亲 和配偶
@@ -102,7 +104,7 @@ public interface UserService {
 	 * @参数 @throws Exception
 	 * @return String
 	 */
-	Result importUserMates(MultipartFile file, HttpServletRequest request) throws Exception;
+	JsonResponse importUserMates(MultipartFile file, HttpServletRequest request) throws Exception;
 	/**
 	 * 
 	 * @描述 查询待审核的用户
@@ -125,7 +127,7 @@ public interface UserService {
 	 * @参数 @throws Exception
 	 * @return String
 	 */
-	String mergeMate(User user,Userinfo userInfo,String usernameBefore) throws Exception;
+	Result mergeMate(User user,Userinfo userInfo,String usernameBefore) throws Exception;
 	
 	/**
 	 * @描述 登录
@@ -212,7 +214,7 @@ public interface UserService {
 
 	List<User> selectAllUser(User user);
 
-	Result importUsersNew (MultipartFile file, HttpServletRequest request);
+	JsonResponse importUsersNew (MultipartFile file, HttpServletRequest request);
 
 	Integer del(@Param("array") String[] userids);
 

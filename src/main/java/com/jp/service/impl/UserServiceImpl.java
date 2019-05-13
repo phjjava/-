@@ -30,7 +30,10 @@ import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.util.StringUtil;
 import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentUserContext;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.controller.UserController;
 import com.jp.dao.BranchDao;
 import com.jp.dao.LoginThirdMapper;
@@ -71,7 +74,7 @@ import com.jp.util.ExcelUtil;
 import com.jp.util.GsonUtil;
 import com.jp.util.MD5Util;
 import com.jp.util.PinyinUtil;
-import com.jp.util.Result;
+//import com.jp.util.Result;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 import com.jp.util.ZodiacUtil;
@@ -130,8 +133,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String merge(User user, Userinfo userinfo, Useredu useredu, String eduExpArray, String workExpArray) throws Exception {
-		String result = null;
+	public Result merge(User user, Userinfo userinfo, Useredu useredu, String eduExpArray, String workExpArray) throws Exception {
+//		String result = null;
+		Result result = null;
 		try {
 			// 点击编辑后保存
 			if (StringTools.trimNotEmpty(user.getUserid()) && StringTools.trimNotEmpty(userinfo.getUserid())) {
@@ -239,7 +243,8 @@ public class UserServiceImpl implements UserService {
 					}
 					userworkDao.insertEduExp(userWorkList);
 				}
-				result = "1";
+//				result = "1";
+				result = new Result(MsgConstants.RESUL_SUCCESS);
 			} else {
 //				boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), 1);
 				boolean flag = checkFamilyUserNumber(1);
@@ -279,7 +284,8 @@ public class UserServiceImpl implements UserService {
 					boolean sameFlag = checkSameUser(user);
 					if (sameFlag) {
 						// 校验有重复什么也不做哦
-						result = "500";
+//						result = "500";
+						result = new Result(MsgConstants.USER_SAVE_HAVEREPEAT);
 					} else {
 						userDao.insertSelective(user);
 						userInfoDao.insertSelective(userinfo);
@@ -340,16 +346,19 @@ public class UserServiceImpl implements UserService {
 							}
 							userworkDao.insertEduExp(userWorkList);
 						}
-						result = "1";
+//						result = "1";
+						result = new Result(MsgConstants.RESUL_SUCCESS);
 					}
 				} else {
-					result = "2";
+//					result = "2";
+					result = new Result(MsgConstants.USER_SAVE_OUTMAX);
 				}
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			result = "0";
+//			result = "0";
+			result = new Result(MsgConstants.USER_SAVE_FAIL);
 		}
 		return result;
 	}
@@ -379,25 +388,30 @@ public class UserServiceImpl implements UserService {
 	 * @see com.jp.service.UserService#importUsers(org.springframework.web.multipart.MultipartFile, javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-	public Result importUsers(MultipartFile file, HttpServletRequest request) throws Exception {
+	public JsonResponse importUsers(MultipartFile file, HttpServletRequest request) throws Exception {
 		// String result = "";
-		Result result = new Result();
+		Result result = null;
+		JsonResponse res = null;
 		String branchid  = request.getParameter("branchid");
 		BranchKey branchkey = new BranchKey();
 		branchkey.setBranchid(branchid);
 		branchkey.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 		Branch branch = branchDao.selectByPrimaryKey(branchkey);
 		if(branch==null) {
-			result.setStatus(0);
-			result.setMsg("当前分支不存在！");
-			return result;
+			/*result.setStatus(0);
+			result.setMsg("当前分支不存在！");*/
+			result = new Result(MsgConstants.USER_NO_BRANCH);
+			res = new JsonResponse(result);
+			return res;
 		}
 		
 		if (file == null) {
 			// result = "0";
-			result.setStatus(0);
-			result.setMsg("当前文件不存在！");
-			return result;
+			/*result.setStatus(0);
+			result.setMsg("当前文件不存在！");*/
+			result = new Result(MsgConstants.USER_NO_FILE);
+			res = new JsonResponse(result);
+			return res;
 		}
 		//查当前分支得用户
 		UserQuery userExample = new UserQuery();
@@ -431,9 +445,11 @@ public class UserServiceImpl implements UserService {
 			// 判断家族人数是否超出当前家族容纳人数上限
 			boolean flag = checkFamilyUserNumber(totalRows - 1);
 			if (flag == false) {
-				result.setStatus(2);
-				result.setMsg("导入用户数量超过版本最大用户限制!");
-				return result;
+				/*result.setStatus(2);
+				result.setMsg("导入用户数量超过版本最大用户限制!");*/
+				result = new Result(MsgConstants.USER_SAVE_OUTMAX);
+				res = new JsonResponse(result);
+				return res;
 			}
 			// 读取Row,从第二行开始
 			for (int rowNum = 1; rowNum <= totalRows; rowNum++) {
@@ -627,9 +643,11 @@ public class UserServiceImpl implements UserService {
 			// 判断家族人数是否超出当前家族容纳人数上限
 			boolean flag = checkFamilyUserNumber(lastRowNum - 1);
 			if (flag == false) {
-				result.setStatus(2);
-				result.setMsg("导入用户数量超过版本最大用户限制!");
-				return result;
+				/*result.setStatus(2);
+				result.setMsg("导入用户数量超过版本最大用户限制!");*/
+				result = new Result(MsgConstants.USER_SAVE_OUTMAX);
+				res = new JsonResponse(result);
+				return res;
 			}
 			userStringList = new ArrayList<String>();
 			for (int i = 1; i < lastRowNum + 1; i++) {
@@ -806,20 +824,27 @@ public class UserServiceImpl implements UserService {
 
 		}
 		// result = "1";
-		result.setStatus(1);
+//		result.setStatus(1);
 		if (userList.size() < 1) {
-			result.setStatus(500);
+			result = new Result(MsgConstants.USER_NO_IMPORT); 
+			res = new JsonResponse(result);
+//			result.setStatus(500);
 			String userString = GsonUtil.GsonString(userStringList);
-			result.setData1(userString);
+			res.setData(userString);
+//			result.setData1(userString);
 		}else{
 			userStringList.add("本次共导入用户" + userList.size() + "人");
 			String userString = GsonUtil.GsonString(userStringList);
-			result.setData(userList);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(userString);
+			res.setEntity(excelid);
+			/*result.setData(userList);
 			result.setData1(userString);
-			result.setData2(excelid);
+			result.setData2(excelid);*/
 		}
 	//	result.setMsg("本次共导入用户" + userList.size() + "人");
-		return result;
+		return res;
 	}
 
 	/**
@@ -955,25 +980,31 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Result importUserMates(MultipartFile file, HttpServletRequest request) throws Exception {
+	public JsonResponse importUserMates(MultipartFile file, HttpServletRequest request) throws Exception {
 		// String result = "";
 		String msg = "";
-		Result result = new Result();
+//		Result result = new Result();
+		Result result= null;
+		JsonResponse res = null;
 		String branchid  = request.getParameter("branchid");
 		BranchKey branchkey = new BranchKey();
 		branchkey.setBranchid(branchid);
 		branchkey.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 		Branch branch = branchDao.selectByPrimaryKey(branchkey);
 		if(branch==null) {
-			result.setStatus(0);
-			result.setMsg("当前分支不存在！");
-			return result;
+			/*result.setStatus(0);
+			result.setMsg("当前分支不存在！");*/
+			result = new Result(MsgConstants.USER_NO_BRANCH);
+			res = new JsonResponse(result);
+			return res;
 		}
 		
 		if (file == null) {
 			// result = "0";
-			result.setStatus(0);
-			return result;
+			//result.setStatus(0);
+			result = new Result(MsgConstants.USER_NO_FILE);
+			res = new JsonResponse(result);
+			return res;
 		}
 		Map<String, User> userPhoneMap = new HashMap<>();
 		List<User> userList = new ArrayList<User>();
@@ -1027,9 +1058,12 @@ public class UserServiceImpl implements UserService {
 //				boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), totalRows - 1);
 				boolean flag = checkFamilyUserNumber(totalRows - 1);
 				if (flag == false) {
-					result.setStatus(2);
+					/*result.setStatus(2);
 					result.setMsg("导入配偶数量超过版本最大用户限制!");
-					return result;
+					return result;*/
+					result = new Result(MsgConstants.USER_SAVE_OUTMAX);
+					res = new JsonResponse(result);
+					return res;
 				}
 				// 读取Row,从第二行开始
 				for (int rowNum = 1; rowNum <= totalRows; rowNum++) {
@@ -1264,7 +1298,7 @@ public class UserServiceImpl implements UserService {
 					userInfoImportMapper.importUser(userInfoList);
 				}
 				// result ="1";
-				result.setStatus(1);
+//				result.setStatus(1);
 			}
 		} else {
 			ExcelUtil eutil = null;
@@ -1280,9 +1314,12 @@ public class UserServiceImpl implements UserService {
 //			boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), lastRowNum - 1);
 			boolean flag = checkFamilyUserNumber(lastRowNum - 1);
 			if (flag == false) {
-				result.setStatus(2);
+				/*result.setStatus(2);
 				result.setMsg("导入配偶数量超过版本最大用户限制!");
-				return result;
+				return result;*/
+				result = new Result(MsgConstants.USER_SAVE_OUTMAX);
+				res = new JsonResponse(result);
+				return res;
 			}
 			userMateStringList = new ArrayList<String>();
 			for (int i = 1; i < lastRowNum + 1; i++) {
@@ -1518,29 +1555,36 @@ public class UserServiceImpl implements UserService {
 				userInfoImportMapper.importUser(userInfoList);
 			}
 			// result ="1";
-			result.setStatus(1);
+			// result.setStatus(1);
 			// 如果符合导入条件的配偶信息条数不为零
 			if (userMatesList.size() < 1&&userList.size()<1) {
-				result.setStatus(500);
+				/*result.setStatus(500);
+				result.setData1(userMatesString);*/
 				String userMatesString = GsonUtil.GsonString(userMateStringList);
-				result.setData1(userMatesString);
+				result = new Result(MsgConstants.USER_NO_IMPORT);
+				res = new JsonResponse(result);
+				res.setData(userMatesString);
 			}else{
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
 				userMateStringList.add("本次共导入配偶" + userMatesList.size() + "人");
 				String userMatesString = GsonUtil.GsonString(userMateStringList);
-				result.setData(userList);
+				res.setData(userList);
+				res.setEntity(userMatesString);
+				/*result.setData(userList);
 				result.setData1(userMatesString);
-				result.setData2(excelid);
+				result.setData2(excelid);*/
 			}
-			String msString="";
+			/*String msString="";
 			if(userStringList.size()>0){
 				for (String ms : userStringList) {
 					msString+=ms+"\r\n,";
 				}
 			}
-			result.setMsg(msString+"本次共导入在世配偶(用户)" + userList.size() + "人,离世配偶" + userMatesList.size() + "人，未导入"+msg);
+			result.setMsg(msString+"本次共导入在世配偶(用户)" + userList.size() + "人,离世配偶" + userMatesList.size() + "人，未导入"+msg);*/
 		}
 		
-		return result;
+		return res;
 	}
 
 	@Override
@@ -1553,8 +1597,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String mergeMate(User user, Userinfo userInfo, String usernameBefore) throws Exception {
-		String result = "";
+	public Result mergeMate(User user, Userinfo userInfo, String usernameBefore) throws Exception {
+		Result result = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			Integer matetype = user.getMatetype();
@@ -1628,7 +1672,8 @@ public class UserServiceImpl implements UserService {
 						boolean sameFlag = checkSameUser(userMmate);
 						if (sameFlag) {
 							// 重复什么也不做
-							result = "500";
+							// result = "500";
+							result = new Result(MsgConstants.USER_SAVE_HAVEREPEAT);
 						} else {
 							userDao.insertSelective(userMmate);
 							userDao.addmateid(user.getUserid(), userid, user.getUsername());
@@ -1641,10 +1686,12 @@ public class UserServiceImpl implements UserService {
 									userInfo.setBirthday(userInfo.getBirthdayStr());
 							}
 							userInfoDao.insertSelective(userInfo);
-							result = "1";
+//							result = "1";
+							result = new Result(MsgConstants.RESUL_SUCCESS);
 						}
 					} else {
-						result = "2";
+//						result = "2";
+						result = new Result(MsgConstants.USER_SAVE_OUTMAX);
 						return result;
 					}
 				}
@@ -1666,14 +1713,17 @@ public class UserServiceImpl implements UserService {
 				boolean sameFlag = checkSameMates(userMates);
 				if (sameFlag) {
 					// 重复什么也不做
-					result = "500";
+					// result = "500";
+					result = new Result(MsgConstants.USER_SAVE_HAVEREPEAT);
 				} else {
 					userMatesDao.insertSelective(userMates);
-					result = "1";
+//					result = "1";
+					result = new Result(MsgConstants.RESUL_SUCCESS);
 				}
 			}
 		} catch (Exception e) {
-			result = "0";
+//			result = "0";
+			result = new Result(MsgConstants.RESUL_FAIL);
 			e.printStackTrace();
 		}
 		return result;
@@ -1773,28 +1823,35 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Result editPwd(String string2md5) {
-		Result result = new Result();
+//		Result result = new Result();
+		Result result = new Result(MsgConstants.RESUL_FAIL);
 		User record = new User();
 		record.setUserid(CurrentUserContext.getCurrentUserId());
 		record.setPassword(string2md5);
 		int updateRt = userDao.updateByPrimaryKeySelective(record);
 		if (updateRt != 1) {
-			result.setStatus(0);
+//			result.setStatus(0);
 			return result;
 		}
-		result.setStatus(updateRt);
+//		result.setStatus(updateRt);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
 		return result;
 	}
 
 	@Override
-	public Result importUsersNew(MultipartFile file, HttpServletRequest request) {
+	public JsonResponse importUsersNew(MultipartFile file, HttpServletRequest request) {
 
 		// String result = "";
-		Result result = new Result();
+//		Result result = new Result();
+		Result result= null;
+		JsonResponse res = null;
 		if (file == null) {
 			// result = "0";
-			result.setStatus(0);
-			return result;
+			/*result.setStatus(0);
+			return result;*/
+			result = new Result(MsgConstants.USER_NO_FILE);
+			res = new JsonResponse(result);
+			return res;
 		}
 		List<User> userList = new ArrayList<User>();
 		User user = null;
@@ -1826,9 +1883,12 @@ public class UserServiceImpl implements UserService {
 //			boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), totalRows - 1);
 			boolean flag = checkFamilyUserNumber(totalRows - 1);
 			if (flag == false) {
-				result.setStatus(2);
+				/*result.setStatus(2);
 				result.setMsg("导入用户数量超过版本最大用户限制!");
-				return result;
+				return result;*/
+				result = new Result(MsgConstants.USER_SAVE_OUTMAX);
+				res = new JsonResponse(result);
+				return res;
 			}
 			// 读取Row,从第二行开始
 			for (int rowNum = 1; rowNum <= totalRows; rowNum++) {
@@ -1993,9 +2053,12 @@ public class UserServiceImpl implements UserService {
 //			boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), lastRowNum - 1);
 			boolean flag = checkFamilyUserNumber(lastRowNum - 1);
 			if (flag == false) {
-				result.setStatus(2);
+				/*result.setStatus(2);
 				result.setMsg("导入用户数量超过版本最大用户限制!");
-				return result;
+				return result;*/
+				result = new Result(MsgConstants.USER_SAVE_OUTMAX);
+				res = new JsonResponse(result);
+				return res;
 			}
 			userStringList = new ArrayList<String>();
 			for (int i = 1; i < lastRowNum + 1; i++) {
@@ -2139,18 +2202,24 @@ public class UserServiceImpl implements UserService {
 
 		}
 		// result = "1";
-		result.setStatus(1);
+//		result.setStatus(1);
 		if (userList.size() < 1) {
-			result.setStatus(500);
+//			result.setStatus(500);
 			String userString = GsonUtil.GsonString(userStringList);
-			result.setData1(userString);
+//			result.setData1(userString);
+			result = new Result(MsgConstants.USER_NO_IMPORT);
+			res = new JsonResponse(result);
+			res.setData(userString);
 		}else{
 			userStringList.add("本次共导入用户" + userList.size() + "人");
 			String userString = GsonUtil.GsonString(userStringList);
-			result.setData1(userString);
+//			result.setData1(userString);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(userString);
 		}
 	//	result.setMsg("本次共导入用户" + userList.size() + "人");
-		return result;
+		return res;
 	
 	}
 
@@ -2162,10 +2231,12 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Result confirmImport(String excelid) {
-		Result result = new Result();
+		// Result result = new Result();
+		Result result = null;
 		if(excelid == null || "".equals(excelid)){
-			result.setStatus(ConstantUtils.RESULT_FAIL);
-			result.setMsg("导入失败！");
+			/*result.setStatus(ConstantUtils.RESULT_FAIL);
+			result.setMsg("导入失败！");*/
+			result = new Result(MsgConstants.RESUL_FAIL);
 			return result;
 		}
 		//1.查临时表的数据
@@ -2186,8 +2257,9 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		
-		result.setStatus(ConstantUtils.RESULT_SUCCESS);
-		result.setMsg("导入成功");
+		/*result.setStatus(ConstantUtils.RESULT_SUCCESS);
+		result.setMsg("导入成功");*/
+		result = new Result(MsgConstants.RESUL_SUCCESS);
 		return result;
 	}
 

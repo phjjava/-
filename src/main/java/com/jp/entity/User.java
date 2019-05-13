@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.jp.entity.SysFamily;
+
 public class User implements Serializable {
     /**
      * 用户ID
@@ -202,6 +204,67 @@ public class User implements Serializable {
 	private String excelid;
 	private String pgenlevel;	//父（母）亲的世系
 	
+	//用户信息
+    private Userinfo userInfo;
+    //教育经历
+    private List<Useredu> userEdu;
+    //工作经历
+    private List<Userworkexp> userWorkexp;
+    //家族信息
+    private List<Branch> branchList;
+    //用户相册
+    private List<Useralbum> userAblumList;
+    //配偶
+    private List<Usermates> mateList;
+    
+	public Userinfo getUserInfo() {
+		return userInfo;
+	}
+
+	public void setUserInfo(Userinfo userInfo) {
+		this.userInfo = userInfo;
+	}
+
+	public List<Useredu> getUserEdu() {
+		return userEdu;
+	}
+
+	public void setUserEdu(List<Useredu> userEdu) {
+		this.userEdu = userEdu;
+	}
+
+	public List<Userworkexp> getUserWorkexp() {
+		return userWorkexp;
+	}
+
+	public void setUserWorkexp(List<Userworkexp> userWorkexp) {
+		this.userWorkexp = userWorkexp;
+	}
+
+	public List<Branch> getBranchList() {
+		return branchList;
+	}
+
+	public void setBranchList(List<Branch> branchList) {
+		this.branchList = branchList;
+	}
+
+	public List<Useralbum> getUserAblumList() {
+		return userAblumList;
+	}
+
+	public void setUserAblumList(List<Useralbum> userAblumList) {
+		this.userAblumList = userAblumList;
+	}
+
+	public List<Usermates> getMateList() {
+		return mateList;
+	}
+
+	public void setMateList(List<Usermates> mateList) {
+		this.mateList = mateList;
+	}
+
 	public String getPgenlevel() {
 		return pgenlevel;
 	}

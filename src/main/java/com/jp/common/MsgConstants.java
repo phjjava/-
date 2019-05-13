@@ -14,4 +14,14 @@ public class MsgConstants {
 	public static final Result LOGIN_ICODE_WRONG = new Result(1006,"验证码不正确");
 	public static final Result LOGIN_USER_CHOOSEFAMILY = new Result(1007,"该用户存在多个家族，请选择");
 	
+	//用户管理异常码
+	public static final Result USER_SAVE_FAIL = new Result(2001,"系统异常，用户信息保存失败");
+	public static final Result USER_SAVE_OUTMAX = new Result(2002,"保存失败，用户数量超过版本最大用户数量");
+	public static final Result USER_SAVE_HAVEREPEAT = new Result(2003,"数据库有重复,保存失败");
+	public static final Result USER_NO_BRANCH = new Result(2004,"当前分支不存在");
+	public static final Result USER_NO_FILE = new Result(2005,"当前文件不存在");
+	public static final Result USER_NO_IMPORT = new Result(2006,"当前没有导入任何数据");
+	
+	
+	
 }
