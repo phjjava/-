@@ -17,6 +17,31 @@ public class JsonResponse implements Serializable{
 	@JsonInclude(Include.NON_NULL)
 	private Object data = null;
 	
+	@JsonInclude(Include.NON_NULL)
+	private Object entity = null;
+	
+	@JsonInclude(Include.NON_NULL)
+	private Object data1 = null;
+	
+	@JsonInclude(Include.NON_NULL)
+	private Object data2 = null;
+	
+	public Object getData1() {
+		return data1;
+	}
+
+	public void setData1(Object data1) {
+		this.data1 = data1;
+	}
+
+	public Object getData2() {
+		return data2;
+	}
+
+	public void setData2(Object data2) {
+		this.data2 = data2;
+	}
+
 	public JsonResponse(int code , String msg) {
 		this.code = code;
 		this.msg = msg;
@@ -50,7 +75,13 @@ public class JsonResponse implements Serializable{
 	public void setData(Object data) {
 		this.data = data;
 	}
-	
-	
-	
+
+	public Object getEntity() {
+		return entity;
+	}
+
+	public void setEntity(Object entity) {
+		this.entity = entity;
+	}
+		
 }

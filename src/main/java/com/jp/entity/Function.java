@@ -1,6 +1,7 @@
 package com.jp.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Function implements Serializable {
     private String functionid;
@@ -27,8 +28,18 @@ public class Function implements Serializable {
      * 版本授权菜单  id   可能为空
      */
     private String isfunctionid; 
+    
+    private List<Function> childList;	// 子菜单集合
 
-    private static final long serialVersionUID = 1L;
+    public List<Function> getChildList() {
+		return childList;
+	}
+
+	public void setChildList(List<Function> childList) {
+		this.childList = childList;
+	}
+
+	private static final long serialVersionUID = 1L;
 
     public String getFunctionid() {
         return functionid;
