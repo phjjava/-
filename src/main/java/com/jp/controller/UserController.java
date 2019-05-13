@@ -1470,7 +1470,8 @@ public class UserController {
 			res = new JsonResponse(result);
 			return res;
 		}
-		
+		user = userDao.selectByPrimaryKey(user.getUserid());
+		userContext.setUser(user);
 		List<Function> functionList = list2Tree(user.getFamilyid(), user.getUserid());
 		List<Branch> branchList = branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(), user.getUserid());
 		userContext.setUsermanagers(managers);
