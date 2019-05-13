@@ -81,10 +81,8 @@ public class LoginController {
 			String password = request.getParameter("password");
 			String inputCode = request.getParameter("code");
 //			String remember = request.getParameter("remember");
-
 			
 			Object sessionCode = request.getSession().getAttribute("code");
-			Object cc = session.getAttribute("code");
 			// 验证验证码是否正确
 			if (StringTools.notEmpty(inputCode) && StringTools.notEmpty(sessionCode)
 					&& inputCode.toLowerCase().equals(sessionCode.toString().toLowerCase())) {
@@ -110,7 +108,8 @@ public class LoginController {
 							}
 							//userContext.setRole(role);
 							//userContext.setUsermanager(manager);
-							List<Function> functionList =functionService.selectFunctionListByManagerid(user.getFamilyid(), user.getUserid());
+							//List<Function> functionList =functionService.selectFunctionListByManagerid(user.getFamilyid(), user.getUserid());
+							List<Function> functionList = list2Tree(user.getFamilyid(), user.getUserid());
 							List<Branch> branchList = branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(), user.getUserid());
 //							if(manager.getIsmanager() == 1 && manager.getEbtype() == 1 ){
 //								//获取该家族所有功能权限
@@ -169,6 +168,28 @@ public class LoginController {
 			
 		}
 		return res;
+	}
+	
+	public List<Function> list2Tree(String familyid,String userid) {
+		List<Function> functionList =functionService.selectFunctionListByManagerid(familyid, userid);
+		List<Function> parentList = new ArrayList<>();
+		for (Function function : functionList) {
+			if("00000".equals(function.getParentid())) {
+				parentList.add(function);
+			}
+		}
+		for (Function parent : parentList) {
+			List<Function> childList = new ArrayList<>();
+			for (Function  function: functionList) {
+				if(function.getParentid().equals(parent.getFunctionid())) {
+//					parent.getChildList().add(function);
+					childList.add(function);
+				}
+			}
+			parent.setChildList(childList);
+		}
+//		String menutree = GsonUtil.GsonString(parentList);
+		return parentList;
 	}
 	
 	//动态登录跳转manager重定向到index
