@@ -108,8 +108,7 @@ public class LoginController {
 							}
 							//userContext.setRole(role);
 							//userContext.setUsermanager(manager);
-							//List<Function> functionList =functionService.selectFunctionListByManagerid(user.getFamilyid(), user.getUserid());
-							List<Function> functionList = list2Tree(user.getFamilyid(), user.getUserid());
+							List<Function> functionList =functionService.selectFunctionListByManagerid(user.getFamilyid(), user.getUserid());
 							List<Branch> branchList = branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(), user.getUserid());
 //							if(manager.getIsmanager() == 1 && manager.getEbtype() == 1 ){
 //								//获取该家族所有功能权限
@@ -131,11 +130,11 @@ public class LoginController {
 							userContext.setBranchList(branchList);
 							
 							// 创建session
-//							request.getSession().setAttribute("userContext", userContext);
+							request.getSession().setAttribute("userContext", userContext);
 							
 							result = new Result(MsgConstants.RESUL_SUCCESS);
 							res = new JsonResponse(result);
-							res.setData(userContext);
+							res.setData(user);
 						}else if(userList.size() == 2){
 							
 							request.getSession().setAttribute("loginUserList", userList);
@@ -170,28 +169,6 @@ public class LoginController {
 		return res;
 	}
 	
-	public List<Function> list2Tree(String familyid,String userid) {
-		List<Function> functionList =functionService.selectFunctionListByManagerid(familyid, userid);
-		List<Function> parentList = new ArrayList<>();
-		for (Function function : functionList) {
-			if("00000".equals(function.getParentid())) {
-				parentList.add(function);
-			}
-		}
-		for (Function parent : parentList) {
-			List<Function> childList = new ArrayList<>();
-			for (Function  function: functionList) {
-				if(function.getParentid().equals(parent.getFunctionid())) {
-//					parent.getChildList().add(function);
-					childList.add(function);
-				}
-			}
-			parent.setChildList(childList);
-		}
-//		String menutree = GsonUtil.GsonString(parentList);
-		return parentList;
-	}
-	
 	//动态登录跳转manager重定向到index
 	@RequestMapping(value = "/manager", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, ModelMap model) {
@@ -211,6 +188,7 @@ public class LoginController {
 		return res;
 	}
 	
+	@ResponseBody
 	@RequestMapping(value = "tochoose", method = RequestMethod.GET)
 	public JsonResponse tochoose(HttpServletRequest request, HttpServletResponse response,ModelMap model) {
 		response.addHeader("Access-Control-Allow-Origin", "*");
@@ -287,7 +265,7 @@ public class LoginController {
 			request.getSession().setAttribute("userContext", userContext);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
-			res.setData(userContext);
+			res.setData(user);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[HNFZ_ERROR登录系统失败:]", e);
