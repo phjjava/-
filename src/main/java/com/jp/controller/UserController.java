@@ -198,6 +198,7 @@ public class UserController {
 	 * @return String
 	 */
 	@RequestMapping(value = "/edit", method = RequestMethod.GET)
+	@ResponseBody
 	public JsonResponse editUser(HttpServletRequest request, ModelMap modelMap) {
 //		String result = null;
 		Result result = null;
@@ -757,6 +758,7 @@ public class UserController {
 	 * @return String
 	 */
 	@RequestMapping(value = "/addmate", method = RequestMethod.GET)
+	@ResponseBody
 	public JsonResponse addmate(HttpServletRequest request, ModelMap modelMap) {
 		Result result= null;
 		JsonResponse res = null;
@@ -925,6 +927,7 @@ public class UserController {
 	 * @return String
 	 */
 	@RequestMapping(value = "/toAddAblum", method = RequestMethod.GET)
+	@ResponseBody
 	public JsonResponse toAddAblum(HttpServletRequest request, ModelMap modelMap) {
 		Result result= null;
 		JsonResponse res = null;
@@ -975,6 +978,7 @@ public class UserController {
 	 * @return String
 	 */
 	@RequestMapping(value = "/toAddPhoto", method = RequestMethod.GET)
+	@ResponseBody
 	public JsonResponse toAddPhoto(HttpServletRequest request,ModelMap modelMap)  {
 		Result result= null;
 		JsonResponse res = null;
@@ -1168,6 +1172,7 @@ public class UserController {
 	 * @return String
 	 */
 	@RequestMapping(value = "/edituserphoto", method = RequestMethod.GET)
+	@ResponseBody
 	public JsonResponse edituserphoto(HttpServletRequest request, ModelMap modelMap) {
 		Result result= null;
 		JsonResponse res = null;
@@ -1456,55 +1461,6 @@ public class UserController {
 			log_.error("[JPSYSTEM]", e);
 		}
 		return res;
-	}
-	
-	@ResponseBody
-	@RequestMapping(value = "getHome", method = RequestMethod.POST)
-	public JsonResponse getHomeData(User user) throws Exception {
-		Result result= null;
-		JsonResponse res = null;
-		LoginUserInfo userContext = new LoginUserInfo();
-		List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid());
-		if(managers == null || managers.size()==0){
-			result = new Result(MsgConstants.LOGIN_NOT_ADMIN);
-			res = new JsonResponse(result);
-			return res;
-		}
-		user = userDao.selectByPrimaryKey(user.getUserid());
-		userContext.setUser(user);
-		List<Function> functionList = list2Tree(user.getFamilyid(), user.getUserid());
-		List<Branch> branchList = branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(), user.getUserid());
-		userContext.setUsermanagers(managers);
-		userContext.setFunctionList(functionList);
-		if(branchList == null){
-			branchList = new ArrayList<Branch>();
-		}
-		userContext.setBranchList(branchList);
-		
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(userContext);
-		return res;
-	}
-	
-	public List<Function> list2Tree(String familyid,String userid) {
-		List<Function> functionList =functionService.selectFunctionListByManagerid(familyid, userid);
-		List<Function> parentList = new ArrayList<>();
-		for (Function function : functionList) {
-			if("00000".equals(function.getParentid())) {
-				parentList.add(function);
-			}
-		}
-		for (Function parent : parentList) {
-			List<Function> childList = new ArrayList<>();
-			for (Function  function: functionList) {
-				if(function.getParentid().equals(parent.getFunctionid())) {
-					childList.add(function);
-				}
-			}
-			parent.setChildList(childList);
-		}
-		return parentList;
 	}
 	 
 }

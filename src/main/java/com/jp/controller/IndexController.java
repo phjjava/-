@@ -15,9 +15,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jp.common.CurrentUserContext;
+import com.jp.common.JsonResponse;
 import com.jp.common.LoginUserInfo;
+import com.jp.common.MsgConstants;
+import com.jp.common.Result;
 import com.jp.entity.Function;
 import com.jp.entity.Indexcount;
 import com.jp.service.FamilyService;
@@ -36,17 +40,22 @@ public class IndexController {
 	 * @return
 	 */
 	@RequestMapping(value = "/init", method = RequestMethod.GET)
-	public String initIndex(HttpServletRequest request, ModelMap modelMap) {
+	@ResponseBody
+	public JsonResponse initIndex(HttpServletRequest request, ModelMap modelMap) {
+		Result result = null;
+		JsonResponse res = null;
 		List<Function> functions = null;//所有菜单
-		List<Function> parentFunctions = new ArrayList<Function>();//父节点
+		List<Function> menuFunctions = null;
+		/*List<Function> parentFunctions = new ArrayList<Function>();//父节点
 		List<Function> childFunctions = null;//子节点
-		Map<String, List<Function>> childFunctionsMap = new HashMap<String, List<Function>>();//key 父节点id value 子节点list
-	
+		Map<String, List<Function>> childFunctionsMap = new HashMap<String, List<Function>>();*///key 父节点id value 子节点list
+		
 		try {
 			LoginUserInfo userInfo = (LoginUserInfo) request.getSession().getAttribute("userContext");
 			if (userInfo != null) {
 				functions = userInfo.getFunctionList();
-				for (Function function : functions) {
+				menuFunctions = list2Tree(functions);
+				/*for (Function function : functions) {
 					//遍历出所有父节点
 					if("00000".equals(function.getParentid())){
 						parentFunctions.add(function);//存储父节点
@@ -59,7 +68,7 @@ public class IndexController {
 						}
 						childFunctionsMap.put(function.getFunctionid(), childFunctions);//父子关系
 					}
-				}
+				}*/
 			}
 			List<String> branchids = CurrentUserContext.getCurrentBranchIds();
 //			Integer type = CurrentUserContext.getUserContext().getRole().getIsmanager();
@@ -68,13 +77,35 @@ public class IndexController {
 //			}
 			String familyid = CurrentUserContext.getCurrentFamilyId();
 			Indexcount countIndex = familyService.countIndex(familyid, branchids);
-			modelMap.put("parentFunctions", parentFunctions);
-			modelMap.put("childFunctionsMap", childFunctionsMap);
-			modelMap.put("countIndex", countIndex);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(menuFunctions);
+			res.setData1(countIndex);
 		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
 			log_.error("[PLMERROR:]", e);
 		}
-		return "/index";
+		return res;
+	}
+	
+	public List<Function> list2Tree(List<Function> functionList) {
+		List<Function> parentList = new ArrayList<>();
+		for (Function function : functionList) {
+			if("00000".equals(function.getParentid())) {
+				parentList.add(function);
+			}
+		}
+		for (Function parent : parentList) {
+			List<Function> childList = new ArrayList<>();
+			for (Function  function: functionList) {
+				if(function.getParentid().equals(parent.getFunctionid())) {
+					childList.add(function);
+				}
+			}
+			parent.setChildList(childList);
+		}
+		return parentList;
 	}
 	
 }
