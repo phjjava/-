@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jp.common.CurrentUserContext;
+import com.jp.common.JsonResponse;
 import com.jp.common.LoginUserInfo;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.dao.BranchDao;
 import com.jp.dao.UserDao;
 import com.jp.dao.UserManagerMapper;
@@ -56,20 +59,22 @@ public class BranchController {
 	private UserDao userDao;
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String save(Branch branch, ModelMap model) {
-		Integer result = null;
+	public JsonResponse save(Branch branch, ModelMap model) {
+		Integer count = null;
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
 		try {
 			if(StringTools.notEmpty(branch.getBranchid())){//修改
 				branch.setUpdateid(CurrentUserContext.getCurrentUserId());
 				branch.setUpdatetime(new Date());
-				result = branchService.update(branch);
+				count = branchService.update(branch);
 			}else{//新增
 				branch.setStatus(0);// 使用中
 				branch.setBranchid(UUIDUtils.getUUID());
 				branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 				branch.setCreateid(CurrentUserContext.getCurrentUserId());
-				result = branchService.insert(branch);
-				if(result>0){
+				count = branchService.insert(branch);
+				if(count>0){
 					//更新session中的分支信息
 					LoginUserInfo userContext = CurrentUserContext.getUserContext();
 					User user = userContext.getUser();
@@ -86,17 +91,23 @@ public class BranchController {
 					userContext.setBranchList(branchList);
 				}
 			}
-
+			if(count > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
-			result = 0;
+			// result = 0;
 		}
-		return result + "";
+		res = new JsonResponse(result);
+		return res;
+//		return result + "";
 	}
 
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
-	public String list(PageModel<Branch> pageModel,Branch branch, ModelMap model) {
+	public JsonResponse list(PageModel<Branch> pageModel,Branch branch, ModelMap model) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
 		try {
 			String userid = CurrentUserContext.getCurrentUserId();
 			UserbranchQuery ex = new UserbranchQuery();
@@ -118,43 +129,34 @@ public class BranchController {
 	        example.or().andUseridEqualTo(CurrentUserContext.getCurrentUserId());
 	        example.setOrderByClause("ebtype desc,ismanager desc");
 	        List<UserManager> managers = userManagerMapper.selectByExample(example);
-//	        UserQuery ex = new UserQuery();
 	        for(UserManager manager : managers) {
 	        	//if(manager.getEbtype() == 1 && manager.getIsmanager() == 1) {
 	        	if(manager.getEbtype() == 1) {
 	        		branchService.pageQuery(pageModel,branch);
-	        		 
 	        	}else {
-	        		
 	        		branchService.selectBranchListByFamilyAndUserid(pageModel,branch);
-		        	
-		        	 
 	        	}
-	             
 	        }
-			
-			
-			
-//			branchService.pageQuery(pageModel,branch);
-//			if (pageModel.getList() != null) {
-//				if (pageModel.getList().size() == 0) {
-//					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
-//						pageModel.setPageNo(pageModel.getPageNo() - 1);
-//						branchService.pageQuery(pageModel,branch);
-//					}
-//				}
-//			}
-			model.put("pageModel", pageModel);
-			model.put("branch", branch);
+	        result = new Result(MsgConstants.RESUL_SUCCESS);
+	        res = new JsonResponse(result);
+	        res.setData(pageModel);
+	        res.setData1(branch);
+			/*model.put("pageModel", pageModel);
+			model.put("branch", branch);*/
 		} catch (Exception e) {
+			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-		return "branch/branchList";
+		return res;
+//		return "branch/branchList";
 	}
 
 	@RequestMapping(value = "/get", method = RequestMethod.GET)
-	public String get(HttpServletRequest request, ModelMap model) {
+	@ResponseBody
+	public JsonResponse get(HttpServletRequest request, ModelMap model) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
 		try {
 
 			String branchid = request.getParameter("branchid");
@@ -165,27 +167,38 @@ public class BranchController {
 			if(user != null) {
 				branch.setGenlevel(user.getGenlevel()+"世");
 			}
-			model.put("branch", branch);
-			
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(branch);
+			// model.put("branch", branch);
 		} catch (Exception e) {
+			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-		return "branch/branch";
+		return res;
+		// return "branch/branch";
 	}
 	
 	@ResponseBody
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
-    public String changeStatus(Branch branch)  {
-    	Integer result = null;
+    public JsonResponse changeStatus(Branch branch)  {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+    	Integer count = null;
     	try {
-    		result  = branchService.changeStatus(branch);
+    		count  = branchService.changeStatus(branch);
+    		if(count > 0) {
+    			result = new Result(MsgConstants.RESUL_SUCCESS);
+    		}
 		} catch (Exception e) {
-			result = 0;
+			// result = 0;
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-    	return result+"";
+    	res = new JsonResponse(result);
+    	return res;
+    	// return result+"";
     }
 	
 	/**
@@ -198,24 +211,33 @@ public class BranchController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/initBranch", method = RequestMethod.POST)
-	public String selectBranch(String familyid) {
-		String gsonStr = null;
+	public JsonResponse selectBranch(String familyid) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+//		String gsonStr = null;
 		try {
 			PageModel<Branch> pageModelBranch = new PageModel<Branch>();
 			Branch branch = new Branch();
 			branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 			branchService.initBranch(pageModelBranch,branch);
-			gsonStr = GsonUtil.GsonString(pageModelBranch.getList());
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(pageModelBranch.getList());
+			// gsonStr = GsonUtil.GsonString(pageModelBranch.getList());
 		} catch (Exception e) {
+			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-		return gsonStr;
+		return res;
+		//return gsonStr;
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/validateBranchname", method = RequestMethod.POST)
-	public String validateBranchname(HttpServletRequest request) {
+	public JsonResponse validateBranchname(HttpServletRequest request) {
+		Result result = null;
+		JsonResponse res = null;
 		boolean flag = true;//默认通过验证
 	
 		String branchname = StringTools.trimNotEmpty(request.getParameter("branchname")) ? request.getParameter("branchname").trim() : null;
@@ -225,14 +247,20 @@ public class BranchController {
 			example.or().andBranchnameEqualTo(branchname)
 				.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
 			List<Branch> selectRt = branchDao.selectByExample(example);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
 			if (selectRt!=null&&selectRt.size()>0) {
+				result = new Result(MsgConstants.BRANCH_VALIDATA_NAME);
 				flag=false;
 			}
-			
+			res.setData(flag);
 		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
 			log_.error("[PLMERROR:]", e);
 		}
-		return flag ? "true" : "false";
+		return res;
+		// return flag ? "true" : "false";
 	}
 	
 	/**
@@ -246,23 +274,36 @@ public class BranchController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/checkBeginer", method = RequestMethod.POST)
-	public String checkBeginer(HttpServletRequest request) {
+	public JsonResponse checkBeginer(HttpServletRequest request) {
+		Result result = null;
+		JsonResponse res = null;
 		boolean flag = true;//默认通过验证	
 		String beginuserid = StringTools.trimNotEmpty(request.getParameter("beginuserid")) ? request.getParameter("beginuserid").trim() : null;
 		if (beginuserid==null) {
-			flag=false;
-			return flag ? "true" : "false";
+			result = new Result(MsgConstants.BRANCH_NO_BEGINERID);
+			res = new JsonResponse(result);
+			res.setData(false);
+			return res;
+			// flag=false;
+			// return flag ? "true" : "false";
 		}
 		try {
 			BranchQuery example=new BranchQuery();
 			example.or().andBeginuseridEqualTo(beginuserid);
 			List<Branch> selectRt = branchDao.selectByExample(example);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
 			if (selectRt!=null&&selectRt.size()>0) {
+				result = new Result(MsgConstants.BRANCH_CHECK_BEGINER);
 				flag=false;
-			}	
+			}
+			res.setData(flag);
 		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
 			log_.error("[PLMERROR:]", e);
 		}
-		return flag ? "true" : "false";
+		res = new JsonResponse(result);
+		return res;
+		//return flag ? "true" : "false";
 	}
 }

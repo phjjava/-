@@ -51,9 +51,10 @@ public class LoginInterceptor implements HandlerInterceptor {
 		log_.info("basePath:" + basePath);
 		log_.info("url：" + url);
 		String dbsessionid=null;
-		response.addHeader("Access-Control-Allow-Origin", "*");
+		response.setHeader("Access-Control-Allow-Origin",request.getHeader("Origin"));// 支持跨域请求
+        response.setHeader("Access-Control-Allow-Credentials", "true");	// 支持cookie跨域
         response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type,userid,sessionid");
         response.addHeader("Access-Control-Max-Age", "1800");
         if(userid == null) {
         	return false;
