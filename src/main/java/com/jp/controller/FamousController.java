@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentUserContext;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.dao.UserDao;
 import com.jp.dao.UsercontentDao;
 import com.jp.entity.User;
@@ -36,8 +39,11 @@ public class FamousController {
 
 	private final Logger log_ = LogManager.getLogger(FamousController.class);
 
+	@ResponseBody
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
-	public String list(PageModel<Usercontent> pageModel, Usercontent usercontent, ModelMap model) {
+	public JsonResponse list(PageModel<Usercontent> pageModel, Usercontent usercontent, ModelMap model) {
+		Result result = null;
+		JsonResponse res = null;
 		try {
 			famousService.selectContentList(pageModel, usercontent);
 			if (pageModel.getList() != null) {
@@ -48,17 +54,25 @@ public class FamousController {
 					}
 				}
 			}
-			model.put("pageModel", pageModel);
-
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(pageModel);
+			// model.put("pageModel", pageModel);
 		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-		return "famous/famousList";
+		return res;
+		//return "famous/famousList";
 	}
 
+	@ResponseBody
 	@RequestMapping(value = "/get", method = RequestMethod.GET)
-	public String get(HttpServletRequest request, ModelMap model) {
+	public JsonResponse get(HttpServletRequest request, ModelMap model) {
+		Result result = null;
+		JsonResponse res = null;
 		try {
 			String userid = request.getParameter("userid");
 			Usercontent usercontent = famousService.get(userid);
@@ -71,30 +85,41 @@ public class FamousController {
 				usercontent.setBranchid(user.getBranchid());
 				usercontent.setBranchname(user.getBranchname());
 			}
-			model.put("usercontent", usercontent);
-			
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(usercontent);
+			// model.put("usercontent", usercontent);
 		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPGL]", e);
 		}
-		return "famous/famous";
+		return res;
+		// return "famous/famous";
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
-	public String changeStatus(Usercontent usercontent) {
-		String result = null;
+	public JsonResponse changeStatus(Usercontent usercontent) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		Integer count = 0;
 		try {
 			Usercontent uc = usercontentDao.selectByPrimaryKey(usercontent.getUserid());
 			uc.setIssee(usercontent.getIssee());
-			usercontentDao.updateByPrimaryKey(uc);
-			result = "1";
+			count = usercontentDao.updateByPrimaryKey(uc);
+			if(count > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+			}
 		} catch (Exception e) {
-			result = "0";
+			// result = "0";
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-		return result;
+		res = new JsonResponse(result);
+		return res;
+		// return result;
 	}
 
 	/**
@@ -108,8 +133,10 @@ public class FamousController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String save(Usercontent usercontent) {
-		Integer result = null;
+	public JsonResponse save(Usercontent usercontent) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		Integer count = 0;
 		try {
 			if (StringTools.notEmpty(usercontent.getUserid())) {
 				Usercontent searchUTResult = usercontentDao.selectByPrimaryKey(usercontent.getUserid());
@@ -117,7 +144,7 @@ public class FamousController {
 					// 有记录存在为编辑修改
 					usercontent.setUpdatetime(new Date());
 					usercontent.setUpdateid(CurrentUserContext.getCurrentUserId());
-					result = famousService.update(usercontent);
+					count = famousService.update(usercontent);
 				} else {
 					// 无记录存在为新增
 					usercontent.setCreateid(CurrentUserContext.getCurrentUserId());
@@ -125,36 +152,48 @@ public class FamousController {
 					usercontent.setUpdatetime(new Date());
 					usercontent.setCreatetime(new Date());
 					usercontent.setIssee(ConstantUtils.ISSEE_DEFAULT);
-					result = famousService.insert(usercontent);
+					count = famousService.insert(usercontent);
+				}
+				if(count > 0) {
+					result = new Result(MsgConstants.RESUL_SUCCESS);
 				}
 			} else {
 				// 用户userid为空
-				result = 0;
+				// result = 0;
+				result = new Result(MsgConstants.FAMOUS_NO_USERID);
 			}
 		} catch (Exception e) {
-			result = 0;
+			//result = 0;
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-		return result + "";
+		res = new JsonResponse(result);
+		return res;
+		// return result + "";
 	}
 	
 	@ResponseBody
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
-    public String batchDelete(String userids){
-    	String result=null;
+    public JsonResponse batchDelete(String userids){
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+    	int count = 0;
     	try {
  		//a,b,c 
  		String id = userids.substring(0, userids.length());
  		String dyidArray [] = id.split(",");
- 		result = famousService.batchDelete(dyidArray)+"";
+ 		count = famousService.batchDelete(dyidArray);
+ 		if(count > 0) {
+ 			result = new Result(MsgConstants.RESUL_SUCCESS);
+ 		}
  		//result="1";
  	} catch (Exception e) {
- 		result = "0";
+ 		// result = "0";
  		e.printStackTrace();
  		log_.error("[JPSYSTEM]", e);
  	}
-    	return result;
+    	res = new JsonResponse(result);
+    	return res;
     }
 
 }

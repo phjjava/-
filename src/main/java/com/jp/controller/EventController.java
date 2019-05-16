@@ -20,7 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.entity.Event;
 import com.jp.service.EventService;
 import com.jp.util.UploadUtil;
@@ -31,56 +34,78 @@ public class EventController {
    @Autowired
    private EventService eservice;
    
+   @ResponseBody
    @RequestMapping(value="/list",method = RequestMethod.POST)
-   public String list(PageModel<Event> pageModel, ModelMap model,Event event){
+   public JsonResponse list(PageModel<Event> pageModel, ModelMap model,Event event){
+	   Result result = null;
+	   JsonResponse res = null;
 	   try {
 		   eservice.pageQuery(pageModel,event);
-		if(pageModel.getList()!=null){
-			if(pageModel.getPageSize()==0){
-				if(pageModel.getPageNo()!=null&&!"1".equals(pageModel.getPageNo())){
-					pageModel.setPageNo(pageModel.getPageNo() - 1);
-					eservice.pageQuery(pageModel,event);
+			if(pageModel.getList()!=null){
+				if(pageModel.getPageSize()==0){
+					if(pageModel.getPageNo()!=null&&!"1".equals(pageModel.getPageNo())){
+						pageModel.setPageNo(pageModel.getPageNo() - 1);
+						eservice.pageQuery(pageModel,event);
+					}
 				}
 			}
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(pageModel);
+			// model.put("pageModel", pageModel);
+		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
 		}
-		model.put("pageModel", pageModel);
-	} catch (Exception e) {
-		e.printStackTrace();
-		log_.error("[JPSYSTEM]", e);
-	}
-	   return "event/eventList";
+	   return res;
+	   //return "event/eventList";
 	   
    }
    
+   @ResponseBody
    @RequestMapping(value = "/get", method = RequestMethod.GET)
-  	public String get(HttpServletRequest request, ModelMap model) {
+  	public JsonResponse get(HttpServletRequest request, ModelMap model) {
+	   Result result = null;
+	   JsonResponse res = null;
   		try {
   			String eventid = request.getParameter("eventid");
   			Event event = eservice.get(eventid);
-  			model.put("event", event);
-  			
+  			result = new Result(MsgConstants.RESUL_SUCCESS);
+  			res = new JsonResponse(result);
+  			res.setData(event);
+  			// model.put("event", event);
   		} catch (Exception e) {
+  			result = new Result(MsgConstants.RESUL_FAIL);
+  			res = new JsonResponse(result);
   			e.printStackTrace();
   			log_.error("[JPGL]", e);
   		}
-  		return "event/event";
+  		return res;
+  		// return "event/event";
   	}
+   
    @ResponseBody
    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
-   public String batchDelete(String eventids){
-   	String result=null;
-   	try {
-	 		String eventid = eventids.substring(0, eventids.length());
-	 		String eventArray [] = eventid.split(",");
-	 		eservice.batchDelete(eventArray);
-	 		result="1";
-	 	} catch (Exception e) {
-	 		result = "0";
-	 		e.printStackTrace();
-	 		log_.error("[JPSYSTEM]", e);
-	 	}
-	    	return result;
-	    }
+   public JsonResponse batchDelete(String eventids){
+	   Result result = new Result(MsgConstants.RESUL_FAIL);
+	   JsonResponse res = null;
+	   Integer count = 0;
+	   	try {
+		 		String eventid = eventids.substring(0, eventids.length());
+		 		String eventArray [] = eventid.split(",");
+		 		count = eservice.batchDelete(eventArray);
+		 		if(count > 0) {
+		 			result = new Result(MsgConstants.RESUL_SUCCESS);
+		 		}
+		 	} catch (Exception e) {
+		 		e.printStackTrace();
+		 		log_.error("[JPSYSTEM]", e);
+		 }
+	   	res = new JsonResponse(result);
+	    return res;
+   }
     /**
      * 
      * @描述 保存大事记
@@ -92,41 +117,47 @@ public class EventController {
      */
     @ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String saveEvent(Event event,HttpServletRequest request)  {
-		String result = null;
+	public JsonResponse saveEvent(Event event,HttpServletRequest request)  {
+    	Result result = new Result(MsgConstants.RESUL_FAIL);
+ 	    JsonResponse res = null;
 		try{
 			if (request.getCharacterEncoding() == null) {
 				request.setCharacterEncoding("UTF-8");
 			}
 			eservice.saveEvent(event);
-			result = "1";
-			
+			result = new Result(MsgConstants.RESUL_SUCCESS);
 		}catch(Exception e){
-			result = "0";
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
-
 		}
-		return result;
+		res = new JsonResponse(result);
+		return res;
 	}
+    
     @ResponseBody
    	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
-      public String changeStatus(Event event)  {
-      	String result = null;
+      public JsonResponse changeStatus(Event event)  {
+    	Result result = new Result(MsgConstants.RESUL_FAIL);
+ 	    JsonResponse res = null;
+      	int count = 0;
       	try {
-      		eservice.changeStatus(event);
-   			result="1";
+      		count = eservice.changeStatus(event);
+      		if(count > 0) {
+      			result = new Result(MsgConstants.RESUL_SUCCESS);
+      		}
    		} catch (Exception e) {
-   			result="0";
    			e.printStackTrace();
    			log_.error("[JPSYSTEM]", e);
    		}
-      	return result;
+      	res = new JsonResponse(result);
+      	return res;
       }
+    
     @ResponseBody
    	@RequestMapping(value = "/savePhoto", method = RequestMethod.POST)
-   	public String savePhoto(@RequestParam("file")MultipartFile[] files,HttpServletRequest request) {
-   		String result = null;
+   	public JsonResponse savePhoto(@RequestParam("file")MultipartFile[] files,HttpServletRequest request) {
+    	Result result = null;
+ 	    JsonResponse res = null;
    		try{
    			List<String> fileNams = new  ArrayList<String>();
    			List<File> fileList = new ArrayList<File>();
@@ -159,12 +190,17 @@ public class EventController {
    		    String url = "";
    		    url = jsonInfo.get("url").toString();
    		    String newStr = url.replaceAll("\"","");
-   		    result = "{\"result\":"+"\""+newStr+"\""+"}";
+   		    result = new Result(MsgConstants.RESUL_SUCCESS);
+   		    res = new JsonResponse(result);
+   		    res.setData(newStr);
+   		    // result = "{\"result\":"+"\""+newStr+"\""+"}";
    		}catch(Exception e){
+   			result = new Result(MsgConstants.RESUL_FAIL);
+   			res = new JsonResponse(result);
    			e.printStackTrace();
-   			result = "{\"result\":\"1\"}";
+   			// result = "{\"result\":\"1\"}";
    			log_.error("[JPSYSTEM]", e);
    		}
-   		return result;
+   		return res;
    	}
 }
