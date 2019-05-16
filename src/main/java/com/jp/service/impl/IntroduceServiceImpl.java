@@ -29,6 +29,7 @@ public class IntroduceServiceImpl implements IntroduceService {
 		IntroduceQuery iq=new IntroduceQuery();
 		Criteria criteria=iq.createCriteria();
 		criteria.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+	//	criteria.andFamilyidEqualTo(introduce.getFamilyid());
 		introduce.setDeleteflag(0);
 		if(StringTools.trimNotEmpty(introduce.getDeleteflag())){
 			criteria.andDeleteflagEqualTo(introduce.getDeleteflag());
@@ -61,29 +62,24 @@ public class IntroduceServiceImpl implements IntroduceService {
 	@Override
 	public String saveIntroduce(Introduce introduce) {
 		String result = "";
-		try{
-			//编辑
-				if (StringTools.trimNotEmpty(introduce.getIntroduceid())) {
-					introduce.setUpdateid(CurrentUserContext.getCurrentUserId());
-					introduce.setUpdatetime(new Date());
-					itdao.updateByPrimaryKeySelective(introduce);
-					result = "0";
-			}else{
-				//新增
-				String introduceid = UUIDUtils.getUUID();
-				introduce.setIntroduceid(introduceid);
-				introduce.setCreateid(CurrentUserContext.getCurrentUserId());
-				introduce.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-				introduce.setDeleteflag(0);
-				Date insertDate=new Date();
-				introduce.setCreatetime(insertDate);
-				introduce.setType("ELSE");
-				itdao.insertSelective(introduce);
-				result = "0";
-
-			}
-		}catch(Exception e){
-			e.printStackTrace();
+		//编辑
+		if (StringTools.trimNotEmpty(introduce.getIntroduceid())) {
+			introduce.setUpdateid(CurrentUserContext.getCurrentUserId());
+			introduce.setUpdatetime(new Date());
+			itdao.updateByPrimaryKeySelective(introduce);
+			result = "0";
+		}else{
+			//新增
+			String introduceid = UUIDUtils.getUUID();
+			introduce.setIntroduceid(introduceid);
+			introduce.setCreateid(CurrentUserContext.getCurrentUserId());
+			introduce.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			introduce.setDeleteflag(0);
+			Date insertDate=new Date();
+			introduce.setCreatetime(insertDate);
+			introduce.setType("ELSE");
+			itdao.insertSelective(introduce);
+			result = "0";
 		}
 		return result;
 	}
