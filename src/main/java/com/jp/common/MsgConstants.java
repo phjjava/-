@@ -27,6 +27,9 @@ public class MsgConstants {
 	public static final Result BRANCH_CHECK_BEGINER = new Result(3002,"该用户已发起过其他分支");
 	public static final Result BRANCH_NO_BEGINERID = new Result(3003,"分支起始人ID为空");
 	
+	//名人录管理异常码
+	public static final Result FAMOUS_NO_USERID = new Result(4001,"userid为空");
+	
 	
 	
 }

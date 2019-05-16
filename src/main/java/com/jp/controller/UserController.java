@@ -116,37 +116,16 @@ public class UserController {
 	@RequestMapping(value = "/merge", method = RequestMethod.POST)
 	public JsonResponse mergeUser(HttpServletRequest request,User user, Userinfo userInfo, Useredu userEdu, ModelMap model, String eduExpArray,
 			String workExpArray, String parentName, String fatherName) {
-//		String result = null;
 		Result result = null;
 		JsonResponse res = null;
 		try {
-			if (!fatherName.equals("-1")) {
-				user.setPid(fatherName);
-                User userfather = userService.selectByPrimaryKey(fatherName);
-                user.setBranchid(userfather.getBranchid());
-                user.setBranchname(userfather.getBranchname());
-				User userP = userService.selectByPrimaryKey(fatherName);
-				if (userP != null && userP.getGenlevel() != null) {
-					user.setGenlevel(userP.getGenlevel() + 1);
-					user.setPname(userP.getUsername());
-				}
-			} else {
-				user.setGenlevel(Integer.valueOf(parentName));
-			}
-			String isMarry = request.getParameter("isMarry");
-			String isdirect = request.getParameter("isdirectjj");
-			user.setIsMarry(Integer.valueOf(isMarry));
-			user.setIsdirect(Integer.valueOf(isdirect));
-			result = userService.merge(user, userInfo, userEdu, eduExpArray, workExpArray);
+			result = userService.merge(user, userInfo, userEdu, eduExpArray, workExpArray); //除了user，其他参数弃用
 			res = new JsonResponse(result);
-//			result = res;
 		} catch (Exception e) {
-//			result = "0";
 			result = new Result(MsgConstants.USER_SAVE_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
-
 		}
 		return res;
 	}
@@ -213,17 +192,17 @@ public class UserController {
 			// selectByPrimaryKey
 			if (StringTools.trimNotEmpty(userid)) {
 				user = userService.selectByPrimaryKey(userid);
-				if (user != null) {
+				/*if (user != null) {
 					if (user.getDietime() != null) {
 						user.setDietimeStr(user.getDietime());
 					}
-				}
+				}*/
 				userInfo = userInfoService.selectByPrimaryKey(userid);
-				if (userInfo != null) {
+				/*if (userInfo != null) {
 					if (userInfo.getBirthday() != null) {
 						userInfo.setBirthdayStr(userInfo.getBirthday());
 					}
-				}
+				}*/
 				if (userInfo != null) {
 					String birth = userInfo.getBirthplace();
 					if (StringTools.trimNotEmpty(birth)) {
@@ -263,27 +242,26 @@ public class UserController {
 							userInfo.setHomeplaceX(homes[2]);
 							userInfo.setHomeDetail(homes[3]);
 						}
-
 					}
 				}
 				workList = userWorkService.selectByUserId(userid);
-				for (int i = 0; i < workList.size(); i++) {
+				/*for (int i = 0; i < workList.size(); i++) {
 					if (workList.get(i).getDatefrom() != null) {
 						workList.get(i).setDatefromStr(DateUtils.dayToString(workList.get(i).getDatefrom()));
 					}
 					if (workList.get(i).getDateto() != null) {
 						workList.get(i).setDatetoStr(DateUtils.dayToString(workList.get(i).getDateto()));
 					}
-				}
+				}*/
 				eduList = usereduService.selectByUserId(userid);
-				for (int i = 0; i < eduList.size(); i++) {
+				/*for (int i = 0; i < eduList.size(); i++) {
 					if (eduList.get(i).getDatefrom() != null) {
 						eduList.get(i).setDatefromStr(DateUtils.dayToString(eduList.get(i).getDatefrom()));
 					}
 					if (eduList.get(i).getDateto() != null) {
 						eduList.get(i).setDatetoStr(DateUtils.dayToString(eduList.get(i).getDateto()));
 					}
-				}
+				}*/
 			}
 			// 初始化分支
 			PageModel<Branch> pageModel = new PageModel<Branch>();
@@ -313,16 +291,8 @@ public class UserController {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(user);
-			/*modelMap.put("user", user);
-			modelMap.put("userInfo", userInfo);
-			modelMap.put("branchList", pageModel.getList());
-			modelMap.put("workList", workList);
-			modelMap.put("eduList", eduList);
-			modelMap.put("userAblumList", userAblumList);
-			//配偶
-			modelMap.put("mateList", mateList);*/
+			
 		} catch (Exception e) {
-//			result = "0";
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
@@ -1251,7 +1221,6 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/checkoldpassword")
 	public JsonResponse checkOldPwd(String oldpassword) {
-//		Result result = new Result();
 		Result result= null;
 		JsonResponse res = null;
 		try {
@@ -1263,14 +1232,11 @@ public class UserController {
 					.andUseridEqualTo(CurrentUserContext.getCurrentUserId());
 			List<User> selectRt = userDao.selectByExample(example);
 			if (selectRt!=null&&selectRt.size()==1) {
-//				result.setStatus(1);
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 			}else{
-//				result.setStatus(0);
 				result = new Result(MsgConstants.RESUL_FAIL);
 			}
 		} catch (Exception e) {
-//			result.setStatus(0);
 			result = new Result(MsgConstants.RESUL_FAIL);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);

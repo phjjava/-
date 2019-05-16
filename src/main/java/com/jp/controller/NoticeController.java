@@ -20,7 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.dao.NoticetopDao;
 import com.jp.entity.Notice;
 import com.jp.entity.Noticefile;
@@ -44,28 +47,41 @@ public class NoticeController {
     private NoticetopDao noticetopDao;
     
     @RequestMapping(value="/list",method = RequestMethod.POST)
-    public String list(PageModel<NoticeVO> pageModel,Notice notice, ModelMap model){
- 	   try {
- 		noticeservice.pageQuery(pageModel,notice);
- 		if(pageModel.getList()!=null){
- 			if(pageModel.getPageSize()==0){
- 				if(pageModel.getPageNo()!=null&&!"1".equals(pageModel.getPageNo())){
- 					pageModel.setPageNo(pageModel.getPageNo() - 1);
- 					noticeservice.pageQuery(pageModel,notice);
- 				}
- 			}
- 		}
- 		model.put("pageModel", pageModel);
- 		model.put("notice", notice);
- 	} catch (Exception e) {
- 		e.printStackTrace();
- 		log_.error("[JPSYSTEM]", e);
- 	}
- 	   return "notice/noticeList";
+    @ResponseBody
+    public JsonResponse list(PageModel<NoticeVO> pageModel,Notice notice, ModelMap model){
+    	Result result = null;
+    	JsonResponse res = null;
+ 	   	try {
+	 		noticeservice.pageQuery(pageModel,notice);
+	 		if(pageModel.getList()!=null){
+	 			if(pageModel.getPageSize()==0){
+	 				if(pageModel.getPageNo()!=null&&!"1".equals(pageModel.getPageNo())){
+	 					pageModel.setPageNo(pageModel.getPageNo() - 1);
+	 					noticeservice.pageQuery(pageModel,notice);
+	 				}
+	 			}
+	 		}
+	 		result = new Result(MsgConstants.RESUL_SUCCESS);
+	 		res = new JsonResponse(result);
+	 		res.setData(pageModel);
+	 		res.setEntity(notice);
+	 		/*model.put("pageModel", pageModel);
+	 		model.put("notice", notice);*/
+	 	} catch (Exception e) {
+	 		result = new Result(MsgConstants.RESUL_FAIL);
+	 		res = new JsonResponse(result);
+	 		e.printStackTrace();
+	 		log_.error("[JPSYSTEM]", e);
+	 	}
+ 	   	return res;
+ 	   // return "notice/noticeList";
  	   
     }
     @RequestMapping(value = "/get", method = RequestMethod.GET)
-	public String get(HttpServletRequest request, ModelMap model) {
+    @ResponseBody
+	public JsonResponse get(HttpServletRequest request, ModelMap model) {
+    	Result result = null;
+    	JsonResponse res = null;
 		try {
 			String noticeid = request.getParameter("noticeid");
 			Notice notice = noticeservice.get(noticeid);
@@ -77,13 +93,20 @@ public class NoticeController {
 				criteria.andNoticeidEqualTo(notice.getNoticeid());
 			}
 			List<Noticefile> ntlist = noticeservice.selectntfile(nfq);
-			model.put("notice", notice);
-			model.put("ntlist", ntlist);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+	 		res = new JsonResponse(result);
+	 		res.setData(ntlist);
+	 		res.setEntity(notice);
+			/*model.put("notice", notice);
+			model.put("ntlist", ntlist);*/
 		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+	 		res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPGL]", e);
 		}
-		return "notice/notice";
+		return res;
+		// return "notice/notice";
 	}
     /**
      * 
@@ -112,17 +135,21 @@ public class NoticeController {
    
     @ResponseBody
    	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
-      public String changeStatus(Notice notice)  {
-      	String result = null;
+      public JsonResponse changeStatus(Notice notice)  {
+    	Result result = new Result(MsgConstants.RESUL_FAIL);
+    	JsonResponse res = null;
+    	Integer count = 0;
       	try {
-      		noticeservice.changeStatus(notice);
-   			result="1";
+      		count = noticeservice.changeStatus(notice);
+      		if(count > 0) {
+      			result = new Result(MsgConstants.RESUL_SUCCESS);
+      		}
    		} catch (Exception e) {
-   			result="0";
    			e.printStackTrace();
    			log_.error("[JPSYSTEM]", e);
    		}
-      	return result;
+      	res = new JsonResponse(result);
+      	return res;
       }
     /**
      * 
@@ -135,8 +162,10 @@ public class NoticeController {
      */
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String saveNotice(Notice notice,@RequestParam("file")MultipartFile[] file,HttpServletRequest request,String fileids)  {
-		String result = null;
+	public JsonResponse saveNotice(Notice notice,@RequestParam("file")MultipartFile[] file,HttpServletRequest request,String fileids)  {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		// String result = null;
 		String url = null;
 		String ntfidArray [] = null;
 		try{
@@ -187,14 +216,16 @@ public class NoticeController {
 			    }
 		    }
 		    noticeservice.saveNotice(notice, ntList,ntfidArray);
-		    result = "1";
+		    result = new Result(MsgConstants.RESUL_SUCCESS);
+		    // result = "1";
 		}catch(Exception e){
-			result = "0";
+			//result = "0";
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 
 		}
-		return result;
+		res = new JsonResponse(result);
+		return res;
 	}
     /**
      * @描述 动态批量删除
@@ -206,18 +237,21 @@ public class NoticeController {
      */
     @ResponseBody
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
-    public String batchDelete(String noticeids){
-    	String result=null;
+    public JsonResponse batchDelete(String noticeids){
+    	Result result = new Result(MsgConstants.RESUL_FAIL);
+ 	    JsonResponse res = null;
     	try {
 	 		String noticeid = noticeids.substring(0, noticeids.length());
 	 		String noticeArray [] = noticeid.split(",");
 	 		noticeservice.batchDelete(noticeArray);
-	 		result="1";
+	 		result = new Result(MsgConstants.RESUL_SUCCESS);
+	 		// result="1";
 	 	} catch (Exception e) {
-	 		result = "0";
+	 		// result = "0";
 	 		e.printStackTrace();
 	 		log_.error("[JPSYSTEM]", e);
 	 	}
-	    	return result;
-	    }
+		res = new JsonResponse(result);
+		return res;
+    }
 }
