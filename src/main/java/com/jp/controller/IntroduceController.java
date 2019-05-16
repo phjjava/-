@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.jp.common.ConstantUtils;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
@@ -28,16 +27,25 @@ public class IntroduceController {
 	private final Logger log_ = LogManager.getLogger(IntroduceController.class);
 	
 	@RequestMapping(value = "/get", method = RequestMethod.GET)
-	public String get(HttpServletRequest request, ModelMap model) {
+	@ResponseBody
+	public JsonResponse get(HttpServletRequest request) {
+		Result result = null;
+		JsonResponse res = null;
+		Introduce introduce = null;
 		try {
 			String itid = request.getParameter("introduceid");
-			Introduce introduce = itservice.get(itid);
-			model.put("introduce", introduce);
+			introduce = itservice.get(itid);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPGL]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-		return "genealogy/introduce";
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(introduce);
+		return res;
 	}
 	@RequestMapping(value="/list",method = RequestMethod.POST)
 	@ResponseBody
@@ -68,36 +76,55 @@ public class IntroduceController {
 	}
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ResponseBody
-    public String batchDelete(String introduceids){
-    	String result=null;
+    public JsonResponse batchDelete(String introduceids){
+    	String str=null;
+    	Result result = null;
+		JsonResponse res = null;
     	try {
 	 		String introduceid = introduceids.substring(0, introduceids.length());
 	 		String introduceArray [] = introduceid.split(",");
 	 		itservice.batchDelete(introduceArray);
-	 		result="1";
+	 		str="1";
 	 	} catch (Exception e) {
-	 		result = "0";
+	 		str = "0";
 	 		e.printStackTrace();
 	 		log_.error("[JPSYSTEM]", e);
+	 		result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			res.setData(str);
+			return res;
 	 	}
-	    	return result;
+    	result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(str);
+		return res;
 	}
     
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	@ResponseBody
-	public String saveIntroduce(Introduce introduce,HttpServletRequest request)  {
-		String result = null;
+	public JsonResponse saveIntroduce(Introduce introduce,HttpServletRequest request)  {
+		String str = null;
+		Result result = null;
+		JsonResponse res = null;
 		try{
 			if (request.getCharacterEncoding() == null) {
 				request.setCharacterEncoding("UTF-8");
 				}
 			itservice.saveIntroduce(introduce);
-		    result = "1";
+		    str = "1";
 		}catch(Exception e){
-			result = "0";
+			System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+			str = "0";
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			res.setData(str);
+			return res;
 		}
-		return result;
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(str);
+		return res;
 	}
 }
