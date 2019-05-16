@@ -17,13 +17,14 @@ import com.jp.entity.Introduce;
 import com.jp.entity.IntroduceQuery;
 import com.jp.entity.IntroduceQuery.Criteria;
 import com.jp.service.IntroduceService;
+import com.jp.util.Result;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 @Service
 public class IntroduceServiceImpl implements IntroduceService {
     @Autowired
     private IntroduceDao itdao;
-	@Override
+    @Override
 	public PageModel<Introduce> pageQuery(PageModel<Introduce> pageModel, Introduce introduce) throws Exception {
 		IntroduceQuery iq=new IntroduceQuery();
 		Criteria criteria=iq.createCriteria();

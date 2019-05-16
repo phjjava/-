@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.jp.common.PageModel;
 import com.jp.entity.Introduce;
+import com.jp.util.Result;
 
 public interface IntroduceService {
 	PageModel<Introduce> pageQuery(PageModel<Introduce> pageModel,Introduce introduce) throws Exception;
