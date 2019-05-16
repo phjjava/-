@@ -138,13 +138,18 @@ public class UserServiceImpl implements UserService {
 		Result result = null;
 		try {
 			// 点击编辑后保存
-			if (StringTools.trimNotEmpty(user.getUserid()) && StringTools.trimNotEmpty(userinfo.getUserid())) {
-				if (!user.getDietimeStr().equals("")) {
+			if (StringTools.trimNotEmpty(user.getUserid()) 
+					/*&& StringTools.trimNotEmpty(userinfo.getUserid())*/
+					) {
+				userinfo = user.getUserInfo();
+				userinfo.setUserid(user.getUserid());
+				// 编辑用户信息
+				/*if (!user.getDietimeStr().equals("")) {
 					//SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
 					//user.setDietime(sdfd.parse(user.getDietimeStr()));
 					if(DateUtils.isDate(user.getDietimeStr(), "-"))
 					user.setDietime(user.getDietimeStr());
-				}
+				}*/
 				if (StringTools.trimNotEmpty(user.getPhone())) {
 					//如果是存在手机号，则用之前德密码
 					UserQuery ex = new UserQuery();
@@ -173,79 +178,42 @@ public class UserServiceImpl implements UserService {
 				user.setUpdateid(CurrentUserContext.getCurrentUserId());
 				user.setUpdatetime(new Date());
 				userDao.updateByPrimaryKeySelective(user);
-				if (!userinfo.getBirthdayStr().equals("")) {
+				/*if (!userinfo.getBirthdayStr().equals("")) {
 					//SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
 					//userinfo.setBirthday(sdfd.parse(userinfo.getBirthdayStr()));
 					if(DateUtils.isDate(userinfo.getBirthdayStr(),"-"))
 						userinfo.setBirthday(userinfo.getBirthdayStr());
-				}
+				}*/
+				// 出生地
+				userinfo.setBirthplace(userinfo.getBirthplaceP()+"@@"+userinfo.getBirthplaceC()+"@@"+userinfo.getBirthplaceX()+"@@"+userinfo.getBirthDetail());
+				// 常住地
+				userinfo.setHomeplace(userinfo.getHomeplaceP()+"@@"+userinfo.getHomeplaceC()+"@@"+userinfo.getHomeplaceX()+"@@"+userinfo.getHomeDetail());
+				// 保存用户详细信息
 				userInfoDao.updateByPrimaryKeySelective(userinfo);
 				//
 				UsereduQuery fq = new UsereduQuery();
 				Criteria createCriteria = fq.createCriteria();
 				createCriteria.andUseridEqualTo(user.getUserid());
 				userEduDao.deleteByExample(fq);
-				if (StringTools.trimNotEmpty(eduExpArray)) {
-					List<Useredu> userEduList = new ArrayList<Useredu>();
-					Useredu usereduInsert = null;
-					String eduExpArrays[] = eduExpArray.substring(0, eduExpArray.length() - 2).split("@@");
-					for (int i = 0; i < eduExpArrays.length; i++) {
-						String eduSingle = eduExpArrays[i];
-						String eduSingels[] = eduSingle.split("_");
-						usereduInsert = new Useredu();
-						usereduInsert.setUserid(user.getUserid());
-						usereduInsert.setUniversity(eduSingels[0]);
-						usereduInsert.setMajor(eduSingels[1]);
-						if (StringTools.trimNotEmpty(eduSingels[2])) {
-							usereduInsert.setDatefrom(DateUtils.stringToDate(eduSingels[2]));
-						}
-						if (StringTools.trimNotEmpty(eduSingels[3])) {
-							usereduInsert.setDateto(DateUtils.stringToDate(eduSingels[3]));
-						}
-						if (StringTools.trimNotEmpty(eduSingels[4])) {
-							usereduInsert.setEducontent(eduSingels[4]);
-						}
-						usereduInsert.setIssecret(Integer.valueOf(eduSingels[5]));
-						usereduInsert.setEduid(UUIDUtils.getUUID());
-						userEduList.add(usereduInsert);
-					}
-					userEduDao.insertEduExp(userEduList);
+				// 循环保存教育经历
+				List<Useredu> eduList = user.getUserEdu();
+				for (Useredu useredu2 : eduList) {
+					useredu2.setUserid(user.getUserid());
+					useredu2.setEduid(UUIDUtils.getUUID());
 				}
-				UserworkexpQuery fqw = new UserworkexpQuery();
-				com.jp.entity.UserworkexpQuery.Criteria createCriteriaw = fqw.createCriteria();
-				createCriteriaw.andUseridEqualTo(user.getUserid());
-				userworkDao.deleteByExample(fqw);
-				if (StringTools.trimNotEmpty(workExpArray)) {
-
-					List<Userworkexp> userWorkList = new ArrayList<Userworkexp>();
-					Userworkexp userworkInsert = null;
-					String workExpArrays[] = workExpArray.substring(0, workExpArray.length() - 2).split("@@");
-					for (int i = 0; i < workExpArrays.length; i++) {
-						String workSingle = workExpArrays[i];
-						String workSingels[] = workSingle.split("_");
-						userworkInsert = new Userworkexp();
-						userworkInsert.setUserid(user.getUserid());
-						userworkInsert.setCompany(workSingels[0]);
-						userworkInsert.setPosition(workSingels[1]);
-						if (StringTools.trimNotEmpty(workSingels[2])) {
-							userworkInsert.setDatefrom(DateUtils.stringToDate(workSingels[2]));
-						}
-						if (StringTools.trimNotEmpty(workSingels[3])) {
-							userworkInsert.setDateto(DateUtils.stringToDate(workSingels[3]));
-						}
-						if (StringTools.trimNotEmpty(workSingels[4])) {
-							userworkInsert.setWorkcontent(workSingels[4]);
-						}
-						userworkInsert.setIssecret(Integer.valueOf(workSingels[5]));
-						userworkInsert.setWorkid(UUIDUtils.getUUID());
-						// userworkInsert.s
-						userWorkList.add(userworkInsert);
-					}
-					userworkDao.insertEduExp(userWorkList);
+				userEduDao.insertEduExp(eduList);
+				
+				// 循环保存工作经历
+				List<Userworkexp> workList = user.getUserWorkexp();
+				for (Userworkexp userwork : workList) {
+					userwork.setUserid(user.getUserid());
+					userwork.setWorkid(UUIDUtils.getUUID());
 				}
-//				result = "1";
+				userworkDao.insertEduExp(workList);
+				
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 			} else {
+				// 新增用户信息
 //				boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), 1);
 				boolean flag = checkFamilyUserNumber(1);
 				if (flag == true) {
@@ -254,19 +222,19 @@ public class UserServiceImpl implements UserService {
 					user.setDeleteflag(0);
 					user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 					user.setStatus(0);
-					user.setIsdirect(1);
+//					user.setIsdirect(1);
 					user.setFamilyname(CurrentUserContext.getCurrentFamilyName());
 					user.setCreatetime(new Date());
 					user.setUpdatetime(new Date());
 					user.setUpdateid(CurrentUserContext.getCurrentUserId());
 					user.setPinyinfirst(PinyinUtil.getPinYinFirstChar(user.getUsername()));
 					user.setPinyinfull(PinyinUtil.getPinyinFull(user.getUsername()));
-					if (!user.getDietimeStr().equals("")) {
+					/*if (!user.getDietimeStr().equals("")) {
 //						SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
 //						user.setDietime(sdfd.parse(user.getDietimeStr()));
 						if(DateUtils.isDate(user.getDietimeStr(), "-"))
 							user.setDietime(user.getDietimeStr());
-					}
+					}*/
 					if (StringTools.trimNotEmpty(user.getPhone())) {
 						user.setPassword(MD5Util.string2MD5(user.getPhone().substring(user.getPhone().length() - 6)));
 					}
@@ -287,77 +255,40 @@ public class UserServiceImpl implements UserService {
 //						result = "500";
 						result = new Result(MsgConstants.USER_SAVE_HAVEREPEAT);
 					} else {
+						// 保存用户信息
 						userDao.insertSelective(user);
+						// 出生地
+						userinfo.setBirthplace(userinfo.getBirthplaceP()+"@@"+userinfo.getBirthplaceC()+"@@"+userinfo.getBirthplaceX()+"@@"+userinfo.getBirthDetail());
+						// 常住地
+						userinfo.setHomeplace(userinfo.getHomeplaceP()+"@@"+userinfo.getHomeplaceC()+"@@"+userinfo.getHomeplaceX()+"@@"+userinfo.getHomeDetail());
+						// 保存用户详细信息
 						userInfoDao.insertSelective(userinfo);
-						// userEduDao.insertSelective(useredu);
-						// 教育经历
-						if (StringTools.trimNotEmpty(eduExpArray)) {
-
-							List<Useredu> userEduList = new ArrayList<Useredu>();
-							Useredu usereduInsert = null;
-							String eduExpArrays[] = eduExpArray.substring(0, eduExpArray.length() - 2).split("@@");
-							for (int i = 0; i < eduExpArrays.length; i++) {
-								String eduSingle = eduExpArrays[i];
-								String eduSingels[] = eduSingle.split("_");
-								usereduInsert = new Useredu();
-								usereduInsert.setUserid(userId);
-								usereduInsert.setUniversity(eduSingels[0]);
-								usereduInsert.setMajor(eduSingels[1]);
-								if (StringTools.trimNotEmpty(eduSingels[2])) {
-									usereduInsert.setDatefrom(DateUtils.stringToDate(eduSingels[2]));
-								}
-								if (StringTools.trimNotEmpty(eduSingels[3])) {
-									usereduInsert.setDateto(DateUtils.stringToDate(eduSingels[3]));
-								}
-								if (StringTools.trimNotEmpty(eduSingels[4])) {
-									usereduInsert.setEducontent(eduSingels[4]);
-								}
-								usereduInsert.setIssecret(Integer.valueOf(eduSingels[5]));
-								usereduInsert.setEduid(UUIDUtils.getUUID());
-								userEduList.add(usereduInsert);
-							}
-							userEduDao.insertEduExp(userEduList);
+						
+						// 循环保存教育经历
+						List<Useredu> eduList = user.getUserEdu();
+						for (Useredu useredu2 : eduList) {
+							useredu2.setUserid(userId);
+							useredu2.setEduid(UUIDUtils.getUUID());
 						}
-						// 工作经历
-						if (StringTools.trimNotEmpty(workExpArray)) {
-
-							List<Userworkexp> userWorkList = new ArrayList<Userworkexp>();
-							Userworkexp userworkInsert = null;
-							String workExpArrays[] = workExpArray.substring(0, workExpArray.length() - 2).split("@@");
-							for (int i = 0; i < workExpArrays.length; i++) {
-								String workSingle = workExpArrays[i];
-								String workSingels[] = workSingle.split("_");
-								userworkInsert = new Userworkexp();
-								userworkInsert.setUserid(userId);
-								userworkInsert.setCompany(workSingels[0]);
-								userworkInsert.setPosition(workSingels[1]);
-								if (StringTools.trimNotEmpty(workSingels[2])) {
-									userworkInsert.setDatefrom(DateUtils.stringToDate(workSingels[2]));
-								}
-								if (StringTools.trimNotEmpty(workSingels[3])) {
-									userworkInsert.setDateto(DateUtils.stringToDate(workSingels[3]));
-								}
-								if (StringTools.trimNotEmpty(workSingels[4])) {
-									userworkInsert.setWorkcontent(workSingels[4]);
-								}
-								userworkInsert.setIssecret(Integer.valueOf(workSingels[5]));
-								userworkInsert.setWorkid(UUIDUtils.getUUID());
-								userWorkList.add(userworkInsert);
-							}
-							userworkDao.insertEduExp(userWorkList);
+						userEduDao.insertEduExp(eduList);
+						
+						// 循环保存工作经历
+						List<Userworkexp> workList = user.getUserWorkexp();
+						for (Userworkexp userwork : workList) {
+							userwork.setUserid(userId);
+							userwork.setWorkid(UUIDUtils.getUUID());
 						}
-//						result = "1";
+						userworkDao.insertEduExp(workList);
+						
 						result = new Result(MsgConstants.RESUL_SUCCESS);
 					}
 				} else {
-//					result = "2";
 					result = new Result(MsgConstants.USER_SAVE_OUTMAX);
 				}
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
-//			result = "0";
 			result = new Result(MsgConstants.USER_SAVE_FAIL);
 		}
 		return result;
