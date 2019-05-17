@@ -65,12 +65,10 @@ public class DynamicController {
 				criteria.andDyidEqualTo(dynamic.getDyid());
 			}
 			List<Dynamicfile> dylist = dyservice.selectdyfile(dfq);
+			dynamic.setDynamicFiles(dylist); // 动态包含附件列表
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
-			res.setData(dylist);
-			res.setEntity(dynamic);
-			/*model.put("dynamic", dynamic);
-			model.put("dylist", dylist);*/
+			res.setData(dynamic);	// 动态
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
@@ -78,7 +76,6 @@ public class DynamicController {
 			log_.error("[JPGL]", e);
 		}
 		return res;
-		// return "dynamic/dynamic";
 	}
    	/**
    	 * 
@@ -122,10 +119,8 @@ public class DynamicController {
 		}
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
-		res.setData(pageModel);
-		res.setEntity(dynamic);
-		/*model.put("pageModel", pageModel);
-		model.put("dynamic", dynamic);*/
+		res.setData(pageModel.getList());
+		res.setCount(pageModel.getPageInfo().getTotal());
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
@@ -133,7 +128,6 @@ public class DynamicController {
 			log_.error("[JPSYSTEM]", e);
 		}
 	   return res;
-	   // return "dynamic/dynamicList";
 	   
    }
    
@@ -158,76 +152,39 @@ public class DynamicController {
     
     @ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST,produces = { "application/json;charset=UTF-8" })
-	public JsonResponse saveDynamic(Dynamic dynamic,@RequestParam("dyfile")MultipartFile file,HttpServletRequest request,String fileids)  {
+	public JsonResponse saveDynamic(Dynamic dynamic,HttpServletRequest request,String fileids)  {
     	Result result = new Result(MsgConstants.RESUL_FAIL);
  	    JsonResponse res = null;
-		String url = null;
 		String dyfidArray [] = null;
 		try{
-			
-			if(StringTools.trimNotEmpty(fileids)){
-				String dyfid = fileids.substring(0, fileids.length()-1);
-	     		dyfidArray = dyfid.split(",");
-			}
-    		List<String> fileNams = new  ArrayList<String>();
-			List<File> fileList = new ArrayList<File>();
-			String fileName = "";
-			fileName = file.getOriginalFilename();
-			fileNams.add(fileName);
-			String pathDir = "/upload";
-			String logoRealPathDir = request.getSession().getServletContext().getRealPath(pathDir);
-			File dyfile = new File(logoRealPathDir);
-			if(StringTools.trimNotEmpty(fileName)){
-				OutputStream output = new FileOutputStream(dyfile);
-			    BufferedOutputStream bufferedOutput = new BufferedOutputStream(output);
-				bufferedOutput.write(file.getBytes());
-				fileList.add(dyfile);
-			}
-		    
-			String status = "";
-			List<Dynamicfile> dyList  = new ArrayList<Dynamicfile>();
-			if(!fileName.equals("") && fileName != null){
-				 status = UploadUtil.taskFileUpload(fileList, fileNams);
-				 Gson gson = new GsonBuilder().create();
-				 JsonObject json = gson.fromJson(status, JsonObject.class);
-				 JsonObject jsonInfo = gson.fromJson(json.get("data"), JsonObject.class);
-				 url = jsonInfo.get("url").toString();
-				 String newStr = url.replaceAll("\"","");
-				 Dynamicfile dyf = null;
-				    
-			    	dyf = new Dynamicfile();
-			    	dyf.setBranchid(dynamic.getBranchid());
-			    	dyf.setFileurl(newStr);
-			    	dyf.setFileid(UUIDUtils.getUUID());
-			    	dyf.setFilename(fileName);
-			    	dyList.add(dyf);
+			List<Dynamicfile> dyList  = dynamic.getDynamicFiles();
+			if(StringTools.trimNotEmpty(dynamic.getDyid())) {
+				for (int i = 0; i < dyList.size(); i++) {
+					dyfidArray[i] = dyList.get(i).getFileid();  //更新动态时，如果有附件，先删除附件再重新写入
+				}
 			}
 		    dyservice.saveDynamic(dynamic,dyList,dyfidArray);
 		    result = new Result(MsgConstants.RESUL_SUCCESS);
-		    // result = "1";
 		}catch(Exception e){
-			// result = "0";
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
 		res = new JsonResponse(result);
 		return res;
 	}
+    
     @ResponseBody
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     public JsonResponse batchDelete(String dyids){
     	Result result = new Result(MsgConstants.RESUL_FAIL);
  	    JsonResponse res = null;
-//    	String result=null;
     	try {
  		//a,b,c 
  		String dyid = dyids.substring(0, dyids.length());
  		String dyidArray [] = dyid.split(",");
  		dyservice.batchDelete(dyidArray);
  		result = new Result(MsgConstants.RESUL_SUCCESS);
- 		// result="1";
 	 	} catch (Exception e) {
-	 		// result = "0";
 	 		e.printStackTrace();
 	 		log_.error("[JPSYSTEM]", e);
 	 	}

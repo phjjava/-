@@ -5,6 +5,7 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonInclude(Include.NON_NULL)
 public class JsonResponse implements Serializable{
 	
 	/**
@@ -14,22 +15,19 @@ public class JsonResponse implements Serializable{
 	private int code = 0;
 	private String msg = "成功";
 	
-	@JsonInclude(Include.NON_NULL)
 	private Object data = null;
 	
-	@JsonInclude(Include.NON_NULL)
 	private Object entity = null;
 	
-	@JsonInclude(Include.NON_NULL)
 	private Object data1 = null;
 	
-	private long count = 0;
+	private Object count = null;
 	
-	public long getCount() {
+	public Object getCount() {
 		return count;
 	}
 
-	public void setCount(long count) {
+	public void setCount(Object count) {
 		this.count = count;
 	}
 
