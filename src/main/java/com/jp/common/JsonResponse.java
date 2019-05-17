@@ -23,23 +23,22 @@ public class JsonResponse implements Serializable{
 	@JsonInclude(Include.NON_NULL)
 	private Object data1 = null;
 	
-	@JsonInclude(Include.NON_NULL)
-	private Object data2 = null;
+	private long count = 0;
 	
+	public long getCount() {
+		return count;
+	}
+
+	public void setCount(long count) {
+		this.count = count;
+	}
+
 	public Object getData1() {
 		return data1;
 	}
 
 	public void setData1(Object data1) {
 		this.data1 = data1;
-	}
-
-	public Object getData2() {
-		return data2;
-	}
-
-	public void setData2(Object data2) {
-		this.data2 = data2;
 	}
 
 	public JsonResponse(int code , String msg) {
