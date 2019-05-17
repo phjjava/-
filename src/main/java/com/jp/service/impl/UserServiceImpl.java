@@ -1530,11 +1530,12 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Result mergeMate(User user, Userinfo userInfo, String usernameBefore) throws Exception {
 		Result result = null;
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		// SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			Integer matetype = user.getMatetype();
 			// 丈夫或妻子
 			String userid = UUIDUtils.getUUID();
+			String birthplace = userInfo.getBirthplaceP()+"@@"+userInfo.getBirthplaceC()+"@@"+userInfo.getBirthplaceX();
 			if (matetype == 0 || matetype == 1) {
 				if (StringTools.trimNotEmpty(user.getMateid())) {
 					User userMmateUpdate = new User();
@@ -1546,16 +1547,17 @@ public class UserServiceImpl implements UserService {
 					}
 					userMmateUpdate.setUpdatetime(new Date());
 					userMmateUpdate.setCreateid(CurrentUserContext.getCurrentUserId());
-					userMmateUpdate.setUsername(user.getUsername());
+					userMmateUpdate.setUsername(user.getMatename());
 					userDao.updateByPrimaryKeySelective(userMmateUpdate);
 					// 更新 userinfo
 					userInfo.setUserid(user.getMateid());
-					if (!userInfo.getBirthdayStr().equals("")) {
+					/*if (!userInfo.getBirthdayStr().equals("")) {
 //						SimpleDateFormat sdfd = new SimpleDateFormat("yyyy-MM-dd");
 //						userInfo.setBirthday(sdfd.parse(userInfo.getBirthdayStr()));
 						if(DateUtils.isDate(userInfo.getBirthdayStr(), "-"))
 							userInfo.setBirthday(userInfo.getBirthdayStr());
-					}
+					}*/
+					userInfo.setBirthplace(birthplace);
 					userInfoDao.updateByPrimaryKeySelective(userInfo);
 				} else {
 //					boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), 1);
@@ -1576,22 +1578,22 @@ public class UserServiceImpl implements UserService {
 						userMmate.setStatus(0);
 						userMmate.setIsdirect(0);
 						userMmate.setMateid(user.getUserid());
-						userMmate.setMatename(usernameBefore);
-						userMmate.setUsername(user.getUsername());
+						userMmate.setMatename(user.getUsername());
+						userMmate.setUsername(user.getMatename());
 						userMmate.setSex(user.getSex());
 						userMmate.setGenlevel(user.getGenlevel());
 						userMmate.setDeleteflag(0);
-						userMmate.setPinyinfirst(PinyinUtil.getPinYinFirstChar(user.getUsername()));
-						userMmate.setPinyinfull(PinyinUtil.getPinyinFull(user.getUsername()));
+						userMmate.setPinyinfirst(PinyinUtil.getPinYinFirstChar(user.getMatename()));
+						userMmate.setPinyinfull(PinyinUtil.getPinyinFull(user.getMatename()));
 						if (user.getLivestatus() != 0) {
 							userMmate.setLivestatus(user.getLivestatus());
 							userMmate.setFixplace(user.getFixplace());
-							if (!user.getDietimeStr().equals("")) {
+							/*if (!user.getDietimeStr().equals("")) {
 //								SimpleDateFormat sdfd = new SimpleDateFormat("yyyy-MM-dd");
 //								userMmate.setDietime(sdfd.parse(user.getDietimeStr()));
 								if(DateUtils.isDate(user.getDietimeStr(), "-"))
 									user.setDietime(user.getDietimeStr());
-							}
+							}*/
 						} else {
 							userMmate.setLivestatus(user.getLivestatus());
 						}
@@ -1607,15 +1609,15 @@ public class UserServiceImpl implements UserService {
 							result = new Result(MsgConstants.USER_SAVE_HAVEREPEAT);
 						} else {
 							userDao.insertSelective(userMmate);
-							userDao.addmateid(user.getUserid(), userid, user.getUsername());
+							userDao.addmateid(user.getUserid(), userid, user.getMatename());
 							// userinfo 表
 							userInfo.setUserid(userid);
-							if (!userInfo.getBirthdayStr().equals("")) {
+							/*if (!userInfo.getBirthdayStr().equals("")) {
 //								SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
 //								userInfo.setBirthday(sdfd.parse(userInfo.getBirthdayStr()));
 								if(DateUtils.isDate(userInfo.getBirthdayStr(), "-"))
 									userInfo.setBirthday(userInfo.getBirthdayStr());
-							}
+							}*/
 							userInfoDao.insertSelective(userInfo);
 //							result = "1";
 							result = new Result(MsgConstants.RESUL_SUCCESS);
@@ -1630,17 +1632,17 @@ public class UserServiceImpl implements UserService {
 				Usermates userMates = new Usermates();
 				// userMates.setBirthday(user.get);
 				userMates.setMateid(userid);
-				userMates.setName(user.getUsername());
+				userMates.setName(user.getMatename());
 				userMates.setUserid(user.getUserid());
 				userMates.setSex(user.getSex());
 				userMates.setRemark(userInfo.getRemark());
 				userMates.setNation(userInfo.getNation());
-				userMates.setBirthplace(userInfo.getBirthplace());
+				userMates.setBirthplace(birthplace);
 				userMates.setMatetype(user.getMatetypeStr());
-				if (!userInfo.getBirthdayStr().equals("")) {
+				/*if (!userInfo.getBirthdayStr().equals("")) {
 					SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
 					userMates.setBirthday(sdfd.parse(userInfo.getBirthdayStr()));
-				}
+				}*/
 				boolean sameFlag = checkSameMates(userMates);
 				if (sameFlag) {
 					// 重复什么也不做

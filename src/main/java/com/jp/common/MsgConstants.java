@@ -21,6 +21,7 @@ public class MsgConstants {
 	public static final Result USER_NO_BRANCH = new Result(2004,"当前分支不存在");
 	public static final Result USER_NO_FILE = new Result(2005,"当前文件不存在");
 	public static final Result USER_NO_IMPORT = new Result(2006,"当前没有导入任何数据");
+	public static final Result USER_PHONE_REPEAT = new Result(2007,"手机号重复");
 	
 	//分支管理异常码
 	public static final Result BRANCH_VALIDATA_NAME = new Result(3001,"当前分支名称已存在");
