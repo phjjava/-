@@ -121,6 +121,8 @@ public class DynamicServiceImpl implements DynamicService {
 					dydao.updateByPrimaryKeySelective(dynamic);
 					for (int i = 0; i < dylist.size(); i++) {
 						dylist.get(i).setDyid(dynamic.getDyid());
+						dylist.get(i).setFileid(UUIDUtils.getUUID());
+						dylist.get(i).setBranchid(dynamic.getBranchid());
 					}
 					if(dylist != null && dylist.size() > 0){
 						dyfdao.insertdyfileSelective(dylist);

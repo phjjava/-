@@ -2,6 +2,10 @@ package com.jp.entity;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class Dynamicfile extends DynamicfileKey implements Serializable {
     /**
      * 附件类型

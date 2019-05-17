@@ -97,14 +97,13 @@ public class BranchController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
-			// result = 0;
 		}
 		res = new JsonResponse(result);
 		return res;
-//		return result + "";
 	}
 
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
+	@ResponseBody
 	public JsonResponse list(PageModel<Branch> pageModel,Branch branch, ModelMap model) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
@@ -130,7 +129,6 @@ public class BranchController {
 	        example.setOrderByClause("ebtype desc,ismanager desc");
 	        List<UserManager> managers = userManagerMapper.selectByExample(example);
 	        for(UserManager manager : managers) {
-	        	//if(manager.getEbtype() == 1 && manager.getIsmanager() == 1) {
 	        	if(manager.getEbtype() == 1) {
 	        		branchService.pageQuery(pageModel,branch);
 	        	}else {
@@ -139,17 +137,14 @@ public class BranchController {
 	        }
 	        result = new Result(MsgConstants.RESUL_SUCCESS);
 	        res = new JsonResponse(result);
-	        res.setData(pageModel);
-	        res.setData1(branch);
-			/*model.put("pageModel", pageModel);
-			model.put("branch", branch);*/
+	        res.setData(pageModel.getList());
+	        res.setCount(pageModel.getPageInfo().getTotal());
 		} catch (Exception e) {
 			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
 		return res;
-//		return "branch/branchList";
 	}
 
 	@RequestMapping(value = "/get", method = RequestMethod.GET)
@@ -170,14 +165,12 @@ public class BranchController {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(branch);
-			// model.put("branch", branch);
 		} catch (Exception e) {
 			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
 		return res;
-		// return "branch/branch";
 	}
 	
 	@ResponseBody
@@ -192,13 +185,11 @@ public class BranchController {
     			result = new Result(MsgConstants.RESUL_SUCCESS);
     		}
 		} catch (Exception e) {
-			// result = 0;
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
     	res = new JsonResponse(result);
     	return res;
-    	// return result+"";
     }
 	
 	/**
@@ -214,7 +205,6 @@ public class BranchController {
 	public JsonResponse selectBranch(String familyid) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
-//		String gsonStr = null;
 		try {
 			PageModel<Branch> pageModelBranch = new PageModel<Branch>();
 			Branch branch = new Branch();
@@ -223,14 +213,12 @@ public class BranchController {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(pageModelBranch.getList());
-			// gsonStr = GsonUtil.GsonString(pageModelBranch.getList());
 		} catch (Exception e) {
 			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
 		return res;
-		//return gsonStr;
 	}
 
 	@ResponseBody
@@ -248,11 +236,11 @@ public class BranchController {
 				.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
 			List<Branch> selectRt = branchDao.selectByExample(example);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
 			if (selectRt!=null&&selectRt.size()>0) {
 				result = new Result(MsgConstants.BRANCH_VALIDATA_NAME);
 				flag=false;
 			}
+			res = new JsonResponse(result);
 			res.setData(flag);
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
@@ -260,7 +248,6 @@ public class BranchController {
 			log_.error("[PLMERROR:]", e);
 		}
 		return res;
-		// return flag ? "true" : "false";
 	}
 	
 	/**
@@ -284,26 +271,23 @@ public class BranchController {
 			res = new JsonResponse(result);
 			res.setData(false);
 			return res;
-			// flag=false;
-			// return flag ? "true" : "false";
 		}
 		try {
 			BranchQuery example=new BranchQuery();
 			example.or().andBeginuseridEqualTo(beginuserid);
 			List<Branch> selectRt = branchDao.selectByExample(example);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
 			if (selectRt!=null&&selectRt.size()>0) {
 				result = new Result(MsgConstants.BRANCH_CHECK_BEGINER);
 				flag=false;
 			}
+			res = new JsonResponse(result);
 			res.setData(flag);
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
 			log_.error("[PLMERROR:]", e);
 		}
-		res = new JsonResponse(result);
 		return res;
-		//return flag ? "true" : "false";
 	}
 }

@@ -2,7 +2,12 @@ package com.jp.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class Dynamic implements Serializable {
     public String getTobranchid() {
 		return tobranchid;
@@ -57,8 +62,18 @@ public class Dynamic implements Serializable {
     
     private String tobranchid;
     private Integer readNum;
+    
+    private List<Dynamicfile> dynamicFiles;
 
-    private static final long serialVersionUID = 1L;
+    public List<Dynamicfile> getDynamicFiles() {
+		return dynamicFiles;
+	}
+
+	public void setDynamicFiles(List<Dynamicfile> dynamicFiles) {
+		this.dynamicFiles = dynamicFiles;
+	}
+
+	private static final long serialVersionUID = 1L;
 
     public String getDyid() {
         return dyid;

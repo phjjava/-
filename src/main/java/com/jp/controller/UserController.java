@@ -346,6 +346,7 @@ public class UserController {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(pageModel.getList());
+			res.setCount(pageModel.getPageInfo().getTotal());
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
@@ -604,6 +605,7 @@ public class UserController {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(pageModel.getList());
+			res.setCount(pageModel.getPageInfo().getTotal());
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
@@ -611,7 +613,6 @@ public class UserController {
 			log_.error("[JPSYSTEM]", e);
 
 		}
-//		return "user/memberPermission";
 		return res;
 	}
 
@@ -627,17 +628,14 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/changeStatusOfReview", method = RequestMethod.POST)
 	public JsonResponse changeStatusOfReview(User user) {
-//		String result = null;
 		Result result= null;
 		JsonResponse res = null;
 		try {
 			Integer count = userService.changeStatus(user);
-//			result = "1";
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(count);
 		} catch (Exception e) {
-			// result = "0";
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
@@ -861,7 +859,6 @@ public class UserController {
 			res.setData(userAlbum);
 			res.setEntity(type);
 			res.setData1(userid);
-			   res.setData2(returnTable);
 			/*modelMap.put("userid", userid);
 			modelMap.put("useralbum", userAlbum);
 			modelMap.put("type", type);
@@ -904,7 +901,6 @@ public class UserController {
 		   res = new JsonResponse(result);
 		   res.setData(albumid);
 		   res.setData1(userid);
-		   res.setData2(returnTable);
 		   res.setEntity(type);
 		   /*modelMap.put("userid", userid);
 		   modelMap.put("albumid", albumid);
@@ -1343,6 +1339,7 @@ public class UserController {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(userList);
+			res.setCount(pageModel.getPageInfo().getTotal());
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
