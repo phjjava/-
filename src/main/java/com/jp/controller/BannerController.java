@@ -23,7 +23,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentUserContext;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.entity.Banner;
 import com.jp.service.BannerService;
 import com.jp.util.StringTools;
@@ -38,7 +41,10 @@ public class BannerController {
 	private BannerService bservice;
 
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
-	public String list(PageModel<Banner> pageModel, Banner banner, ModelMap model) {
+	@ResponseBody
+	public JsonResponse list(PageModel<Banner> pageModel, Banner banner, ModelMap model) {
+		Result result = null;
+		JsonResponse res = null;
 		try {
 			bservice.pageQuery(pageModel, banner);
 			if (pageModel.getList() != null) {
@@ -49,49 +55,69 @@ public class BannerController {
 					}
 				}
 			}
-			model.put("pageModel", pageModel);
-			model.put("banner", banner);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(pageModel);
+			res.setEntity(banner);
+			/*model.put("pageModel", pageModel);
+			model.put("banner", banner);*/
 		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-		return "banner/bannerList";
-
+		// return "banner/bannerList";
+		return res;
 	}
 
 	@RequestMapping(value = "/get", method = RequestMethod.GET)
-	public String get(HttpServletRequest request, ModelMap model) {
+	@ResponseBody
+	public JsonResponse get(HttpServletRequest request, ModelMap model) {
+		Result result = null;
+		JsonResponse res = null;
 		try {
 			String bannerid = request.getParameter("bannerid");
 			Banner banner = bservice.get(bannerid);
-			model.put("banner", banner);
-
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(banner);
+			// model.put("banner", banner);
 		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPGL]", e);
 		}
-		return "banner/banner";
+		return res;
+		// return "banner/banner";
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
-	public String changeStatus(Banner banner) {
-		String result = null;
+	public JsonResponse changeStatus(Banner banner) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		Integer count = 0;
 		try {
-			bservice.changeStatus(banner);
-			result = "1";
+			count = bservice.changeStatus(banner);
+			if(count > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+			}
 		} catch (Exception e) {
-			result = "0";
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-		return result;
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String save(Banner banner, ModelMap model,String bannerurlId) {
-		Integer result = null;
+	public JsonResponse save(Banner banner, ModelMap model,String bannerurlId) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		Integer count = 0;
 		try {
 			if (StringTools.notEmpty(banner.getBannerid())) {
 				// 修改
@@ -100,7 +126,7 @@ public class BannerController {
 				if(bannerurlId != null){
 					banner.setBannerurl(bannerurlId);
 				}
-				result = bservice.update(banner);
+				count = bservice.update(banner);
 			} else {
 				// 新增
 				if (!StringTools.trimNotEmpty(banner.getFamilyid())) {
@@ -115,14 +141,19 @@ public class BannerController {
 				if(bannerurlId != null){
 					banner.setBannerurl(bannerurlId);
 				}
-				result = bservice.insert(banner);
+				count = bservice.insert(banner);
+			}
+			if(count > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
 			}
 		} catch (Exception e) {
-			result = 0;
+			// result = 0;
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-		return result + "";
+		res = new JsonResponse(result);
+		return res;
+		// return result + "";
 	}
 
 	/**
@@ -137,20 +168,22 @@ public class BannerController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
-	public String batchDelete(String bannerids) {
-		String result = null;
+	public JsonResponse batchDelete(String bannerids) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
 		try {
 			// a,b,c
 			String bannerid = bannerids.substring(0, bannerids.length());
 			String banneridArray[] = bannerid.split(",");
 			bservice.batchDelete(banneridArray);
-			result = "1";
+			result = new Result(MsgConstants.RESUL_SUCCESS);
 		} catch (Exception e) {
-			result = "0";
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-		return result;
+		res = new JsonResponse(result);
+		return res;
+		// return result;
 	}
 
 	/**
@@ -165,8 +198,10 @@ public class BannerController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/savePhoto", method = RequestMethod.POST, produces = { "application/json;charset=UTF-8" })
-	public String savePhoto(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) {
-		String result = null;
+	public JsonResponse savePhoto(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) {
+		Result result = null;
+		JsonResponse res = null;
+		// String result = null;
 		try {
 			List<String> fileNams = new ArrayList<String>();
 			List<File> fileList = new ArrayList<File>();
@@ -188,7 +223,10 @@ public class BannerController {
 			Gson gson = new GsonBuilder().create();
 			JsonObject json = gson.fromJson(status, JsonObject.class);
 			JsonObject jsonInfo = gson.fromJson(json.get("data"), JsonObject.class);
-			result = jsonInfo.toString();
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(jsonInfo.toString());
+			// result = jsonInfo.toString();
 			System.out.println(json.get("result"));
 			if ("0".equals(json.get("result").toString())) {
 				 // 删除缓存文件
@@ -210,11 +248,13 @@ public class BannerController {
 
 //		    result = "{\"result\":"+"\""+newStr+""+"\""+"}";
 		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
 			e.printStackTrace();
-			result = "{\"result\":\"1\"}";
+			// result = "{\"result\":\"1\"}";
 			log_.error("[JPSYSTEM]", e);
 		}
-		return result;
+		return res;
 	}
 	/**
 	 * @描述 选择不同的跳转类型级联
@@ -226,15 +266,22 @@ public class BannerController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/bannerJson", method = RequestMethod.POST)
-    public String bannerJson(String goType)  {
+    public JsonResponse bannerJson(String goType)  {
+		Result result = null;
+		JsonResponse res = null;
     	String resultJson = null;
     	try {
     		resultJson = bservice.selectByGoType(goType);
+    		result = new Result(MsgConstants.RESUL_SUCCESS);
+    		res = new JsonResponse(result);
+    		res.setData(resultJson);
 		} catch (Exception e) {
-			resultJson = "";
+			// resultJson = "";
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-    	return resultJson;
+    	return res;
     }
 }

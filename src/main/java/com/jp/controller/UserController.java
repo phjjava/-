@@ -116,37 +116,16 @@ public class UserController {
 	@RequestMapping(value = "/merge", method = RequestMethod.POST)
 	public JsonResponse mergeUser(HttpServletRequest request,User user, Userinfo userInfo, Useredu userEdu, ModelMap model, String eduExpArray,
 			String workExpArray, String parentName, String fatherName) {
-//		String result = null;
 		Result result = null;
 		JsonResponse res = null;
 		try {
-			if (!fatherName.equals("-1")) {
-				user.setPid(fatherName);
-                User userfather = userService.selectByPrimaryKey(fatherName);
-                user.setBranchid(userfather.getBranchid());
-                user.setBranchname(userfather.getBranchname());
-				User userP = userService.selectByPrimaryKey(fatherName);
-				if (userP != null && userP.getGenlevel() != null) {
-					user.setGenlevel(userP.getGenlevel() + 1);
-					user.setPname(userP.getUsername());
-				}
-			} else {
-				user.setGenlevel(Integer.valueOf(parentName));
-			}
-			String isMarry = request.getParameter("isMarry");
-			String isdirect = request.getParameter("isdirectjj");
-			user.setIsMarry(Integer.valueOf(isMarry));
-			user.setIsdirect(Integer.valueOf(isdirect));
-			result = userService.merge(user, userInfo, userEdu, eduExpArray, workExpArray);
+			result = userService.merge(user, userInfo, userEdu, eduExpArray, workExpArray); //除了user，其他参数弃用
 			res = new JsonResponse(result);
-//			result = res;
 		} catch (Exception e) {
-//			result = "0";
 			result = new Result(MsgConstants.USER_SAVE_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
-
 		}
 		return res;
 	}
@@ -164,7 +143,6 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/del", method = RequestMethod.POST)
 	public JsonResponse deleteUser(String userids) {
-//		Integer result=0;
 		Result result = null;
 		JsonResponse res = null;
 		try {
@@ -213,17 +191,17 @@ public class UserController {
 			// selectByPrimaryKey
 			if (StringTools.trimNotEmpty(userid)) {
 				user = userService.selectByPrimaryKey(userid);
-				if (user != null) {
+				/*if (user != null) {
 					if (user.getDietime() != null) {
 						user.setDietimeStr(user.getDietime());
 					}
-				}
+				}*/
 				userInfo = userInfoService.selectByPrimaryKey(userid);
-				if (userInfo != null) {
+				/*if (userInfo != null) {
 					if (userInfo.getBirthday() != null) {
 						userInfo.setBirthdayStr(userInfo.getBirthday());
 					}
-				}
+				}*/
 				if (userInfo != null) {
 					String birth = userInfo.getBirthplace();
 					if (StringTools.trimNotEmpty(birth)) {
@@ -263,27 +241,26 @@ public class UserController {
 							userInfo.setHomeplaceX(homes[2]);
 							userInfo.setHomeDetail(homes[3]);
 						}
-
 					}
 				}
 				workList = userWorkService.selectByUserId(userid);
-				for (int i = 0; i < workList.size(); i++) {
+				/*for (int i = 0; i < workList.size(); i++) {
 					if (workList.get(i).getDatefrom() != null) {
 						workList.get(i).setDatefromStr(DateUtils.dayToString(workList.get(i).getDatefrom()));
 					}
 					if (workList.get(i).getDateto() != null) {
 						workList.get(i).setDatetoStr(DateUtils.dayToString(workList.get(i).getDateto()));
 					}
-				}
+				}*/
 				eduList = usereduService.selectByUserId(userid);
-				for (int i = 0; i < eduList.size(); i++) {
+				/*for (int i = 0; i < eduList.size(); i++) {
 					if (eduList.get(i).getDatefrom() != null) {
 						eduList.get(i).setDatefromStr(DateUtils.dayToString(eduList.get(i).getDatefrom()));
 					}
 					if (eduList.get(i).getDateto() != null) {
 						eduList.get(i).setDatetoStr(DateUtils.dayToString(eduList.get(i).getDateto()));
 					}
-				}
+				}*/
 			}
 			// 初始化分支
 			PageModel<Branch> pageModel = new PageModel<Branch>();
@@ -313,16 +290,8 @@ public class UserController {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(user);
-			/*modelMap.put("user", user);
-			modelMap.put("userInfo", userInfo);
-			modelMap.put("branchList", pageModel.getList());
-			modelMap.put("workList", workList);
-			modelMap.put("eduList", eduList);
-			modelMap.put("userAblumList", userAblumList);
-			//配偶
-			modelMap.put("mateList", mateList);*/
+			
 		} catch (Exception e) {
-//			result = "0";
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
@@ -343,6 +312,7 @@ public class UserController {
 	 * @return ModelMap
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
+	@ResponseBody
 	public JsonResponse list(PageModel<User> pageModel, User user, ModelMap model) {
 		Result result = null;
 		JsonResponse res = null;
@@ -363,14 +333,7 @@ public class UserController {
 
 			user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 			List<String> branchList = CurrentUserContext.getCurrentBranchIds();
-//			Integer manager = CurrentUserContext.getUserContext().getRole().getIsmanager();
-//			Integer type =  CurrentUserContext.getUserContext().getRole().getType();
-//			if (manager == 1 && type == 1) {// 验证是否是总编委会主任
-//				branchList.clear();
-//				user.setBranchid(null);
-//			}else if(manager == 0 && type == 1){//总编委成员
-//				user.setBranchid(null);
-//			}
+			
 			userService.selectUserList(pageModel, user, branchList);
 			if (pageModel.getList() != null) {
 				if (pageModel.getList().size() == 0) {
@@ -380,18 +343,15 @@ public class UserController {
 					}
 				}
 			}
-			/*model.put("pageModel", pageModel);
-			model.put("user", user);*/
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
-			res.setData(pageModel);
-			res.setEntity(user);
+			res.setData(pageModel.getList());
+			res.setCount(pageModel.getPageInfo().getTotal());
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
-
 		}
 		return res;
 	}
@@ -504,18 +464,14 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
 	public JsonResponse changeStatus(User user)  {
-//		String result = null;
 		Result result = null;
 		JsonResponse res = null;
 		try {
-			// user.setStatus(3);
             user.setUpdateid(CurrentUserContext.getCurrentUserId());
             user.setUpdatetime(new Date());			
 			userService.changeStatus(user);
-//			result = "1";
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 		} catch (Exception e) {
-//			result = "0";
 			result = new Result(MsgConstants.RESUL_FAIL);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
@@ -631,6 +587,7 @@ public class UserController {
 	 * @return ModelMap
 	 */
 	@RequestMapping(value = "/listToReview", method = RequestMethod.POST)
+	@ResponseBody
 	public JsonResponse listToReview(PageModel<User> pageModel, User user, ModelMap model) {
 		Result result= null;
 		JsonResponse res = null;
@@ -645,12 +602,10 @@ public class UserController {
 					}
 				}
 			}
-			/*model.put("pageModel", pageModel);
-			model.put("user", user);*/
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
-			res.setData(pageModel);
-			res.setEntity(user);
+			res.setData(pageModel.getList());
+			res.setCount(pageModel.getPageInfo().getTotal());
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
@@ -658,7 +613,6 @@ public class UserController {
 			log_.error("[JPSYSTEM]", e);
 
 		}
-//		return "user/memberPermission";
 		return res;
 	}
 
@@ -674,17 +628,14 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/changeStatusOfReview", method = RequestMethod.POST)
 	public JsonResponse changeStatusOfReview(User user) {
-//		String result = null;
 		Result result= null;
 		JsonResponse res = null;
 		try {
 			Integer count = userService.changeStatus(user);
-//			result = "1";
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(count);
 		} catch (Exception e) {
-			// result = "0";
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
@@ -768,7 +719,6 @@ public class UserController {
 			if (StringTools.trimNotEmpty(userid)) {
 				user = userService.selectByPrimaryKey(userid);
 			}
-			// modelMap.put("user", user);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(user);
@@ -778,7 +728,6 @@ public class UserController {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-//		return "user/addmate";
 		return res;
 	}
 
@@ -794,14 +743,11 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/mergeMate", method = RequestMethod.POST)
 	public JsonResponse mergeUserMate(User user, Userinfo userInfo, String usernameBefore) {
-		// String result = null;
 		Result result= null;
 		JsonResponse res = null;
 		try {
 			result = userService.mergeMate(user, userInfo, usernameBefore);
-//			result = res;
 		} catch (Exception e) {
-			// result = "0";
 			result = new Result(MsgConstants.RESUL_FAIL);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
@@ -822,64 +768,24 @@ public class UserController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/saveAlbum", method = RequestMethod.POST, produces = { "application/json;charset=UTF-8" })
-	public JsonResponse saveAlbum(@RequestParam("file") MultipartFile[] files, HttpServletRequest request, String albumid,
+	public JsonResponse saveAlbum(List<Userphoto> userPhotoList, HttpServletRequest request, String albumid,
 			String userid) {
-//		String result = null;
 		Result result= null;
 		JsonResponse res = null;
 		try {
-			List<String> fileNams = new ArrayList<String>();
-			List<File> fileList = new ArrayList<File>();
-			File file = null;
-			String fileName = "";
-			// String zhName = "";
-			for (MultipartFile fileM : files) {
-				// zhName = fileM.getName();
-				fileName = fileM.getOriginalFilename();
-				fileNams.add(fileName);
+			for (Userphoto userphoto : userPhotoList) {
+				userphoto.setUserid(userid);
+				userphoto.setAlbumid(albumid);
+				userphoto.setImgid(UUIDUtils.getUUID());
+				userphoto.setCreatetime(new Date());
+				userphoto.setCreateid(CurrentUserContext.getCurrentUserId());
+				userphoto.setDeleteflag(0);
 			}
-			String pathDir = "/upload";
-			String logoRealPathDir = request.getSession().getServletContext().getRealPath(pathDir);
-			for (int i = 0; i < files.length; i++) {
-				file = new File(logoRealPathDir);
-				// OutputStream output = new FileOutputStream(file);
-				// BufferedOutputStream bufferedOutput = new
-				// BufferedOutputStream(output);
-				// bufferedOutput.write(files[i].getBytes());
-				files[i].transferTo(file);
-				fileList.add(file);
-			}
-			String status = UploadUtil.taskFileUpload(fileList, fileNams);
-			Gson gson = new GsonBuilder().create();
-			JsonObject json = gson.fromJson(status, JsonObject.class);
-			JsonObject jsonInfo = gson.fromJson(json.get("data"), JsonObject.class);
-			String url = "";
-			String iconurl = "";
-			url = jsonInfo.get("url").toString();
-			iconurl = jsonInfo.get("iconUrl").toString();
-			String newStr = url.replaceAll("\"", "");
-			String newStrIcon = iconurl.replaceAll("\"", "");
-			Userphoto userPhoto = null;
-			List<Userphoto> userPhotoList = new ArrayList<Userphoto>();
-			for (int i = 0; i < files.length; i++) {
-				userPhoto = new Userphoto();
-				userPhoto.setUserid(userid);
-				userPhoto.setAlbumid(albumid);
-				userPhoto.setImgurl(newStr);
-				userPhoto.setCreatetime(new Date());
-				userPhoto.setCreateid(CurrentUserContext.getCurrentUserId());
-				userPhoto.setDeleteflag(0);
-				userPhoto.setSmallimgurl(newStrIcon);
-				userPhoto.setImgid(UUIDUtils.getUUID());
-				userPhoto.setDescription(fileName);
-				userPhotoList.add(userPhoto);
-			}
+			
 			userService.mergeUserPhoto(userPhotoList);
-//			result = "{\"result\":\"0\"}";
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 		} catch (Exception e) {
 			e.printStackTrace();
-//			result = "{\"result\":\"1\"}";
 			result = new Result(MsgConstants.RESUL_FAIL);
 			log_.error("[JPSYSTEM]", e);
 		}
@@ -953,7 +859,6 @@ public class UserController {
 			res.setData(userAlbum);
 			res.setEntity(type);
 			res.setData1(userid);
-			   res.setData2(returnTable);
 			/*modelMap.put("userid", userid);
 			modelMap.put("useralbum", userAlbum);
 			modelMap.put("type", type);
@@ -996,7 +901,6 @@ public class UserController {
 		   res = new JsonResponse(result);
 		   res.setData(albumid);
 		   res.setData1(userid);
-		   res.setData2(returnTable);
 		   res.setEntity(type);
 		   /*modelMap.put("userid", userid);
 		   modelMap.put("albumid", albumid);
@@ -1021,6 +925,7 @@ public class UserController {
 	 * @参数 @return
 	 * @return String
 	 */
+	@ResponseBody
 	@RequestMapping(value = "/userAlbumDetail", method = RequestMethod.POST)
 	public JsonResponse userAlbumDetail(String albumid, String userid, String type, ModelMap modelMap) {
 		Result result= null;
@@ -1037,17 +942,12 @@ public class UserController {
 			res = new JsonResponse(result);
 			res.setData(photoList);
 			res.setData1(userAlbum);
-			res.setData2(type);
-			/*modelMap.put("photoList", photoList);
-			modelMap.put("userAlbum", userAlbum);
-			modelMap.put("type", type);*/
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-//		return "user/userphotoDetail";
 		return res;
 	}
 
@@ -1062,7 +962,6 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/deleteUserAlbum", method = RequestMethod.POST)
 	public JsonResponse deleteUserAlbum(Useralbum userAlbum) {
-//		String result = "";
 		Result result= null;
 		JsonResponse res = null;
 		try {
@@ -1073,7 +972,6 @@ public class UserController {
 			useralbumService.deleteByPrimaryKey(key);
 			// 删除照片
 			useralbumService.deleteUserPhoto(userAlbum.getAlbumid());
-//			result = "1";
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
@@ -1128,8 +1026,7 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/validatePhone", method = RequestMethod.POST)
 	public JsonResponse validatePhone(User user) {
-//		boolean flag = true;// 默认通过验证
-		Result result= new Result(MsgConstants.RESUL_SUCCESS);
+		Result result= new Result(MsgConstants.RESUL_SUCCESS); // 默认通过验证
 		JsonResponse res = null;
 		try {
 			user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
@@ -1142,13 +1039,11 @@ public class UserController {
 					}
 				}
 				if (StringTools.trimNotEmpty(userid)) {
-//					flag = false;
-					result = new Result(MsgConstants.RESUL_FAIL);
+					result = new Result(MsgConstants.USER_PHONE_REPEAT);
 				}
 			} else {
 				if (userList != null && userList.size() > 0) {
-//					flag = false;
-					result = new Result(MsgConstants.RESUL_FAIL);
+					result = new Result(MsgConstants.USER_PHONE_REPEAT);
 				}
 			}
 		} catch (Exception e) {
@@ -1158,7 +1053,6 @@ public class UserController {
 		}
 		res = new JsonResponse(result);
 		return res;
-//		return flag ? "true" : "false";
 	}
 
 	/**
@@ -1251,7 +1145,6 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/checkoldpassword")
 	public JsonResponse checkOldPwd(String oldpassword) {
-//		Result result = new Result();
 		Result result= null;
 		JsonResponse res = null;
 		try {
@@ -1263,14 +1156,11 @@ public class UserController {
 					.andUseridEqualTo(CurrentUserContext.getCurrentUserId());
 			List<User> selectRt = userDao.selectByExample(example);
 			if (selectRt!=null&&selectRt.size()==1) {
-//				result.setStatus(1);
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 			}else{
-//				result.setStatus(0);
 				result = new Result(MsgConstants.RESUL_FAIL);
 			}
 		} catch (Exception e) {
-//			result.setStatus(0);
 			result = new Result(MsgConstants.RESUL_FAIL);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
@@ -1411,10 +1301,8 @@ public class UserController {
 	@RequestMapping(value = "/searchUser", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse searchUser(PageModel<User> pageModel, User user,ModelMap model) throws IOException {
-//		Result result = new Result();
 		Result result= null;
 		JsonResponse res = null;
-		String gsonStr = null;
 		try {
 			String userid = CurrentUserContext.getCurrentUserId();
 			UserbranchQuery ex = new UserbranchQuery();
@@ -1448,12 +1336,10 @@ public class UserController {
 				userAddrss.setAddress(userDao.getAddressByUserid(userAddrss.getUserid()));
 				userList.add(userAddrss);
 			}
-			/*result.setStatus(ConstantUtils.RESULT_SUCCESS);
-			result.setData(userList);
-			gsonStr = GsonUtil.GsonString(result);*/
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(userList);
+			res.setCount(pageModel.getPageInfo().getTotal());
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);

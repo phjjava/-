@@ -21,11 +21,15 @@ public class MsgConstants {
 	public static final Result USER_NO_BRANCH = new Result(2004,"当前分支不存在");
 	public static final Result USER_NO_FILE = new Result(2005,"当前文件不存在");
 	public static final Result USER_NO_IMPORT = new Result(2006,"当前没有导入任何数据");
+	public static final Result USER_PHONE_REPEAT = new Result(2007,"手机号重复");
 	
 	//分支管理异常码
 	public static final Result BRANCH_VALIDATA_NAME = new Result(3001,"当前分支名称已存在");
 	public static final Result BRANCH_CHECK_BEGINER = new Result(3002,"该用户已发起过其他分支");
 	public static final Result BRANCH_NO_BEGINERID = new Result(3003,"分支起始人ID为空");
+	
+	//名人录管理异常码
+	public static final Result FAMOUS_NO_USERID = new Result(4001,"userid为空");
 	
 	
 	

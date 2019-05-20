@@ -84,38 +84,6 @@ public class BranchServiceImpl implements BranchService {
             throws Exception {
         PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
         List<Branch> list = branchDao.selectBranchListByFamilyAndUserid(CurrentUserContext.getCurrentFamilyId(),null,branch.getBranchname());
-//        UserManagerExample example = new UserManagerExample();
-//        example.or().andUseridEqualTo(CurrentUserContext.getCurrentUserId());
-//        example.setOrderByClause("ebtype desc,ismanager desc");
-//        List<UserManager> managers = userManagerMapper.selectByExample(example);
-//        UserQuery ex = new UserQuery();
-//        for(UserManager manager : managers) {
-//        	if(manager.getEbtype() == 1 && manager.getIsmanager() == 1) {
-//        		 List<Branch> list = branchDao.selectBranchListByFamilyAndUserid(CurrentUserContext.getCurrentFamilyId(),null);
-//        		 for(Branch b : list) {
-//        	        	ex.clear();
-//        	        	ex.or().andBranchidEqualTo(b.getBranchid());
-//        	        	int num = userDao.countByExample(ex);
-//        	        	b.setUsercount(num);
-//        	        }
-//        		 pageModel.setList(list);
-//        		 pageModel.setPageInfo(new PageInfo<Branch>(list));
-//        	     return pageModel;
-//        	}else {
-//        		
-//	        	 List<Branch> list = branchDao.getBranchsByFamilyAndUserid(CurrentUserContext.getCurrentFamilyId(), CurrentUserContext.getCurrentUserId());
-//	        	 for(Branch b : list) {
-//	             	ex.clear();
-//	             	ex.or().andBranchidEqualTo(b.getBranchid());
-//	             	int num = userDao.countByExample(ex);
-//	             	b.setUsercount(num);
-//	             }
-//	        	 
-//	        	 pageModel.setPageInfo(new PageInfo<Branch>(list));
-//	             return pageModel;
-//        	}
-//             
-//        }
         UserQuery ex = new UserQuery();
         for(Branch b : list) {
          	ex.clear();

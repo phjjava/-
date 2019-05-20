@@ -17,12 +17,12 @@ public class Userworkexp extends UserworkexpKey implements Serializable {
     /**
      * 工作日期从
      */
-    private Date datefrom;
+    private String datefrom;
     private String datefromStr;
     /**
      * 工作日期到
      */
-    private Date dateto;
+    private String dateto;
     private String datetoStr;
     /**
      * 是否保密
@@ -52,19 +52,19 @@ public class Userworkexp extends UserworkexpKey implements Serializable {
         this.position = position == null ? null : position.trim();
     }
 
-    public Date getDatefrom() {
+    public String getDatefrom() {
         return datefrom;
     }
 
-    public void setDatefrom(Date datefrom) {
+    public void setDatefrom(String datefrom) {
         this.datefrom = datefrom;
     }
 
-    public Date getDateto() {
+    public String getDateto() {
         return dateto;
     }
 
-    public void setDateto(Date dateto) {
+    public void setDateto(String dateto) {
         this.dateto = dateto;
     }
 

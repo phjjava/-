@@ -26,12 +26,12 @@ public class Useredu extends UsereduKey implements Serializable {
     /**
      * 开始日期
      */
-    private Date datefrom;
+    private String datefrom;
     private String datefromStr;
     /**
      * 结束日期
      */
-    private Date dateto;
+    private String dateto;
     private String datetoStr;
     /**
      * 教育内容
@@ -71,19 +71,19 @@ public class Useredu extends UsereduKey implements Serializable {
         this.issecret = issecret;
     }
     
-    public Date getDatefrom() {
+    public String getDatefrom() {
 		return datefrom;
 	}
 
-	public void setDatefrom(Date datefrom) {
+	public void setDatefrom(String datefrom) {
 		this.datefrom = datefrom;
 	}
 
-	public Date getDateto() {
+	public String getDateto() {
 		return dateto;
 	}
 
-	public void setDateto(Date dateto) {
+	public void setDateto(String dateto) {
 		this.dateto = dateto;
 	}
     

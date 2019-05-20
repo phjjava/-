@@ -65,15 +65,16 @@ public class LoginInterceptor implements HandlerInterceptor {
         	// 查询用户的登陆间隔时间	
 			Date lastLogintime = loginUser.getLogintime();
 			long timeDifferenceOfMin = DateUtils.timeDifferenceOfMin(new Date(), lastLogintime);
-			if(timeDifferenceOfMin/(60*24)>=7){
+			/*if(timeDifferenceOfMin/(60*24)>=7){
 				return false;				
-			}
+			}*/
         }
         // 校验session是否失效
         if(dbsessionid == null) {
         	return false;
         }else{
         	if(dbsessionid != null && !dbsessionid.equals(sessionid)) {
+        		log_.info("sessionid过期！");
         		return false;	// sessionid失效
         	}else {
         		return true;
