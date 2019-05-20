@@ -117,7 +117,7 @@ public class BannerServiceImpl implements BannerService {
 	}
 	
 	@Override
-	public String selectByGoType(String goType) { 
+	public List<GoTypeResult> selectByGoType(String goType) { 
 		GoTypeResult goTypeResult = null;
 		List<GoTypeResult> goTypeResultList = new ArrayList<GoTypeResult>();
 		Integer type = CurrentUserContext.getUserContext().getUsermanagers().get(0).getEbtype();
@@ -259,6 +259,6 @@ public class BannerServiceImpl implements BannerService {
 				}
 			}
 		}
-		return GsonUtil.GsonString(goTypeResultList);
+		return goTypeResultList;
 	}
 }

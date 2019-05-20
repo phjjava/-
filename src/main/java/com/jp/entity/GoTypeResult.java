@@ -1,5 +1,9 @@
 package com.jp.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class GoTypeResult {
     private String id;
     private String name;

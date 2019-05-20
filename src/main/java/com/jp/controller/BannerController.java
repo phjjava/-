@@ -28,6 +28,7 @@ import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.entity.Banner;
+import com.jp.entity.GoTypeResult;
 import com.jp.service.BannerService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
@@ -57,17 +58,14 @@ public class BannerController {
 			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
-			res.setData(pageModel);
-			res.setEntity(banner);
-			/*model.put("pageModel", pageModel);
-			model.put("banner", banner);*/
+			res.setData(pageModel.getList());
+			res.setCount(pageModel.getPageInfo().getTotal());
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-		// return "banner/bannerList";
 		return res;
 	}
 
@@ -82,7 +80,6 @@ public class BannerController {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(banner);
-			// model.put("banner", banner);
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
@@ -90,7 +87,6 @@ public class BannerController {
 			log_.error("[JPGL]", e);
 		}
 		return res;
-		// return "banner/banner";
 	}
 
 	@ResponseBody
@@ -147,13 +143,11 @@ public class BannerController {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 			}
 		} catch (Exception e) {
-			// result = 0;
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
 		res = new JsonResponse(result);
 		return res;
-		// return result + "";
 	}
 
 	/**
@@ -183,7 +177,6 @@ public class BannerController {
 		}
 		res = new JsonResponse(result);
 		return res;
-		// return result;
 	}
 
 	/**
@@ -269,14 +262,13 @@ public class BannerController {
     public JsonResponse bannerJson(String goType)  {
 		Result result = null;
 		JsonResponse res = null;
-    	String resultJson = null;
+    	List<GoTypeResult> gotypeList = null;
     	try {
-    		resultJson = bservice.selectByGoType(goType);
+    		gotypeList = bservice.selectByGoType(goType);
     		result = new Result(MsgConstants.RESUL_SUCCESS);
     		res = new JsonResponse(result);
-    		res.setData(resultJson);
+    		res.setData(gotypeList);
 		} catch (Exception e) {
-			// resultJson = "";
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
