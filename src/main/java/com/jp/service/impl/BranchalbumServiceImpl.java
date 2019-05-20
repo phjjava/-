@@ -22,53 +22,55 @@ import com.jp.entity.UserManager;
 import com.jp.service.BranchalbumService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
+
 @Service
 public class BranchalbumServiceImpl implements BranchalbumService {
-    @Autowired
-    private BranchalbumMapper badao;
-    @Autowired
-    private BranchphotoMapper photodao;
+	@Autowired
+	private BranchalbumMapper badao;
+	@Autowired
+	private BranchphotoMapper photodao;
+
 	@Override
-	public PageModel<Branchalbum> pageQuery(PageModel<Branchalbum> pageModel,Branchalbum branchalbum) throws Exception {
-		//当前登录人所管理的branchids
-		BranchalbumExample example=new BranchalbumExample();
-		BranchalbumExample.Criteria criteria=example.createCriteria();
-		if (StringTools.trimNotEmpty(branchalbum.getBranchid())) {
-			criteria.andBranchidEqualTo(branchalbum.getBranchid());
-		}
-		if(StringTools.trimNotEmpty(branchalbum.getDeleteflag())){
-			criteria.andDeleteflagEqualTo(branchalbum.getDeleteflag());
-		}
+	public PageModel<Branchalbum> pageQuery(PageModel<Branchalbum> pageModel, Branchalbum branchalbum)
+			throws Exception {
+		// 当前登录人所管理的branchids
+
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		List<UserManager> managers = CurrentUserContext.getCurrentUserManager();
 		String familyid = CurrentUserContext.getCurrentFamilyId();
 		List<String> branchList = CurrentUserContext.getCurrentBranchIds();
 		List<Branchalbum> list = new ArrayList<Branchalbum>();
-		for(UserManager m : managers) {
+		for (UserManager m : managers) {
+			BranchalbumExample example = new BranchalbumExample();
 			example.clear();
+			BranchalbumExample.Criteria criteria = example.createCriteria();
+			if (StringTools.trimNotEmpty(branchalbum.getBranchid())) {
+				criteria.andBranchidEqualTo(branchalbum.getBranchid());
+			}
+			if (StringTools.trimNotEmpty(branchalbum.getDeleteflag())) {
+				criteria.andDeleteflagEqualTo(branchalbum.getDeleteflag());
+			}
 			example.setOrderByClause("createtime DESC");
-			if(m.getEbtype()==1) {
-				example.or().andFamilyidEqualTo(familyid);
+			if (m.getEbtype() == 1) {
+				criteria.andFamilyidEqualTo(familyid);
 				list = badao.selectByExample(example);
 				break;
-			}else {
+			} else {
 				criteria.andBranchidIn(branchList);
-				list=badao.selectBranchAlbumMangeList(example);
+				list = badao.selectBranchAlbumMangeList(example);
 			}
 		}
-//		if (branchList!=null&&branchList.size()>0) {
-//			criteria.andBranchidIn(branchList);
-//		}else{
-//			return pageModel;
-//		}
-		
-		
-		
-		//List<Branchalbum> list = badao.selectByBranchIds(branchList);
-		//badao.selectBranchAlbumMangeList()\
+		// if (branchList!=null&&branchList.size()>0) {
+		// criteria.andBranchidIn(branchList);
+		// }else{
+		// return pageModel;
+		// }
+
+		// List<Branchalbum> list = badao.selectByBranchIds(branchList);
+		// badao.selectBranchAlbumMangeList()\
 		BranchphotoExample example1 = new BranchphotoExample();
-		
-		for(Branchalbum al : list) {
+
+		for (Branchalbum al : list) {
 			example1.clear();
 			example1.or().andAlbumidEqualTo(al.getAlbumid()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
 			al.setAlbumNum(photodao.countByExample(example1));
@@ -79,7 +81,7 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	}
 
 	@Override
-	public Branchalbum get(String albumid,String branchid) throws Exception {
+	public Branchalbum get(String albumid, String branchid) throws Exception {
 		Branchalbum branchalbum = badao.selectByPrimaryKey(albumid);
 		return branchalbum;
 	}
@@ -87,37 +89,32 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	@Override
 	public String mergeBranchAlbum(Branchalbum branchalbum) {
 		String ablumId = "";
-		try{
-			if(StringTools.trimNotEmpty(branchalbum.getAlbumid())){
-				branchalbum.setUpdatetime(new Date());
-				branchalbum.setUpdateid(CurrentUserContext.getCurrentUserId());
-				BranchalbumExample query=new BranchalbumExample();
-				query.or().andAlbumidEqualTo(branchalbum.getAlbumid());
-				 if(!StringTools.trimNotEmpty(branchalbum.getBranchid())) {
-				    	branchalbum.setBranchid("0");
-				 }
-				branchalbum.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-				badao.updateByExampleSelective(branchalbum, query);
-				//badao.updateByPrimaryKeySelective(branchalbum);
-			}else{
-			    
-			    if(!StringTools.trimNotEmpty(branchalbum.getBranchid())) {
-			    	branchalbum.setBranchid("0");
-			    }
-			    ablumId = UUIDUtils.getUUID();
-			    branchalbum.setAlbumid(ablumId);
-			    branchalbum.setCreatetime(new Date());
-			    branchalbum.setCreateid(CurrentUserContext.getCurrentUserId());
-			    branchalbum.setUpdatetime(new Date());
-			    branchalbum.setUpdateid(CurrentUserContext.getCurrentUserId());
-			    branchalbum.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-				//0未删除
-			    branchalbum.setDeleteflag(0);
-			    badao.insertSelective(branchalbum);
+		if (StringTools.trimNotEmpty(branchalbum.getAlbumid())) {
+			branchalbum.setUpdatetime(new Date());
+			branchalbum.setUpdateid(CurrentUserContext.getCurrentUserId());
+			BranchalbumExample query = new BranchalbumExample();
+			query.or().andAlbumidEqualTo(branchalbum.getAlbumid());
+			if (!StringTools.trimNotEmpty(branchalbum.getBranchid())) {
+				branchalbum.setBranchid("0");
 			}
-		}catch(Exception e){
-			ablumId = "";
-			e.printStackTrace();
+			branchalbum.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			badao.updateByExampleSelective(branchalbum, query);
+			// badao.updateByPrimaryKeySelective(branchalbum);
+		} else {
+
+			if (!StringTools.trimNotEmpty(branchalbum.getBranchid())) {
+				branchalbum.setBranchid("0");
+			}
+			ablumId = UUIDUtils.getUUID();
+			branchalbum.setAlbumid(ablumId);
+			branchalbum.setCreatetime(new Date());
+			branchalbum.setCreateid(CurrentUserContext.getCurrentUserId());
+			branchalbum.setUpdatetime(new Date());
+			branchalbum.setUpdateid(CurrentUserContext.getCurrentUserId());
+			branchalbum.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			// 0未删除
+			branchalbum.setDeleteflag(0);
+			badao.insertSelective(branchalbum);
 		}
 		return ablumId;
 	}
@@ -144,7 +141,7 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 
 	@Override
 	public int batchDelete(String[] albumidArray) {
-		return  badao.batchDelete(albumidArray);
+		return badao.batchDelete(albumidArray);
 	}
 
 	@Override
