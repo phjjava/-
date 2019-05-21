@@ -65,7 +65,9 @@ public class DynamicServiceImpl implements DynamicService {
 			DynamicExample example1 = new DynamicExample();
 			example1.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
 								
-			list = dydao.selectByExample(example1);
+			// list = dydao.selectByExample(example1);
+			dynamic.setFamilyid(familyid);
+			list = dydao.selectReadOfManager(dynamic);
 		}else {
 			list = dydao.selectdyread(dynamic,branchList);
 		}

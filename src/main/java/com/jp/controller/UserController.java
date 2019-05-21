@@ -1,6 +1,7 @@
 
 package com.jp.controller;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -64,6 +65,7 @@ import com.jp.service.UserWorkService;
 import com.jp.service.UseralbumService;
 import com.jp.util.DateUtils;
 import com.jp.util.GsonUtil;
+import com.jp.util.JacksonUtil;
 import com.jp.util.MD5Util;
 //import com.jp.util.Result;
 import com.jp.util.StringTools;
@@ -111,15 +113,23 @@ public class UserController {
 	 * @参数 @param model
 	 * @参数 @return
 	 * @return String
+	 * @throws IOException 
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/merge", method = RequestMethod.POST)
-	public JsonResponse mergeUser(HttpServletRequest request,User user, Userinfo userInfo, Useredu userEdu, ModelMap model, String eduExpArray,
-			String workExpArray, String parentName, String fatherName) {
+	public JsonResponse mergeUser(HttpServletRequest request) throws IOException {
 		Result result = null;
 		JsonResponse res = null;
+		BufferedReader reader = request.getReader();
+		StringBuilder sb = new StringBuilder();
+		String line = null; 
+		while ((line = reader.readLine()) != null) {   
+            sb.append(line);   
+        }
+		String jsonstr = sb.toString();
+		User user = JacksonUtil.fromJsonToObject(jsonstr, User.class);
 		try {
-			result = userService.merge(user, userInfo, userEdu, eduExpArray, workExpArray); //除了user，其他参数弃用
+			result = userService.merge(user); //除了user，其他参数弃用
 			res = new JsonResponse(result);
 		} catch (Exception e) {
 			result = new Result(MsgConstants.USER_SAVE_FAIL);

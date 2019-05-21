@@ -51,8 +51,8 @@ public class EventController {
 			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
-			res.setData(pageModel);
-			// model.put("pageModel", pageModel);
+			res.setData(pageModel.getList());
+			res.setCount(pageModel.getPageInfo().getTotal());
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
@@ -60,7 +60,6 @@ public class EventController {
 			log_.error("[JPSYSTEM]", e);
 		}
 	   return res;
-	   //return "event/eventList";
 	   
    }
    
@@ -75,7 +74,6 @@ public class EventController {
   			result = new Result(MsgConstants.RESUL_SUCCESS);
   			res = new JsonResponse(result);
   			res.setData(event);
-  			// model.put("event", event);
   		} catch (Exception e) {
   			result = new Result(MsgConstants.RESUL_FAIL);
   			res = new JsonResponse(result);
@@ -83,7 +81,6 @@ public class EventController {
   			log_.error("[JPGL]", e);
   		}
   		return res;
-  		// return "event/event";
   	}
    
    @ResponseBody
