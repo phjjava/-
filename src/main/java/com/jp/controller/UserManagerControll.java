@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -15,21 +15,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jp.common.CurrentUserContext;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
-import com.jp.entity.Branch;
+import com.jp.common.Result;
 import com.jp.entity.EditorialBoard;
 import com.jp.entity.Function;
-import com.jp.entity.Role;
-import com.jp.entity.SysFunction;
-import com.jp.entity.SysVersion;
-import com.jp.entity.User;
 import com.jp.entity.UserManager;
-import com.jp.service.EditorialBoardService;
 import com.jp.service.FunctionService;
-import com.jp.service.RoleService;
 import com.jp.service.UserManagerService;
-import com.jp.util.GsonUtil;
-import com.jp.util.Result;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 
@@ -44,31 +38,41 @@ public class UserManagerControll {
 
 	@Autowired
 	private FunctionService functionService;
-	
-	
 
-	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String save(HttpServletRequest request, UserManager manager, ModelMap model) {
-		Integer result = null;
+	@ResponseBody
+	public JsonResponse save(HttpServletRequest request, UserManager manager, ModelMap model) {
+		Result result = null;
+		JsonResponse res = null;
+		Integer status = null;
 		String[] functionids = request.getParameterValues("functionids[]");
 		try {
 			if (StringTools.notEmpty(manager.getId())) {// 修改
-				result = userManagerService.update(manager,functionids);
+				status = userManagerService.update(manager, functionids);
 			} else {// 新增
 				manager.setId(UUIDUtils.getUUID());
-				result = userManagerService.insert(manager,functionids);
+				status = userManagerService.insert(manager, functionids);
 			}
 		} catch (Exception e) {
-			result = 0;
+			status = 0;
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			res.setData(status);
+			return res;
 		}
-		return result + "";
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(status);
+		return res;
 	}
 
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
-	public String list(PageModel<UserManager> pageModel, UserManager entity, ModelMap model) {
+	@ResponseBody
+	public JsonResponse list(PageModel<UserManager> pageModel, UserManager entity) {
+		Result result = null;
+		JsonResponse res = null;
 		try {
 			entity.setUserid(CurrentUserContext.getCurrentUserId());
 			userManagerService.pageQuery(pageModel, entity);
@@ -80,81 +84,130 @@ public class UserManagerControll {
 					}
 				}
 			}
-			model.put("pageModel", pageModel);
-			
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-		return "editorial/usermanagerList";
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(pageModel);
+		return res;
 	}
 
-	@ResponseBody
 	@RequestMapping(value = "/del", method = RequestMethod.POST)
-	public Result deleteEditorialBoard(EditorialBoard entity) {
-		Result result=new Result();
+	@ResponseBody
+	public JsonResponse deleteEditorialBoard(EditorialBoard entity) {
+		Result result = null;
+		JsonResponse res = null;
+		Integer status = null;
 		try {
-			int status =userManagerService.del(entity.getId());
-			result.setData(status);
+			status = userManagerService.del(entity.getId());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
-			result.setData(0);
-			return result;
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			res.setData(0);
+			return res;
 		}
-		return result;
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(status);
+		return res;
 	}
-	
+
+	/**
+	 * 获取编委会详情和菜单列表
+	 * 
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/get", method = RequestMethod.GET)
-	public String get(HttpServletRequest request, ModelMap model) {
+	@ResponseBody
+	public JsonResponse get(HttpServletRequest request) {
+		Result result = null;
+		JsonResponse res = null;
+		UserManager manager = null;
+		List<Function> treeList = new ArrayList<Function>();// 树状菜单
 		try {
-			//获取当前管理员的id
+			// 获取当前管理员的id
 			String id = request.getParameter("id");
-			UserManager manager = null;
-			if(id !=null && !"".equals(id)) {
+			if (id != null && !"".equals(id)) {
 				manager = userManagerService.getUserManager(id);
-				if(manager != null) {
-					manager.setGenlevel(manager.getGenlevel()+"世");
+				if (manager != null) {
+					manager.setGenlevel(manager.getGenlevel() + "世");
 				}
-				model.put("manager", manager);
 			}
-			String familyid = CurrentUserContext.getCurrentFamilyId();
+			// String familyid = CurrentUserContext.getCurrentFamilyId();
 			List<Function> functionList = new ArrayList<>();
-			if(manager == null || ( manager.getIsmanager()==1 && manager.getEbtype()==1)) {
-				functionList = functionService.selectFunctionListByEbid(familyid,"","","");
-			}else {
-				functionList = functionService.selectFunctionListByEbid(familyid,manager.getUserid(),manager.getEbid(),manager.getPostid());
+			if (manager == null || (manager.getIsmanager() == 1 && manager.getEbtype() == 1)) {
+				functionList = functionService.selectFunctionListByEbid("9ba9172bd1a44e35992d8b1c247adb95", "", "", "");
+			} else {
+				functionList = functionService.selectFunctionListByEbid("9ba9172bd1a44e35992d8b1c247adb95",
+						manager.getUserid(), manager.getEbid(), manager.getPostid());
 			}
-			
-			
-			List<Function> plist = null;
-			List<Function> clist = null;
+
 			if (functionList != null) {
-				// 一级菜单
-				plist = new ArrayList<Function>();
-				// 二级菜单
-				clist = new ArrayList<Function>();
 				Function function = null;
-				// 循环所有菜单，将一级菜单和二级菜单还有三级封装到不同集合中
+				// 先找到所有的一级菜单
 				for (int i = 0; i < functionList.size(); i++) {
 					function = functionList.get(i);
+					// 一级菜单父ID为00000
 					if ("00000".equals(function.getParentid())) {
-						plist.add(function);
-					} else {
-						clist.add(function);
+						treeList.add(function);
 					}
 				}
 			}
+			// 为一级菜单设置子菜单，getChild是递归调用的
+			for (Function fun : treeList) {
+				fun.setChildList(getChild(fun.getFunctionid(), functionList));
+			}
 
-			model.put("plist", plist);
-			model.put("clist", clist);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-		
-		return "editorial/usermanager";
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setEntity(manager);
+		res.setData(treeList);
+		System.out.println("========================================" + manager);
+		return res;
+	}
+
+	/**
+	 * 子菜单递归
+	 * 
+	 * @param id
+	 * @param rootMenu
+	 * @return
+	 */
+	private List<Function> getChild(String id, List<Function> rootFun) {
+		// 子菜单
+		List<Function> childList = new ArrayList<>();
+		for (Function fun : rootFun) {
+			// 遍历所有节点，将父菜单id与传过来的id比较
+			if (fun.getParentid().equals(id)) {
+				childList.add(fun);
+			}
+		}
+
+		// 把子菜单的子菜单再循环一遍
+		for (Function fun : childList) {
+			fun.setChildList(getChild(fun.getFunctionid(), rootFun));// 递归
+		}
+
+		// 判断递归结束
+		if (childList.size() == 0) {
+			return null;
+		}
+		return childList;
 	}
 
 	/**
@@ -165,18 +218,20 @@ public class UserManagerControll {
 	 * @参数 @return
 	 * @return String
 	 */
-//	@ResponseBody
-//	@RequestMapping(value = "/selecteditorialBoardList", method = RequestMethod.POST)
-//	public String selectRoleList() {
-//		String gsonStr = null;
-//		try {
-//			List<EditorialBoard> list = userManagerService.selecteditorialBoardList(CurrentUserContext.getCurrentUserId());
-//			gsonStr = GsonUtil.GsonString(list);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			log_.error("[JPSYSTEM]", e);
-//		}
-//		return gsonStr;
-//	}
+	// @ResponseBody
+	// @RequestMapping(value = "/selecteditorialBoardList", method =
+	// RequestMethod.POST)
+	// public String selectRoleList() {
+	// String gsonStr = null;
+	// try {
+	// List<EditorialBoard> list =
+	// userManagerService.selecteditorialBoardList(CurrentUserContext.getCurrentUserId());
+	// gsonStr = GsonUtil.GsonString(list);
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// log_.error("[JPSYSTEM]", e);
+	// }
+	// return gsonStr;
+	// }
 
 }

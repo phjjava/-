@@ -27,12 +27,13 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 	private UserManagerMapper userManagerMapper;
 
 	@Override
-	public PageModel<EditorialBoard> pageQuery(PageModel<EditorialBoard> pageModel, EditorialBoard entity) throws Exception {
+	public PageModel<EditorialBoard> pageQuery(PageModel<EditorialBoard> pageModel, EditorialBoard entity)
+			throws Exception {
 
 		EditorialBoardExample example = new EditorialBoardExample();
-		
-		if(StringTools.notEmpty(entity.getFamilyid())){
-			
+
+		if (StringTools.notEmpty(entity.getFamilyid())) {
+
 			example.or().andFamilyidEqualTo(entity.getFamilyid());
 		}
 		example.setOrderByClause("type desc");
@@ -45,19 +46,17 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 		return pageModel;
 	}
 
-	@Override	
-  public EditorialBoard getEditorialBoard(String id) throws Exception {
+	@Override
+	public EditorialBoard getEditorialBoard(String id) throws Exception {
 
 		return editorialBoardMapper.selectByPrimaryKey(id);
 	}
 
 	@Override
 	public Integer insert(EditorialBoard entity) throws Exception {
-		return  editorialBoardMapper.insertSelective(entity);
-	
+		return editorialBoardMapper.insertSelective(entity);
+
 	}
-
-
 
 	@Override
 	public Integer update(EditorialBoard entity) throws Exception {
@@ -75,18 +74,18 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 		List<UserManager> managers = userManagerMapper.selectMnangers(userid);
 		List<EditorialBoard> list = new ArrayList<>();
 		EditorialBoardExample example = new EditorialBoardExample();
-		for(UserManager manager : managers) {
+		for (UserManager manager : managers) {
 			example.clear();
-			//if(manager.getIsmanager() == 1 ) {
-				//总编委会主任查询所有的编委会列表
-				EditorialBoard eb = editorialBoardMapper.selectByPrimaryKey(manager.getEbid());
-				example.or().andFamilyidEqualTo(eb.getFamilyid());
-				example.setOrderByClause("type desc");
-				List<EditorialBoard> elist = editorialBoardMapper.selectByExample(example);
-				list.addAll(elist);
-				break;
-			//}
-			
+			// if(manager.getIsmanager() == 1 ) {
+			// 总编委会主任查询所有的编委会列表
+			EditorialBoard eb = editorialBoardMapper.selectByPrimaryKey(manager.getEbid());
+			example.or().andFamilyidEqualTo(eb.getFamilyid());
+			example.setOrderByClause("type desc");
+			List<EditorialBoard> elist = editorialBoardMapper.selectByExample(example);
+			list.addAll(elist);
+			break;
+			// }
+
 		}
 		return list;
 	}

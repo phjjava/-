@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jp.common.CurrentUserContext;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.entity.EditorialBoard;
 import com.jp.service.EditorialBoardService;
-
-import com.jp.util.GsonUtil;
-import com.jp.util.Result;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 
@@ -32,33 +32,42 @@ public class EditorialControll {
 	@Autowired
 	private EditorialBoardService editorialBoardService;
 
-	
-	
-
-	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String save(HttpServletRequest request, EditorialBoard eb, ModelMap model) {
-		Integer result = null;
+	@ResponseBody
+	public JsonResponse save(HttpServletRequest request, EditorialBoard eb, ModelMap model) {
+		Result result = null;
+		JsonResponse res = null;
+		Integer status = null;
 		try {
 			if (StringTools.notEmpty(eb.getId())) {// 修改
-				result = editorialBoardService.update(eb);
+				status = editorialBoardService.update(eb);
 			} else {// 新增
 				eb.setId(UUIDUtils.getUUID());
 				eb.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 				eb.setType(0);
-				result = editorialBoardService.insert(eb);
+				status = editorialBoardService.insert(eb);
 			}
 
 		} catch (Exception e) {
-			result = 0;
+			status = 0;
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			res.setData(status);
+			return res;
 		}
-		return result + "";
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(status);
+		return res;
 	}
 
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
-	public String list(PageModel<EditorialBoard> pageModel, EditorialBoard entity, ModelMap model) {
+	@ResponseBody
+	public JsonResponse list(PageModel<EditorialBoard> pageModel, EditorialBoard entity) {
+		Result result = null;
+		JsonResponse res = null;
 		try {
 			entity.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 			editorialBoardService.pageQuery(pageModel, entity);
@@ -70,44 +79,66 @@ public class EditorialControll {
 					}
 				}
 			}
-			model.put("pageModel", pageModel);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-		return "editorial/editorialboardList";
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(pageModel);
+		return res;
 	}
 
-	@ResponseBody
 	@RequestMapping(value = "/del", method = RequestMethod.POST)
-	public Result deleteEditorialBoard(EditorialBoard entity) {
-		Result result=new Result();
+	@ResponseBody
+	public JsonResponse deleteEditorialBoard(EditorialBoard entity) {
+		Result result = null;
+		JsonResponse res = null;
+		Integer status = null;
 		try {
-			int status =editorialBoardService.del(entity.getId());
-			result.setData(status);
+			status = editorialBoardService.del(entity.getId());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
-			result.setData(0);
-			return result;
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			res.setData(0);
+			return res;
 		}
-		return result;
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(status);
+		return res;
 	}
-	
+
 	@RequestMapping(value = "/get", method = RequestMethod.GET)
-	public String get(HttpServletRequest request, ModelMap model) {
+	@ResponseBody
+	public JsonResponse get(HttpServletRequest request, ModelMap model) {
+		Result result = null;
+		JsonResponse res = null;
+		EditorialBoard eb = null;
 		try {
-
 			String id = request.getParameter("id");
-			EditorialBoard eb = editorialBoardService.getEditorialBoard(id);
-			model.put("editorial", eb);
-
+			eb = editorialBoardService.getEditorialBoard(id);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-		return "editorial/editorialboard";
+		if (eb == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(eb);
+		return res;
 	}
 
 	/**
@@ -118,18 +149,25 @@ public class EditorialControll {
 	 * @参数 @return
 	 * @return String
 	 */
-	@ResponseBody
 	@RequestMapping(value = "/selecteditorialBoardList", method = RequestMethod.POST)
-	public String selectRoleList() {
-		String gsonStr = null;
+	@ResponseBody
+	public JsonResponse selectRoleList() {
+		Result result = null;
+		JsonResponse res = null;
+		List<EditorialBoard> list = null;
 		try {
-			List<EditorialBoard> list = editorialBoardService.selecteditorialBoardList(CurrentUserContext.getCurrentUserId());
-			gsonStr = GsonUtil.GsonString(list);
+			list = editorialBoardService.selecteditorialBoardList(CurrentUserContext.getCurrentUserId());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-		return gsonStr;
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(list);
+		return res;
 	}
 
 }

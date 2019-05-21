@@ -237,22 +237,22 @@ public class BranchalbumController {
 	}
 
 	/**
-	 * @描述 照片列表
+	 * @描述 相册照片列表
 	 * @作者 sj
 	 * @时间 2017年5月22日上午12:52:29
 	 * @参数 @param albumid
 	 * @参数 @param userid
-	 * @参数 @param type
 	 * @参数 @param modelMap
 	 * @参数 @return
 	 * @return String
 	 */
 	@RequestMapping(value = "/showPhoto", method = RequestMethod.GET)
 	@ResponseBody
-	public JsonResponse showPhoto(String albumid) {
+	public JsonResponse showPhoto(String albumid, String branchid) {
 		Result result = null;
 		JsonResponse res = null;
 		List<Branchphoto> photoList = null;
+		Branchalbum branchalbum = null;
 		try {
 			BranchphotoExample example = new BranchphotoExample();
 			com.jp.entity.BranchphotoExample.Criteria criteria = example.createCriteria();
@@ -261,37 +261,6 @@ public class BranchalbumController {
 			}
 			criteria.andDeleteflagEqualTo(0);
 			photoList = baservice.selectByExample(example);
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(photoList);
-		return res;
-	}
-
-	/**
-	 * @描述 相册信息（标题、简介）
-	 * @作者 sj
-	 * @时间 2017年5月22日上午12:52:29
-	 * @参数 @param albumid
-	 * @参数 @param userid
-	 * @参数 @param type
-	 * @参数 @param modelMap
-	 * @参数 @return
-	 * @return String
-	 */
-	@RequestMapping(value = "/showAlbum", method = RequestMethod.GET)
-	@ResponseBody
-	public JsonResponse showAlbum(String albumid, String branchid) {
-		Result result = null;
-		JsonResponse res = null;
-		Branchalbum branchalbum = null;
-		try {
 			branchalbum = baservice.get(albumid, branchid);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -302,7 +271,8 @@ public class BranchalbumController {
 		}
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
-		res.setData(branchalbum);
+		res.setData(photoList);
+		res.setEntity(branchalbum);
 		return res;
 	}
 

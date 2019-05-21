@@ -1,7 +1,5 @@
 package com.jp.service.impl;
 
-
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -16,15 +14,13 @@ import com.jp.dao.PostMapper;
 import com.jp.dao.UserManagerMapper;
 import com.jp.entity.Post;
 import com.jp.entity.PostExample;
-import com.jp.entity.User;
 import com.jp.entity.UserManager;
 import com.jp.entity.UserManagerExample;
 import com.jp.service.PostService;
 
-
 @Service
 public class PostServiceImpl implements PostService {
-	
+
 	@Resource
 	private PostMapper postMapper;
 	@Resource
@@ -43,28 +39,28 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public Post getPost(String id) {	
+	public Post getPost(String id) {
 		return postMapper.selectByPrimaryKey(id);
 	}
 
 	@Override
 	public Integer update(Post post) {
-		
+
 		UserManagerExample example = new UserManagerExample();
 		example.or().andPostidEqualTo(post.getId());
 		UserManager manager = new UserManager();
 		manager.setPostname(post.getName());
 		userManagerMapper.updateByExampleSelective(manager, example);
-		
+
 		return postMapper.updateByPrimaryKeySelective(post);
 	}
 
 	@Override
 	public Integer insert(Post post) {
-		
+
 		return postMapper.insertSelective(post);
 	}
-	
+
 	@Override
 	public Integer del(Post post) {
 		UserManagerExample example = new UserManagerExample();
@@ -73,16 +69,14 @@ public class PostServiceImpl implements PostService {
 		return postMapper.deleteByPrimaryKey(post.getId());
 	}
 
-
 	@Override
 	public List<Post> selectPostList(Post post) {
-		
+
 		PostExample example = new PostExample();
-		//分编委
-		example.or().andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId())
-							.andTypeEqualTo(post.getType());
-		
+		// 分编委
+		example.or().andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId()).andTypeEqualTo(post.getType());
+
 		return postMapper.selectByExample(example);
 	}
-	
+
 }
