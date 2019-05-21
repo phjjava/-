@@ -48,4 +48,6 @@ List<Dynamic> selectBranchDynamicList(Dynamic dynamic);
      * @return List<Dynamic>
      */
     List<Dynamic> selectGoType(@Param("list")List<String> branchids);
+    
+    List<Dynamic> selectReadOfManager(@Param("dynamic")Dynamic dynamic);
 }

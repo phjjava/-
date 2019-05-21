@@ -56,7 +56,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         response.setHeader("Access-Control-Allow-Headers", "Content-Type,userid,sessionid");
         response.addHeader("Access-Control-Max-Age", "1800");
-        if(userid == null) {
+        if(userid == null || userid.equals("")) {
         	return false;
         }else {
         	// 获取数据库中的对应用户的sessionid

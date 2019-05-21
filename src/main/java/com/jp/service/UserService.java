@@ -35,7 +35,7 @@ public interface UserService {
 	 * @参数 @throws Exception
 	 * @return int
 	 */
-	Result merge(User user,Userinfo userinfo,Useredu useredu,String eduExpArray,String workExpArray) throws Exception;
+	Result merge(User user) throws Exception;
 	/**
 	 * 
 	 * @描述 用户列表分页

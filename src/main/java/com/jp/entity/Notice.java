@@ -2,7 +2,12 @@ package com.jp.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class Notice implements Serializable {
     private String noticeid;
 
@@ -44,7 +49,17 @@ public class Notice implements Serializable {
      */
     private String tobranchid;
     
-    private static final long serialVersionUID = 1L;
+    private List<Noticefile> noticeFiles;
+    
+    public List<Noticefile> getNoticeFiles() {
+		return noticeFiles;
+	}
+
+	public void setNoticeFiles(List<Noticefile> noticeFiles) {
+		this.noticeFiles = noticeFiles;
+	}
+
+	private static final long serialVersionUID = 1L;
 
     public String getNoticeid() {
         return noticeid;
