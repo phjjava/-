@@ -56,8 +56,8 @@ public class FamousController {
 			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
-			res.setData(pageModel);
-			// model.put("pageModel", pageModel);
+			res.setData(pageModel.getList());
+			res.setCount(pageModel.getPageInfo().getTotal());
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
@@ -65,7 +65,6 @@ public class FamousController {
 			log_.error("[JPSYSTEM]", e);
 		}
 		return res;
-		//return "famous/famousList";
 	}
 
 	@ResponseBody
@@ -88,7 +87,6 @@ public class FamousController {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(usercontent);
-			// model.put("usercontent", usercontent);
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
@@ -96,7 +94,6 @@ public class FamousController {
 			log_.error("[JPGL]", e);
 		}
 		return res;
-		// return "famous/famous";
 	}
 
 	@ResponseBody
@@ -113,13 +110,11 @@ public class FamousController {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 			}
 		} catch (Exception e) {
-			// result = "0";
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
 		res = new JsonResponse(result);
 		return res;
-		// return result;
 	}
 
 	/**
@@ -159,17 +154,14 @@ public class FamousController {
 				}
 			} else {
 				// 用户userid为空
-				// result = 0;
 				result = new Result(MsgConstants.FAMOUS_NO_USERID);
 			}
 		} catch (Exception e) {
-			//result = 0;
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
 		res = new JsonResponse(result);
 		return res;
-		// return result + "";
 	}
 	
 	@ResponseBody
@@ -179,19 +171,17 @@ public class FamousController {
 		JsonResponse res = null;
     	int count = 0;
     	try {
- 		//a,b,c 
- 		String id = userids.substring(0, userids.length());
- 		String dyidArray [] = id.split(",");
- 		count = famousService.batchDelete(dyidArray);
- 		if(count > 0) {
- 			result = new Result(MsgConstants.RESUL_SUCCESS);
- 		}
- 		//result="1";
- 	} catch (Exception e) {
- 		// result = "0";
- 		e.printStackTrace();
- 		log_.error("[JPSYSTEM]", e);
- 	}
+	 		//a,b,c 
+	 		String id = userids.substring(0, userids.length());
+	 		String dyidArray [] = id.split(",");
+	 		count = famousService.batchDelete(dyidArray);
+	 		if(count > 0) {
+	 			result = new Result(MsgConstants.RESUL_SUCCESS);
+	 		}
+	 	} catch (Exception e) {
+	 		e.printStackTrace();
+	 		log_.error("[JPSYSTEM]", e);
+	 	}
     	res = new JsonResponse(result);
     	return res;
     }

@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Result merge(User user, Userinfo userinfo, Useredu useredu, String eduExpArray, String workExpArray) throws Exception {
+	public Result merge(User user) throws Exception {
 //		String result = null;
 		Result result = null;
 		try {
@@ -141,6 +141,7 @@ public class UserServiceImpl implements UserService {
 			if (StringTools.trimNotEmpty(user.getUserid()) 
 					/*&& StringTools.trimNotEmpty(userinfo.getUserid())*/
 					) {
+				Userinfo userinfo = new Userinfo();
 				userinfo = user.getUserInfo();
 				userinfo.setUserid(user.getUserid());
 				// 编辑用户信息
@@ -238,6 +239,7 @@ public class UserServiceImpl implements UserService {
 					if (StringTools.trimNotEmpty(user.getPhone())) {
 						user.setPassword(MD5Util.string2MD5(user.getPhone().substring(user.getPhone().length() - 6)));
 					}
+					Userinfo userinfo = new Userinfo();
 					userinfo.setUserid(userId);
 					if (!userinfo.getBirthdayStr().equals("")) {
 //						SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
@@ -245,6 +247,7 @@ public class UserServiceImpl implements UserService {
 						if(DateUtils.isDate(userinfo.getBirthdayStr(),"-"))
 							userinfo.setBirthday(userinfo.getBirthdayStr());
 					}
+					Useredu useredu = new Useredu();
 					useredu.setUserid(userId);
 					user.setCreateid(CurrentUserContext.getCurrentUserId());
 					user.setCreatetime(new Date());
