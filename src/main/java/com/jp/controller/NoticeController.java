@@ -25,6 +25,7 @@ import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.dao.NoticetopDao;
+import com.jp.entity.Dynamicfile;
 import com.jp.entity.Notice;
 import com.jp.entity.Noticefile;
 import com.jp.entity.NoticefileQuery;
@@ -63,10 +64,8 @@ public class NoticeController {
 	 		}
 	 		result = new Result(MsgConstants.RESUL_SUCCESS);
 	 		res = new JsonResponse(result);
-	 		res.setData(pageModel);
-	 		res.setEntity(notice);
-	 		/*model.put("pageModel", pageModel);
-	 		model.put("notice", notice);*/
+	 		res.setData(pageModel.getList());
+	 		res.setCount(pageModel.getPageInfo().getTotal());
 	 	} catch (Exception e) {
 	 		result = new Result(MsgConstants.RESUL_FAIL);
 	 		res = new JsonResponse(result);
@@ -74,7 +73,6 @@ public class NoticeController {
 	 		log_.error("[JPSYSTEM]", e);
 	 	}
  	   	return res;
- 	   // return "notice/noticeList";
  	   
     }
     @RequestMapping(value = "/get", method = RequestMethod.GET)
@@ -93,12 +91,10 @@ public class NoticeController {
 				criteria.andNoticeidEqualTo(notice.getNoticeid());
 			}
 			List<Noticefile> ntlist = noticeservice.selectntfile(nfq);
+			notice.setNoticeFiles(ntlist);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 	 		res = new JsonResponse(result);
-	 		res.setData(ntlist);
-	 		res.setEntity(notice);
-			/*model.put("notice", notice);
-			model.put("ntlist", ntlist);*/
+	 		res.setData(notice);
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 	 		res = new JsonResponse(result);
@@ -106,7 +102,6 @@ public class NoticeController {
 			log_.error("[JPGL]", e);
 		}
 		return res;
-		// return "notice/notice";
 	}
     /**
      * 
@@ -162,67 +157,22 @@ public class NoticeController {
      */
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public JsonResponse saveNotice(Notice notice,@RequestParam("file")MultipartFile[] file,HttpServletRequest request,String fileids)  {
+	public JsonResponse saveNotice(Notice notice,HttpServletRequest request,String fileids)  {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
-		// String result = null;
-		String url = null;
 		String ntfidArray [] = null;
 		try{
-			if (request.getCharacterEncoding() == null) {
-				request.setCharacterEncoding("UTF-8");
-				}
-			if(StringTools.trimNotEmpty(fileids)){
-				String ntfid = fileids.substring(0, fileids.length()-1);
-	     		ntfidArray = ntfid.split(",");
-			}
-			List<String> fileNams = new  ArrayList<String>();
-			List<File> fileList = new ArrayList<File>();
-			File ntfile = null;
-			String fileName = "";
-			for(MultipartFile fileM : file) {
-				fileName = fileM.getOriginalFilename();
-				fileNams.add(fileName);
-			}
-			String pathDir = "/upload";
-			String logoRealPathDir = request.getSession().getServletContext().getRealPath(pathDir);
-			for(int i = 0; i < file.length; i++) {
-				ntfile = new File(logoRealPathDir+file[i].getOriginalFilename());
-				if(!ntfile.exists()) {
-					file[i].transferTo(ntfile);
-					fileList.add(ntfile);
+			List<Noticefile> nfList  = notice.getNoticeFiles();
+			if(StringTools.trimNotEmpty(notice.getNoticeid())) {
+				for (int i = 0; i < nfList.size(); i++) {
+					ntfidArray[i] = nfList.get(i).getFileid();  //更新公告时，如果有附件，先删除附件再重新写入
 				}
 			}
-			String status = "";
-			if(fileList != null && fileList.size() > 0){
-				 status = UploadUtil.taskFileUpload(fileList, fileNams);
-				 Gson gson = new GsonBuilder().create();
-				 if(StringTools.trimNotEmpty(status)){
-					 JsonObject json = gson.fromJson(status, JsonObject.class);
-					 JsonObject jsonInfo = gson.fromJson(json.get("data"), JsonObject.class);
-					 url = jsonInfo.get("url").toString();
-				 }
-			}			
-		    Noticefile ntf = null;
-		    List<Noticefile> ntList  = new ArrayList<Noticefile>();
-		    if(StringTools.trimNotEmpty(url)){
-			    for( int i = 0; i < file.length; i ++){
-			    	ntf = new Noticefile();
-			    	ntf.setBranchid(notice.getBranchid());
-			    	ntf.setFileurl(url);
-			    	ntf.setFileid(UUIDUtils.getUUID());
-			    	ntf.setFilename(fileName);
-			    	ntList.add(ntf);
-			    }
-		    }
-		    noticeservice.saveNotice(notice, ntList,ntfidArray);
+		    noticeservice.saveNotice(notice, nfList,ntfidArray);
 		    result = new Result(MsgConstants.RESUL_SUCCESS);
-		    // result = "1";
 		}catch(Exception e){
-			//result = "0";
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
-
 		}
 		res = new JsonResponse(result);
 		return res;
@@ -245,9 +195,7 @@ public class NoticeController {
 	 		String noticeArray [] = noticeid.split(",");
 	 		noticeservice.batchDelete(noticeArray);
 	 		result = new Result(MsgConstants.RESUL_SUCCESS);
-	 		// result="1";
 	 	} catch (Exception e) {
-	 		// result = "0";
 	 		e.printStackTrace();
 	 		log_.error("[JPSYSTEM]", e);
 	 	}

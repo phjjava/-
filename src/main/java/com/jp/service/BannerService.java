@@ -60,5 +60,5 @@ public interface BannerService {
 	 * @参数 @return
 	 * @return List<GoTypeResult>
 	 */
-	String selectByGoType(String goType);
+	List<GoTypeResult> selectByGoType(String goType);
 }
