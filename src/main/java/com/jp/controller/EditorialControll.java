@@ -34,7 +34,7 @@ public class EditorialControll {
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse save(HttpServletRequest request, EditorialBoard eb) {
+	public JsonResponse save(HttpServletRequest request, EditorialBoard eb, ModelMap model) {
 		Result result = null;
 		JsonResponse res = null;
 		Integer status = null;
