@@ -31,6 +31,23 @@ public class MsgConstants {
 	//名人录管理异常码
 	public static final Result FAMOUS_NO_USERID = new Result(4001,"userid为空");
 	
+	//api异常码
+	public static final Result FAMILYID_IS_NULL = new Result(5001,"家族id不能为空");
+	public static final Result BRANCHID_IS_NULL = new Result(5002,"分支id不能为空");
+	public static final Result AREA_IS_NULL = new Result(5003,"当前家族没有有效的地区信息");
+	public static final Result CITYCODE_IS_NULL = new Result(5004,"没有当前有效的城市信息");
+	public static final Result AREACODE_IS_NULL = new Result(5005,"没有当前有效的地区信息");
+	public static final Result XCODE_IS_NULL = new Result(5006,"没有当前有效的县区信息");
+	public static final Result BRANCHS_IS_NULL = new Result(5007,"没有有效的分支信息");
+	public static final Result GENLEVEL_IS_NULL = new Result(5008,"起始人世系为空");
+	public static final Result USERID_IS_NULL = new Result(5009,"用户id不能为空");
+	public static final Result BEGINUSERID_IS_NULL = new Result(5010,"当前分支没有设置起始人");
+	public static final Result USERS_IS_NULL = new Result(5011,"当前分支起始人不存在");
+	public static final Result STATUS_IS_NULL = new Result(5012,"缺少向上查询世系参数");
+	
+	
+	
+	
 	
 	
 }

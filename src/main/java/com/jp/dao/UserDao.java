@@ -5,6 +5,8 @@ import com.jp.entity.UserQuery;
 import com.jp.entity.Usercontent;
 
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface UserDao {
@@ -88,7 +90,11 @@ public interface UserDao {
 	
 	String getAddressByUserid(@Param("userid")String userid);
 	
+	List<User> selectBranchUsers(Map<String, String> map);
 	
+	List<User> selectByMapOrder(Map map);
+	
+	List<User> selectByMap(Map map);
 	
 	
 }

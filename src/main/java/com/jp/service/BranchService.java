@@ -1,7 +1,7 @@
 package com.jp.service;
 
 import java.util.List;
-
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.Branch;
 
@@ -98,4 +98,36 @@ public interface BranchService {
 	boolean validateBranchname(Branch branch) throws Exception;
 
 	PageModel<Branch> selectBranchListByFamilyAndUserid(PageModel<Branch> pageModel,Branch branch) throws Exception;
+	
+	/**
+	* 以下方法用于api
+	*/
+	
+	JsonResponse getAllBranch(Branch branch);
+	
+	JsonResponse getBranchPersons(Branch branch);
+	
+	JsonResponse getBranchVaildArea(Branch entity);
+	
+	JsonResponse getBranchVaildAreaAndCity(Branch entity);
+	
+	JsonResponse getBranchVaildXQAndBranch(Branch entity);
+
+	JsonResponse getGenListOnlyExtMod(Branch entity);
+    
+	JsonResponse getBranchByCitycode(Branch entity);
+	
+	JsonResponse getBranchVaildCity(Branch entity);
+	
+	JsonResponse getBranchVaildXQ(Branch entity);
+
+	JsonResponse getBranchOfXQ(Branch entity);
+
+	JsonResponse getGenList(Branch entity);
+
+	JsonResponse getGenListOnly(Branch entity);
+
+	JsonResponse getGenListToTop(Branch entity);
+
+	JsonResponse getGenListOnlyExt(Branch entity);
 }

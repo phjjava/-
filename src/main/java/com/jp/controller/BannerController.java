@@ -276,4 +276,18 @@ public class BannerController {
 		}
     	return res;
     }
+	
+	/**
+	 * 以下方法用于api
+	 */
+	
+	/**
+	 * 根据家族id获取banner列表
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getBanners", method = RequestMethod.GET)
+	public JsonResponse getBanners(Banner banner) {
+		return bservice.getBanners(banner);
+	}
 }

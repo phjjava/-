@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.Banner;
 import com.jp.entity.GoTypeResult;
@@ -61,4 +62,14 @@ public interface BannerService {
 	 * @return List<GoTypeResult>
 	 */
 	List<GoTypeResult> selectByGoType(String goType);
+	
+	/**
+	 * 以下方法用于api
+	 */
+	
+	/**
+	 * 根据家族id获取banner列表
+	 * @return
+	 */
+	JsonResponse getBanners(Banner banner);
 }

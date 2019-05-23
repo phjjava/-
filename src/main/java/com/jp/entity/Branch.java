@@ -109,6 +109,28 @@ public class Branch extends BranchKey implements Serializable {
 	public void setGenlevel(String genlevel) {
 		this.genlevel = genlevel;
 	}
+	
+	private Long start;// 页数
+    
+    private Long count;// 每页条数
+    
+   
+
+	public Long getStart() {
+		return start;
+	}
+
+	public void setStart(Long start) {
+		this.start = start;
+	}
+
+	public Long getCount() {
+		return count;
+	}
+
+	public void setCount(Long count) {
+		this.count = count;
+	}
 
 	private static final long serialVersionUID = 1L;
 
