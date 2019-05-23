@@ -1,12 +1,14 @@
 package com.jp.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
 import com.jp.entity.Branch;
 import com.jp.entity.BranchKey;
 import com.jp.entity.BranchQuery;
+import com.jp.entity.BranchValidArea;
 
 public interface BranchDao {
     int countByExample(BranchQuery example);
@@ -42,4 +44,14 @@ public interface BranchDao {
 	List<String> selectByFamilyid(String familyid);
 
 	List<Branch> getBranchsByFamilyAndUserid(@Param("familyid")String familyid, @Param("userid")String userid,@Param("branchname")String branchname);
+	
+	List<BranchValidArea> selectValidArea(String familyid);
+	
+	List<BranchValidArea> selectValidCity(Map<String, String> map);
+	
+	List<BranchValidArea> selectValidXQ(Map<String, String> map);
+
+    List<Branch> selectBranchByXQ(Map<String, String> map);
+    
+    List<Branch> selectBranchByCitycode(Map<String, String> map);
 }

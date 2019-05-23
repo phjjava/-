@@ -11,7 +11,10 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentUserContext;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.dao.BannerDao;
 import com.jp.dao.BranchDao;
 import com.jp.dao.BranchalbumMapper;
@@ -260,5 +263,23 @@ public class BannerServiceImpl implements BannerService {
 			}
 		}
 		return goTypeResultList;
+	}
+
+	@Override
+	public JsonResponse getBanners(Banner entity) {
+		Result result = null;
+		JsonResponse res = null;
+		if (entity.getFamilyid() == null || "".equals(entity.getFamilyid())) {
+	        result = new Result(MsgConstants.FAMILYID_IS_NULL);
+	        res = new JsonResponse(result);
+	        return res;
+	    }
+		BannerQuery bannerExample = new BannerQuery();
+        bannerExample.or().andFamilyidEqualTo(entity.getFamilyid()).andDeleteflagEqualTo(0);
+        List<Banner> banners = bdao.selectByExample(bannerExample);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(banners);
+		return res;
 	}
 }

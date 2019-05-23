@@ -593,4 +593,46 @@ WHERE
     </set>
     where branchid = #{branchid,jdbcType=VARCHAR}
   </update>
+  
+  <!-- 自写 -->
+   <select id="selectValidArea" resultType="com.jp.entity.BranchValidArea" parameterType="String" >
+    select 
+  distinct  area as areaname,areacode as areacode
+    from jp_branch
+    where status=0
+      and familyid = #{familyid,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectValidCity" resultType="com.jp.entity.BranchValidArea" parameterType="map" >
+    select 
+  distinct  citycode as areacode ,cityname as areaname
+    from jp_branch
+    where status=0
+      and familyid = #{familyid,jdbcType=VARCHAR}
+      and areacode= #{areacode,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectValidXQ" resultType="com.jp.entity.BranchValidArea" parameterType="map" >
+    select 
+  distinct  xcode as areacode,xname as  areaname
+    from jp_branch
+    where status=0
+      and familyid = #{familyid,jdbcType=VARCHAR}
+      and citycode= #{citycode,jdbcType=VARCHAR}
+  </select>
+  
+   <select id="selectBranchByXQ" resultType="com.jp.entity.Branch" parameterType="map" >
+    select * from jp_branch
+    where status=0
+      and familyid = #{familyid,jdbcType=VARCHAR}
+      and xcode= #{xcode,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectBranchByCitycode" resultType="com.jp.entity.Branch" parameterType="map" >
+    select * from jp_branch
+    where status=0
+      and familyid = #{familyid,jdbcType=VARCHAR}
+      and citycode= #{citycode,jdbcType=VARCHAR}
+  </select>
+  
 </mapper>

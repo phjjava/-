@@ -874,5 +874,36 @@
 		where user.status = 0 and user.deleteflag = 0 
 	  	and user.userid = #{userid,jdbcType=VARCHAR}
   </select>
+  
+  <!-- 获取某分支下所有人员 -->
+  <select id="selectBranchUsers"  parameterType="Map" resultType="com.jp.entity.User">
+ select u.* from  jp_user u  where u.deleteflag=0 and u.status=0 and u.livestatus=0
+ and u.familyid =#{familyid,jdbcType=VARCHAR} and u.branchid=#{branchid,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectByMapOrder"  parameterType="Map" resultType="com.jp.entity.User">
+ select u.* from jp_user u,jp_userposition p
+where u.pid=#{pid,jdbcType=VARCHAR} and u.status=#{status,jdbcType=VARCHAR} and u.deleteflag=#{deleteflag,jdbcType=VARCHAR}  and u.brotherpos =p.position
+ORDER BY
+	u.genlevel ASC,u.sex desc,p.sort 
+   </select>
+   
+   <select id="selectByMap"  parameterType="Map" resultType="com.jp.entity.User">
+   SELECT
+	u.*
+	FROM
+		jp_user u,jp_userposition p
+	WHERE
+		(
+	u.brotherpos =p.position
+		and	u.genlevel > #{genlevel,jdbcType=VARCHAR}
+			AND u.STATUS = #{status,jdbcType=VARCHAR}
+			AND u.isdirect = #{isdirect,jdbcType=VARCHAR}
+			AND u.branchid = #{branchid,jdbcType=VARCHAR}
+			AND u.deleteflag =#{deleteflag,jdbcType=VARCHAR}
+		)
+	ORDER BY
+	u.genlevel ASC,u.sex desc,p.sort 
+   </select>
    
 </mapper>
