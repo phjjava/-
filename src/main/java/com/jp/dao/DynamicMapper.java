@@ -3,6 +3,8 @@ package com.jp.dao;
 import com.jp.entity.Dynamic;
 import com.jp.entity.DynamicExample;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface DynamicMapper {
@@ -50,4 +52,9 @@ List<Dynamic> selectBranchDynamicList(Dynamic dynamic);
     List<Dynamic> selectGoType(@Param("list")List<String> branchids);
     
     List<Dynamic> selectReadOfManager(@Param("dynamic")Dynamic dynamic);
+    
+    /**
+	* 以下方法用于api
+	*/	
+    List<Dynamic> selectByCityCode(Map<String, Object> params);
 }

@@ -3,6 +3,10 @@ package com.jp.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class Branchalbum implements Serializable {
     private String albumid;
 
@@ -31,8 +35,59 @@ public class Branchalbum implements Serializable {
     private Integer type;
     
     private Integer albumNum;
+    
+    //添加额外显示属性
+    private Integer photoNum; //相册图片数量
+    
+    private String prePhotoImg; //相册显示头图
+    
+    private Integer meautype ;//获取相册列表得类型  0：家族  1：全部   2按城市编码获取 3按照分支获取
+    
+    private Long start;// 页数
+    
+    private Long count;// 每页条数
 
-    private static final long serialVersionUID = 1L;
+	public Integer getPhotoNum() {
+		return photoNum;
+	}
+
+	public void setPhotoNum(Integer photoNum) {
+		this.photoNum = photoNum;
+	}
+
+	public String getPrePhotoImg() {
+		return prePhotoImg;
+	}
+
+	public void setPrePhotoImg(String prePhotoImg) {
+		this.prePhotoImg = prePhotoImg;
+	}
+
+	public Long getStart() {
+		return start;
+	}
+
+	public void setStart(Long start) {
+		this.start = start;
+	}
+
+	public Long getCount() {
+		return count;
+	}
+
+	public void setCount(Long count) {
+		this.count = count;
+	}
+
+    public Integer getMeautype() {
+		return meautype;
+	}
+
+	public void setMeautype(Integer meautype) {
+		this.meautype = meautype;
+	}
+
+	private static final long serialVersionUID = 1L;
 
     public String getAlbumid() {
         return albumid;

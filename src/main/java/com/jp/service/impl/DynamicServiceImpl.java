@@ -3,10 +3,14 @@ package com.jp.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -15,31 +19,55 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentUserContext;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.dao.BranchDao;
+import com.jp.dao.DycommentDao;
 import com.jp.dao.DynamicMapper;
 import com.jp.dao.DynamicfileDao;
+import com.jp.dao.DypriseDao;
+import com.jp.dao.DyreadDao;
 import com.jp.dao.DytopDao;
 import com.jp.dao.UserManagerMapper;
+import com.jp.entity.Dycomment;
+import com.jp.entity.DycommentQuery;
 import com.jp.entity.Dynamic;
+import com.jp.entity.DynamicDetailVO;
 import com.jp.entity.DynamicExample;
 import com.jp.entity.DynamicExample.Criteria;
+import com.jp.entity.DynamicVO;
 import com.jp.entity.Dynamicfile;
 import com.jp.entity.DynamicfileQuery;
+import com.jp.entity.Dyprise;
+import com.jp.entity.DypriseQuery;
+import com.jp.entity.Dyread;
+import com.jp.entity.DyreadQuery;
 import com.jp.entity.Dytop;
 import com.jp.entity.DytopQuery;
 import com.jp.entity.UserManager;
 import com.jp.entity.UserManagerExample;
 import com.jp.service.DynamicService;
+import com.jp.util.HTMLUtil;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 
 @Service
 public class DynamicServiceImpl implements DynamicService {
+	
+	private final Logger log_ = LogManager.getLogger(DynamicServiceImpl.class);
+			
 	@Autowired
 	private DynamicMapper dydao;
 	@Autowired
 	private DynamicfileDao dyfdao;
+	@Autowired
+	private DypriseDao dypdao;
+	@Autowired
+	private DycommentDao dycdao;
+	@Autowired
+	private DyreadDao dyrdao;
 	@Resource
 	private DytopDao dytopDao;
 	@Resource
@@ -202,6 +230,242 @@ public class DynamicServiceImpl implements DynamicService {
 	@Override
 	public List<Dynamicfile> selectdyfile(DynamicfileQuery example) {
 		return dyfdao.selectByExample(example);
+	}
+
+	
+	/**
+	* 以下方法用于api
+	*/
+	
+	@Override
+	public JsonResponse getDylist(Dynamic entity) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		try {
+			if(entity.getMeautype()==null || "".equals(entity.getMeautype())) {
+				result.setMsg("参数meautype为空！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			if(entity.getFamilyid()==null || "".equals(entity.getFamilyid())) {
+				result.setMsg("参数familyid为空！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			
+			List<Dynamic> dynamics = new ArrayList<Dynamic>();
+			DynamicExample example = new DynamicExample();
+			example.setOrderByClause("createtime desc");
+			if(entity.getStart()!=null && entity.getCount()!=null) {
+				example.setPageNo(entity.getStart().intValue()+1);
+				example.setPageSize(entity.getCount().intValue());
+			}
+			
+			if(0==entity.getMeautype()) {
+				//获取家族得相册列表
+				example.or().andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE)
+									.andFamilyidEqualTo(entity.getFamilyid())
+									.andDytypeEqualTo(0);
+				dynamics = dydao.selectByExample(example);
+				
+			}else if(1==entity.getMeautype()) {
+				//获取全部动态
+				example.or().andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE)
+								.andFamilyidEqualTo(entity.getFamilyid());
+				dynamics = dydao.selectByExample(example);
+			}else if(2==entity.getMeautype()) {
+				if(entity.getBranchid()==null || "".equals(entity.getBranchid())) {
+					result.setMsg("参数branchid为空！");
+					return res;
+				}
+					
+				//按照城市编码获取动态列表
+				Map<String,Object> params  = new HashMap<String,Object>();
+				params.put("startRow", entity.getStart());
+				params.put("pageSize",entity.getCount());
+				params.put("cityCode", entity.getBranchid());
+				params.put("familyid", entity.getFamilyid());
+				
+				dynamics = dydao.selectByCityCode(params);
+			}else if(3==entity.getMeautype()) {
+				if(entity.getBranchid()==null || "".equals(entity.getBranchid())) {
+					result.setMsg("参数branchid为空！");
+					return res;
+				}
+				//按照分支id获取动态列表
+				example.or().andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE)
+							.andBranchidEqualTo(entity.getBranchid());
+				dynamics = dydao.selectByExample(example);
+			}
+			
+			for(Dynamic dy : dynamics) {
+				JsonResponse result2 = getDyDetailExt(dy);
+	            if (result2.getCode() == 0){
+	            	DynamicVO data = (DynamicVO) result2.getData();
+	            	String content=data.getDynamic().getDycontent();
+	            	//System.out.println("原动态内容============="+content);
+	            	content  = content.replaceAll("</?[^>]+>", "");
+					content  = content.replaceAll("\\s*|\t|\r|\n", "");
+					content	 = content.replaceAll("&nbsp;"," ");
+					if (content!=null&&content.length()>20) {
+						//去除html标签
+						//截取1/10长度
+						content  = content.substring(0, 20);						
+					} 
+					dy.setDycontent(content);
+	               dy.setCountReads(data.getCountReads());
+	               dy.setCountFiles(data.getCountFiles());
+	               dy.setCountComments(data.getCountComments());
+	               dy.setCountPrises(data.getCountPrises());
+	            }
+	            
+			}
+			
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(dynamics);
+		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			log_.error("[DynamicServiceImpl---Error:]", e);
+		}
+		return res;
+	}
+	
+	public JsonResponse getDyDetailExt(Dynamic entity) {
+        Result result = new Result(MsgConstants.RESUL_FAIL);
+        JsonResponse res = null;
+        if (entity.getDyid() == null || "".equals(entity.getDyid())) {
+            result.setMsg("参数动态id为空");
+            return res;
+        }
+        DynamicVO dynamicVO = new DynamicVO();
+        // 获取动态详情
+        DynamicExample dynamicExample = new DynamicExample();
+        dynamicExample.or()/* .andBranchidEqualTo(entity.getBranchid()) */
+                .andDyidEqualTo(entity.getDyid()).andDeleteflagEqualTo(0);
+        List<Dynamic> dynamics = dydao.selectByExample(dynamicExample);
+        for (Dynamic dynamic : dynamics) {
+            if (dynamic.getDycontent() != null || !"".equals(dynamic.getDycontent()))
+                dynamic.setDycontent(HTMLUtil.delHTMLTag(dynamic.getDycontent()));
+        }
+        if (dynamics.size() == 0) {
+            result.setMsg("不存在该动态信息");
+            return res;
+        }
+        dynamicVO.setDynamic(dynamics.get(0));
+        // 获取动态创建时间：取更新时间
+        // 获取动态附件
+        DynamicfileQuery dynamicFileExample = new DynamicfileQuery();
+        dynamicFileExample.or().andBranchidEqualTo(entity.getBranchid())
+                .andDyidEqualTo(entity.getDyid());
+        List<Dynamicfile> dynamicFiles = dyfdao.selectByExample(dynamicFileExample);
+        // dynamicVO.setDynamicFiles(dynamicFiles);
+        dynamicVO.setCountFiles(dynamicFiles.size());
+        // 获取动态点赞
+        DypriseQuery dyPriseExample = new DypriseQuery();
+        dyPriseExample.or().andBranchidEqualTo(entity.getBranchid())
+                .andDyidEqualTo(entity.getDyid());
+        dyPriseExample.setOrderByClause("createtime asc");
+        List<Dyprise> dyPrises = dypdao.selectByExample(dyPriseExample);
+        // dynamicVO.setDyPrises(dyPrises);
+        dynamicVO.setCountPrises(dyPrises.size());
+        // 获取评论列表
+        DycommentQuery dyCommentExample = new DycommentQuery();
+        dyCommentExample.or().andBranchidEqualTo(entity.getBranchid())
+                .andDyidEqualTo(entity.getDyid()).andDeleteflagEqualTo(0);
+        dyCommentExample.setOrderByClause("createtime desc");
+        List<Dycomment> dyComments = dycdao.selectByExample(dyCommentExample);
+        dynamicVO.setCountComments(dyComments.size());
+
+        DyreadQuery dyReadExample = new DyreadQuery();
+        dyReadExample.or().andDyidEqualTo(entity.getDyid());
+        dyReadExample.setOrderByClause("createtime desc");
+        List<Dyread> dyReads = dyrdao.selectByExample(dyReadExample);
+        dynamicVO.setCountReads(dyReads.size());
+        
+        result = new Result(MsgConstants.RESUL_SUCCESS);
+        res = new JsonResponse(result);
+        res.setData(dynamicVO);
+        return res;
+    }
+
+	@Override
+	public JsonResponse getDyDetail(Dynamic entity) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		try {
+			if (entity.getDyid() == null || "".equals(entity.getDyid())) {
+	            result.setMsg("不存在动态信息");
+	            res = new JsonResponse(result);
+	            return res;
+	        }
+	        if (entity.getUpdateid() == null || "".equals(entity.getUpdateid())) {
+	        	result.setMsg("不存在阅读人ID信息");
+	            res = new JsonResponse(result);
+	            return res;
+	        }
+	        DynamicDetailVO dynamicVO = new DynamicDetailVO();
+	        // 获取动态详情
+	        DynamicExample dynamicExample = new DynamicExample();
+	        dynamicExample.or()/* .andBranchidEqualTo(entity.getBranchid()) */
+	                .andDyidEqualTo(entity.getDyid()).andDeleteflagEqualTo(0);
+	        List<Dynamic> dynamics = dydao.selectByExample(dynamicExample);
+	        if (dynamics.size() == 0) {
+	            result.setMsg("不存在该动态信息");
+	            res = new JsonResponse(result);
+	            return res;
+	        }
+	        //替换html标签
+	        dynamicVO.setDynamic(dynamics.get(0));
+	        // 获取动态创建时间：取更新时间
+	        // dynamicVO.setCreatetime(dynamics.get(0).getUpdatetime());
+	        // 获取动态附件
+	        DynamicfileQuery dynamicFileExample=new DynamicfileQuery();
+	        dynamicFileExample.or()
+	                .andDyidEqualTo(entity.getDyid());
+	        List<Dynamicfile> dynamicFiles = dyfdao.selectByExample(dynamicFileExample);
+	        dynamicVO.setDynamicFiles(dynamicFiles);
+	        dynamicVO.setCountFiles(dynamicFiles.size());
+	        // 获取动态点赞
+	        DypriseQuery dyPriseExample=new DypriseQuery();
+	        dyPriseExample.or()
+	                .andDyidEqualTo(entity.getDyid());
+	        dyPriseExample.setOrderByClause("createtime asc");
+	        List<Dyprise> dyPrises = dypdao.selectByExample(dyPriseExample);
+	        dynamicVO.setDyPrises(dyPrises);
+	        dynamicVO.setCountPrises(dyPrises.size());
+	        // 获取评论列表
+	        DycommentQuery dyCommentExample=new DycommentQuery();
+	        dyCommentExample.or()
+	                .andDyidEqualTo(entity.getDyid()).andDeleteflagEqualTo(0);
+	        dyCommentExample.setOrderByClause("createtime desc");
+	        List<Dycomment> dyComments = dycdao.selectByExample(dyCommentExample);
+	        dynamicVO.setDyComments(dyComments);
+	        dynamicVO.setCountComments(dyComments.size());
+	        // 插入已读用户列表
+	        Dyread dyRead = new Dyread();
+	        dyRead.setId(UUIDUtils.getUUID());
+	        dyRead.setDyid(entity.getDyid());
+	        dyRead.setUserid(entity.getUpdateid());
+	        dyRead.setCreatetime(new Date());
+	        dyrdao.insert(dyRead);
+
+	        DyreadQuery dyReadExample = new DyreadQuery();
+	        dyReadExample.or().andDyidEqualTo(entity.getDyid());
+	        dyReadExample.setOrderByClause("createtime desc");
+	        List<Dyread> dyReads = dyrdao.selectByExample(dyReadExample);
+	        dynamicVO.setCountReads(dyReads.size());
+
+	        result = new Result(MsgConstants.RESUL_SUCCESS);
+	        res = new JsonResponse(result);
+	        res.setData(dynamicVO);
+		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			log_.error("[DynamicServiceImpl---Error:]", e);
+		}
+		return res;
 	}
 	
 

@@ -2,7 +2,10 @@ package com.jp.dao;
 
 import com.jp.entity.Branchalbum;
 import com.jp.entity.BranchalbumExample;
+
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface BranchalbumMapper {
@@ -57,4 +60,11 @@ public interface BranchalbumMapper {
 	 * @return int
 	 */
 	int batchDelete(String[] albumidArray);
+	
+	
+	/**
+	* 以下方法用于api
+	*/	
+	
+	List<Branchalbum> selectByCityCode(Map<String, Object> params);
 }

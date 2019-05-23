@@ -398,4 +398,22 @@
 	     where albumid = #{item,jdbcType=VARCHAR}
 	 </foreach>
   </update>
+  
+  <select id="selectByCityCode" resultType="com.jp.entity.Branchalbum" parameterType="Map">
+  select t.* from (
+  	select m.* from jp_branchalbum m left join jp_branch n on m.branchid = n.branchid 
+  	where n.areacode = #{cityCode} and n.familyid = #{familyid}
+  	union 
+  	select m.* from jp_branchalbum m left join jp_branch n on m.branchid = n.branchid 
+  	where n.citycode = #{cityCode} and n.familyid = #{familyid}
+  	union 
+  	select m.* from jp_branchalbum m left join jp_branch n on m.branchid = n.branchid 
+  	where n.xcode = #{cityCode} and n.familyid = #{familyid}
+  	) t 
+  	order by t.sort asc,t.updatetime desc
+  	<if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  
 </mapper>
