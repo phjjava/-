@@ -141,13 +141,13 @@ public class UserManagerControll {
 					manager.setGenlevel(manager.getGenlevel() + "世");
 				}
 			}
-			// String familyid = CurrentUserContext.getCurrentFamilyId();
+			String familyid = CurrentUserContext.getCurrentFamilyId();
 			List<Function> functionList = new ArrayList<>();
 			if (manager == null || (manager.getIsmanager() == 1 && manager.getEbtype() == 1)) {
-				functionList = functionService.selectFunctionListByEbid("9ba9172bd1a44e35992d8b1c247adb95", "", "", "");
+				functionList = functionService.selectFunctionListByEbid(familyid, "", "", "");
 			} else {
-				functionList = functionService.selectFunctionListByEbid("9ba9172bd1a44e35992d8b1c247adb95",
-						manager.getUserid(), manager.getEbid(), manager.getPostid());
+				functionList = functionService.selectFunctionListByEbid(familyid, manager.getUserid(),
+						manager.getEbid(), manager.getPostid());
 			}
 
 			if (functionList != null) {
@@ -177,7 +177,6 @@ public class UserManagerControll {
 		res = new JsonResponse(result);
 		res.setEntity(manager);
 		res.setData(treeList);
-		System.out.println("========================================" + manager);
 		return res;
 	}
 
