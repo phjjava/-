@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.Dynamic;
 import com.jp.entity.Dynamicfile;
@@ -74,6 +75,13 @@ public interface DynamicService {
      * @return List<Dynamicfile>
      */
     List<Dynamicfile> selectdyfile(DynamicfileQuery example);
+    
+    /**
+	* 以下方法用于api
+	*/
+    JsonResponse getDylist(Dynamic entity);
+    
+    JsonResponse getDyDetail(Dynamic entity);
     
     
 }

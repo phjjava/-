@@ -44,6 +44,9 @@ public class MsgConstants {
 	public static final Result BEGINUSERID_IS_NULL = new Result(5010,"当前分支没有设置起始人");
 	public static final Result USERS_IS_NULL = new Result(5011,"当前分支起始人不存在");
 	public static final Result STATUS_IS_NULL = new Result(5012,"缺少向上查询世系参数");
+	public static final Result MEAUTYPE_IS_NULL = new Result(5013,"参数meautype不能为空");
+	public static final Result ALBUMID_IS_NULL = new Result(5014,"参数albumid不能为空");
+	
 	
 	
 	

@@ -64,8 +64,74 @@ public class Dynamic implements Serializable {
     private Integer readNum;
     
     private List<Dynamicfile> dynamicFiles;
+    
+    private Integer meautype ;//获取相册列表得类型  0：家族  1：全部   2按城市编码获取 3按照分支获取
 
-    public List<Dynamicfile> getDynamicFiles() {
+    private int countComments;//评论
+    private int countReads;//阅读
+    private int countPrises;//点赞
+    private int countFiles;//文件
+    private Long start;// 页数
+    private Long count;// 每页条数
+    
+    public Long getStart() {
+		return start;
+	}
+
+	public void setStart(Long start) {
+		this.start = start;
+	}
+
+	public Long getCount() {
+		return count;
+	}
+
+	public void setCount(Long count) {
+		this.count = count;
+	}
+
+
+    public Integer getMeautype() {
+		return meautype;
+	}
+
+	public void setMeautype(Integer meautype) {
+		this.meautype = meautype;
+	}
+
+	public int getCountComments() {
+		return countComments;
+	}
+
+	public void setCountComments(int countComments) {
+		this.countComments = countComments;
+	}
+
+	public int getCountReads() {
+		return countReads;
+	}
+
+	public void setCountReads(int countReads) {
+		this.countReads = countReads;
+	}
+
+	public int getCountPrises() {
+		return countPrises;
+	}
+
+	public void setCountPrises(int countPrises) {
+		this.countPrises = countPrises;
+	}
+
+	public int getCountFiles() {
+		return countFiles;
+	}
+
+	public void setCountFiles(int countFiles) {
+		this.countFiles = countFiles;
+	}
+
+	public List<Dynamicfile> getDynamicFiles() {
 		return dynamicFiles;
 	}
 

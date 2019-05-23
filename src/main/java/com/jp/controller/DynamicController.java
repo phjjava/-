@@ -255,5 +255,31 @@ public class DynamicController {
 		}
 		return res;
 	}
+    
+    /**
+	* 以下方法用于api
+	*/
+    
+    /**
+     * 获取动态详情 - 家族动态详情
+     * @return
+     */
+    @ResponseBody
+	@RequestMapping(value = "/getDyDetail", method = RequestMethod.GET)
+    public JsonResponse getDyDetail(Dynamic entity) {
+    	return dyservice.getDyDetail(entity);
+    }
+    
+    /**
+     * 获取指定分支下的动态列表（包括其他分支发布的置顶的动态） - 家族动态列表
+     * @return
+     */
+    @ResponseBody
+	@RequestMapping(value = "/getDylist", method = RequestMethod.GET)
+    public JsonResponse getDylist(Dynamic entity,HttpServletRequest request) {
+    	String familyid = request.getHeader("familyid");
+    	entity.setFamilyid(familyid);
+    	return dyservice.getDylist(entity);
+    }
 }
    

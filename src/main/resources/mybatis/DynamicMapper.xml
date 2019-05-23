@@ -511,4 +511,21 @@
      </if>
   </select>
   
+  <select id="selectByCityCode" resultType="com.jp.entity.Dynamic" parameterType="Map">
+  select t.* from (
+  	select m.* from jp_dynamic m left join jp_branch n on m.branchid = n.branchid 
+  	where n.areacode = #{cityCode} and n.familyid = #{familyid}
+  	union 
+  	select m.* from jp_dynamic m left join jp_branch n on m.branchid = n.branchid 
+  	where n.citycode = #{cityCode} and n.familyid = #{familyid}
+  	union 
+  	select m.* from jp_dynamic m left join jp_branch n on m.branchid = n.branchid 
+  	where n.xcode = #{cityCode} and n.familyid = #{familyid}
+  	) t 
+  	order by t.createtime desc
+  	<if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  
 </mapper>

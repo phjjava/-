@@ -34,7 +34,7 @@ import com.jp.util.UUIDUtils;
 import com.jp.util.UploadUtil;
 
 @Controller
-@RequestMapping("album")
+@RequestMapping("branchalbum")
 public class BranchalbumController {
 	@Autowired
 	private BranchalbumService baservice;
@@ -450,5 +450,22 @@ public class BranchalbumController {
 		res = new JsonResponse(result);
 		res.setData(str);
 		return res;
+	}
+	
+	/**
+	* 以下方法用于api
+	*/
+	
+	/**
+	 * 获取家族相册列表
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/getAlbum", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getAlbum(Branchalbum entity,HttpServletRequest request) {
+		String familyid = request.getHeader("familyid");
+		entity.setFamilyid(familyid);
+		return baservice.getAlbum(entity);
 	}
 }

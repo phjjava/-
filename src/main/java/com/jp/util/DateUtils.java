@@ -1526,5 +1526,15 @@ public class DateUtils {
 		  
 		return min;
 	}
+	
+	/**
+	 * 将传入的Date时间对象用日期格式(yyyy-MM-dd，短时间格式)转化成字符串时间
+	 * @param date 时间对象
+	 * @return String 字符串时间 yyyy-MM-dd
+	 */
+	public static String date2shortStr(Date date) {
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+		return sf.format(date);
+	}
  	
 }

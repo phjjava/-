@@ -335,4 +335,19 @@
   	where m.albumid=n.albumid 
   	and n.familyid=#{familyid} and m.deleteflag=0 and n.deleteflag=0
   </select>
+  
+  <select id="selectPhotosByAlbumid" parameterType="map" resultType="com.jp.entity.Branchphoto">  
+    select jp.*,jb.albumname,jb.remark
+    from   jp_branchphoto jp,jp_branchalbum jb 
+    where jp.albumid = #{albumid,jdbcType=VARCHAR}
+	and jp.albumid = jb.albumid
+    and jp.deleteflag = 0
+    order by jp.updatetime desc
+    <if test="count != null" >
+		limit ${count}
+	</if>
+	<if test="start != null" >
+		offset ${start}
+	</if>
+  </select>
 </mapper>

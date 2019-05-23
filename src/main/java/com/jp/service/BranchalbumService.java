@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.Branchalbum;
 import com.jp.entity.Branchphoto;
@@ -51,4 +52,12 @@ public interface BranchalbumService {
 	 * @return List<Branchphoto>
 	 */
 	List<Branchphoto> selectByBranch(List<String> branchids);
+	
+	/**
+	* 以下方法用于api
+	*/
+	
+	JsonResponse getAlbum(Branchalbum entity);
+	
+	JsonResponse getPhotolistOfBranchAlbum(Branchphoto entity);
 }
