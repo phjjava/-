@@ -2,11 +2,13 @@ package com.jp.service;
 
 import java.util.List;
 
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.Indexcount;
 import com.jp.entity.SysFamily;
 import com.jp.entity.User;
 import com.jp.entity.Userinfo;
+import com.jp.entity.Version;
 import com.jp.util.Result;
 
 public interface FamilyService {
@@ -65,4 +67,8 @@ public interface FamilyService {
 	 * @return Indexcount
 	 */
 	Indexcount countIndex(String familyid,List<String> branchids);
+	
+	List<Version> selectList();
+	
+	JsonResponse mergeForApi(User user, Userinfo userinfo, SysFamily family);
 }

@@ -72,8 +72,40 @@ public class Event implements Serializable {
     private String eventcontent;
     
     private Integer readNum;
+    
+    /**
+	* 以下方法用于api
+	*/
+    private Integer start;
+    private Integer count;
+    // 阅读总数
+    private Integer readcount;
 
-    private static final long serialVersionUID = 1L;
+    public Integer getStart() {
+		return start;
+	}
+
+	public void setStart(Integer start) {
+		this.start = start;
+	}
+
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	public Integer getReadcount() {
+		return readcount;
+	}
+
+	public void setReadcount(Integer readcount) {
+		this.readcount = readcount;
+	}
+
+	private static final long serialVersionUID = 1L;
 
     public String getEventid() {
         return eventid;

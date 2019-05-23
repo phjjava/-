@@ -200,4 +200,28 @@ public class EventController {
    		}
    		return res;
    	}
+    
+    /**
+	* 以下方法用于api
+	*/
+    
+    /**
+     * 获取大事记列表信息 - 家族大事记列表
+     * @return
+     */
+    @ResponseBody
+	@RequestMapping(value = "/getEventList", method = RequestMethod.GET)
+    public JsonResponse getEventList(Event entity) {
+    	return eservice.getEventList(entity);
+    }
+    
+    /**
+     * 获取大事记详情 - 家族大事记详情
+     * @return
+     */
+    @ResponseBody
+	@RequestMapping(value = "/getEventDetail", method = RequestMethod.GET)
+    public JsonResponse getEventDetail(Event entity) {
+    	return eservice.getEventDetail(entity);
+    }
 }
