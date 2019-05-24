@@ -13,6 +13,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -2224,6 +2225,34 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<User> validatePhoneForApi(String familyid, String userid, String phone) {
 		return userDao.validatePhone(familyid, userid, phone);
+	}
+
+	@Override
+	public JsonResponse getAddressByUserid(User user) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		try {
+			if(StringUtils.isBlank(user.getUserid())) {
+				result.setMsg("用户userid为空！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			user = userDao.selectByPrimaryKey(user.getUserid());
+			Branch branch = new Branch();
+			branch.setBranchid(user.getBranchid());
+			branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			branch = branchDao.selectByPrimaryKey(branch);
+			user.setBranch(branch);
+			
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(user);
+		} catch (Exception e) {
+			res = new JsonResponse(result);
+			e.printStackTrace();
+			return res;
+		}
+		return res;
 	}
 	
 	
