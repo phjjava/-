@@ -3,6 +3,10 @@ package com.jp.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class Branchphoto implements Serializable {
     private String imgid;
 
@@ -27,8 +31,28 @@ public class Branchphoto implements Serializable {
     private Date updatetime;
 
     private static final long serialVersionUID = 1L;
+    
+    private Long start;// 页数
+    
+    private Long count;// 每页条数
 
-    private String albumname;
+    public Long getStart() {
+		return start;
+	}
+
+	public void setStart(Long start) {
+		this.start = start;
+	}
+
+	public Long getCount() {
+		return count;
+	}
+
+	public void setCount(Long count) {
+		this.count = count;
+	}
+
+	private String albumname;
     public String getImgid() {
         return imgid;
     }

@@ -2,7 +2,10 @@ package com.jp.dao;
 
 import com.jp.entity.Branchphoto;
 import com.jp.entity.BranchphotoExample;
+
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface BranchphotoMapper {
@@ -48,4 +51,6 @@ public interface BranchphotoMapper {
     List<Branchphoto> selectByBranch(@Param("list")List<String> branchids);
 
 	List<Branchphoto> selectByFamilyid(String familyid);
+	
+	List<Branchphoto> selectPhotosByAlbumid(Map<String, String> map);
 }

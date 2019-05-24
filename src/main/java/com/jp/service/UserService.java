@@ -220,4 +220,8 @@ public interface UserService {
 
 	Result confirmImport(String excelid);
 	
+	List<User> validatePhoneForApi(@Param("familyid") String familyid,@Param("userid") String userid,@Param("phone") String phone);
+	
+	JsonResponse getAddressByUserid(User user);
+	
 }

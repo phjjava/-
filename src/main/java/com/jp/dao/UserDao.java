@@ -96,5 +96,7 @@ public interface UserDao {
 	
 	List<User> selectByMap(Map map);
 	
+	List<User> selectByPhone(@Param("phone")String phone);
+	
 	
 }

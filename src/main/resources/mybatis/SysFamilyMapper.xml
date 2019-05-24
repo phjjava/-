@@ -373,4 +373,8 @@
  <select id="nextVal" resultType="java.lang.Integer" >
   		SELECT NEXTVAL('item_id')
   </select>
+  
+  <select id="selectList" resultType="com.jp.entity.Version" >
+   select versionid,versionname from jp_sys_version
+  </select>
 </mapper>

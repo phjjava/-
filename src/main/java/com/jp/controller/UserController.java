@@ -1351,5 +1351,17 @@ public class UserController {
 		}
 		return res;
 	}
+	
+	/**
+	 * 新的用户检索接口
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/getAddressByUserid", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getAddressByUserid(User user) {
+		return userService.getAddressByUserid(user);
+	}
 
 }

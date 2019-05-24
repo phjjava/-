@@ -13,6 +13,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -143,12 +144,6 @@ public class UserServiceImpl implements UserService {
 				userinfo = user.getUserInfo();
 				userinfo.setUserid(user.getUserid());
 				// 编辑用户信息
-				/*if (!user.getDietimeStr().equals("")) {
-					//SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
-					//user.setDietime(sdfd.parse(user.getDietimeStr()));
-					if(DateUtils.isDate(user.getDietimeStr(), "-"))
-					user.setDietime(user.getDietimeStr());
-				}*/
 				if (StringTools.trimNotEmpty(user.getPhone())) {
 					//如果是存在手机号，则用之前德密码
 					UserQuery ex = new UserQuery();
@@ -177,19 +172,13 @@ public class UserServiceImpl implements UserService {
 				user.setUpdateid(CurrentUserContext.getCurrentUserId());
 				user.setUpdatetime(new Date());
 				userDao.updateByPrimaryKeySelective(user);
-				/*if (!userinfo.getBirthdayStr().equals("")) {
-					//SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
-					//userinfo.setBirthday(sdfd.parse(userinfo.getBirthdayStr()));
-					if(DateUtils.isDate(userinfo.getBirthdayStr(),"-"))
-						userinfo.setBirthday(userinfo.getBirthdayStr());
-				}*/
 				// 出生地
 				userinfo.setBirthplace(userinfo.getBirthplaceP()+"@@"+userinfo.getBirthplaceC()+"@@"+userinfo.getBirthplaceX()+"@@"+userinfo.getBirthDetail());
 				// 常住地
 				userinfo.setHomeplace(userinfo.getHomeplaceP()+"@@"+userinfo.getHomeplaceC()+"@@"+userinfo.getHomeplaceX()+"@@"+userinfo.getHomeDetail());
 				// 保存用户详细信息
 				userInfoDao.updateByPrimaryKeySelective(userinfo);
-				//
+				// 删除教育经历
 				UsereduQuery fq = new UsereduQuery();
 				Criteria createCriteria = fq.createCriteria();
 				createCriteria.andUseridEqualTo(user.getUserid());
@@ -200,15 +189,23 @@ public class UserServiceImpl implements UserService {
 					useredu2.setUserid(user.getUserid());
 					useredu2.setEduid(UUIDUtils.getUUID());
 				}
-				userEduDao.insertEduExp(eduList);
-				
+				if(eduList.size() > 0) {
+					userEduDao.insertEduExp(eduList);
+				}
+				// 删除工作经历
+				UserworkexpQuery fqw = new UserworkexpQuery();
+				com.jp.entity.UserworkexpQuery.Criteria createCriteriaw = fqw.createCriteria();
+				createCriteriaw.andUseridEqualTo(user.getUserid());
+				userworkDao.deleteByExample(fqw);
 				// 循环保存工作经历
 				List<Userworkexp> workList = user.getUserWorkexp();
 				for (Userworkexp userwork : workList) {
 					userwork.setUserid(user.getUserid());
 					userwork.setWorkid(UUIDUtils.getUUID());
 				}
-				userworkDao.insertEduExp(workList);
+				if(workList.size() > 0) {
+					userworkDao.insertEduExp(workList);
+				}
 				
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 			} else {
@@ -265,7 +262,9 @@ public class UserServiceImpl implements UserService {
 							useredu2.setUserid(userId);
 							useredu2.setEduid(UUIDUtils.getUUID());
 						}
-						userEduDao.insertEduExp(eduList);
+						if(eduList.size() > 0) {
+							userEduDao.insertEduExp(eduList);
+						}
 						
 						// 循环保存工作经历
 						List<Userworkexp> workList = user.getUserWorkexp();
@@ -273,7 +272,9 @@ public class UserServiceImpl implements UserService {
 							userwork.setUserid(userId);
 							userwork.setWorkid(UUIDUtils.getUUID());
 						}
-						userworkDao.insertEduExp(workList);
+						if(workList.size() > 0) {
+							userworkDao.insertEduExp(workList);
+						}
 						
 						result = new Result(MsgConstants.RESUL_SUCCESS);
 					}
@@ -2219,6 +2220,39 @@ public class UserServiceImpl implements UserService {
 			checkResult = true;
 		}
 		return checkResult;
+	}
+
+	@Override
+	public List<User> validatePhoneForApi(String familyid, String userid, String phone) {
+		return userDao.validatePhone(familyid, userid, phone);
+	}
+
+	@Override
+	public JsonResponse getAddressByUserid(User user) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		try {
+			if(StringUtils.isBlank(user.getUserid())) {
+				result.setMsg("用户userid为空！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			user = userDao.selectByPrimaryKey(user.getUserid());
+			Branch branch = new Branch();
+			branch.setBranchid(user.getBranchid());
+			branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			branch = branchDao.selectByPrimaryKey(branch);
+			user.setBranch(branch);
+			
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(user);
+		} catch (Exception e) {
+			res = new JsonResponse(result);
+			e.printStackTrace();
+			return res;
+		}
+		return res;
 	}
 	
 	

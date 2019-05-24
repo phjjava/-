@@ -408,4 +408,15 @@
 	where e.familyid = #{familyid,jdbcType=VARCHAR}
 	and e.deleteflag = 0
   </select>
+  
+  <select id="getEventList" parameterType="map" resultType="com.jp.entity.Event">
+		select * from jp_event where familyid= #{familyid,jdbcType=VARCHAR}
+		and deleteflag=0 order by type desc,updatetime desc
+		<if test="count != null">
+			limit ${count}
+		</if>
+		<if test="start != null">
+			offset ${start}
+		</if>
+	</select>
 </mapper>
