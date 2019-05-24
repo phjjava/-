@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.jp.common.PageModel;
 import com.jp.entity.Post;
-import com.jp.entity.User;
 
 public interface PostService {
 
@@ -19,5 +18,5 @@ public interface PostService {
 	List<Post> selectPostList(Post post);
 
 	Integer del(Post post);
-	
+
 }
