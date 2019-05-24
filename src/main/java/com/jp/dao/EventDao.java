@@ -46,4 +46,6 @@ public interface EventDao {
 	*/
     
     List<Event> getEventList(Map<String, String> map);
+    
+    List<Event> selectAllEvent(Map<String, Object> map);
 }

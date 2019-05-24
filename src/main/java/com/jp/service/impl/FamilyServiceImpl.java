@@ -37,6 +37,7 @@ import com.jp.entity.IntroudceTemplateDetailExample;
 import com.jp.entity.IntroudceTemplateExample;
 import com.jp.entity.Post;
 import com.jp.entity.SysFamily;
+import com.jp.entity.SysFamilyQuery;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
 import com.jp.entity.UserQuery;
@@ -446,6 +447,36 @@ public class FamilyServiceImpl implements FamilyService {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			res = new JsonResponse(result);
 			res.setMsg("网络错误");
+			log_.error("[FamilyServiceImpl---Error:]", e);
+		}
+		return res;
+	}
+
+
+
+	@Override
+	public JsonResponse searchFamily(SysFamily family) {
+		com.jp.common.Result result = new com.jp.common.Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		try {
+			if(StringUtils.isBlank(family.getFamilycode())) {
+				result.setMsg("参数familycode为空！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			SysFamilyQuery sysFamilyExample = new SysFamilyQuery();
+			sysFamilyExample.or().andFamilycodeEqualTo(family.getFamilycode());
+			List<SysFamily> sysFamilys = sysFamilyDao.selectByExample(sysFamilyExample);
+			if(sysFamilys.size() == 0) {
+		        result.setMsg("没有该家族");
+		        res = new JsonResponse(result);
+				return res;
+			}
+			result = new com.jp.common.Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(sysFamilys.get(0));	       
+		} catch (Exception e) {
+			res = new JsonResponse(result);
 			log_.error("[FamilyServiceImpl---Error:]", e);
 		}
 		return res;

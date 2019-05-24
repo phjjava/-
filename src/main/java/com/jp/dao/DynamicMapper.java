@@ -57,4 +57,6 @@ List<Dynamic> selectBranchDynamicList(Dynamic dynamic);
 	* 以下方法用于api
 	*/	
     List<Dynamic> selectByCityCode(Map<String, Object> params);
+    
+    List<Dynamic> searchAllDynamic(Map<String, Object> map);
 }

@@ -1,8 +1,12 @@
 package com.jp.dao;
 
+import com.jp.entity.UserContentVO;
 import com.jp.entity.Usercontent;
 import com.jp.entity.UsercontentExample;
+
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface UsercontentDao {
@@ -35,4 +39,6 @@ public interface UsercontentDao {
     int updateByPrimaryKey(Usercontent record);
 
 	int batchDelete(@Param("array")String[] idArray);
+	
+	List<UserContentVO> searchtUserContent(Map<String, Object> map);
 }

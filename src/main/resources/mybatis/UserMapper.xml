@@ -909,5 +909,75 @@ ORDER BY
    <select id="selectByPhone"  parameterType="String" resultType="com.jp.entity.User">
      select*from jp_user where status = 0  and deleteflag = 0 and familyid is not null and phone = #{phone,jdbcType=VARCHAR}
   </select>
+  
+  <select id="searchUser" parameterType="Map" resultType="com.jp.entity.User">
+SELECT
+	userid,
+	phone,
+	PASSWORD,
+	sessionid,
+	logintime,
+	username,
+	usedname,
+	livestatus,
+	sex,
+	mateid,
+	matename,
+	pid,
+	pname,
+	familyid,
+	familyname,
+	branchid,
+	branchname,
+	isdirect,
+	isborn,
+	genlevel,
+	brotherpos,
+	STATUS,
+	deleteflag,
+	imgurl,
+	idcard,
+	pinyinfirst,
+	pinyinfull,
+	dietime,
+	fixplace,
+	remarkelse,
+	createid,
+	createtime,
+	updateid,
+	updatetime
+FROM
+	jp_user
+WHERE
+	(
+		familyid = #{familyid}
+		AND STATUS = 0
+		AND deleteflag = 0
+		AND livestatus = 0
+		AND username LIKE CONCAT('%',#{content},'%')
+		
+	)
+	<if test="branchids != null and branchids.size()>0">
+	  		and branchid in 
+	  		<foreach collection="branchids" item="item" index="index" open="(" separator="," close=")">
+	  			#{item}
+	        </foreach>
+  	</if>
+ORDER BY
+	pinyinfirst DESC
+  <if test="count != null">
+		limit ${count}
+	</if>
+	<if test="start != null">
+		offset ${start}
+	</if>
+ </select>
+ 
+ <select id="selectManagerBranchidsByUserid" resultType="com.jp.entity.EditorialBoard" parameterType="Map" >
+ SELECT je.* FROM  jp_user_manager jm,`jp_editorial_board` je 
+where jm.familyid= #{familyid}
+and jm.ebid = je.id and jm.familyid = je.familyid
+and jm.userid = #{userid}
+   </select>
    
 </mapper>

@@ -1,5 +1,6 @@
 package com.jp.dao;
 
+import com.jp.entity.EditorialBoard;
 import com.jp.entity.User;
 import com.jp.entity.UserQuery;
 import com.jp.entity.Usercontent;
@@ -97,6 +98,10 @@ public interface UserDao {
 	List<User> selectByMap(Map map);
 	
 	List<User> selectByPhone(@Param("phone")String phone);
+	
+	List<User> searchUser(Map<String, Object> map);
+	
+	List<EditorialBoard> selectManagerBranchidsByUserid(Map<String, String> map);
 	
 	
 }

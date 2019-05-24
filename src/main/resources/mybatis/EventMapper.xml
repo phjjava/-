@@ -419,4 +419,19 @@
 			offset ${start}
 		</if>
 	</select>
+	
+	<select id="selectAllEvent" resultType="com.jp.entity.Event"
+		parameterType="Map">
+		select * from jp_event where (eventtitle like
+		CONCAT("%",#{content,jdbcType=VARCHAR},"%") or eventcontent like
+		CONCAT("%",#{content,jdbcType=VARCHAR},"%")) and familyid=#{familyid}
+		and deleteflag = 0
+		order by updatetime desc
+		 <if test="count != null">
+			limit ${count}
+		</if>
+		<if test="start != null">
+			offset ${start}
+		</if>
+	</select>
 </mapper>

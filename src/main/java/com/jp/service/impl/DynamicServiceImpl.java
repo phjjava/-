@@ -332,6 +332,7 @@ public class DynamicServiceImpl implements DynamicService {
 		return res;
 	}
 	
+	@Override
 	public JsonResponse getDyDetailExt(Dynamic entity) {
         Result result = new Result(MsgConstants.RESUL_FAIL);
         JsonResponse res = null;

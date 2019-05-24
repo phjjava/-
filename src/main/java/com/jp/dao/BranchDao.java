@@ -54,4 +54,10 @@ public interface BranchDao {
     List<Branch> selectBranchByXQ(Map<String, String> map);
     
     List<Branch> selectBranchByCitycode(Map<String, String> map);
+    
+    List<String> selectBranchidsByAreacode(@Param("code")String code, @Param("familyid")String familyid);
+
+	List<String> selectBranchidsByCitycode(@Param("code")String code, @Param("familyid")String familyid);
+
+	List<String> selectBranchidsByQxcode(@Param("code")String code, @Param("familyid")String familyid);
 }
