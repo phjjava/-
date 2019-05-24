@@ -222,4 +222,6 @@ public interface UserService {
 	
 	List<User> validatePhoneForApi(@Param("familyid") String familyid,@Param("userid") String userid,@Param("phone") String phone);
 	
+	JsonResponse getAddressByUserid(User user);
+	
 }

@@ -409,7 +409,7 @@
 	and e.deleteflag = 0
   </select>
   
-  <select id="getEventList" parameterType="map" resultType="com.jp.model.Event">
+  <select id="getEventList" parameterType="map" resultType="com.jp.entity.Event">
 		select * from jp_event where familyid= #{familyid,jdbcType=VARCHAR}
 		and deleteflag=0 order by type desc,updatetime desc
 		<if test="count != null">
