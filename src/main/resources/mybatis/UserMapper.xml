@@ -906,4 +906,8 @@ ORDER BY
 	u.genlevel ASC,u.sex desc,p.sort 
    </select>
    
+   <select id="selectByPhone"  parameterType="String" resultType="com.jp.model.User">
+     select*from jp_user where status = 0  and deleteflag = 0 and familyid is not null and phone = #{phone,jdbcType=VARCHAR}
+  </select>
+   
 </mapper>

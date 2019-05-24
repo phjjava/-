@@ -4,6 +4,7 @@ import com.jp.entity.Event;
 import com.jp.entity.EventQuery;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -39,4 +40,10 @@ public interface EventDao {
     int batchDelete(@Param("array") String noticeid[]);
     
     List<Event> selecteventread(Event event);
+    
+    /**
+	* 以下方法用于api
+	*/
+    
+    List<Event> getEventList(Map<String, String> map);
 }

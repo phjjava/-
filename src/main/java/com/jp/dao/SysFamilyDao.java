@@ -3,6 +3,7 @@ package com.jp.dao;
 import com.jp.entity.Indexcount;
 import com.jp.entity.SysFamily;
 import com.jp.entity.SysFamilyQuery;
+import com.jp.entity.Version;
 
 import java.util.List;
 
@@ -88,5 +89,7 @@ public interface SysFamilyDao {
      * @return
      */
     Integer nextVal(); 
+    
+    List<Version> selectList();
     
 }

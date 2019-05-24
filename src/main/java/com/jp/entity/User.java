@@ -219,7 +219,17 @@ public class User implements Serializable {
     private List<Useralbum> userAblumList;
     //配偶
     private List<Usermates> mateList;
+    //分支信息
+    private Branch branch;
     
+	public Branch getBranch() {
+		return branch;
+	}
+
+	public void setBranch(Branch branch) {
+		this.branch = branch;
+	}
+
 	public Userinfo getUserInfo() {
 		return userInfo;
 	}
