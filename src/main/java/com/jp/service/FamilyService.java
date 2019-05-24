@@ -71,4 +71,6 @@ public interface FamilyService {
 	List<Version> selectList();
 	
 	JsonResponse mergeForApi(User user, Userinfo userinfo, SysFamily family);
+	
+	JsonResponse searchFamily(SysFamily family);
 }

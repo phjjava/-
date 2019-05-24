@@ -152,6 +152,7 @@ public class EventServiceImpl implements EventService {
 	        
 	        result = new Result(MsgConstants.RESUL_SUCCESS);
 	        res = new JsonResponse(result);
+	        res.setData(events);
 		} catch (Exception e) {
 			res = new JsonResponse(result);
 			log_.error("[EventServiceImpl---Error:]", e);

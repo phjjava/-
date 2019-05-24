@@ -416,4 +416,32 @@
     </if>
   </select>
   
+  <select id="selectAllAlbum" resultType="com.jp.entity.Branchalbum"
+		parameterType="Map">
+		select a.*,b.photoNum from jp_branchalbum a left join 
+		(select albumid,count(1) as photoNum from jp_branchphoto group by albumid) b
+		on a.albumid = b.albumid
+		where 
+		(a.albumname like
+		CONCAT("%",#{content,jdbcType=VARCHAR},"%") 
+		or 
+		a.remark like
+		CONCAT("%",#{content,jdbcType=VARCHAR},"%")) 
+		and a.familyid=#{familyid}
+		and a.deleteflag = 0
+		<if test="branchids != null and branchids.size()>0">
+  			and a.branchid in 
+	  		<foreach collection="branchids" item="item" index="index" open="(" separator="," close=")">
+	  			#{item}
+	        </foreach>
+  		</if>
+		order by a.updatetime desc
+		 <if test="count != null">
+			limit ${count}
+		</if>
+		<if test="start != null">
+			offset ${start}
+		</if>
+	</select>
+  
 </mapper>

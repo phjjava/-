@@ -446,7 +446,7 @@
   <select id="selectdyread" parameterType="com.jp.entity.Dynamic" resultType="com.jp.entity.Dynamic">
       SELECT
 	  dyread.readNum,
-	  dy.dyid, dy. branchid, dy. dytitle, dy. deleteflag, dy. imgurl, dy. branchname, 
+	  dy.dyid, dy.dytype, dy. branchid, dy. dytitle, dy. deleteflag, dy. imgurl, dy. branchname, 
 	  dy. createid, dy. createtime, dy. updateid, dy. updatetime, dy. createname, dy. type, dy.dycontent
        FROM
 	   jp_dynamic dy
@@ -485,7 +485,7 @@
   <select id="selectReadOfManager" parameterType="com.jp.entity.Dynamic" resultType="com.jp.entity.Dynamic">
       SELECT
 	  dyread.readNum,
-	  dy.dyid, dy. branchid, dy. dytitle, dy. deleteflag, dy. imgurl, dy. branchname, 
+	  dy.dyid, dy.dytype, dy. branchid, dy. dytitle, dy. deleteflag, dy. imgurl, dy. branchname, 
 	  dy. createid, dy. createtime, dy. updateid, dy. updatetime, dy. createname, dy. type, dy.dycontent
        FROM
 	   jp_dynamic dy
@@ -526,6 +526,29 @@
   	<if test="startRow != null" >
       limit #{startRow} , #{pageSize}
     </if>
+  </select>
+  
+  <select id="searchAllDynamic"  resultType="com.jp.entity.Dynamic" parameterType="Map">
+  select * from jp_dynamic 
+  where 
+  (dytitle like  CONCAT("%",#{content,jdbcType=VARCHAR},"%") 
+  	or 
+  dycontent like  CONCAT("%",#{content,jdbcType=VARCHAR},"%")) 
+  and familyid=#{familyid} 
+  and deleteflag = 0
+  <if test="branchids != null and branchids.size()>0">
+  	and branchid in 
+  		<foreach collection="branchids" item="item" index="index" open="(" separator="," close=")">
+  			#{item}
+        </foreach>
+  </if>
+   order by updatetime desc 
+    <if test="count != null">
+			limit ${count}
+		</if>
+		<if test="start != null">
+			offset ${start}
+		</if>
   </select>
   
 </mapper>
