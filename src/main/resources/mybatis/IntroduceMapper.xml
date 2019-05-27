@@ -370,4 +370,21 @@
 	     where introduceid = #{item,jdbcType=VARCHAR}
 	  </foreach>
   </update>
+  
+  <!-- 自写 -->
+  
+  <select id="selectByPrimaryID" parameterType="String" resultType="com.jp.entity.Introduce">
+  	SELECT * FROM jp_introduce where deleteflag=0 and introduceid =#{introduceid,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectPreIntroduce" parameterType="Map" resultType="com.jp.entity.Introduce">
+  	SELECT * FROM jp_introduce where deleteflag=0 and familyid=#{familyid,jdbcType=VARCHAR} and sort &lt;#{sort,jdbcType=VARCHAR} order by sort desc limit 1
+  </select>
+
+   <select id="selectNextIntroduce" parameterType="Map" resultType="com.jp.entity.Introduce">
+  	SELECT * FROM jp_introduce where deleteflag=0 and familyid=#{familyid,jdbcType=VARCHAR} and sort &gt; #{sort,jdbcType=VARCHAR} limit 1
+  </select>
+  <select id="getIntroduceByType" resultType="com.jp.entity.Introduce" parameterType="Map">
+   	SELECT * FROM jp_introduce where deleteflag = 0 and familyid=#{familyid,jdbcType=VARCHAR} and type = #{type,jdbcType=VARCHAR}
+   </select>
 </mapper>

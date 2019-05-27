@@ -67,6 +67,17 @@ public class FamilyApiController {
 		
 	}
     
+    /**
+     * 获取在用的版本号内容 - 注册家族
+     * @return
+	 * @throws IOException 
+     */
+    @ResponseBody
+	@RequestMapping(value = "/searchFamily", method = RequestMethod.POST)
+    public JsonResponse searchFamily(SysFamily family) {
+    	return familyService.searchFamily(family);
+    }
+    
     public String valide(){
     	//参数验证
     	String result = "1";

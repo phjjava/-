@@ -4,6 +4,7 @@ import com.jp.entity.Introduce;
 import com.jp.entity.IntroduceQuery;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -37,4 +38,17 @@ public interface IntroduceDao {
     int updateByPrimaryKey(Introduce record);
     
     int batchDelete(@Param("array") String introduceid[]);
+    
+    /**
+	* 以下方法用于api
+	*/
+    
+    List<Introduce> selectByPrimaryID(String introduceid);
+    
+    Introduce selectPreIntroduce(Map<String, String> map);
+    
+    Introduce selectNextIntroduce(Map<String, String> map);
+    
+    Introduce getIntroduceByType(Map<String, Object> params);
+    
 }

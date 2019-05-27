@@ -83,5 +83,6 @@ public interface DynamicService {
     
     JsonResponse getDyDetail(Dynamic entity);
     
+    JsonResponse getDyDetailExt(Dynamic entity);
     
 }

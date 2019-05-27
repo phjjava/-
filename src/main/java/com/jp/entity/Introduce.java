@@ -58,9 +58,63 @@ public class Introduce implements Serializable {
      * 章节类型
      */
     private String type;
-     
+    
+    private String preintroduceid;
+    private String preintroducetitle;
+    private String nextintroduceid;
+    private String nextintroducetitle;
+    private Long start;
+    private Long count;
 
-    public String getType() {
+    public Long getStart() {
+		return start;
+	}
+
+	public void setStart(Long start) {
+		this.start = start;
+	}
+
+	public Long getCount() {
+		return count;
+	}
+
+	public void setCount(Long count) {
+		this.count = count;
+	}
+
+	public String getPreintroduceid() {
+		return preintroduceid;
+	}
+
+	public void setPreintroduceid(String preintroduceid) {
+		this.preintroduceid = preintroduceid;
+	}
+
+	public String getPreintroducetitle() {
+		return preintroducetitle;
+	}
+
+	public void setPreintroducetitle(String preintroducetitle) {
+		this.preintroducetitle = preintroducetitle;
+	}
+
+	public String getNextintroduceid() {
+		return nextintroduceid;
+	}
+
+	public void setNextintroduceid(String nextintroduceid) {
+		this.nextintroduceid = nextintroduceid;
+	}
+
+	public String getNextintroducetitle() {
+		return nextintroducetitle;
+	}
+
+	public void setNextintroducetitle(String nextintroducetitle) {
+		this.nextintroducetitle = nextintroducetitle;
+	}
+
+	public String getType() {
 		return type;
 	}
 

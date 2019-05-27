@@ -127,4 +127,42 @@ public class IntroduceController {
 		res.setData(str);
 		return res;
 	}
+	
+	/**
+	* 以下方法用于api
+	*/
+	
+	/**
+	 * 获取家谱章节列表 - 家族谱章节列表
+	 * @param entity
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getIntroduceList", method = RequestMethod.GET)
+	public JsonResponse getIntroduceList(Introduce entity) {
+		return itservice.getIntroduceList(entity);
+	}
+	
+	/**
+	 * 获取家谱章节详细信息 - 家族谱某章节详情
+	 * @param entity
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getIntroduceDetail", method = RequestMethod.GET)
+	public JsonResponse getIntroduceDetail(Introduce entity) {
+		return itservice.getIntroduceDetail(entity);
+	}
+	
+	/**
+	 * 获取菜单列表 - 获取首页菜单列表
+	 * @param entity
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getMenuList", method = RequestMethod.GET)
+	public JsonResponse getMenuList(Introduce entity,HttpServletRequest request) {
+		return itservice.getMenuList(entity,request);
+	}
+	
 }

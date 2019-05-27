@@ -2,10 +2,8 @@ package com.jp.dao;
 
 import com.jp.entity.Branchalbum;
 import com.jp.entity.BranchalbumExample;
-
 import java.util.List;
 import java.util.Map;
-
 import org.apache.ibatis.annotations.Param;
 
 public interface BranchalbumMapper {
@@ -67,4 +65,6 @@ public interface BranchalbumMapper {
 	*/	
 	
 	List<Branchalbum> selectByCityCode(Map<String, Object> params);
+	
+	List<Branchalbum> selectAllAlbum(Map<String, Object> map);
 }
