@@ -1529,11 +1529,13 @@ public class UserServiceImpl implements UserService {
 		// SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			Integer matetype = user.getMatetype();
-			// 丈夫或妻子
+			// 丈夫或妻子 matetype 0丈夫;1妻子;2其他
 			String userid = UUIDUtils.getUUID();
 			String birthplace = userInfo.getBirthplaceP()+"@@"+userInfo.getBirthplaceC()+"@@"+userInfo.getBirthplaceX();
+			userInfo.setBirthplace(birthplace);
 			if (matetype == 0 || matetype == 1) {
 				if (StringTools.trimNotEmpty(user.getMateid())) {
+					// 修改用户配偶信息
 					User userMmateUpdate = new User();
 					String phone = user.getPhone();
 					userMmateUpdate.setUserid(user.getMateid());
@@ -1553,9 +1555,9 @@ public class UserServiceImpl implements UserService {
 						if(DateUtils.isDate(userInfo.getBirthdayStr(), "-"))
 							userInfo.setBirthday(userInfo.getBirthdayStr());
 					}*/
-					userInfo.setBirthplace(birthplace);
 					userInfoDao.updateByPrimaryKeySelective(userInfo);
 				} else {
+					// 新增用户配偶信息,修改配偶保存逻辑，配偶信息作为主用户存到user表里，jp_usermates单独的用户配偶表弃用
 //					boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), 1);
 					boolean flag = checkFamilyUserNumber(1);
 					if (flag == true) {
@@ -1594,14 +1596,9 @@ public class UserServiceImpl implements UserService {
 							userMmate.setLivestatus(user.getLivestatus());
 						}
 
-						/*
-						 * if(matetype == 0){ userMmate.setMatename("丈夫");
-						 * }else{ userMmate.setMatename("妻子"); }
-						 */
 						boolean sameFlag = checkSameUser(userMmate);
 						if (sameFlag) {
 							// 重复什么也不做
-							// result = "500";
 							result = new Result(MsgConstants.USER_SAVE_HAVEREPEAT);
 						} else {
 							userDao.insertSelective(userMmate);
@@ -1615,43 +1612,49 @@ public class UserServiceImpl implements UserService {
 									userInfo.setBirthday(userInfo.getBirthdayStr());
 							}*/
 							userInfoDao.insertSelective(userInfo);
-//							result = "1";
 							result = new Result(MsgConstants.RESUL_SUCCESS);
 						}
 					} else {
-//						result = "2";
 						result = new Result(MsgConstants.USER_SAVE_OUTMAX);
 						return result;
 					}
 				}
 			} else {// 配偶做为记录
-				Usermates userMates = new Usermates();
-				// userMates.setBirthday(user.get);
-				userMates.setMateid(userid);
-				userMates.setName(user.getMatename());
-				userMates.setUserid(user.getUserid());
+				// 修改配偶保存逻辑，配偶信息作为主用户存到user表里，jp_usermates单独的用户配偶表弃用
+				User userMates = new User();
+				userMates.setUserid(userid);
+				userMates.setMateid(user.getUserid());
+				userMates.setCreatetime(new Date());
+				userMates.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				userMates.setFamilyname(CurrentUserContext.getCurrentFamilyName());
+				userMates.setCreateid(CurrentUserContext.getCurrentUserId());
+				userMates.setCreatetime(new Date());
+				userMates.setStatus(0);
+				userMates.setIsdirect(0);
+				userMates.setMateid(user.getUserid());
+				userMates.setMatename(user.getUsername());
+				userMates.setUsername(user.getMatename());
 				userMates.setSex(user.getSex());
-				userMates.setRemark(userInfo.getRemark());
-				userMates.setNation(userInfo.getNation());
-				userMates.setBirthplace(birthplace);
-				userMates.setMatetype(user.getMatetypeStr());
-				/*if (!userInfo.getBirthdayStr().equals("")) {
-					SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
-					userMates.setBirthday(sdfd.parse(userInfo.getBirthdayStr()));
-				}*/
-				boolean sameFlag = checkSameMates(userMates);
+				userMates.setGenlevel(user.getGenlevel());
+				userMates.setDeleteflag(0);
+				userMates.setPinyinfirst(PinyinUtil.getPinYinFirstChar(user.getMatename()));
+				userMates.setPinyinfull(PinyinUtil.getPinyinFull(user.getMatename()));
+				userMates.setLivestatus(user.getLivestatus());
+				
+				boolean sameFlag = checkSameUser(userMates);
 				if (sameFlag) {
 					// 重复什么也不做
-					// result = "500";
 					result = new Result(MsgConstants.USER_SAVE_HAVEREPEAT);
 				} else {
-					userMatesDao.insertSelective(userMates);
-//					result = "1";
+					// userMatesDao.insertSelective(userMates);
+					userDao.insertSelective(userMates);
+					
+					userInfo.setUserid(userid);
+					userInfoDao.insertSelective(userInfo);
 					result = new Result(MsgConstants.RESUL_SUCCESS);
 				}
 			}
 		} catch (Exception e) {
-//			result = "0";
 			result = new Result(MsgConstants.RESUL_FAIL);
 			e.printStackTrace();
 		}
