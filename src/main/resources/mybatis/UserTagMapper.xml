@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jp.dao.UserTagMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jp.entity.UserTag">
+        <id column="id" property="id" />
+        <result column="userid" property="userid" />
+        <result column="tag_name" property="tagName" />
+        <result column="createtime" property="createtime" />
+        <result column="updatetime" property="updatetime" />
+        <result column="createby" property="createby" />
+        <result column="updateby" property="updateby" />
+        <result column="deleteflag" property="deleteflag" />
+    </resultMap>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+	    select id,userid,tag_name,createtime,updatetime,createby,updateby,deleteflag
+	    from jp_user_tag
+	    where id = #{id,jdbcType=VARCHAR}
+  	</select>
+  	<select id="selectListByUserid" resultMap="BaseResultMap" parameterType="java.lang.String">
+  		select id,userid,tag_name,createtime,updatetime,createby,updateby,deleteflag
+	    from jp_user_tag
+	    where deleteflag = 0 and userid = #{userid,jdbcType=VARCHAR}
+  	</select>
+    <delete id="deleteByTagId" parameterType="com.jp.entity.UserTag" >
+    	delete from jp_user_tag_user
+      where tag_id = #{id,jdbcType=VARCHAR}
+    </delete>
+    
+    <delete id="deleteById" parameterType="com.jp.entity.UserTag" >
+    	UPDATE  jp_user_tag SET deleteflag = 1
+      where id = #{id,jdbcType=VARCHAR}
+    </delete>
+   
+    <update id="updateById" parameterType="com.jp.entity.UserTag" >
+    	update jp_user_tag
+    <set >
+      <if test="userid != null" >
+        userid = #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="tagName != null" >
+        tag_name = #{tagName,jdbcType=VARCHAR},
+      </if>
+      <if test="createby != null" >
+        createby = #{createby,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateby != null" >
+        updateby = #{updateby,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag = #{deleteflag,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update> 
+  
+    <insert id="insert" parameterType="com.jp.entity.UserTag" >
+    insert into jp_user_tag
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="tagName != null" >
+        tag_name,
+      </if>
+      <if test="createby != null" >
+        createby,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="updateby != null" >
+        updateby,
+      </if>
+      <if test="updatetime != null" >
+        updatetime,
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="tagName != null" >
+        #{tagName,jdbcType=VARCHAR},
+      </if>
+      <if test="createby != null" >
+        #{createby,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateby != null" >
+        #{updateby,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteflag != null" >
+        #{deleteflag,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+</mapper>
