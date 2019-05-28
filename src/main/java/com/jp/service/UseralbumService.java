@@ -2,15 +2,14 @@ package com.jp.service;
 
 import java.util.List;
 
+import com.jp.common.JsonResponse;
 import com.jp.entity.Useralbum;
 import com.jp.entity.UseralbumKey;
-import com.jp.entity.UseralbumQuery;
 import com.jp.entity.Userphoto;
 import com.jp.entity.UserphotoKey;
 
 public interface UseralbumService {
-	
-	
+
 	/**
 	 * @描述 查询单个相册
 	 * @作者 sj
@@ -21,6 +20,7 @@ public interface UseralbumService {
 	 * @return User
 	 */
 	Useralbum selectByPrimaryKey(UseralbumKey key) throws Exception;
+
 	/**
 	 * 
 	 * @描述 查询相册详情
@@ -32,6 +32,7 @@ public interface UseralbumService {
 	 * @return List<Userphoto>
 	 */
 	List<Userphoto> selectByAlbumId(String albumId) throws Exception;
+
 	/**
 	 * 
 	 * @描述 删除相册
@@ -42,6 +43,7 @@ public interface UseralbumService {
 	 * @return int
 	 */
 	int deleteByPrimaryKey(UseralbumKey key);
+
 	/**
 	 * 
 	 * @描述 删除
@@ -52,6 +54,7 @@ public interface UseralbumService {
 	 * @return int
 	 */
 	int deleteUserPhoto(String albumid);
+
 	/**
 	 * 
 	 * @描述 删除单张照片
@@ -62,6 +65,7 @@ public interface UseralbumService {
 	 * @return int
 	 */
 	int deleteUserPhotoSingle(UserphotoKey key);
+
 	/**
 	 * @描述 查询单张图片
 	 * @作者 sj
@@ -72,6 +76,7 @@ public interface UseralbumService {
 	 * @return Userphoto
 	 */
 	Userphoto selectByImgId(UserphotoKey key) throws Exception;
+
 	/**
 	 * @描述 更新单张照片
 	 * @作者 sj
@@ -81,4 +86,20 @@ public interface UseralbumService {
 	 * @return int
 	 */
 	int updateByPrimaryKeySelective(Userphoto userPhoto);
+
+	/**
+	 * api迁移方法分割线
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	JsonResponse getPersonAlbums(Useralbum entity, int start, int count);
+
+	JsonResponse getPersonPhotosOfAlbum(Useralbum entity, int start, int count);
+
+	JsonResponse createNewAlbum(Useralbum entity);
+
+	JsonResponse createPhoto(Userphoto entity);
+
+	JsonResponse createPhotos(Userphoto entity);
 }
