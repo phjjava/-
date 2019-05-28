@@ -3,114 +3,115 @@ package com.jp.entity;
 import java.io.Serializable;
 
 public class EditorialBoard implements Serializable {
-    /**
-     * id
-     */
-    private String id;
+	/**
+	 * id
+	 */
+	private String id;
 
-    /**
-     * ±àÎ¯»áÃû³Æ
-     */
-    private String name;
+	/**
+	 * ï¿½ï¿½Î¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 */
+	private String name;
 
-    /**
-     * ±àÎ¯»áÀàĞÍ 1×Ü±à0·Ö±à
-     */
-    private Integer type;
+	/**
+	 * ï¿½ï¿½Î¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 1ï¿½Ü±ï¿½0ï¿½Ö±ï¿½
+	 */
+	private Integer type;
 
-    /**
-     * ±àÎ¯»á±àÂë    Ê¡ÊĞÇø±àÂë»ò·ÖÖ§id
-     */
-    private String code;
+	/**
+	 * ï¿½ï¿½Î¯ï¿½ï¿½ï¿½ï¿½ï¿½ Ê¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö§id
+	 */
+	private String code;
 
-    /**
-     * AÊ¡CÊĞXÇøB·ÖÖ§
-     */
-    private String codetype;
+	/**
+	 * AÊ¡Cï¿½ï¿½Xï¿½ï¿½Bï¿½ï¿½Ö§
+	 */
+	private String codetype;
 
-    /**
-     * ¼Ò×åid
-     */
-    private String familyid;
+	/**
+	 * ï¿½ï¿½ï¿½ï¿½id
+	 */
+	private String familyid;
 
-    /**
-     * ÃèÊö
-     */
-    private String eddesc;
+	/**
+	 * ï¿½ï¿½ï¿½ï¿½
+	 */
+	private String eddesc;
 
-    private static final long serialVersionUID = 1L;
+	/**
+	 * æ’åº
+	 */
+	private String sort;
 
-    public String getId() {
-        return id;
-    }
+	private static final long serialVersionUID = 1L;
 
-    public void setId(String id) {
-        this.id = id == null ? null : id.trim();
-    }
+	public String getSort() {
+		return sort;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setSort(String sort) {
+		this.sort = sort;
+	}
 
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
-    }
+	public String getId() {
+		return id;
+	}
 
-    public Integer getType() {
-        return type;
-    }
+	public void setId(String id) {
+		this.id = id == null ? null : id.trim();
+	}
 
-    public void setType(Integer type) {
-        this.type = type;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getCode() {
-        return code;
-    }
+	public void setName(String name) {
+		this.name = name == null ? null : name.trim();
+	}
 
-    public void setCode(String code) {
-        this.code = code == null ? null : code.trim();
-    }
+	public Integer getType() {
+		return type;
+	}
 
-    public String getCodetype() {
-        return codetype;
-    }
+	public void setType(Integer type) {
+		this.type = type;
+	}
 
-    public void setCodetype(String codetype) {
-        this.codetype = codetype == null ? null : codetype.trim();
-    }
+	public String getCode() {
+		return code;
+	}
 
-    public String getFamilyid() {
-        return familyid;
-    }
+	public void setCode(String code) {
+		this.code = code == null ? null : code.trim();
+	}
 
-    public void setFamilyid(String familyid) {
-        this.familyid = familyid == null ? null : familyid.trim();
-    }
+	public String getCodetype() {
+		return codetype;
+	}
 
-    public String getEddesc() {
-        return eddesc;
-    }
+	public void setCodetype(String codetype) {
+		this.codetype = codetype == null ? null : codetype.trim();
+	}
 
-    public void setEddesc(String eddesc) {
-        this.eddesc = eddesc == null ? null : eddesc.trim();
-    }
+	public String getFamilyid() {
+		return familyid;
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", id=").append(id);
-        sb.append(", name=").append(name);
-        sb.append(", type=").append(type);
-        sb.append(", code=").append(code);
-        sb.append(", codetype=").append(codetype);
-        sb.append(", familyid=").append(familyid);
-        sb.append(", eddesc=").append(eddesc);
-        sb.append(", serialVersionUID=").append(serialVersionUID);
-        sb.append("]");
-        return sb.toString();
-    }
+	public void setFamilyid(String familyid) {
+		this.familyid = familyid == null ? null : familyid.trim();
+	}
+
+	public String getEddesc() {
+		return eddesc;
+	}
+
+	public void setEddesc(String eddesc) {
+		this.eddesc = eddesc == null ? null : eddesc.trim();
+	}
+
+	@Override
+	public String toString() {
+		return "EditorialBoard [id=" + id + ", name=" + name + ", type=" + type + ", code=" + code + ", codetype="
+				+ codetype + ", familyid=" + familyid + ", eddesc=" + eddesc + ", sort=" + sort + "]";
+	}
 }

@@ -12,6 +12,7 @@
     <result column="ebname" property="ebname" jdbcType="VARCHAR" />
     <result column="ebtype" property="ebtype" jdbcType="INTEGER" />
     <result column="ismanager" property="ismanager" jdbcType="INTEGER" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
   </resultMap>
   <resultMap id="BaseResultMapForMe" type="com.jp.entity.UserManager" >
     <id column="id" property="id" jdbcType="VARCHAR" />
@@ -87,7 +88,7 @@
   </sql>
   <sql id="Base_Column_List" >
     <if test="fields == null" >
-      id, userid, username, familyid, postid, postname, ebid, ebname, ebtype, ismanager
+      id, userid, username, familyid, postid, postname, ebid, ebname, ebtype, ismanager,sort
     </if>
     <if test="fields != null" >
       ${fields}
@@ -134,11 +135,11 @@
     insert into jp_user_manager (id, userid, username, 
       familyid, postid, postname, 
       ebid, ebname, ebtype, 
-      ismanager)
+      ismanager,sort)
     values (#{id,jdbcType=VARCHAR}, #{userid,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
       #{familyid,jdbcType=VARCHAR}, #{postid,jdbcType=VARCHAR}, #{postname,jdbcType=VARCHAR}, 
       #{ebid,jdbcType=VARCHAR}, #{ebname,jdbcType=VARCHAR}, #{ebtype,jdbcType=INTEGER}, 
-      #{ismanager,jdbcType=INTEGER})
+      #{ismanager,jdbcType=INTEGER}),#{sort,jdbcType=INTEGER}
   </insert>
   <insert id="insertSelective" parameterType="com.jp.entity.UserManager" >
     insert into jp_user_manager

@@ -9,6 +9,7 @@
     <result column="codetype" property="codetype" jdbcType="VARCHAR" />
     <result column="familyid" property="familyid" jdbcType="VARCHAR" />
     <result column="eddesc" property="eddesc" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -70,7 +71,7 @@
   </sql>
   <sql id="Base_Column_List" >
     <if test="fields == null" >
-      id, name, type, code, codetype, familyid, eddesc
+      id, name, type, code, codetype, familyid, eddesc,sort
     </if>
     <if test="fields != null" >
       ${fields}
@@ -95,7 +96,7 @@
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
-    id,name,type,code,codetype,familyid,eddesc
+    id,name,type,code,codetype,familyid,eddesc,sort
     from jp_editorial_board
     where id = #{id,jdbcType=VARCHAR}
   </select>
@@ -112,10 +113,10 @@
   <insert id="insert" parameterType="com.jp.entity.EditorialBoard" >
     insert into jp_editorial_board (id, name, type, 
       code, codetype, familyid, 
-      eddesc)
+      eddesc,sort)
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
       #{code,jdbcType=VARCHAR}, #{codetype,jdbcType=VARCHAR}, #{familyid,jdbcType=VARCHAR}, 
-      #{eddesc,jdbcType=VARCHAR})
+      #{eddesc,jdbcType=VARCHAR}),#{sort,jdbcType=INTEGER}
   </insert>
   <insert id="insertSelective" parameterType="com.jp.entity.EditorialBoard" >
     insert into jp_editorial_board
