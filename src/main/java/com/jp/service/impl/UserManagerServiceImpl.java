@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.druid.util.StringUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jp.common.CurrentUserContext;
@@ -47,15 +48,28 @@ public class UserManagerServiceImpl implements UserManagerService {
 		for (UserManager manager : managers) {
 			example.clear();
 			example.setOrderByClause("ismanager desc");
+
 			if (manager.getEbtype() == 1) {
 				// 总编委会查询所有
-				example.or().andIdNotEqualTo(manager.getId()).andFamilyidEqualTo(manager.getFamilyid());
+
+				if (!StringUtils.isEmpty(entity.getUsername())) {
+					example.or().andIdNotEqualTo(manager.getId()).andFamilyidEqualTo(manager.getFamilyid())
+							.andUsernameLike("%" + entity.getUsername() + "%");
+				} else {
+					example.or().andIdNotEqualTo(manager.getId()).andFamilyidEqualTo(manager.getFamilyid());
+				}
 
 				// list = userManagerMapper.selectByExample(example);
 				// rtnlist.addAll(list);
 				break;
 			}
-			example.or().andEbidEqualTo(manager.getEbid()).andIdNotEqualTo(manager.getId());
+			if (!StringUtils.isEmpty(entity.getUsername())) {
+				example.or().andEbidEqualTo(manager.getEbid()).andIdNotEqualTo(manager.getId())
+						.andUsernameLike("%" + entity.getUsername() + "%");
+			} else {
+				example.or().andEbidEqualTo(manager.getEbid()).andIdNotEqualTo(manager.getId());
+			}
+
 			// list = userManagerMapper.selectByExample(example);
 			// rtnlist.addAll(list);
 		}
