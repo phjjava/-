@@ -75,6 +75,11 @@ public class ConstantUtils implements Serializable {
 	public static String HEADER_VERSION = "version";// 版本号
 	public static String HEADER_DEVICEID = "deviceid";// 版本号
 	public static String HEADER_INTERNETTYPE = "internetType";// 运营商
+	
+	//族圈状态  展示类型ALL,PRIIVATE,SELECT
+	public static String MOMENT_ALL = "ALL";	//INVITE_USER企业管理员邀请用户
+	public static String MOMENT_PRIIVATE = "PRIIVATE";		//ADMIN_ADD后台管理添加
+	public static String MOMENT_SELECT = "SELECT";	//ADMIN_IMPORT后台管理导入
 
 	/**
 	 * @功能 性别

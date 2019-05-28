@@ -218,7 +218,7 @@ public class User implements Serializable {
     //用户相册
     private List<Useralbum> userAblumList;
     //配偶
-    private List<Usermates> mateList;
+    private List<User> mateList;
     //分支信息
     private Branch branch;
     
@@ -270,11 +270,11 @@ public class User implements Serializable {
 		this.userAblumList = userAblumList;
 	}
 
-	public List<Usermates> getMateList() {
+	public List<User> getMateList() {
 		return mateList;
 	}
 
-	public void setMateList(List<Usermates> mateList) {
+	public void setMateList(List<User> mateList) {
 		this.mateList = mateList;
 	}
 

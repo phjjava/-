@@ -103,5 +103,18 @@ public interface UserDao {
 	
 	List<EditorialBoard> selectManagerBranchidsByUserid(Map<String, String> map);
 	
+	List<User> selectUserByBranchids(@Param("array") String[] strs);
+
+	List<User> selectUserByTag(@Param("array") String[] strs);
+	
+	/**
+	 * 获取用户的其他配偶列表
+	 * @param userid
+	 * @param mateid
+	 * @return
+	 */
+	List<User> selectMateList(@Param("userid")String userid,@Param("mateid")String mateid);
+	
+	
 	
 }
