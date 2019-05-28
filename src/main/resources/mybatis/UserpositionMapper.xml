@@ -186,4 +186,8 @@
       sex = #{sex,jdbcType=INTEGER}
     where id = #{id,jdbcType=VARCHAR}
   </update>
+  
+  	<select id="selectBySex" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  		SELECT * FROM jp_userposition WHERE sex = #{sex}
+  	</select>
 </mapper>
