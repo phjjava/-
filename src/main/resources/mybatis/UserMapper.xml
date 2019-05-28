@@ -980,4 +980,33 @@ and jm.ebid = je.id and jm.familyid = je.familyid
 and jm.userid = #{userid}
    </select>
    
+   <select id="selectUserByBranchids" resultType="com.jp.entity.User">
+ 	select * from jp_user 
+ 	where
+ 	deleteflag = 0 
+ 	and status = 0
+ 	and branchid in
+ 	 <foreach collection="array" item="item" index="index" open="(" separator="," close=")">
+	  			#{item}
+	 </foreach>
+ </select>
+  
+  <select id="selectUserByTag" resultType="com.jp.entity.User">
+ 	select u.* from jp_user_tag t left join jp_user_tag_user tu on t.id = tu.tag_id left join jp_user u on tu.userid = u.userid 
+ 	where t.deleteflag = 0
+ 	and tu.deleteflag = 0
+ 	and u.deleteflag = 0
+ 	and u.status = 0 
+ 	and t.id in
+ 	<foreach collection="array" item="item" index="index" open="(" separator="," close=")">
+	  			#{item}
+	</foreach>
+ </select>
+ 
+ <select id="selectMateList" resultType="com.jp.entity.User">
+ 	select * from jp_user 
+ 	where mateid = #{userid,jdbcType=VARCHAR}
+ 	and userid != #{mateid,jdbcType=VARCHAR}
+ </select>
+   
 </mapper>

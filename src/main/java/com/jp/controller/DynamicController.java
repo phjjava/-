@@ -1,8 +1,10 @@
 package com.jp.controller;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +36,7 @@ import com.jp.entity.DynamicfileQuery;
 import com.jp.entity.Dytop;
 import com.jp.entity.DytopQuery;
 import com.jp.service.DynamicService;
+import com.jp.util.JacksonUtil;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 import com.jp.util.UploadUtil;
@@ -152,10 +155,18 @@ public class DynamicController {
     
     @ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST,produces = { "application/json;charset=UTF-8" })
-	public JsonResponse saveDynamic(Dynamic dynamic,HttpServletRequest request,String fileids)  {
+	public JsonResponse saveDynamic(HttpServletRequest request) throws IOException  {
     	Result result = new Result(MsgConstants.RESUL_FAIL);
  	    JsonResponse res = null;
 		String dyfidArray [] = null;
+		BufferedReader reader = request.getReader();
+		StringBuilder sb = new StringBuilder();
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			sb.append(line);
+		}
+		String jsonstr = sb.toString();
+		Dynamic dynamic = JacksonUtil.fromJsonToObject(jsonstr, Dynamic.class);
 		try{
 			List<Dynamicfile> dyList  = dynamic.getDynamicFiles();
 			if(StringTools.trimNotEmpty(dynamic.getDyid())) {

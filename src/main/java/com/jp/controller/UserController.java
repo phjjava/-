@@ -174,7 +174,6 @@ public class UserController {
 	@RequestMapping(value = "/edit", method = RequestMethod.GET)
 	@ResponseBody
 	public JsonResponse editUser(HttpServletRequest request, ModelMap modelMap) {
-		// String result = null;
 		Result result = null;
 		JsonResponse res = null;
 		SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
@@ -271,7 +270,8 @@ public class UserController {
 				}
 			}
 			// 查询配偶
-			List<Usermates> mateList = userMatesDao.selectmateIdByUserId(userid);
+			// List<Usermates> mateList = userMatesDao.selectmateIdByUserId(userid);
+			List<User> mateList = userDao.selectMateList(userid, user.getMateid());
 			// 增加父（母）亲姓名和世系信息回写
 			User puser = userService.selectByPrimaryKey(user.getPid());
 			user.setPgenlevel(puser.getGenlevel() + "世");
@@ -733,14 +733,23 @@ public class UserController {
 	 * @参数 @param user
 	 * @参数 @return
 	 * @return String
+	 * @throws IOException 
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/mergeMate", method = RequestMethod.POST)
-	public JsonResponse mergeUserMate(User user, Userinfo userInfo, String usernameBefore) {
+	public JsonResponse mergeUserMate(HttpServletRequest request) throws IOException {
 		Result result = null;
 		JsonResponse res = null;
+		BufferedReader reader = request.getReader();
+		StringBuilder sb = new StringBuilder();
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			sb.append(line);
+		}
+		String jsonstr = sb.toString();
+		User user = JacksonUtil.fromJsonToObject(jsonstr, User.class);
 		try {
-			result = userService.mergeMate(user, userInfo, usernameBefore);
+			result = userService.mergeMate(user, user.getUserInfo(), "");
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			e.printStackTrace();
