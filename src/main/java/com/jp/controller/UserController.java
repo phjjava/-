@@ -488,15 +488,11 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/importUser", method = RequestMethod.POST, produces = { "application/json;charset=UTF-8" })
 	public JsonResponse importUser(MultipartFile file, HttpServletRequest request) {
-		// String result = "";
 		Result result = null;
 		JsonResponse res = null;
 		try {
 			res = userService.importUsers(file, request);
-			// result = res;
 		} catch (Exception e) {
-			// result = "0";
-			// result.setStatus(0);
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
@@ -518,16 +514,13 @@ public class UserController {
 	 * @return String
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/importUsermates", method = RequestMethod.POST)
+	@RequestMapping(value = "/importUsermates", method = RequestMethod.POST, produces = { "application/json;charset=UTF-8" })
 	public JsonResponse importUsermates(MultipartFile file, HttpServletRequest request) {
-		// String result = "";
 		Result result = null;
 		JsonResponse res = null;
 		try {
 			res = userService.importUserMates(file, request);
 		} catch (Exception e) {
-			// result = "0";
-			// result.setStatus(0);
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
