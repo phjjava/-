@@ -233,4 +233,15 @@ public class UserManagerControll {
 	// return gsonStr;
 	// }
 
+	/**
+	 * 获取职务的下拉列表
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "/getPost", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse getPost() {
+		return userManagerService.getPost();
+
+	}
 }

@@ -2,9 +2,8 @@ package com.jp.service;
 
 import java.util.List;
 
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
-import com.jp.entity.EditorialBoard;
-import com.jp.entity.Role;
 import com.jp.entity.UserManager;
 
 public interface UserManagerService {
@@ -18,9 +17,7 @@ public interface UserManagerService {
 	 * @参数 @throws Exception
 	 * @return PageModel<Role>
 	 */
-	PageModel<UserManager> pageQuery(PageModel<UserManager> pageModel,UserManager entity) throws Exception;
-
-	
+	PageModel<UserManager> pageQuery(PageModel<UserManager> pageModel, UserManager entity) throws Exception;
 
 	/**
 	 * @描述 获取编委会详情
@@ -42,9 +39,8 @@ public interface UserManagerService {
 	 * @参数 @throws Exception
 	 * @return int
 	 */
-	Integer update(UserManager manager,String[] functionids) throws Exception;
-	
-	
+	Integer update(UserManager manager, String[] functionids) throws Exception;
+
 	/**
 	 * @描述 新增编委会
 	 * @作者 chenxiaobing
@@ -54,16 +50,14 @@ public interface UserManagerService {
 	 * @参数 @throws Exception
 	 * @return List<Role>
 	 */
-	Integer insert(UserManager manager,String[] functionids) throws Exception;
+	Integer insert(UserManager manager, String[] functionids) throws Exception;
 
 	int del(String id);
 
-
-
 	List<UserManager> selectManagerByUserid(String userid);
 
-
-
 	UserManager selectByFamilyId(String familyid);
+
+	JsonResponse getPost();
 
 }
