@@ -316,7 +316,6 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public JsonResponse importUsers(MultipartFile file, HttpServletRequest request) throws Exception {
-		// String result = "";
 		Result result = null;
 		JsonResponse res = null;
 		String branchid  = request.getParameter("branchid");
@@ -325,17 +324,12 @@ public class UserServiceImpl implements UserService {
 		branchkey.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 		Branch branch = branchDao.selectByPrimaryKey(branchkey);
 		if(branch==null) {
-			/*result.setStatus(0);
-			result.setMsg("当前分支不存在！");*/
 			result = new Result(MsgConstants.USER_NO_BRANCH);
 			res = new JsonResponse(result);
 			return res;
 		}
 		
 		if (file == null) {
-			// result = "0";
-			/*result.setStatus(0);
-			result.setMsg("当前文件不存在！");*/
 			result = new Result(MsgConstants.USER_NO_FILE);
 			res = new JsonResponse(result);
 			return res;
@@ -356,6 +350,7 @@ public class UserServiceImpl implements UserService {
 		// 获取文件名称
 		String name = file.getOriginalFilename();
 		String excelid = UUIDUtils.getUUID();
+		boolean importResult = true ;
 		if (name.indexOf(".xlsx") != -1) {
 			XSSFWorkbook wb = new XSSFWorkbook(file.getInputStream());
 			// 循环三sheet
@@ -474,6 +469,7 @@ public class UserServiceImpl implements UserService {
 					if(userAleardyList !=null && userAleardyList.size()>0) {
 						for(User uuu : userAleardyList) {
 							if(uuu.getUsername().equals(username) && uuu.getGenlevel()==genlevel) {
+								importResult = false;
 								user.setIsnormal(0);
 								user.setMsg("存在重名同世系用户请特殊处理！");
 								break;
@@ -484,6 +480,7 @@ public class UserServiceImpl implements UserService {
 					String key = ((int) genlevel - 1) + pname;
 					if((pname==null || "".equals(pname))&&rowNum==1){
 						if(userMap.containsKey((int) genlevel + username)) {
+							importResult = false;
 							user.setIsnormal(0);
 							user.setMsg("存在重名同世系用户请特殊处理！");
 						}
@@ -496,11 +493,13 @@ public class UserServiceImpl implements UserService {
 						User userTemp = userMap.get(key);
 						user.setPid(userTemp.getUserid());
 						if(userMap.containsKey((int) genlevel + username)) {
+							importResult = false;
 							user.setIsnormal(0);
 							user.setMsg("存在重名同世系用户请特殊处理！");
 						}
 						userMap.put((int) genlevel + username, user);
 					} else {
+						importResult = false;
 						user.setIsnormal(0);
 						user.setMsg("请核对世系或父亲名字！");
 					}
@@ -535,22 +534,23 @@ public class UserServiceImpl implements UserService {
 					userInfo.setNation(nation);
 					userInfo.setBackground(background);
 					userInfo.setRemark(remark);
+					// userList.add(user);
+					// userInfoList.add(userInfo);
+					boolean sameFlag = checkSameUser(user);
+					if(sameFlag) {
+						importResult = false;
+						user.setIsnormal(0);
+						user.setMsg("数据库已存在该数据！");
+					}
 					userList.add(user);
 					userInfoList.add(userInfo);
-//					boolean sameFlag = checkSameUser(user);
-//					if (sameFlag) {
-//						continue;
-//					} else {
-//						userList.add(user);
-//						userInfoList.add(userInfo);
-//					}
 				}
 			}
 			
-			if (userList != null && userList.size() > 0) {
+			if (userList != null && userList.size() > 0 && importResult) {
 				userImportMapper.importUser(userList);
 			}
-			if (userInfoList != null && userInfoList.size() > 0) {
+			if (userInfoList != null && userInfoList.size() > 0 && importResult) {
 				userInfoImportMapper.importUser(userInfoList);
 			}
 			// }
@@ -674,6 +674,7 @@ public class UserServiceImpl implements UserService {
 					if(userAleardyList !=null && userAleardyList.size()>0) {
 						for(User uuu : userAleardyList) {
 							if(uuu.getUsername().equals(username) && uuu.getGenlevel()==genlevel) {
+								importResult = false;
 								user.setIsnormal(0);
 								user.setMsg("存在重名同世系用户请特殊处理！");
 								break;
@@ -683,6 +684,7 @@ public class UserServiceImpl implements UserService {
 					}
 					if((pname==null || "".equals(pname))&& i==1){
 						if(userMap.containsKey((int) genlevel + username)) {
+							importResult = false;
 							user.setIsnormal(0);
 							user.setMsg("存在重名同世系用户请特殊处理！");
 						}
@@ -695,11 +697,13 @@ public class UserServiceImpl implements UserService {
 						User userTemp = userMap.get(key);
 						user.setPid(userTemp.getUserid());
 						if(userMap.containsKey((int) genlevel + username)) {
+							importResult = false;
 							user.setIsnormal(0);
 							user.setMsg("存在重名同世系用户请特殊处理！");
 						}
 						userMap.put((int) genlevel + username, user);
 					} else {
+						importResult = false;
 						user.setIsnormal(0);
 						user.setMsg("请核对世系或父亲名字！");
 					}
@@ -731,46 +735,48 @@ public class UserServiceImpl implements UserService {
 					userInfo.setNation(nation);
 					userInfo.setBackground(background);
 					userInfo.setRemark(remark);
+					// userList.add(user);
+					// userInfoList.add(userInfo);
+					boolean sameFlag = checkSameUser(user);
+					if(sameFlag) {
+						importResult = false;
+						user.setIsnormal(0);
+						user.setMsg("数据库已存在该数据！");
+					}
 					userList.add(user);
 					userInfoList.add(userInfo);
-//					boolean sameFlag = checkSameUser(user);
-//					if (sameFlag) {
-//						continue;
-//					} else {
-//						userList.add(user);
-//						userInfoList.add(userInfo);
-//					}
 				}
 			}
-			if (userList != null && userList.size() > 0) {
+			if (userList != null && userList.size() > 0  && importResult) {
 				userImportMapper.importUser(userList);
 			}
-			if (userInfoList != null && userInfoList.size() > 0) {
+			if (userInfoList != null && userInfoList.size() > 0 && importResult) {
 				userInfoImportMapper.importUser(userInfoList);
 			}
 
 		}
-		// result = "1";
-//		result.setStatus(1);
 		if (userList.size() < 1) {
 			result = new Result(MsgConstants.USER_NO_IMPORT); 
 			res = new JsonResponse(result);
-//			result.setStatus(500);
 			String userString = GsonUtil.GsonString(userStringList);
 			res.setData(userString);
-//			result.setData1(userString);
 		}else{
 			userStringList.add("本次共导入用户" + userList.size() + "人");
 			String userString = GsonUtil.GsonString(userStringList);
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
-			res.setData(userString);
-			res.setEntity(excelid);
-			/*result.setData(userList);
-			result.setData1(userString);
-			result.setData2(excelid);*/
+			if(importResult) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(userList);
+				res.setData1(userString);
+				res.setEntity(excelid);
+			}else {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				res = new JsonResponse(result);
+				res.setData(userList);
+				res.setData1(userString);
+			}
+			
 		}
-	//	result.setMsg("本次共导入用户" + userList.size() + "人");
 		return res;
 	}
 
@@ -908,9 +914,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public JsonResponse importUserMates(MultipartFile file, HttpServletRequest request) throws Exception {
-		// String result = "";
 		String msg = "";
-//		Result result = new Result();
 		Result result= null;
 		JsonResponse res = null;
 		String branchid  = request.getParameter("branchid");
@@ -919,16 +923,12 @@ public class UserServiceImpl implements UserService {
 		branchkey.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 		Branch branch = branchDao.selectByPrimaryKey(branchkey);
 		if(branch==null) {
-			/*result.setStatus(0);
-			result.setMsg("当前分支不存在！");*/
 			result = new Result(MsgConstants.USER_NO_BRANCH);
 			res = new JsonResponse(result);
 			return res;
 		}
 		
 		if (file == null) {
-			// result = "0";
-			//result.setStatus(0);
 			result = new Result(MsgConstants.USER_NO_FILE);
 			res = new JsonResponse(result);
 			return res;
@@ -973,6 +973,7 @@ public class UserServiceImpl implements UserService {
 		String excelid = UUIDUtils.getUUID();
 		Userinfo userInfo ;
 		List<Userinfo> userInfoList = new ArrayList<Userinfo>();
+		boolean importResult = true;
 		if (name.indexOf(".xlsx") != -1) {
 			XSSFWorkbook wb = new XSSFWorkbook(file.getInputStream());
 			// 循环三sheet
@@ -985,9 +986,6 @@ public class UserServiceImpl implements UserService {
 //				boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), totalRows - 1);
 				boolean flag = checkFamilyUserNumber(totalRows - 1);
 				if (flag == false) {
-					/*result.setStatus(2);
-					result.setMsg("导入配偶数量超过版本最大用户限制!");
-					return result;*/
 					result = new Result(MsgConstants.USER_SAVE_OUTMAX);
 					res = new JsonResponse(result);
 					return res;
@@ -1100,6 +1098,7 @@ public class UserServiceImpl implements UserService {
 									
 									// 维护当前配偶id
 									if(userAl==null) {
+										importResult = false;
 										user.setIsnormal(0);
 										user.setMsg("请检查配偶姓名或世系！");
 									}
@@ -1132,6 +1131,7 @@ public class UserServiceImpl implements UserService {
 //									boolean sameFlag = checkSameUser(user);
 									boolean sameFlag = checkSameMateUser(user,userStringList);	
 									if (sameFlag) {
+										importResult = false;
 										user.setIsnormal(0);
 										user.setMsg("请勿重复导入配偶！");
 										continue;
@@ -1207,25 +1207,23 @@ public class UserServiceImpl implements UserService {
 					}
 				}
 				// 批量导入妻子或丈夫配偶 user
-				if (userList != null && userList.size() > 0) {
+				if (userList != null && userList.size() > 0 && importResult) {
 					userImportMapper.importUser(userList);
 				}
 
 				// 批量更新 已存在的用户
-				if (userAleardyListUpdate != null && userAleardyListUpdate.size() > 0) {
+				if (userAleardyListUpdate != null && userAleardyListUpdate.size() > 0 && importResult) {
 					userDao.updateAleardyUser(userAleardyListUpdate);
 				}
 
 				// 批量插入 配偶 表
-				if (userMatesList != null && userMatesList.size() > 0) {
+				if (userMatesList != null && userMatesList.size() > 0 && importResult) {
 					userMatesDao.insertMatesList(userMatesList);
 				}
 				// 批量插入 配偶 表
-				if (userInfoList != null && userInfoList.size() > 0) {
+				if (userInfoList != null && userInfoList.size() > 0 && importResult) {
 					userInfoImportMapper.importUser(userInfoList);
 				}
-				// result ="1";
-//				result.setStatus(1);
 			}
 		} else {
 			ExcelUtil eutil = null;
@@ -1241,9 +1239,6 @@ public class UserServiceImpl implements UserService {
 //			boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), lastRowNum - 1);
 			boolean flag = checkFamilyUserNumber(lastRowNum - 1);
 			if (flag == false) {
-				/*result.setStatus(2);
-				result.setMsg("导入配偶数量超过版本最大用户限制!");
-				return result;*/
 				result = new Result(MsgConstants.USER_SAVE_OUTMAX);
 				res = new JsonResponse(result);
 				return res;
@@ -1356,6 +1351,7 @@ public class UserServiceImpl implements UserService {
 								user.setCreatetime(new Date());
 								// 维护当前配偶id
 								if(userAl==null) {
+									importResult = false;
 									user.setIsnormal(0);
 									user.setMsg("请检查配偶姓名或世系！");
 								}
@@ -1386,6 +1382,7 @@ public class UserServiceImpl implements UserService {
 								userList.add(user);
 								boolean sameFlag = checkSameMateUser(user,userStringList);	
 								if (sameFlag) {
+									importResult = false;
 									user.setIsnormal(0);
 									user.setMsg("请勿重复导入配偶！");
 									continue;
@@ -1394,6 +1391,7 @@ public class UserServiceImpl implements UserService {
 								}
 								
 								if(n>1) {
+									importResult = false;
 									user.setMsg("当前用户存在多个同名同世系配偶！");
 								}else {
 								
@@ -1464,43 +1462,45 @@ public class UserServiceImpl implements UserService {
 				}
 			}
 			// 批量导入妻子或丈夫配偶 user
-			if (userList != null && userList.size() > 0) {
+			if (userList != null && userList.size() > 0 && importResult) {
 				userImportMapper.importUser(userList);
 			}
 
 			// 批量更新 已存在的用户
-			if (userAleardyListUpdate != null && userAleardyListUpdate.size() > 0) {
+			if (userAleardyListUpdate != null && userAleardyListUpdate.size() > 0 && importResult) {
 				userDao.updateAleardyUser(userAleardyListUpdate);
 			}
 
 			// 批量插入 配偶 表
-			if (userMatesList != null && userMatesList.size() > 0) {
+			if (userMatesList != null && userMatesList.size() > 0 && importResult) {
 				userMatesDao.insertMatesList(userMatesList);
 			}
 			// 批量插入info
-			if (userInfoList != null && userInfoList.size() > 0) {
+			if (userInfoList != null && userInfoList.size() > 0 && importResult) {
 				userInfoImportMapper.importUser(userInfoList);
 			}
-			// result ="1";
-			// result.setStatus(1);
 			// 如果符合导入条件的配偶信息条数不为零
 			if (userMatesList.size() < 1&&userList.size()<1) {
-				/*result.setStatus(500);
-				result.setData1(userMatesString);*/
 				String userMatesString = GsonUtil.GsonString(userMateStringList);
 				result = new Result(MsgConstants.USER_NO_IMPORT);
 				res = new JsonResponse(result);
 				res.setData(userMatesString);
 			}else{
-				result = new Result(MsgConstants.RESUL_SUCCESS);
-				res = new JsonResponse(result);
 				userMateStringList.add("本次共导入配偶" + userMatesList.size() + "人");
 				String userMatesString = GsonUtil.GsonString(userMateStringList);
-				res.setData(userList);
+				if(importResult) {
+					result = new Result(MsgConstants.RESUL_SUCCESS);
+					res = new JsonResponse(result);
+					res.setData(userList);
+					res.setData1(userMatesString);
+					res.setEntity(excelid);
+				}else {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					res = new JsonResponse(result);
+					res.setData(userList);
+					res.setData1(userMatesString);
+				}
 				res.setEntity(userMatesString);
-				/*result.setData(userList);
-				result.setData1(userMatesString);
-				result.setData2(excelid);*/
 			}
 			/*String msString="";
 			if(userStringList.size()>0){

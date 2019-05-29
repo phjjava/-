@@ -22,6 +22,7 @@ public class MsgConstants {
 	public static final Result USER_NO_FILE = new Result(2005,"当前文件不存在");
 	public static final Result USER_NO_IMPORT = new Result(2006,"当前没有导入任何数据");
 	public static final Result USER_PHONE_REPEAT = new Result(2007,"手机号重复");
+	public static final Result IMPORT_USER_NAMEREPEAT = new Result(2008,"存在重名同世系用户请特殊处理！");
 	
 	//分支管理异常码
 	public static final Result BRANCH_VALIDATA_NAME = new Result(3001,"当前分支名称已存在");
@@ -46,6 +47,9 @@ public class MsgConstants {
 	public static final Result STATUS_IS_NULL = new Result(5012,"缺少向上查询世系参数");
 	public static final Result MEAUTYPE_IS_NULL = new Result(5013,"参数meautype不能为空");
 	public static final Result ALBUMID_IS_NULL = new Result(5014,"参数albumid不能为空");
+	
+	
+	
 	
 	
 	
