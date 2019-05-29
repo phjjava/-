@@ -202,8 +202,9 @@ public class UseralbumServiceImpl implements UseralbumService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (userAlbum.getSort() != null)
+		if (userAlbum.getSort() != null) {
 			sort = userAlbum.getSort();
+		}
 		userAlbum.setAlbumid(UUIDUtils.getUUID());
 		userAlbum.setSort(sort);
 		// 个人只能创建个人相册
@@ -249,8 +250,9 @@ public class UseralbumServiceImpl implements UseralbumService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (userPhoto.getSort() != null)
+		if (userPhoto.getSort() != null) {
 			sort = userPhoto.getSort();
+		}
 		userPhoto.setImgid(UUIDUtils.getUUID());
 		userPhoto.setCreateid(userPhoto.getUserid());
 		userPhoto.setUpdateid(userPhoto.getUserid());
