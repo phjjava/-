@@ -10,7 +10,10 @@ import com.alibaba.druid.util.StringUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jp.common.CurrentUserContext;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.dao.FunctionRoleMapper;
 import com.jp.dao.PostMapper;
 import com.jp.dao.UserManagerMapper;
@@ -161,6 +164,25 @@ public class UserManagerServiceImpl implements UserManagerService {
 		UserManagerExample example = new UserManagerExample();
 		example.or().andFamilyidEqualTo(familyid).andEbtypeEqualTo(1).andIsmanagerEqualTo(1);
 		return userManagerMapper.selectByExample(example).get(0);
+	}
+
+	@Override
+	public JsonResponse getPost() {
+		Result result = null;
+		JsonResponse res = null;
+		List<Post> allPost = null;
+		try {
+			allPost = postMapper.selectAllPost();
+		} catch (Exception e) {
+			e.printStackTrace();
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(allPost);
+		return res;
 	}
 
 	// @Override

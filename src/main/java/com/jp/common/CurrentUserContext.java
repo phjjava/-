@@ -35,7 +35,8 @@ public class CurrentUserContext implements Serializable {
 	public static LoginUserInfo getUserContext() {
 		LoginUserInfo userContext = null;
 		try {
-			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+					.getRequest();
 			HttpSession session = request.getSession();
 
 			userContext = (LoginUserInfo) session.getAttribute("userContext");
@@ -45,7 +46,7 @@ public class CurrentUserContext implements Serializable {
 		}
 		return userContext;
 	}
-	
+
 	/**
 	 * @描述 获取登录用户ID
 	 * @作者 wumin
@@ -56,7 +57,8 @@ public class CurrentUserContext implements Serializable {
 	public static String getCurrentUserId() {
 		LoginUserInfo userContext = null;
 		try {
-			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+					.getRequest();
 			HttpSession session = request.getSession();
 
 			userContext = (LoginUserInfo) session.getAttribute("userContext");
@@ -80,7 +82,8 @@ public class CurrentUserContext implements Serializable {
 		LoginUserInfo userContext = null;
 		String familyid = "";
 		try {
-			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+					.getRequest();
 			HttpSession session = request.getSession();
 
 			userContext = (LoginUserInfo) session.getAttribute("userContext");
@@ -91,7 +94,7 @@ public class CurrentUserContext implements Serializable {
 		}
 		return familyid;
 	}
-	
+
 	/**
 	 * 
 	 * @描述 获取登录用户家族名称
@@ -105,7 +108,8 @@ public class CurrentUserContext implements Serializable {
 		LoginUserInfo userContext = null;
 		String familyid = "";
 		try {
-			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+					.getRequest();
 			HttpSession session = request.getSession();
 
 			userContext = (LoginUserInfo) session.getAttribute("userContext");
@@ -127,7 +131,8 @@ public class CurrentUserContext implements Serializable {
 	public static String getCurrentUserName() {
 		LoginUserInfo userContext = null;
 		try {
-			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+					.getRequest();
 			HttpSession session = request.getSession();
 
 			userContext = (LoginUserInfo) session.getAttribute("userContext");
@@ -137,24 +142,24 @@ public class CurrentUserContext implements Serializable {
 			log_.error("[HNFZERROR-获取登录用户信息失败：]", e);
 		}
 		return userContext.getUser().getUsername();
-		
-		
-/*		String userId = null;
-		// LoginUserInfo loginUserInfo = getUserContext();
-		// if (loginUserInfo != null) {
-		// userId = loginUserInfo.getUserInfo().getName();
-		// }
 
-		return userId;*/
+		/*
+		 * String userId = null; // LoginUserInfo loginUserInfo = getUserContext(); //
+		 * if (loginUserInfo != null) { // userId =
+		 * loginUserInfo.getUserInfo().getName(); // }
+		 * 
+		 * return userId;
+		 */
 	}
-	
+
 	public static String getCurrentBranch() {
 		LoginUserInfo userContext = null;
 		String branchJson = null;
 		try {
-			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+					.getRequest();
 			HttpSession session = request.getSession();
-			
+
 			userContext = (LoginUserInfo) session.getAttribute("userContext");
 			List<Branch> branchList = userContext.getBranchList();
 			branchJson = GsonUtil.GsonString(branchList);
@@ -164,40 +169,41 @@ public class CurrentUserContext implements Serializable {
 		}
 		return branchJson;
 	}
-	
-	public static List<String> getCurrentBranchIds(){
+
+	public static List<String> getCurrentBranchIds() {
 		LoginUserInfo userContext = null;
 		List<String> branchids = null;
 		try {
-			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+					.getRequest();
 			HttpSession session = request.getSession();
-			
+
 			userContext = (LoginUserInfo) session.getAttribute("userContext");
 			List<Branch> branchList = userContext.getBranchList();
 			branchids = new ArrayList<String>();
-			
-			for(Branch branch:branchList){
+
+			for (Branch branch : branchList) {
 				branchids.add(branch.getBranchid());
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[HNFZERROR-获取登录用户信息失败：]", e);
 		}
 		return branchids;
 	}
-	
-	public static List<UserManager> getCurrentUserManager(){
+
+	public static List<UserManager> getCurrentUserManager() {
 		LoginUserInfo userContext = null;
 		List<UserManager> managers = null;
 		try {
-			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+					.getRequest();
 			HttpSession session = request.getSession();
-			
+
 			userContext = (LoginUserInfo) session.getAttribute("userContext");
 			managers = userContext.getUsermanagers();
-			
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[HNFZERROR-获取登录用户信息失败：]", e);
