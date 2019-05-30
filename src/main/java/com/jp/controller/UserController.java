@@ -274,7 +274,10 @@ public class UserController {
 			List<User> mateList = userDao.selectMateList(userid, user.getMateid());
 			// 增加父（母）亲姓名和世系信息回写
 			User puser = userService.selectByPrimaryKey(user.getPid());
-			user.setPgenlevel(puser.getGenlevel() + "世");
+			// 兼容分支起始人没有父系信息
+			if(puser != null) {
+				user.setPgenlevel(puser.getGenlevel() + "世");
+			}
 			user.setUserInfo(userInfo);
 			user.setBranchList((List<Branch>) pageModel.getList());
 			user.setUserWorkexp(workList);
