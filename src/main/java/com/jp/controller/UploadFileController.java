@@ -23,9 +23,9 @@ import com.jp.util.GsonUtil;
 import com.jp.util.UploadUtil;
 
 @Controller
-@RequestMapping("upload")
-public class UploadController {
-	private final Logger log_ = LogManager.getLogger(UploadController.class);
+@RequestMapping("uploadFile")
+public class UploadFileController {
+	private final Logger log_ = LogManager.getLogger(UploadFileController.class);
 
 	/**
 	 * 

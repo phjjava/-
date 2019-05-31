@@ -51,7 +51,7 @@ public interface UserService {
 	 * @参数 @throws Exception
 	 * @return PageModel
 	 */
-	PageModel selectUserList(PageModel pageModel, User user, List<String> branchList) throws Exception;
+	PageModel<User> selectUserList(PageModel<User> pageModel, User user, List<String> branchList) throws Exception;
 
 	/**
 	 * 

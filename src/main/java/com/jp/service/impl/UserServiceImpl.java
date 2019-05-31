@@ -299,7 +299,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public PageModel selectUserList(PageModel pageModel, User user, List<String> branchList) throws Exception {
+	public PageModel<User> selectUserList(PageModel<User> pageModel, User user, List<String> branchList)
+			throws Exception {
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 
 		// CurrentUserContext.getUserContext().getRole().getIsmanager();
