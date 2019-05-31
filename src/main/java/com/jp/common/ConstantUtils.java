@@ -45,6 +45,11 @@ public class ConstantUtils implements Serializable {
 	 */
 	public static Integer ISSEE_DEFAULT = 1;// 不可见
 	public static Integer ISSEE_SHOW = 0;// 可见
+
+	public static Integer USER_STATUS_OK = 0; // 用户状态标记，正式
+	public static Integer USER_STATUS_WAIT = 1; // 用户状态标记，审核中
+	public static Integer USER_STATUS_NO = 2; // 用户状态标记，审核未通过
+
 	/**
 	 * 默认下拉框民族选项字符串
 	 */
@@ -75,11 +80,13 @@ public class ConstantUtils implements Serializable {
 	public static String HEADER_VERSION = "version";// 版本号
 	public static String HEADER_DEVICEID = "deviceid";// 版本号
 	public static String HEADER_INTERNETTYPE = "internetType";// 运营商
-	
-	//族圈状态  展示类型ALL,PRIIVATE,SELECT
-	public static String MOMENT_ALL = "ALL";	//INVITE_USER企业管理员邀请用户
-	public static String MOMENT_PRIIVATE = "PRIIVATE";		//ADMIN_ADD后台管理添加
-	public static String MOMENT_SELECT = "SELECT";	//ADMIN_IMPORT后台管理导入
+
+	// 族圈状态 展示类型ALL,PRIIVATE,SELECT
+	public static String MOMENT_ALL = "ALL"; // INVITE_USER企业管理员邀请用户
+	public static String MOMENT_PRIIVATE = "PRIIVATE"; // ADMIN_ADD后台管理添加
+	public static String MOMENT_SELECT = "SELECT"; // ADMIN_IMPORT后台管理导入
+
+	public static Map<String, String> SESSION_MAP = new HashMap<String, String>();// 用来保存用户的sessionid,key为用户的id
 
 	/**
 	 * @功能 性别

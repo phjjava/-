@@ -1,30 +1,35 @@
 package com.jp.dao;
 
-import com.jp.entity.Usercode;
-import com.jp.entity.UsercodeQuery;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 
+import com.jp.entity.Usercode;
+import com.jp.entity.UsercodeQuery;
+
 public interface UsercodeDao {
-    int countByExample(UsercodeQuery example);
+	int countByExample(UsercodeQuery example);
 
-    int deleteByExample(UsercodeQuery example);
+	int deleteByExample(UsercodeQuery example);
 
-    int deleteByPrimaryKey(String id);
+	int deleteByPrimaryKey(String id);
 
-    int insert(Usercode record);
+	int insert(Usercode record);
 
-    int insertSelective(Usercode record);
+	int insertSelective(Usercode record);
 
-    List<Usercode> selectByExample(UsercodeQuery example);
+	List<Usercode> selectByExample(UsercodeQuery example);
 
-    Usercode selectByPrimaryKey(String id);
+	Usercode selectByPrimaryKey(String id);
 
-    int updateByExampleSelective(@Param("record") Usercode record, @Param("example") UsercodeQuery example);
+	int updateByExampleSelective(@Param("record") Usercode record, @Param("example") UsercodeQuery example);
 
-    int updateByExample(@Param("record") Usercode record, @Param("example") UsercodeQuery example);
+	int updateByExample(@Param("record") Usercode record, @Param("example") UsercodeQuery example);
 
-    int updateByPrimaryKeySelective(Usercode record);
+	int updateByPrimaryKeySelective(Usercode record);
 
-    int updateByPrimaryKey(Usercode record);
+	int updateByPrimaryKey(Usercode record);
+
+	Usercode selectByPhone(Map<String, String> params);
 }

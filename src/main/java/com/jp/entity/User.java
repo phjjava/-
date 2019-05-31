@@ -6,19 +6,18 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.jp.entity.SysFamily;
 
 @JsonInclude(Include.NON_NULL)
 public class User implements Serializable {
-    /**
-     * 用户ID
-     */
-    private String userid;
+	/**
+	 * 用户ID
+	 */
+	private String userid;
 
-    /**
-     * 性别
-     */
-    private Integer sex;
+	/**
+	 * 性别
+	 */
+	private Integer sex;
 
 	/**
 	 * 在世状态
@@ -178,7 +177,7 @@ public class User implements Serializable {
 	 * 配偶姓名
 	 */
 	private String matename;
-	
+
 	/**
 	 * 保存配偶类型字符串信息
 	 */
@@ -195,33 +194,171 @@ public class User implements Serializable {
 	/**
 	 * 用户列表查询新增字段
 	 */
-	
-	
-	//自属性
+
+	// 自属性
 	private String searchBirthplace;
 	private String searchBirthday;
-	private String address;//用户所属分支的护体地址
-	private String msg;//导入用户出错提示信息
-	private Integer isnormal;//导入用户是否正常
-	private List<String> userids;//用户id集合   批量操作用户使用
+	private String address;// 用户所属分支的护体地址
+	private String msg;// 导入用户出错提示信息
+	private Integer isnormal;// 导入用户是否正常
+	private List<String> userids;// 用户id集合 批量操作用户使用
 	private String excelid;
-	private String pgenlevel;	//父（母）亲的世系
-	
-	//用户信息
-    private Userinfo userInfo;
-    //教育经历
-    private List<Useredu> userEdu;
-    //工作经历
-    private List<Userworkexp> userWorkexp;
-    //家族信息
-    private List<Branch> branchList;
-    //用户相册
-    private List<Useralbum> userAblumList;
-    //配偶
-    private List<User> mateList;
-    //分支信息
-    private Branch branch;
-    
+	private String pgenlevel; // 父（母）亲的世系
+
+	// 用户信息
+	private Userinfo userInfo;
+	// 教育经历
+	private List<Useredu> userEdu;
+	// 工作经历
+	private List<Userworkexp> userWorkexp;
+	// 家族信息
+	private List<Branch> branchList;
+	// 用户相册
+	private List<Useralbum> userAblumList;
+	// 配偶
+	private List<User> mateList;
+	// 分支信息
+	private Branch branch;
+
+	// 家族信息
+	private List<SysFamily> familys;
+	// 登录状态信息
+	private UserAppLimit userAppLimit;
+	// 第三方登录的openid
+	private String openid;
+	// 第三方登录的类型
+	private String thirdType;
+	// 第三方用户密钥
+	private String secret;
+	// 第三方用户昵称
+	private String nickname;
+	// 是否需要重新设置密码 1:是0:否
+	private Integer resetpwd;
+	// 用户绑定的第三方列表
+	private List<LoginThird> thirds;
+	// 是否设置了初始密码
+	private Integer isSetPwd;
+	// 用户所在家族编码
+	private String familycode;
+
+	// 自写属性:分页数据
+	private Long start;
+	private Long count;
+	private String cityname;
+	private String citycode;
+
+	public Long getStart() {
+		return start;
+	}
+
+	public void setStart(Long start) {
+		this.start = start;
+	}
+
+	public Long getCount() {
+		return count;
+	}
+
+	public void setCount(Long count) {
+		this.count = count;
+	}
+
+	public String getCityname() {
+		return cityname;
+	}
+
+	public void setCityname(String cityname) {
+		this.cityname = cityname;
+	}
+
+	public String getCitycode() {
+		return citycode;
+	}
+
+	public void setCitycode(String citycode) {
+		this.citycode = citycode;
+	}
+
+	public List<SysFamily> getFamilys() {
+		return familys;
+	}
+
+	public void setFamilys(List<SysFamily> familys) {
+		this.familys = familys;
+	}
+
+	public UserAppLimit getUserAppLimit() {
+		return userAppLimit;
+	}
+
+	public void setUserAppLimit(UserAppLimit userAppLimit) {
+		this.userAppLimit = userAppLimit;
+	}
+
+	public String getOpenid() {
+		return openid;
+	}
+
+	public void setOpenid(String openid) {
+		this.openid = openid;
+	}
+
+	public String getThirdType() {
+		return thirdType;
+	}
+
+	public void setThirdType(String thirdType) {
+		this.thirdType = thirdType;
+	}
+
+	public String getSecret() {
+		return secret;
+	}
+
+	public void setSecret(String secret) {
+		this.secret = secret;
+	}
+
+	public String getNickname() {
+		return nickname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	public Integer getResetpwd() {
+		return resetpwd;
+	}
+
+	public void setResetpwd(Integer resetpwd) {
+		this.resetpwd = resetpwd;
+	}
+
+	public List<LoginThird> getThirds() {
+		return thirds;
+	}
+
+	public void setThirds(List<LoginThird> thirds) {
+		this.thirds = thirds;
+	}
+
+	public Integer getIsSetPwd() {
+		return isSetPwd;
+	}
+
+	public void setIsSetPwd(Integer isSetPwd) {
+		this.isSetPwd = isSetPwd;
+	}
+
+	public String getFamilycode() {
+		return familycode;
+	}
+
+	public void setFamilycode(String familycode) {
+		this.familycode = familycode;
+	}
+
 	public Branch getBranch() {
 		return branch;
 	}
@@ -293,8 +430,6 @@ public class User implements Serializable {
 	 */
 	private Integer familystatus;
 
-	
-	
 	public Integer getFamilystatus() {
 		return familystatus;
 	}
@@ -316,7 +451,6 @@ public class User implements Serializable {
 
 	private Integer type;
 	private Integer matetype;
-
 
 	public String getMatetypeStr() {
 		return matetypeStr;
@@ -526,8 +660,6 @@ public class User implements Serializable {
 		this.fixplace = fixplace == null ? null : fixplace.trim();
 	}
 
-	
-
 	public Integer getIsdirect() {
 		return isdirect;
 	}
@@ -690,47 +822,27 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(getClass().getSimpleName());
-		sb.append(" [");
-		sb.append("Hash = ").append(hashCode());
-		sb.append(", userid=").append(userid);
-		sb.append(", sex=").append(sex);
-		sb.append(", livestatus=").append(livestatus);
-		sb.append(", phone=").append(phone);
-		sb.append(", usedname=").append(usedname);
-		sb.append(", createtime=").append(createtime);
-		sb.append(", updatetime=").append(updatetime);
-		sb.append(", createid=").append(createid);
-		sb.append(", updateid=").append(updateid);
-		sb.append(", remarkelse=").append(remarkelse);
-		sb.append(", branchid=").append(branchid);
-		sb.append(", pid=").append(pid);
-		sb.append(", brotherpos=").append(brotherpos);
-		sb.append(", password=").append(password);
-		sb.append(", logintime=").append(logintime);
-		sb.append(", sessionid=").append(sessionid);
-		sb.append(", familyid=").append(familyid);
-		sb.append(", status=").append(status);
-		sb.append(", deleteflag=").append(deleteflag);
-		sb.append(", imgurl=").append(imgurl);
-		sb.append(", username=").append(username);
-		sb.append(", idcard=").append(idcard);
-		sb.append(", isborn=").append(isborn);
-		sb.append(", dietime=").append(dietime);
-		sb.append(", fixplace=").append(fixplace);
-		sb.append(", isdirect=").append(isdirect);
-		sb.append(", genlevel=").append(genlevel);
-		sb.append(", familyname=").append(familyname);
-		sb.append(", pinyinfirst=").append(pinyinfirst);
-		sb.append(", pinyinfull=").append(pinyinfull);
-		sb.append(", pname=").append(pname);
-		sb.append(", mateid=").append(mateid);
-		sb.append(", matename=").append(matename);
-		sb.append(", branchname=").append(branchname);
-		sb.append(", serialVersionUID=").append(serialVersionUID);
-		sb.append("]");
-		return sb.toString();
+		return "User [userid=" + userid + ", sex=" + sex + ", livestatus=" + livestatus + ", phone=" + phone
+				+ ", usedname=" + usedname + ", createtime=" + createtime + ", updatetime=" + updatetime + ", createid="
+				+ createid + ", updateid=" + updateid + ", remarkelse=" + remarkelse + ", branchid=" + branchid
+				+ ", pid=" + pid + ", brotherpos=" + brotherpos + ", password=" + password + ", logintime=" + logintime
+				+ ", sessionid=" + sessionid + ", familyid=" + familyid + ", status=" + status + ", deleteflag="
+				+ deleteflag + ", imgurl=" + imgurl + ", username=" + username + ", idcard=" + idcard + ", isborn="
+				+ isborn + ", dietime=" + dietime + ", dietimeStr=" + dietimeStr + ", fixplace=" + fixplace
+				+ ", isdirect=" + isdirect + ", genlevel=" + genlevel + ", familyname=" + familyname + ", pinyinfirst="
+				+ pinyinfirst + ", pinyinfull=" + pinyinfull + ", pname=" + pname + ", mateid=" + mateid + ", matename="
+				+ matename + ", matetypeStr=" + matetypeStr + ", branchname=" + branchname + ", isMarry=" + isMarry
+				+ ", searchBirthplace=" + searchBirthplace + ", searchBirthday=" + searchBirthday + ", address="
+				+ address + ", msg=" + msg + ", isnormal=" + isnormal + ", userids=" + userids + ", excelid=" + excelid
+				+ ", pgenlevel=" + pgenlevel + ", userInfo=" + userInfo + ", userEdu=" + userEdu + ", userWorkexp="
+				+ userWorkexp + ", branchList=" + branchList + ", userAblumList=" + userAblumList + ", mateList="
+				+ mateList + ", branch=" + branch + ", familys=" + familys + ", userAppLimit=" + userAppLimit
+				+ ", openid=" + openid + ", thirdType=" + thirdType + ", secret=" + secret + ", nickname=" + nickname
+				+ ", resetpwd=" + resetpwd + ", thirds=" + thirds + ", isSetPwd=" + isSetPwd + ", familycode="
+				+ familycode + ", start=" + start + ", count=" + count + ", cityname=" + cityname + ", citycode="
+				+ citycode + ", familystatus=" + familystatus + ", roleid=" + roleid + ", rolename=" + rolename
+				+ ", roledesc=" + roledesc + ", funcgroupid=" + funcgroupid + ", ismanager=" + ismanager + ", type="
+				+ type + ", matetype=" + matetype + "]";
 	}
 
 	public String getAddress() {
