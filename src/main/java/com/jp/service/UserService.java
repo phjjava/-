@@ -2,6 +2,7 @@ package com.jp.service;
 
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.ibatis.annotations.Param;
@@ -12,18 +13,19 @@ import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.entity.User;
 import com.jp.entity.Useralbum;
-import com.jp.entity.Useredu;
+import com.jp.entity.Usercode;
 import com.jp.entity.Userinfo;
 import com.jp.entity.Userphoto;
 //import com.jp.util.Result;
 
 public interface UserService {
-	
+
 	int insert(User user) throws Exception;
-	
-	PageModel pageQuery(PageModel pageModel,User user) throws Exception;
-	
+
+	PageModel pageQuery(PageModel pageModel, User user) throws Exception;
+
 	void deleteAndAll(User user) throws Exception;
+
 	/**
 	 * @描述 用户的保存
 	 * @作者 sj
@@ -36,6 +38,7 @@ public interface UserService {
 	 * @return int
 	 */
 	Result merge(User user) throws Exception;
+
 	/**
 	 * 
 	 * @描述 用户列表分页
@@ -48,7 +51,8 @@ public interface UserService {
 	 * @参数 @throws Exception
 	 * @return PageModel
 	 */
-	PageModel selectUserList(PageModel pageModel,User user,List<String> branchList) throws Exception;
+	PageModel selectUserList(PageModel pageModel, User user, List<String> branchList) throws Exception;
+
 	/**
 	 * 
 	 * @描述 查询单个用户
@@ -60,6 +64,7 @@ public interface UserService {
 	 * @return User
 	 */
 	User selectByPrimaryKey(String userid) throws Exception;
+
 	/**
 	 * 
 	 * @描述 停用用户
@@ -71,6 +76,7 @@ public interface UserService {
 	 * @return int
 	 */
 	int changeStatus(User user) throws Exception;
+
 	/**
 	 * 
 	 * @描述 用户的导入
@@ -83,6 +89,7 @@ public interface UserService {
 	 * @return String
 	 */
 	JsonResponse importUsers(MultipartFile file, HttpServletRequest request) throws Exception;
+
 	/**
 	 * 
 	 * @描述 新增用户时初始化 父亲 和配偶
@@ -92,7 +99,8 @@ public interface UserService {
 	 * @参数 @throws Exception
 	 * @return List<User>
 	 */
-	List<User> selectPnameAndMate(String familyid,List<String> branchList) throws Exception;
+	List<User> selectPnameAndMate(String familyid, List<String> branchList) throws Exception;
+
 	/**
 	 * 
 	 * @描述 用户配偶的导入
@@ -105,6 +113,7 @@ public interface UserService {
 	 * @return String
 	 */
 	JsonResponse importUserMates(MultipartFile file, HttpServletRequest request) throws Exception;
+
 	/**
 	 * 
 	 * @描述 查询待审核的用户
@@ -116,8 +125,8 @@ public interface UserService {
 	 * @参数 @throws Exception
 	 * @return PageModel
 	 */
-	PageModel selecUserListToReview(PageModel pageModel,User user) throws Exception;
-	
+	PageModel selecUserListToReview(PageModel pageModel, User user) throws Exception;
+
 	/**
 	 * @描述 保存用户配偶
 	 * @作者 sj
@@ -127,8 +136,8 @@ public interface UserService {
 	 * @参数 @throws Exception
 	 * @return String
 	 */
-	Result mergeMate(User user,Userinfo userInfo,String usernameBefore) throws Exception;
-	
+	Result mergeMate(User user, Userinfo userInfo, String usernameBefore) throws Exception;
+
 	/**
 	 * @描述 登录
 	 * @作者 wumin
@@ -140,8 +149,9 @@ public interface UserService {
 	 * @return List<User>
 	 */
 	List<User> login(String phone, String password) throws Exception;
-	
+
 	boolean validatePhone(String familyid, String userid, String phone);
+
 	/**
 	 * 
 	 * @描述 用户新增相册
@@ -153,6 +163,7 @@ public interface UserService {
 	 * @return int
 	 */
 	String mergeUserAlbum(Useralbum userAlbum) throws Exception;
+
 	/**
 	 * 
 	 * @描述 用户新增相册
@@ -164,6 +175,7 @@ public interface UserService {
 	 * @return String
 	 */
 	String mergeUserPhoto(List<Userphoto> userPhotoList) throws Exception;
+
 	/**
 	 * 
 	 * @描述 查询用户相册
@@ -175,6 +187,7 @@ public interface UserService {
 	 * @return List<Useralbum>
 	 */
 	List<Useralbum> selectUseralbum(String userid) throws Exception;
+
 	/**
 	 * @描述 新增或编辑用户验证手机号
 	 * @作者 sj
@@ -185,10 +198,12 @@ public interface UserService {
 	 * @return List<User>
 	 */
 	List<User> validatePhone(User user) throws Exception;
+
 	/**
 	 * 对应家族版本用户数量验证
 	 */
-	boolean limitUserNumber(String familyid,Integer addNum);
+	boolean limitUserNumber(String familyid, Integer addNum);
+
 	/**
 	 * @描述 用户下拉项数据
 	 * @作者 wumin
@@ -199,6 +214,7 @@ public interface UserService {
 	 * @return List<User>
 	 */
 	List<User> selectUserItem(User user) throws Exception;
+
 	/**
 	 * 
 	 * @描述 修改当前登陆用户原始密码
@@ -214,14 +230,25 @@ public interface UserService {
 
 	List<User> selectAllUser(User user);
 
-	JsonResponse importUsersNew (MultipartFile file, HttpServletRequest request);
+	JsonResponse importUsersNew(MultipartFile file, HttpServletRequest request);
 
 	Integer del(@Param("array") String[] userids);
 
 	Result confirmImport(String excelid);
-	
-	List<User> validatePhoneForApi(@Param("familyid") String familyid,@Param("userid") String userid,@Param("phone") String phone);
-	
+
+	List<User> validatePhoneForApi(@Param("familyid") String familyid, @Param("userid") String userid,
+			@Param("phone") String phone);
+
 	JsonResponse getAddressByUserid(User user);
-	
+
+	JsonResponse checkCodeForMT(Usercode usercode);
+
+	JsonResponse regist(User user, String userCode);
+
+	JsonResponse logout(ServletContext servletContext, User user);
+
+	JsonResponse getOnlineUser(ServletContext servletContext);
+
+	JsonResponse login(HttpServletRequest req, User entity, String loginType, String internetType, String version,
+			String smscode);
 }

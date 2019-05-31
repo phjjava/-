@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.binary.Base64;
@@ -40,9 +41,9 @@ import com.jp.entity.Useralbum;
 import com.jp.entity.UseralbumKey;
 import com.jp.entity.Userbranch;
 import com.jp.entity.UserbranchQuery;
+import com.jp.entity.Usercode;
 import com.jp.entity.Useredu;
 import com.jp.entity.Userinfo;
-import com.jp.entity.Usermates;
 import com.jp.entity.Userphoto;
 import com.jp.entity.UserphotoKey;
 import com.jp.entity.Userworkexp;
@@ -517,7 +518,8 @@ public class UserController {
 	 * @return String
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/importUsermates", method = RequestMethod.POST, produces = { "application/json;charset=UTF-8" })
+	@RequestMapping(value = "/importUsermates", method = RequestMethod.POST, produces = {
+			"application/json;charset=UTF-8" })
 	public JsonResponse importUsermates(MultipartFile file, HttpServletRequest request) {
 		Result result = null;
 		JsonResponse res = null;
@@ -729,7 +731,7 @@ public class UserController {
 	 * @参数 @param user
 	 * @参数 @return
 	 * @return String
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/mergeMate", method = RequestMethod.POST)
@@ -1356,7 +1358,7 @@ public class UserController {
 		}
 		return res;
 	}
-	
+
 	/**
 	 * 新的用户检索接口
 	 * 
@@ -1367,6 +1369,74 @@ public class UserController {
 	@ResponseBody
 	public JsonResponse getAddressByUserid(User user) {
 		return userService.getAddressByUserid(user);
+	}
+
+	/**
+	 * api方法分割线-------------------------------------------------------------------------------
+	 */
+
+	/**
+	 * 注册用户
+	 * 
+	 * @param entity
+	 * @param smscode
+	 * @return
+	 */
+	@RequestMapping(value = "/regist", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse regist(HttpServletRequest req, User entity, String smscode) {
+		String sessionid = req.getSession().getId();
+		entity.setSessionid(sessionid);
+		return userService.regist(entity, smscode);
+	}
+
+	/**
+	 * 获取在线用户
+	 * 
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(value = "/getOnlineUser", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getOnlineUser(HttpServletRequest req) {
+		ServletContext servletContext = req.getServletContext();
+		return userService.getOnlineUser(servletContext);
+	}
+
+	/**
+	 * 退出登录
+	 * 
+	 * @param req
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse logout(HttpServletRequest req, User entity) {
+		ServletContext servletContext = req.getServletContext();
+		return userService.logout(servletContext, entity);
+	}
+
+	/**
+	 * 1.1.1 登录\切换
+	 * 
+	 * @since 1.0
+	 * @version 5.1.1 支持单家族和多家族用户登录、支持多家族用户登陆后切换企业
+	 * @author 李鹏 17-02-15
+	 */
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse login(HttpServletRequest req, User entity, Usercode usercode, String loginType,
+			String internetType, String version) {
+		// 先取请求session的id
+		String sessionid = req.getSession().getId();
+		entity.setSessionid(sessionid);
+		// 进行查询
+		if (usercode != null && usercode.getSmscode() != null && !"".equals(usercode.getSmscode())) {
+			return userService.login(req, entity, loginType, internetType, version, usercode.getSmscode());
+		} else {
+			return userService.login(req, entity, loginType, internetType, version, null);
+		}
 	}
 
 }

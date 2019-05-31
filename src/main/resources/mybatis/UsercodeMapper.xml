@@ -216,4 +216,14 @@
       type = #{type,jdbcType=INTEGER}
     where id = #{id,jdbcType=VARCHAR}
   </update>
+  
+    <!-- 自写方法分割线 -->
+  <select id="selectByPhone" resultType="com.jp.entity.Usercode" parameterType="map" >
+  	select id,phone,smscode,createtime,type
+  	from jp_usercode 
+  	where phone=#{phone,jdbcType=VARCHAR}
+  	order by createtime desc 
+  	limit 1
+  </select>
+  
 </mapper>
