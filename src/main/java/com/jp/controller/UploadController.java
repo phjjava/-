@@ -25,9 +25,16 @@ import com.jp.util.UploadUtil;
 @Controller
 @RequestMapping("upload")
 public class UploadController {
-
 	private final Logger log_ = LogManager.getLogger(UploadController.class);
 
+	/**
+	 * 
+	 * @描述 图片上传公共方法
+	 * @参数 @param files
+	 * @参数 @param request
+	 * @参数 @return
+	 * @return String
+	 */
 	@ResponseBody
 	@RequestMapping(value = "/savePhoto", method = RequestMethod.POST, produces = { "application/json;charset=UTF-8" })
 	public JsonResponse savePhoto(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) {
@@ -45,13 +52,15 @@ public class UploadController {
 			String logoRealPathDir = request.getSession().getServletContext().getRealPath(pathDir);
 			for (int i = 0; i < files.length; i++) {
 				MultipartFile fileMe = files[i];
-				logoRealPathDir = logoRealPathDir + "/" + fileMe.getOriginalFilename();
 				file = new File(logoRealPathDir);
+				if (!file.exists()) {
+					file.mkdirs();
+				}
+				file = new File(logoRealPathDir, fileMe.getOriginalFilename());
 				files[i].transferTo(file);
 				fileList.add(file);
 			}
 			String status = UploadUtil.taskFileUpload(fileList, fileNams);
-
 			Map<String, Object> gsonToMaps = GsonUtil.GsonToMaps(status);
 
 			result = new Result(MsgConstants.RESUL_SUCCESS);
