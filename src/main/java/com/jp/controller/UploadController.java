@@ -62,7 +62,6 @@ public class UploadController {
 			}
 			String status = UploadUtil.taskFileUpload(fileList, fileNams);
 			Map<String, Object> gsonToMaps = GsonUtil.GsonToMaps(status);
-
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(gsonToMaps.get("data"));
