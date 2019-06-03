@@ -92,7 +92,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 
 	@Override
 	public Integer insert(UserManager entity, String[] functionids) throws Exception {
-		entity.setFamilyid("9ba9172bd1a44e35992d8b1c247adb95");
+		entity.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 		if (functionids != null && functionids.length > 0) {
 			FunctionRoleExample example = new FunctionRoleExample();
 			// example.clear();
