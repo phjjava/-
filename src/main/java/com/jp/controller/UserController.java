@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.github.pagehelper.PageInfo;
 import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
@@ -276,7 +277,7 @@ public class UserController {
 			// 增加父（母）亲姓名和世系信息回写
 			User puser = userService.selectByPrimaryKey(user.getPid());
 			// 兼容分支起始人没有父系信息
-			if(puser != null) {
+			if (puser != null) {
 				user.setPgenlevel(puser.getGenlevel() + "世");
 			}
 			user.setUserInfo(userInfo);
@@ -1346,10 +1347,11 @@ public class UserController {
 				userAddrss.setAddress(userDao.getAddressByUserid(userAddrss.getUserid()));
 				userList.add(userAddrss);
 			}
+			pageModel.setList(userList);
+			pageModel.setPageInfo(new PageInfo<User>(userList));
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
-			res.setData(userList);
-			res.setCount(pageModel.getPageInfo().getTotal());
+			res.setData(pageModel);
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
