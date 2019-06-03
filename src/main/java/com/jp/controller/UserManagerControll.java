@@ -62,6 +62,12 @@ public class UserManagerControll {
 			res.setData(status);
 			return res;
 		}
+		if (status == 0) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			res.setData(status);
+			return res;
+		}
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
 		res.setData(status);
