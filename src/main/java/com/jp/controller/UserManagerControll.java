@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -41,7 +40,7 @@ public class UserManagerControll {
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse save(HttpServletRequest request, UserManager manager, ModelMap model) {
+	public JsonResponse save(HttpServletRequest request, UserManager manager) {
 		Result result = null;
 		JsonResponse res = null;
 		Integer status = null;
