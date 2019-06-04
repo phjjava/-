@@ -19,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.Result;
-import com.jp.util.GsonUtil;
 import com.jp.util.UploadUtil;
 
 @Controller
@@ -41,12 +40,12 @@ public class UploadFileController {
 		Result result = null;
 		JsonResponse res = null;
 		try {
-			List<String> fileNams = new ArrayList<String>();
+			List<String> fileNames = new ArrayList<String>();
 			List<File> fileList = new ArrayList<File>();
 			File file = null;
 			for (MultipartFile fileM : files) {
 				String fileName = fileM.getOriginalFilename();
-				fileNams.add(fileName);
+				fileNames.add(fileName);
 			}
 			String pathDir = "/upload";
 			String logoRealPathDir = request.getSession().getServletContext().getRealPath(pathDir);
@@ -60,12 +59,14 @@ public class UploadFileController {
 				files[i].transferTo(file);
 				fileList.add(file);
 			}
-			String status = UploadUtil.taskFileUpload(fileList, fileNams);
-			Map<String, Object> gsonToMaps = GsonUtil.GsonToMaps(status);
+			// String status = UploadUtil.taskFileUpload(fileList, fileNams);
+			// Map<String, Object> gsonToMaps = GsonUtil.GsonToMaps(status);
+			Map<String, Object> resultMap = UploadUtil.batchFileUpload(fileList, fileNames);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
-			res.setData(gsonToMaps.get("data"));
-			if ("0".equals(gsonToMaps.get("result").toString())) {
+			res.setData(resultMap);
+			// res.setData(gsonToMaps.get("data"));
+			if ("0".equals(resultMap.get("result").toString())) {
 				// 删除缓存文件
 				boolean flag = file.delete();
 				if (!flag) {
@@ -74,7 +75,7 @@ public class UploadFileController {
 			}
 
 		} catch (Exception e) {
-			log_.error("[UploadController.savePhoto方法---异常:]", e);
+			log_.error("[UploadFileController.savePhoto方法---异常:]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
 			return res;
