@@ -2542,7 +2542,7 @@ public class UserServiceImpl implements UserService {
 			usercode.setPhone(entity.getPhone());
 			usercode.setSmscode(smscode);
 			res = checkCode(usercode);
-			if (res.getCode() == ConstantUtils.RESULT_FAIL) {
+			if (res.getCode() == 1) {
 				return res;
 			}
 		}
