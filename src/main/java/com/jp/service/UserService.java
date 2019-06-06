@@ -251,4 +251,7 @@ public interface UserService {
 
 	JsonResponse login(HttpServletRequest req, User entity, String loginType, String internetType, String version,
 			String smscode);
+
+	JsonResponse sendSMSCode(User entity);
+
 }

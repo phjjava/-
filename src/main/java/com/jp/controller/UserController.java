@@ -3,6 +3,7 @@ package com.jp.controller;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.security.interfaces.RSAPrivateKey;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,6 +59,7 @@ import com.jp.service.UserWorkService;
 import com.jp.service.UseralbumService;
 import com.jp.util.JacksonUtil;
 import com.jp.util.MD5Util;
+import com.jp.util.RSAUtils;
 //import com.jp.util.Result;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
@@ -1426,7 +1428,7 @@ public class UserController {
 	 * @version 5.1.1 支持单家族和多家族用户登录、支持多家族用户登陆后切换企业
 	 * @author 李鹏 17-02-15
 	 */
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse login(HttpServletRequest req, User entity, Usercode usercode, String loginType,
 			String internetType, String version) {
@@ -1439,6 +1441,47 @@ public class UserController {
 		} else {
 			return userService.login(req, entity, loginType, internetType, version, null);
 		}
+	}
+
+	/**
+	 * 微信端登录，使用RSA加密
+	 * 
+	 * @param req
+	 * @param entity
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/loginB", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse loginB(HttpServletRequest req, User entity) throws Exception {
+		String password = entity.getPassword();
+		RSAPrivateKey privateKey = (RSAPrivateKey) req.getSession().getAttribute("privateKey");
+		if (privateKey == null) {
+			Result result = new Result(MsgConstants.RESUL_FAIL);
+			JsonResponse res = new JsonResponse(result);
+			res.setData(0);
+			return res;
+		}
+		String descrypedPwd = RSAUtils.decryptByPrivateKey(password, privateKey); // 解密后的密码,password是提交过来的密码
+		String md5Pwd = MD5Util.string2MD5(descrypedPwd);
+		entity.setPassword(md5Pwd);
+		// 先去请求session的id
+		String sessionid = req.getSession().getId();
+		entity.setSessionid(sessionid);
+		// 进行查询
+		return userService.login(req, entity, "wechat", "其他", "1.0", "");
+	}
+
+	/**
+	 * 发送短信验证码 一天之内最多发10条； 系统不存在的手机号（用户）不允许发验证码;一条验证码3分钟内有效，3分钟之内不允许再次发送 by 李鹏
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/sendSMSCode", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse sendSMSCode(User entity) {
+		return userService.sendSMSCode(entity);
 	}
 
 }
