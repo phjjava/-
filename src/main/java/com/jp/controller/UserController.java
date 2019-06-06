@@ -1472,4 +1472,16 @@ public class UserController {
 		return userService.login(req, entity, "wechat", "其他", "1.0", "");
 	}
 
+	/**
+	 * 发送短信验证码 一天之内最多发10条； 系统不存在的手机号（用户）不允许发验证码;一条验证码3分钟内有效，3分钟之内不允许再次发送 by 李鹏
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/sendSMSCode", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse sendSMSCode(User entity) {
+		return userService.sendSMSCode(entity);
+	}
+
 }

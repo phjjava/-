@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -117,7 +118,7 @@ public class BranchalbumController {
 	}
 
 	/**
-	 * @描述 分支上传图片
+	 * @描述 分支上传图片（弃用）
 	 * @作者 sj
 	 * @时间 2017年5月21日下午11:15:06
 	 * @参数 @param files
@@ -204,6 +205,18 @@ public class BranchalbumController {
 		res = new JsonResponse(result);
 		res.setData(str);
 		return res;
+	}
+
+	/**
+	 * 批量保存照片信息
+	 * 
+	 * @param userPhotoList
+	 * @return
+	 */
+	@RequestMapping(value = "/batchSavePhoto", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse batchSavePhoto(@RequestBody List<Branchphoto> userPhotoList) {
+		return baservice.insertBranchPhoto(userPhotoList);
 	}
 
 	/**
@@ -451,19 +464,20 @@ public class BranchalbumController {
 		res.setData(str);
 		return res;
 	}
-	
+
 	/**
-	* 以下方法用于api
-	*/
-	
+	 * 以下方法用于api
+	 */
+
 	/**
 	 * 获取家族相册列表
+	 * 
 	 * @param entity
 	 * @return
 	 */
 	@RequestMapping(value = "/getAlbum", method = RequestMethod.GET)
 	@ResponseBody
-	public JsonResponse getAlbum(Branchalbum entity,HttpServletRequest request) {
+	public JsonResponse getAlbum(Branchalbum entity, HttpServletRequest request) {
 		String familyid = request.getHeader("familyid");
 		entity.setFamilyid(familyid);
 		return baservice.getAlbum(entity);
