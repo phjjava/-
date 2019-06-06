@@ -173,7 +173,6 @@ public class BranchalbumController {
 					branchPhoto.setCreateid(CurrentUserContext.getCurrentUserId());
 					branchPhoto.setDeleteflag(0);
 					branchPhoto.setImgid(UUIDUtils.getUUID());
-					branchPhoto.setDeleteflag(0);
 					userPhotoList.add(branchPhoto);
 				}
 				baservice.insertBranchPhoto(userPhotoList);
@@ -215,8 +214,23 @@ public class BranchalbumController {
 	 */
 	@RequestMapping(value = "/batchSavePhoto", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse batchSavePhoto(@RequestBody List<Branchphoto> userPhotoList) {
-		return baservice.insertBranchPhoto(userPhotoList);
+	public JsonResponse batchSavePhoto(@RequestBody List<Branchphoto> userPhotoList, String albumid, String branchid) {
+		List<Branchphoto> branchphotos = new ArrayList<Branchphoto>();
+		for (Branchphoto bp : userPhotoList) {
+			Branchphoto branchPhoto = new Branchphoto();
+			branchPhoto.setImgid(UUIDUtils.getUUID());
+			branchPhoto.setAlbumid(albumid);
+			branchPhoto.setBranchid(branchid);
+			branchPhoto.setImgurl(bp.getImgurl());
+			branchPhoto.setSmallimgurl(bp.getSmallimgurl());
+			branchPhoto.setDescription(bp.getDescription());
+			branchPhoto.setCreatetime(new Date());
+			branchPhoto.setCreateid(CurrentUserContext.getCurrentUserId());
+			branchPhoto.setDeleteflag(0);
+			branchphotos.add(branchPhoto);
+		}
+
+		return baservice.insertBranchPhoto(branchphotos);
 	}
 
 	/**

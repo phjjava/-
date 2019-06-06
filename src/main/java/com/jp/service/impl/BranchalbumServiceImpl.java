@@ -47,7 +47,6 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 			throws Exception {
 		// 当前登录人所管理的branchids
 
-		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		List<UserManager> managers = CurrentUserContext.getCurrentUserManager();
 		String familyid = CurrentUserContext.getCurrentFamilyId();
 		List<String> branchList = CurrentUserContext.getCurrentBranchIds();
@@ -63,6 +62,7 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 				criteria.andDeleteflagEqualTo(branchalbum.getDeleteflag());
 			}
 			example.setOrderByClause("createtime DESC");
+			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 			if (m.getEbtype() == 1) {
 				criteria.andFamilyidEqualTo(familyid);
 				list = badao.selectByExample(example);
