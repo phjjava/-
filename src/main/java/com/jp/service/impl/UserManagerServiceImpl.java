@@ -3,6 +3,8 @@ package com.jp.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,22 +24,22 @@ import com.jp.entity.Post;
 import com.jp.entity.UserManager;
 import com.jp.entity.UserManagerExample;
 import com.jp.service.UserManagerService;
+import com.jp.util.StringTools;
 
 @Service
 public class UserManagerServiceImpl implements UserManagerService {
 
+	private final Logger log_ = LogManager.getLogger(UserManagerServiceImpl.class);
+
 	@Autowired
 	private FunctionRoleMapper functionRoleMapper;
-
 	@Autowired
 	private UserManagerMapper userManagerMapper;
-
 	@Autowired
 	private PostMapper postMapper;
 
 	@Override
 	public PageModel<UserManager> pageQuery(PageModel<UserManager> pageModel, UserManager entity) throws Exception {
-
 		UserManagerExample example = new UserManagerExample();
 		example.or().andUseridEqualTo(entity.getUserid());
 		example.setOrderByClause("ismanager desc,ebtype desc");
@@ -90,6 +92,9 @@ public class UserManagerServiceImpl implements UserManagerService {
 		return userManagerMapper.selectByPrimaryKey(id);
 	}
 
+	/**
+	 * 废弃了，后期再删
+	 */
 	@Override
 	public Integer insert(UserManager entity, String[] functionids) throws Exception {
 		entity.setFamilyid(CurrentUserContext.getCurrentFamilyId());
@@ -98,12 +103,6 @@ public class UserManagerServiceImpl implements UserManagerService {
 			// example.clear();
 			example.or().andUseridEqualTo(entity.getUserid()).andEbidEqualTo(entity.getEbid());
 			functionRoleMapper.deleteByExample(example);
-			// for(String functionid : functionids) {
-			// example.or().andUseridEqualTo(entity.getUserid())
-			// .andFunctionidEqualTo(functionid)
-			// .andEbidEqualTo(entity.getEbid());
-			// functionRoleMapper.deleteByExample(example);
-			// }
 
 			functionRoleMapper.insertBatch(entity.getUserid(), functionids, entity.getEbid(), entity.getPostid());
 		}
@@ -114,6 +113,9 @@ public class UserManagerServiceImpl implements UserManagerService {
 
 	}
 
+	/**
+	 * 废弃了，后期再删
+	 */
 	@Override
 	public Integer update(UserManager entity, String[] functionids) throws Exception {
 		entity.setFamilyid(CurrentUserContext.getCurrentFamilyId());
@@ -141,15 +143,41 @@ public class UserManagerServiceImpl implements UserManagerService {
 	}
 
 	@Override
-	public int del(String id) {
-		UserManager manager = userManagerMapper.selectByPrimaryKey(id);
-		if (manager != null) {
-			FunctionRoleExample roleEx = new FunctionRoleExample();
-			roleEx.or().andUseridEqualTo(manager.getUserid());
-			functionRoleMapper.deleteByExample(roleEx);
+	public JsonResponse del(String id) {
+		Result result = null;
+		JsonResponse res = null;
+		int status = 0;
+		try {
+			UserManager manager = userManagerMapper.selectByPrimaryKey(id);
+			if (manager != null) {
+				FunctionRoleExample roleEx = new FunctionRoleExample();
+				roleEx.or().andUseridEqualTo(manager.getUserid());
+				// 先删除《角色功能》
+				status = functionRoleMapper.deleteByExample(roleEx);
+				if (status < 1) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("角色功能删除失败！");
+					res = new JsonResponse(result);
+					return res;
+				}
+			}
+			status = userManagerMapper.deleteByPrimaryKey(id);
+			if (status < 1) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("管理员删除失败！");
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[del方法(删除管理员)---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-
-		return userManagerMapper.deleteByPrimaryKey(id);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		result.setMsg("管理员删除成功！");
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
@@ -183,6 +211,62 @@ public class UserManagerServiceImpl implements UserManagerService {
 		res = new JsonResponse(result);
 		res.setData(allPost);
 		return res;
+	}
+
+	@Override
+	public JsonResponse save(UserManager entity, String[] functionids) {
+		Result result = null;
+		JsonResponse res = null;
+		if (functionids != null && functionids.length > 0) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数functionids不能为空，请至少指定一个权限！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			entity.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			FunctionRoleExample example = new FunctionRoleExample();
+			example.or().andUseridEqualTo(entity.getUserid()).andEbidEqualTo(entity.getEbid())
+					.andPostidEqualTo(entity.getPostid());
+			// 先把原有的《角色功能》删除
+			functionRoleMapper.deleteByExample(example);
+			// 把新授权或编辑的《角色功能》添加
+			functionRoleMapper.insertBatch(entity.getUserid(), functionids, entity.getEbid(), entity.getPostid());
+			Post post = postMapper.selectByPrimaryKey(entity.getPostid());
+			entity.setPostname(post.getName());
+			entity.setIsmanager(post.getIsmanager());
+			if (StringTools.notEmpty(entity.getId())) {// 修改
+				int status = userManagerMapper.updateByPrimaryKeySelective(entity);
+				if (status > 0) {
+					result = new Result(MsgConstants.RESUL_SUCCESS);
+					result.setMsg("修改成功");
+					res = new JsonResponse(result);
+					return res;
+				}
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("修改失败");
+				res = new JsonResponse(result);
+				return res;
+			} else {// 新增
+				int status = userManagerMapper.insertSelective(entity);
+				if (status > 0) {
+					result = new Result(MsgConstants.RESUL_SUCCESS);
+					result.setMsg("新增成功");
+					res = new JsonResponse(result);
+					return res;
+				}
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("新增失败");
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[保存或编辑管理员save方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
 	}
 
 	// @Override

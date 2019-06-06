@@ -6,8 +6,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -27,7 +27,6 @@ import com.jp.dao.UserManagerMapper;
 import com.jp.dao.UserbranchDao;
 import com.jp.entity.Branch;
 import com.jp.entity.BranchQuery;
-import com.jp.entity.Role;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
 import com.jp.entity.UserManagerExample;
@@ -35,14 +34,13 @@ import com.jp.entity.Userbranch;
 import com.jp.entity.UserbranchQuery;
 import com.jp.service.BranchService;
 import com.jp.service.RoleService;
-import com.jp.util.GsonUtil;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 
 @Controller
 @RequestMapping("branch")
 public class BranchController {
-	
+
 	private final Logger log_ = LogManager.getLogger(BranchController.class);
 
 	@Autowired
@@ -57,6 +55,7 @@ public class BranchController {
 	private UserManagerMapper userManagerMapper;
 	@Autowired
 	private UserDao userDao;
+
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public JsonResponse save(Branch branch, ModelMap model) {
@@ -64,34 +63,36 @@ public class BranchController {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		try {
-			if(StringTools.notEmpty(branch.getBranchid())){//修改
+			if (StringTools.notEmpty(branch.getBranchid())) {// 修改
 				branch.setUpdateid(CurrentUserContext.getCurrentUserId());
 				branch.setUpdatetime(new Date());
 				count = branchService.update(branch);
-			}else{//新增
+			} else {// 新增
 				branch.setStatus(0);// 使用中
 				branch.setBranchid(UUIDUtils.getUUID());
 				branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 				branch.setCreateid(CurrentUserContext.getCurrentUserId());
 				count = branchService.insert(branch);
-				if(count>0){
-					//更新session中的分支信息
+				if (count > 0) {
+					// 更新session中的分支信息
 					LoginUserInfo userContext = CurrentUserContext.getUserContext();
 					User user = userContext.getUser();
-					//Role role = roleService.selectRoleByUserid(user.getFamilyid(), user.getUserid());
+					// Role role = roleService.selectRoleByUserid(user.getFamilyid(),
+					// user.getUserid());
 					List<Branch> branchList = null;
-					//if(role.getIsmanager() == 1){
-					//	branchList = branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(), null);
-					//}else{						
-						branchList = branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(), user.getUserid());
-					//}
-					if(branchList == null){
+					// if(role.getIsmanager() == 1){
+					// branchList =
+					// branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(), null);
+					// }else{
+					branchList = branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(), user.getUserid());
+					// }
+					if (branchList == null) {
 						branchList = new ArrayList<Branch>();
 					}
 					userContext.setBranchList(branchList);
 				}
 			}
-			if(count > 0) {
+			if (count > 0) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 			}
 		} catch (Exception e) {
@@ -104,7 +105,7 @@ public class BranchController {
 
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse list(PageModel<Branch> pageModel,Branch branch, ModelMap model) {
+	public JsonResponse list(PageModel<Branch> pageModel, Branch branch, ModelMap model) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		try {
@@ -113,32 +114,31 @@ public class BranchController {
 			ex.or().andUseridEqualTo(userid);
 			List<Userbranch> list = userBranchDao.selectByExample(ex);
 			Branch bran = new Branch();
-			for(Userbranch b : list){
+			for (Userbranch b : list) {
 				bran.setBranchid(b.getBranchid());
 				bran.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 				bran = branchDao.selectByPrimaryKey(bran);
-				if(bran.getBranchid()!=null && !"".equals(bran.getBranchid()))
-				branch.setBranchid(b.getBranchid());
-				
+				if (bran.getBranchid() != null && !"".equals(bran.getBranchid()))
+					branch.setBranchid(b.getBranchid());
+
 			}
 			branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-			
-			
-	        UserManagerExample example = new UserManagerExample();
-	        example.or().andUseridEqualTo(CurrentUserContext.getCurrentUserId());
-	        example.setOrderByClause("ebtype desc,ismanager desc");
-	        List<UserManager> managers = userManagerMapper.selectByExample(example);
-	        for(UserManager manager : managers) {
-	        	if(manager.getEbtype() == 1) {
-	        		branchService.pageQuery(pageModel,branch);
-	        	}else {
-	        		branchService.selectBranchListByFamilyAndUserid(pageModel,branch);
-	        	}
-	        }
-	        result = new Result(MsgConstants.RESUL_SUCCESS);
-	        res = new JsonResponse(result);
-	        res.setData(pageModel.getList());
-	        res.setCount(pageModel.getPageInfo().getTotal());
+
+			UserManagerExample example = new UserManagerExample();
+			example.or().andUseridEqualTo(CurrentUserContext.getCurrentUserId());
+			example.setOrderByClause("ebtype desc,ismanager desc");
+			List<UserManager> managers = userManagerMapper.selectByExample(example);
+			for (UserManager manager : managers) {
+				if (manager.getEbtype() == 1) {
+					branchService.pageQuery(pageModel, branch);
+				} else {
+					branchService.selectBranchListByFamilyAndUserid(pageModel, branch);
+				}
+			}
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(pageModel.getList());
+			res.setCount(pageModel.getPageInfo().getTotal());
 		} catch (Exception e) {
 			res = new JsonResponse(result);
 			e.printStackTrace();
@@ -159,8 +159,8 @@ public class BranchController {
 			// 根据beginuserid获取世系信息
 			User user = userDao.selectByPrimaryKey(branch.getBeginuserid());
 			// 增加返回世系信息
-			if(user != null) {
-				branch.setGenlevel(user.getGenlevel()+"世");
+			if (user != null) {
+				branch.setGenlevel(user.getGenlevel() + "世");
 			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
@@ -172,26 +172,26 @@ public class BranchController {
 		}
 		return res;
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
-    public JsonResponse changeStatus(Branch branch)  {
+	public JsonResponse changeStatus(Branch branch) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
-    	Integer count = null;
-    	try {
-    		count  = branchService.changeStatus(branch);
-    		if(count > 0) {
-    			result = new Result(MsgConstants.RESUL_SUCCESS);
-    		}
+		Integer count = null;
+		try {
+			count = branchService.changeStatus(branch);
+			if (count > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-    	res = new JsonResponse(result);
-    	return res;
-    }
-	
+		res = new JsonResponse(result);
+		return res;
+	}
+
 	/**
 	 * @描述 新增用户初始化父亲 和 配偶
 	 * @作者 sj
@@ -209,10 +209,10 @@ public class BranchController {
 			PageModel<Branch> pageModelBranch = new PageModel<Branch>();
 			Branch branch = new Branch();
 			branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-			branchService.initBranch(pageModelBranch,branch);
+			branchService.initBranch(pageModelBranch, branch);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
-			res.setData(pageModelBranch.getList());
+			res.setData(pageModelBranch);
 		} catch (Exception e) {
 			res = new JsonResponse(result);
 			e.printStackTrace();
@@ -226,19 +226,20 @@ public class BranchController {
 	public JsonResponse validateBranchname(HttpServletRequest request) {
 		Result result = null;
 		JsonResponse res = null;
-		boolean flag = true;//默认通过验证
-	
-		String branchname = StringTools.trimNotEmpty(request.getParameter("branchname")) ? request.getParameter("branchname").trim() : null;
-		
+		boolean flag = true;// 默认通过验证
+
+		String branchname = StringTools.trimNotEmpty(request.getParameter("branchname"))
+				? request.getParameter("branchname").trim()
+				: null;
+
 		try {
-			BranchQuery example=new BranchQuery();
-			example.or().andBranchnameEqualTo(branchname)
-				.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+			BranchQuery example = new BranchQuery();
+			example.or().andBranchnameEqualTo(branchname).andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
 			List<Branch> selectRt = branchDao.selectByExample(example);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
-			if (selectRt!=null&&selectRt.size()>0) {
+			if (selectRt != null && selectRt.size() > 0) {
 				result = new Result(MsgConstants.BRANCH_VALIDATA_NAME);
-				flag=false;
+				flag = false;
 			}
 			res = new JsonResponse(result);
 			res.setData(flag);
@@ -249,7 +250,7 @@ public class BranchController {
 		}
 		return res;
 	}
-	
+
 	/**
 	 * 
 	 * @描述 对发起人做出提示(此人是否已经发起过其他分支)
@@ -264,22 +265,24 @@ public class BranchController {
 	public JsonResponse checkBeginer(HttpServletRequest request) {
 		Result result = null;
 		JsonResponse res = null;
-		boolean flag = true;//默认通过验证	
-		String beginuserid = StringTools.trimNotEmpty(request.getParameter("beginuserid")) ? request.getParameter("beginuserid").trim() : null;
-		if (beginuserid==null) {
+		boolean flag = true;// 默认通过验证
+		String beginuserid = StringTools.trimNotEmpty(request.getParameter("beginuserid"))
+				? request.getParameter("beginuserid").trim()
+				: null;
+		if (beginuserid == null) {
 			result = new Result(MsgConstants.BRANCH_NO_BEGINERID);
 			res = new JsonResponse(result);
 			res.setData(false);
 			return res;
 		}
 		try {
-			BranchQuery example=new BranchQuery();
+			BranchQuery example = new BranchQuery();
 			example.or().andBeginuseridEqualTo(beginuserid);
 			List<Branch> selectRt = branchDao.selectByExample(example);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
-			if (selectRt!=null&&selectRt.size()>0) {
+			if (selectRt != null && selectRt.size() > 0) {
 				result = new Result(MsgConstants.BRANCH_CHECK_BEGINER);
-				flag=false;
+				flag = false;
 			}
 			res = new JsonResponse(result);
 			res.setData(flag);
@@ -290,13 +293,14 @@ public class BranchController {
 		}
 		return res;
 	}
-	
+
 	/**
-	* 以下方法用于api
-	*/
-	
+	 * 以下方法用于api
+	 */
+
 	/**
 	 * 获取所有分支信息列表
+	 * 
 	 * @return
 	 */
 	@ResponseBody
@@ -304,9 +308,10 @@ public class BranchController {
 	public JsonResponse getAllBranch(Branch branch) {
 		return branchService.getAllBranch(branch);
 	}
-	
+
 	/**
 	 * 获取某分支下的所有人员 - 分支内家族成员通讯录
+	 * 
 	 * @param branch
 	 * @return
 	 */
@@ -315,9 +320,10 @@ public class BranchController {
 	public JsonResponse getBranchPersons(Branch branch) {
 		return branchService.getBranchPersons(branch);
 	}
-	
+
 	/**
 	 * 获取动态、公告等筛选条件中的有效的省份信息 - 省份列表
+	 * 
 	 * @param branch
 	 * @return
 	 */
@@ -326,9 +332,10 @@ public class BranchController {
 	public JsonResponse getBranchVaildArea(Branch branch) {
 		return branchService.getBranchVaildArea(branch);
 	}
-	
+
 	/**
 	 * 获取有效的省份和所在城市列表 - 省份和城市列表（组合）
+	 * 
 	 * @param branch
 	 * @return
 	 */
@@ -337,9 +344,10 @@ public class BranchController {
 	public JsonResponse getBranchVaildAreaAndCity(Branch branch) {
 		return branchService.getBranchVaildAreaAndCity(branch);
 	}
-	
+
 	/**
 	 * 获取有效的县区和分支列表 - 县区和分支列表（组合）
+	 * 
 	 * @param branch
 	 * @return
 	 */
@@ -348,9 +356,10 @@ public class BranchController {
 	public JsonResponse getBranchVaildXQAndBranch(Branch branch) {
 		return branchService.getBranchVaildXQAndBranch(branch);
 	}
-	
+
 	/**
 	 * 获取动态、公告等筛选条件中的有效的城市信息 - 城市列表
+	 * 
 	 * @param branch
 	 * @return
 	 */
@@ -359,9 +368,10 @@ public class BranchController {
 	public JsonResponse getBranchVaildCity(Branch branch) {
 		return branchService.getBranchVaildCity(branch);
 	}
-	
+
 	/**
 	 * 获取动态、公告等筛选条件中的有效的县区信息 - 县区列表
+	 * 
 	 * @param branch
 	 * @return
 	 */
@@ -370,9 +380,10 @@ public class BranchController {
 	public JsonResponse getBranchVaildXQ(Branch branch) {
 		return branchService.getBranchVaildXQ(branch);
 	}
-	
+
 	/**
 	 * 获取某县区下的分支列表 - 分支列表
+	 * 
 	 * @param branch
 	 * @return
 	 */
@@ -381,9 +392,10 @@ public class BranchController {
 	public JsonResponse getBranchOfXQ(Branch branch) {
 		return branchService.getBranchOfXQ(branch);
 	}
-	
+
 	/**
 	 * 获取某城市下的分支列表
+	 * 
 	 * @param branch
 	 * @return
 	 */
@@ -392,22 +404,24 @@ public class BranchController {
 	public JsonResponse getBranchByCitycode(Branch branch) {
 		return branchService.getBranchByCitycode(branch);
 	}
-	
+
 	/**
 	 * 获取指定分支的世系表（结构化数据列表） - 获取指定分支的世系表 (iOS 用)（层次结构数据）
+	 * 
 	 * @param branch
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/getGenList", method = RequestMethod.GET)
-	public JsonResponse getGenList(Branch branch,HttpServletRequest request) {
+	public JsonResponse getGenList(Branch branch, HttpServletRequest request) {
 		String userid = request.getHeader("userid");
 		branch.setParentid(userid);
 		return branchService.getGenList(branch);
 	}
-	
+
 	/**
 	 * 获取指定分支的世系表（仅列表：递归） - 获取指定分支的世系表（列表数据+递归查询）
+	 * 
 	 * @param branch
 	 * @return
 	 */
@@ -416,22 +430,24 @@ public class BranchController {
 	public JsonResponse getGenListOnly(Branch branch) {
 		return branchService.getGenListOnly(branch);
 	}
-	
+
 	/**
 	 * 获取指定分支的世系表（仅列表：无递归） - 获取指定分支的世系表(Android用)（列表数据+批量查询）
+	 * 
 	 * @param branch
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/getGenListOnlyExt", method = RequestMethod.GET)
-	public JsonResponse getGenListOnlyExt(Branch branch,HttpServletRequest request) {
+	public JsonResponse getGenListOnlyExt(Branch branch, HttpServletRequest request) {
 		String userid = request.getHeader("userid");
 		branch.setParentid(userid);
 		return branchService.getGenListOnlyExt(branch);
 	}
-	
+
 	/**
 	 * 向上查找指定的几代 - 追根溯源指定分支的世系表（追根溯源-列表结构）
+	 * 
 	 * @param branch
 	 * @return
 	 */
@@ -440,9 +456,10 @@ public class BranchController {
 	public JsonResponse getGenListToTop(Branch branch) {
 		return branchService.getGenListToTop(branch);
 	}
-	
+
 	/**
 	 * 五世一展示，从当前节点向上查到第一个被5整除的世系根节点，向下查到第一个被5整除的世系 - 追根溯源指定分支的世系表（追根溯源--五世一表）
+	 * 
 	 * @param branch
 	 * @return
 	 */
@@ -451,5 +468,5 @@ public class BranchController {
 	public JsonResponse getGenListOnlyExtMod(Branch branch) {
 		return branchService.getGenListOnlyExtMod(branch);
 	}
-	
+
 }

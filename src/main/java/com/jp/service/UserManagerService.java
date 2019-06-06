@@ -30,29 +30,13 @@ public interface UserManagerService {
 	 */
 	UserManager getUserManager(String id) throws Exception;
 
-	/**
-	 * @描述 修改编委会
-	 * @作者 chenxiaobing
-	 * @时间 2018年8月27日下午4:21:48
-	 * @参数 @param eb
-	 * @参数 @return
-	 * @参数 @throws Exception
-	 * @return int
-	 */
-	Integer update(UserManager manager, String[] functionids) throws Exception;
+	Integer update(UserManager manager, String[] functionids) throws Exception;// 废弃了，后期再删
 
-	/**
-	 * @描述 新增编委会
-	 * @作者 chenxiaobing
-	 * @时间 2018年8月27日下午5:00:56
-	 * @参数 @param eb
-	 * @参数 @return
-	 * @参数 @throws Exception
-	 * @return List<Role>
-	 */
-	Integer insert(UserManager manager, String[] functionids) throws Exception;
+	JsonResponse save(UserManager manager, String[] functionids);
 
-	int del(String id);
+	Integer insert(UserManager manager, String[] functionids) throws Exception;// 废弃了，后期再删
+
+	JsonResponse del(String id);
 
 	List<UserManager> selectManagerByUserid(String userid);
 
