@@ -286,8 +286,9 @@
 	 icon, sort, description,func_role.functionid as isfunctionid
 	from jp_function fk
 	left join jp_function_role func_role on fk.functionid = func_role.functionid
+	where fk.familyid = #{familyid}
 	<if test="userid != null" >
-        and func_role.userid = #{userid,jdbcType=VARCHAR}
+       and func_role.userid = #{userid,jdbcType=VARCHAR}
     </if>
     <if test="ebid != null" >
         and func_role.ebid = #{ebid,jdbcType=VARCHAR}
@@ -298,8 +299,6 @@
     <if test="userid == null" >
         and 1=2
     </if>
-	where fk.familyid = #{familyid}
-	
 	order by fk.sort desc
   </select>
   

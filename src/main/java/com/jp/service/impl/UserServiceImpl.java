@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -64,6 +65,7 @@ import com.jp.entity.UserImportExample;
 import com.jp.entity.UserQuery;
 import com.jp.entity.Useralbum;
 import com.jp.entity.Usercode;
+import com.jp.entity.UsercodeQuery;
 import com.jp.entity.Useredu;
 import com.jp.entity.UsereduQuery;
 import com.jp.entity.UsereduQuery.Criteria;
@@ -75,6 +77,7 @@ import com.jp.entity.UserworkexpQuery;
 import com.jp.service.UserService;
 import com.jp.util.DateUtil;
 import com.jp.util.DateUtils;
+import com.jp.util.EmaySend;
 import com.jp.util.ExcelUtil;
 import com.jp.util.GsonUtil;
 import com.jp.util.MD5Util;
@@ -2542,7 +2545,7 @@ public class UserServiceImpl implements UserService {
 			usercode.setPhone(entity.getPhone());
 			usercode.setSmscode(smscode);
 			res = checkCode(usercode);
-			if (res.getCode() == ConstantUtils.RESULT_FAIL) {
+			if (res.getCode() == 1) {
 				return res;
 			}
 		}
@@ -2871,6 +2874,92 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 		return ip;
+	}
+
+	@Override
+	public JsonResponse sendSMSCode(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		// 检验接口参数
+		if (entity.getPhone() == null || "".equals(entity.getPhone())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("请填写手机号！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (!ValidatorUtil.isMobile(entity.getPhone())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("手机号格式不正确！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		String phone = entity.getPhone();
+
+		UserQuery userExample = new UserQuery();
+		userExample.or().andPhoneEqualTo(phone);
+		// userExample.setOrderByClause("createtime desc");
+		List<User> users = userDao.selectByExample(userExample);
+		if (users.size() == 0) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("不存在该用戶，请检查重试！");
+			res = new JsonResponse(result);
+			return res;
+		}
+
+		UsercodeQuery userCodeExample = new UsercodeQuery();
+		userCodeExample.or().andPhoneEqualTo(phone).andCreatetimeGreaterThan(DateUtil.getOneDayStratTime(new Date()));
+		userCodeExample.setOrderByClause("createtime desc");
+		List<Usercode> userCodes = usercodeDao.selectByExample(userCodeExample);
+		if (userCodes.size() > 10) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("当天获取验证码已经达到10次，请明天再试！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		long validtime = 180000l;
+		boolean betweenTimeLessThanSetTime = false;
+		if (userCodes.size() > 0) {
+			betweenTimeLessThanSetTime = DateUtil.isBetweenTimeLessThanSetTime(
+					userCodes.get(0).getCreatetime().getTime(), new Date().getTime(), validtime);
+			// 距离上次获取验证码超过3分钟才发送新的验证码
+			if (!betweenTimeLessThanSetTime) {
+				res = sendsms(phone);
+			} else {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("不要频繁发送验证码，请稍后重试！");
+				res = new JsonResponse(result);
+				return res;
+			}
+		} else {
+			res = sendsms(phone);
+		}
+
+		return res;
+	}
+
+	public JsonResponse sendsms(String phone) {
+		Result result = null;
+		JsonResponse res = null;
+		int smscode = new Random().nextInt(900000);
+		smscode = smscode + 100000;
+		Usercode userCode = new Usercode();
+		userCode.setId(UUIDUtils.getUUID());
+		userCode.setPhone(phone);
+		userCode.setSmscode(String.valueOf(smscode));
+		userCode.setType(1);
+		userCode.setCreatetime(new Date());
+		usercodeDao.insertSelective(userCode);
+		int issend = EmaySend.sendSMS(phone, "您此次授权认证的验证码为：" + smscode + "，有效期为3分钟！");
+		if (issend == 0) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			result.setMsg("发送成功！");
+			res = new JsonResponse(result);
+		} else {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("发送失败！");
+			res = new JsonResponse(result);
+		}
+		return res;
 	}
 
 }

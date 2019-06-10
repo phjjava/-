@@ -116,7 +116,7 @@
     id,userid,username,familyid,postid,postname,ebid,ebname,ebtype,ismanager
     from jp_user_manager
     where id = #{id,jdbcType=VARCHAR} -->
-    select m.id,m.userid,m.username,m.familyid,m.postid,m.postname,m.ebid,m.ebname,m.ebtype,m.ismanager,
+    select m.id,m.userid,m.username,m.familyid,m.postid,m.postname,m.ebid,m.ebname,m.ebtype,m.ismanager,m.sort,
 	concat_ws('',b.area,b.cityname,b.xname,ifNULL(b.address,' ')) as address,u.genlevel as genlevel
  	from jp_user_manager m , jp_user u, jp_branch b where m.userid = u.userid and u.branchid = b.branchid 
  	and m.id = #{id,jdbcType=VARCHAR}
@@ -269,7 +269,8 @@
       ebid = #{record.ebid,jdbcType=VARCHAR},
       ebname = #{record.ebname,jdbcType=VARCHAR},
       ebtype = #{record.ebtype,jdbcType=INTEGER},
-      ismanager = #{record.ismanager,jdbcType=INTEGER}
+      ismanager = #{record.ismanager,jdbcType=INTEGER},
+      sort = #{record.sort,jdbcType=INTEGER}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -304,6 +305,9 @@
       <if test="ismanager != null" >
         ismanager = #{ismanager,jdbcType=INTEGER},
       </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -317,7 +321,8 @@
       ebid = #{ebid,jdbcType=VARCHAR},
       ebname = #{ebname,jdbcType=VARCHAR},
       ebtype = #{ebtype,jdbcType=INTEGER},
-      ismanager = #{ismanager,jdbcType=INTEGER}
+      ismanager = #{ismanager,jdbcType=INTEGER},
+      sort = #{sort,jdbcType=INTEGER}
     where id = #{id,jdbcType=VARCHAR}
   </update>
   

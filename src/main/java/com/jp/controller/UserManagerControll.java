@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,8 +23,6 @@ import com.jp.entity.Function;
 import com.jp.entity.UserManager;
 import com.jp.service.FunctionService;
 import com.jp.service.UserManagerService;
-import com.jp.util.StringTools;
-import com.jp.util.UUIDUtils;
 
 @Controller
 @RequestMapping("userManager")
@@ -39,40 +36,54 @@ public class UserManagerControll {
 	@Autowired
 	private FunctionService functionService;
 
+	/**
+	 * 保存或编辑管理员,入参有id编辑，无id新增
+	 * 
+	 * @param manager
+	 * @param functionids
+	 * @return
+	 */
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse save(HttpServletRequest request, UserManager manager, ModelMap model) {
-		Result result = null;
-		JsonResponse res = null;
-		Integer status = null;
-		String[] functionids = request.getParameterValues("functionids[]");
-		try {
-			if (StringTools.notEmpty(manager.getId())) {// 修改
-				status = userManagerService.update(manager, functionids);
-			} else {// 新增
-				manager.setId(UUIDUtils.getUUID());
-				status = userManagerService.insert(manager, functionids);
-			}
-		} catch (Exception e) {
-			status = 0;
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			res.setData(status);
-			return res;
-		}
-		if (status == 0) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			res = new JsonResponse(result);
-			res.setData(status);
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(status);
-		return res;
+	public JsonResponse save(UserManager manager, String[] functionids) {
+		return userManagerService.save(manager, functionids);
 	}
+
+	//
+	// @RequestMapping(value = "/save", method = RequestMethod.POST)
+	// @ResponseBody
+	// public JsonResponse save(HttpServletRequest request, UserManager manager) {
+	// Result result = null;
+	// JsonResponse res = null;
+	// Integer status = null;
+	// String[] functionids = request.getParameterValues("functionids[]");
+	// try {
+	// if (StringTools.notEmpty(manager.getId())) {// 修改
+	// status = userManagerService.update(manager, functionids);
+	// } else {// 新增
+	// manager.setId(UUIDUtils.getUUID());
+	// status = userManagerService.insert(manager, functionids);
+	// }
+	// } catch (Exception e) {
+	// status = 0;
+	// e.printStackTrace();
+	// log_.error("[JPSYSTEM]", e);
+	// result = new Result(MsgConstants.SYS_ERROR);
+	// res = new JsonResponse(result);
+	// res.setData(status);
+	// return res;
+	// }
+	// if (status == 0) {
+	// result = new Result(MsgConstants.RESUL_FAIL);
+	// res = new JsonResponse(result);
+	// res.setData(status);
+	// return res;
+	// }
+	// result = new Result(MsgConstants.RESUL_SUCCESS);
+	// res = new JsonResponse(result);
+	// res.setData(status);
+	// return res;
+	// }
 
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
@@ -106,23 +117,7 @@ public class UserManagerControll {
 	@RequestMapping(value = "/del", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse deleteEditorialBoard(EditorialBoard entity) {
-		Result result = null;
-		JsonResponse res = null;
-		Integer status = null;
-		try {
-			status = userManagerService.del(entity.getId());
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			res.setData(0);
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(status);
-		return res;
+		return userManagerService.del(entity.getId());
 	}
 
 	/**
@@ -147,7 +142,7 @@ public class UserManagerControll {
 					manager.setGenlevel(manager.getGenlevel() + "世");
 				}
 			}
-			String familyid = CurrentUserContext.getCurrentFamilyId();
+			String familyid = "9ba9172bd1a44e35992d8b1c247adb95";
 			List<Function> functionList = new ArrayList<>();
 			if (manager == null || (manager.getIsmanager() == 1 && manager.getEbtype() == 1)) {
 				functionList = functionService.selectFunctionListByEbid(familyid, "", "", "");

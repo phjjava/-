@@ -34,9 +34,9 @@ import com.jp.util.UUIDUtils;
 
 @Service
 public class BranchalbumServiceImpl implements BranchalbumService {
-	
+
 	private final Logger log_ = LogManager.getLogger(BranchalbumServiceImpl.class);
-	
+
 	@Autowired
 	private BranchalbumMapper badao;
 	@Autowired
@@ -47,7 +47,6 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 			throws Exception {
 		// 当前登录人所管理的branchids
 
-		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		List<UserManager> managers = CurrentUserContext.getCurrentUserManager();
 		String familyid = CurrentUserContext.getCurrentFamilyId();
 		List<String> branchList = CurrentUserContext.getCurrentBranchIds();
@@ -63,6 +62,7 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 				criteria.andDeleteflagEqualTo(branchalbum.getDeleteflag());
 			}
 			example.setOrderByClause("createtime DESC");
+			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 			if (m.getEbtype() == 1) {
 				criteria.andFamilyidEqualTo(familyid);
 				list = badao.selectByExample(example);
@@ -132,8 +132,26 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	}
 
 	@Override
-	public int insertBranchPhoto(List<Branchphoto> userPhotoList) {
-		return photodao.insertBranchPhoto(userPhotoList);
+	public JsonResponse insertBranchPhoto(List<Branchphoto> userPhotoList) {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			int status = photodao.insertBranchPhoto(userPhotoList);
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[insertBranchPhoto方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
@@ -167,74 +185,71 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	}
 
 	/**
-	* 以下方法用于api
-	*/
-	
+	 * 以下方法用于api
+	 */
+
 	@Override
 	public JsonResponse getAlbum(Branchalbum entity) {
 		Result result = null;
 		JsonResponse res = null;
 		try {
-			if(entity.getFamilyid()==null) {
+			if (entity.getFamilyid() == null) {
 				result = new Result(MsgConstants.FAMILYID_IS_NULL);
 				res = new JsonResponse(result);
 				return res;
 			}
-			if(entity.getMeautype()==null) {
+			if (entity.getMeautype() == null) {
 				result = new Result(MsgConstants.MEAUTYPE_IS_NULL);
 				res = new JsonResponse(result);
 				return res;
 			}
-			
+
 			List<Branchalbum> albums = new ArrayList<>();
 			BranchalbumExample example = new BranchalbumExample();
 			example.setOrderByClause("sort asc,createtime desc");
-			if(entity.getStart()!=null && entity.getCount()!=null) {
-				example.setPageNo(entity.getStart().intValue()+1);
+			if (entity.getStart() != null && entity.getCount() != null) {
+				example.setPageNo(entity.getStart().intValue() + 1);
 				example.setPageSize(entity.getCount().intValue());
 			}
-			
-			if(0==entity.getMeautype()) {
-				//获取家族得相册列表
-				example.or().andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE)
-									.andFamilyidEqualTo(entity.getFamilyid())
-									.andTypeEqualTo(0);
+
+			if (0 == entity.getMeautype()) {
+				// 获取家族得相册列表
+				example.or().andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE).andFamilyidEqualTo(entity.getFamilyid())
+						.andTypeEqualTo(0);
 				albums = badao.selectByExample(example);
-				
-			}else if(1==entity.getMeautype()) {
-				//获取全部相册
-				example.or().andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE)
-								.andFamilyidEqualTo(entity.getFamilyid());
+
+			} else if (1 == entity.getMeautype()) {
+				// 获取全部相册
+				example.or().andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE).andFamilyidEqualTo(entity.getFamilyid());
 				albums = badao.selectByExample(example);
-			}else if(2==entity.getMeautype()) {
-				if(entity.getBranchid()==null || "".equals(entity.getBranchid())) {
+			} else if (2 == entity.getMeautype()) {
+				if (entity.getBranchid() == null || "".equals(entity.getBranchid())) {
 					result = new Result(MsgConstants.BRANCHID_IS_NULL);
 					res = new JsonResponse(result);
 					return res;
 				}
-					
-				//按照城市编码获取相册列表
-				Map<String,Object> params  = new HashMap<String,Object>();
+
+				// 按照城市编码获取相册列表
+				Map<String, Object> params = new HashMap<String, Object>();
 				params.put("startRow", entity.getStart());
-				params.put("pageSize",entity.getCount());
+				params.put("pageSize", entity.getCount());
 				params.put("cityCode", entity.getBranchid());
 				params.put("familyid", entity.getFamilyid());
-				
+
 				albums = badao.selectByCityCode(params);
-			}else if(3==entity.getMeautype()) {
-				if(entity.getBranchid()==null || "".equals(entity.getBranchid())) {
+			} else if (3 == entity.getMeautype()) {
+				if (entity.getBranchid() == null || "".equals(entity.getBranchid())) {
 					result = new Result(MsgConstants.BRANCHID_IS_NULL);
 					res = new JsonResponse(result);
 					return res;
 				}
-				//按照分支id获取相册列表
-				example.or().andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE)
-							.andBranchidEqualTo(entity.getBranchid());
+				// 按照分支id获取相册列表
+				example.or().andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE).andBranchidEqualTo(entity.getBranchid());
 				albums = badao.selectByExample(example);
 			}
-			
+
 			addAlbumNumAndPreImg(albums);
-			
+
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(albums);
@@ -245,75 +260,74 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 		}
 		return res;
 	}
-	
+
 	/**
-     * 填充头图与图片数量
-     * @描述 
-     * @作者 jinlizhi
-     * @时间 2017年9月6日下午5:05:16
-     * @参数 @param branchAlbumList
-     * @return void
-     */
+	 * 填充头图与图片数量
+	 * 
+	 * @描述
+	 * @作者 jinlizhi
+	 * @时间 2017年9月6日下午5:05:16
+	 * @参数 @param branchAlbumList
+	 * @return void
+	 */
 	private void addAlbumNumAndPreImg(List<Branchalbum> branchAlbumList) {
-		//填充图片数量
-        BranchphotoExample photoEp = new BranchphotoExample();
-        for (Branchalbum branchAlbum : branchAlbumList) {		
+		// 填充图片数量
+		BranchphotoExample photoEp = new BranchphotoExample();
+		for (Branchalbum branchAlbum : branchAlbumList) {
 			photoEp.clear();
 			photoEp.setOrderByClause("createtime asc");
-			photoEp.or().andAlbumidEqualTo(branchAlbum.getAlbumid())
-				.andBranchidEqualTo(branchAlbum.getBranchid())
+			photoEp.or().andAlbumidEqualTo(branchAlbum.getAlbumid()).andBranchidEqualTo(branchAlbum.getBranchid())
 					.andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
 			List<Branchphoto> photeList = photodao.selectByExample(photoEp);
-			if (photeList!=null) {
-				//填充头图
+			if (photeList != null) {
+				// 填充头图
 				branchAlbum.setPhotoNum(photeList.size());
-				if (photeList.size()>0) {
+				if (photeList.size() > 0) {
 					String smallimgurl = photeList.get(0).getSmallimgurl();
 					branchAlbum.setPrePhotoImg(smallimgurl);
 				}
 			}
-			
+
 		}
 	}
 
 	@Override
 	public JsonResponse getPhotolistOfBranchAlbum(Branchphoto entity) {
-		Result result  = null;
+		Result result = null;
 		JsonResponse res = null;
 		try {
 			if (entity.getAlbumid() == null || "".equals(entity.getAlbumid())) {
 				result = new Result(MsgConstants.ALBUMID_IS_NULL);
-		        res = new JsonResponse(result);
-		        return res;
-	        }
-	     Map<String, String> map=new HashMap<String,String>();
-	     if (entity.getStart() != null && entity.getCount() != null) {
-	         map.put("start", entity.getStart().toString());
-	         map.put("count", entity.getCount().toString());
-	     }
-	      map.put("albumid", entity.getAlbumid());
-	        List<Branchphoto> branchPhotos = photodao.selectPhotosByAlbumid(map);
-	        PhotosVO vo = new PhotosVO();
-	        if(branchPhotos==null || branchPhotos.size()==0) {
-	            result = new Result(result);
-	            result.setMsg("没有相片");
-	            res = new JsonResponse(result);
-	            res.setData(vo);
-	            return res;
-	        }
-	        Branchalbum album = badao.selectByPrimaryKey(entity.getAlbumid());
-	        //构造返回
-	        
-	        vo.setAlbumname(album.getAlbumname());
-	        vo.setRemake(album.getRemark());
-	        vo.setCreatetime(DateUtils.date2shortStr(album.getCreatetime()));
-	        
-	       
-	        vo.setPhotos(branchPhotos);
-	       
-	        result = new Result(MsgConstants.RESUL_SUCCESS);
-	        res = new JsonResponse(result);
-	        res.setData(vo);
+				res = new JsonResponse(result);
+				return res;
+			}
+			Map<String, String> map = new HashMap<String, String>();
+			if (entity.getStart() != null && entity.getCount() != null) {
+				map.put("start", entity.getStart().toString());
+				map.put("count", entity.getCount().toString());
+			}
+			map.put("albumid", entity.getAlbumid());
+			List<Branchphoto> branchPhotos = photodao.selectPhotosByAlbumid(map);
+			PhotosVO vo = new PhotosVO();
+			if (branchPhotos == null || branchPhotos.size() == 0) {
+				result = new Result(result);
+				result.setMsg("没有相片");
+				res = new JsonResponse(result);
+				res.setData(vo);
+				return res;
+			}
+			Branchalbum album = badao.selectByPrimaryKey(entity.getAlbumid());
+			// 构造返回
+
+			vo.setAlbumname(album.getAlbumname());
+			vo.setRemake(album.getRemark());
+			vo.setCreatetime(DateUtils.date2shortStr(album.getCreatetime()));
+
+			vo.setPhotos(branchPhotos);
+
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(vo);
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
