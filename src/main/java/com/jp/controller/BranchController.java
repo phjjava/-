@@ -202,12 +202,12 @@ public class BranchController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/initBranch", method = RequestMethod.POST)
-	public JsonResponse selectBranch(String familyid) {
+	public JsonResponse selectBranch(Branch branch) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		try {
 			PageModel<Branch> pageModelBranch = new PageModel<Branch>();
-			Branch branch = new Branch();
+			
 			branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 			branchService.initBranch(pageModelBranch, branch);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
