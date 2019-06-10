@@ -18,9 +18,12 @@ import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
-import com.jp.common.Result;
+import com.jp.common.Result;import com.jp.dao.BranchDao;
 import com.jp.dao.BranchalbumMapper;
 import com.jp.dao.BranchphotoMapper;
+import com.jp.entity.Branch;
+import com.jp.entity.BranchKey;
+import com.jp.entity.BranchQuery;
 import com.jp.entity.Branchalbum;
 import com.jp.entity.BranchalbumExample;
 import com.jp.entity.Branchphoto;
@@ -41,6 +44,8 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	private BranchalbumMapper badao;
 	@Autowired
 	private BranchphotoMapper photodao;
+	@Autowired
+	private BranchDao branchDao;
 
 	@Override
 	public PageModel<Branchalbum> pageQuery(PageModel<Branchalbum> pageModel, Branchalbum branchalbum)
@@ -81,11 +86,28 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 		// List<Branchalbum> list = badao.selectByBranchIds(branchList);
 		// badao.selectBranchAlbumMangeList()\
 		BranchphotoExample example1 = new BranchphotoExample();
-
+		BranchKey key = new BranchKey();
 		for (Branchalbum al : list) {
 			example1.clear();
 			example1.or().andAlbumidEqualTo(al.getAlbumid()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
 			al.setAlbumNum(photodao.countByExample(example1));
+			if(!"0".equals(al.getBranchid())) {
+				key.setBranchid(al.getBranchid());
+				key.setFamilyid(familyid);
+				Branch branch = branchDao.selectByPrimaryKey(key);
+				String area = "";
+				if(branch.getArea()!=null)
+					area += branch.getArea();
+				if(branch.getCityname()!=null)
+					area += "_"+branch.getCityname();
+				if(branch.getXname()!=null)
+					area += "_"+branch.getXname();
+				if(branch.getAddress()!=null)
+					area += "_"+branch.getAddress();
+				area += " "+branch.getBranchname(); 
+				al.setBranchname(area);
+			}
+			
 		}
 		pageModel.setList(list);
 		pageModel.setPageInfo(new PageInfo<Branchalbum>(list));
