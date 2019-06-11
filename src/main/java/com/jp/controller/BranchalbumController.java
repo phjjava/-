@@ -214,13 +214,13 @@ public class BranchalbumController {
 	 */
 	@RequestMapping(value = "/batchSavePhoto", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse batchSavePhoto(@RequestBody List<Branchphoto> userPhotoList, String albumid, String branchid) {
+	public JsonResponse batchSavePhoto(@RequestBody List<Branchphoto> userPhotoList) {
 		List<Branchphoto> branchphotos = new ArrayList<Branchphoto>();
 		for (Branchphoto bp : userPhotoList) {
 			Branchphoto branchPhoto = new Branchphoto();
 			branchPhoto.setImgid(UUIDUtils.getUUID());
-			branchPhoto.setAlbumid(albumid);
-			branchPhoto.setBranchid(branchid);
+			branchPhoto.setAlbumid(bp.getAlbumid());
+			branchPhoto.setBranchid(bp.getBranchid());
 			branchPhoto.setImgurl(bp.getImgurl());
 			branchPhoto.setSmallimgurl(bp.getSmallimgurl());
 			branchPhoto.setDescription(bp.getDescription());
