@@ -218,7 +218,7 @@ public class BranchalbumController {
 		List<Branchphoto> branchphotos = new ArrayList<Branchphoto>();
 		for (Branchphoto bp : userPhotoList) {
 			Branchphoto branchPhoto = new Branchphoto();
-			branchPhoto.setImgid(UUIDUtils.getUUID());
+			branchPhoto.setImgid(bp.getImgid());
 			branchPhoto.setAlbumid(bp.getAlbumid());
 			branchPhoto.setBranchid(bp.getBranchid());
 			branchPhoto.setImgurl(bp.getImgurl());
