@@ -324,19 +324,26 @@ public class BranchalbumController {
 			key.setBranchid(branchPhoto.getBranchid());
 			key.setDeleteflag(1);
 			// 删除照片
-			baservice.updateByPrimaryKeySelective(key);
-			str = "1";
+			int num = baservice.updateByPrimaryKeySelective(key);
+			if(num > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+			}else {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				res = new JsonResponse(result);
+			}
+			//str = "1";
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
-			res.setData("0");
+			//res.setData("0");
 			return res;
 		}
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
-		res.setData(str);
+		//res.setData(str);
 		return res;
 	}
 
