@@ -215,22 +215,7 @@ public class BranchalbumController {
 	@RequestMapping(value = "/batchSavePhoto", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse batchSavePhoto(@RequestBody List<Branchphoto> userPhotoList) {
-		List<Branchphoto> branchphotos = new ArrayList<Branchphoto>();
-		for (Branchphoto bp : userPhotoList) {
-			Branchphoto branchPhoto = new Branchphoto();
-			branchPhoto.setImgid(bp.getImgid());
-			branchPhoto.setAlbumid(bp.getAlbumid());
-			branchPhoto.setBranchid(bp.getBranchid());
-			branchPhoto.setImgurl(bp.getImgurl());
-			branchPhoto.setSmallimgurl(bp.getSmallimgurl());
-			branchPhoto.setDescription(bp.getDescription());
-			branchPhoto.setCreatetime(new Date());
-			branchPhoto.setCreateid(CurrentUserContext.getCurrentUserId());
-			branchPhoto.setDeleteflag(0);
-			branchphotos.add(branchPhoto);
-		}
-
-		return baservice.insertBranchPhoto(branchphotos);
+		return baservice.insertBranchPhoto(userPhotoList);
 	}
 
 	/**
@@ -468,21 +453,27 @@ public class BranchalbumController {
 	public JsonResponse changeStatus(Branchalbum branchAlbum) {
 		Result result = null;
 		JsonResponse res = null;
-		String str = null;
+		int num = 0;
 		try {
-			str = baservice.changeStatus(branchAlbum) + "";
+			num = baservice.changeStatus(branchAlbum) ;
 		} catch (Exception e) {
-			str = "0";
+			//
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
-			res.setData(str);
+			//res.setData(str);
 			return res;
 		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(str);
+		if(num >0) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+		}else {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+		}
+		
+		//res.setData(str);
 		return res;
 	}
 
