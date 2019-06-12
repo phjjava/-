@@ -18,12 +18,12 @@ import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
-import com.jp.common.Result;import com.jp.dao.BranchDao;
+import com.jp.common.Result;
+import com.jp.dao.BranchDao;
 import com.jp.dao.BranchalbumMapper;
 import com.jp.dao.BranchphotoMapper;
 import com.jp.entity.Branch;
 import com.jp.entity.BranchKey;
-import com.jp.entity.BranchQuery;
 import com.jp.entity.Branchalbum;
 import com.jp.entity.BranchalbumExample;
 import com.jp.entity.Branchphoto;
@@ -91,23 +91,23 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 			example1.clear();
 			example1.or().andAlbumidEqualTo(al.getAlbumid()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
 			al.setAlbumNum(photodao.countByExample(example1));
-			if(!"0".equals(al.getBranchid())) {
+			if (!"0".equals(al.getBranchid())) {
 				key.setBranchid(al.getBranchid());
 				key.setFamilyid(familyid);
 				Branch branch = branchDao.selectByPrimaryKey(key);
 				String area = "";
-				if(branch.getArea()!=null)
+				if (branch.getArea() != null)
 					area += branch.getArea();
-				if(branch.getCityname()!=null)
-					area += "_"+branch.getCityname();
-				if(branch.getXname()!=null)
-					area += "_"+branch.getXname();
-				if(branch.getAddress()!=null)
-					area += "_"+branch.getAddress();
-				area += " "+branch.getBranchname(); 
+				if (branch.getCityname() != null)
+					area += "_" + branch.getCityname();
+				if (branch.getXname() != null)
+					area += "_" + branch.getXname();
+				if (branch.getAddress() != null)
+					area += "_" + branch.getAddress();
+				area += " " + branch.getBranchname();
 				al.setBranchname(area);
 			}
-			
+
 		}
 		pageModel.setList(list);
 		pageModel.setPageInfo(new PageInfo<Branchalbum>(list));
@@ -115,9 +115,30 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	}
 
 	@Override
-	public Branchalbum get(String albumid, String branchid) throws Exception {
-		Branchalbum branchalbum = badao.selectByPrimaryKey(albumid);
-		return branchalbum;
+	public JsonResponse get(String albumid) {
+		Result result = null;
+		JsonResponse res = null;
+		Branchalbum branchalbum = null;
+		try {
+			if (StringTools.trimNotEmpty(albumid)) {
+				branchalbum = badao.selectByPrimaryKey(albumid);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPGL]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (branchalbum == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(branchalbum);
+		return res;
 	}
 
 	@Override
@@ -159,7 +180,7 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 		JsonResponse res = null;
 		List<Branchphoto> branchphotos = new ArrayList<Branchphoto>();
 		for (Branchphoto bp : userPhotoList) {
-			if(bp.getImgid() == null || "".equals(bp.getImgid())) {
+			if (bp.getImgid() == null || "".equals(bp.getImgid())) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				res = new JsonResponse(result);
 				return res;
@@ -176,7 +197,7 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 			branchPhoto.setDeleteflag(0);
 			branchphotos.add(branchPhoto);
 		}
-		
+
 		try {
 			int status = photodao.insertBranchPhoto(branchphotos);
 			if (status > 0) {
@@ -197,13 +218,26 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	}
 
 	@Override
-	public List<Branchphoto> selectByExample(BranchphotoExample example) {
-		return photodao.selectByExample(example);
-	}
-
-	@Override
-	public int updateByPrimaryKeySelective(Branchphoto record) {
-		return photodao.updateByPrimaryKeySelective(record);
+	public JsonResponse updateByPrimaryKeySelective(Branchphoto record) {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			int status = photodao.updateByPrimaryKeySelective(record);
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
@@ -212,13 +246,49 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	}
 
 	@Override
-	public int batchDelete(String[] albumidArray) {
-		return badao.batchDelete(albumidArray);
+	public JsonResponse batchDelete(String[] albumidArray) {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			int status = badao.batchDelete(albumidArray);
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
-	public int changeStatus(Branchalbum branchAlbum) {
-		return badao.updateByPrimaryKeySelective(branchAlbum);
+	public JsonResponse changeStatus(Branchalbum branchAlbum) {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			int status = badao.updateByPrimaryKeySelective(branchAlbum);
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
@@ -375,6 +445,35 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 			res = new JsonResponse(result);
 			log_.error("[BranchalbumServiceImpl---Error:]", e);
 		}
+		return res;
+	}
+
+	@Override
+	public JsonResponse getAlbumAndPhotos(String albumid, String branchid) {
+		Result result = null;
+		JsonResponse res = null;
+		List<Branchphoto> photoList = null;
+		Branchalbum branchalbum = null;
+		try {
+			BranchphotoExample example = new BranchphotoExample();
+			com.jp.entity.BranchphotoExample.Criteria criteria = example.createCriteria();
+			if (StringTools.trimNotEmpty(albumid)) {
+				criteria.andAlbumidEqualTo(albumid);
+			}
+			criteria.andDeleteflagEqualTo(0);
+			photoList = photodao.selectByExample(example);
+			branchalbum = badao.selectByPrimaryKey(albumid);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(photoList);
+		res.setEntity(branchalbum);
 		return res;
 	}
 }

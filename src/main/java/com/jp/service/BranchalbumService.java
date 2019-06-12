@@ -8,21 +8,20 @@ import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.Branchalbum;
 import com.jp.entity.Branchphoto;
-import com.jp.entity.BranchphotoExample;
 
 public interface BranchalbumService {
 
 	PageModel<Branchalbum> pageQuery(PageModel<Branchalbum> pageModel, Branchalbum ranchalbum) throws Exception;
 
-	Branchalbum get(String albumid, String branchid) throws Exception;
+	JsonResponse get(String albumid);
 
 	String mergeBranchAlbum(Branchalbum branchalbum);
 
 	JsonResponse insertBranchPhoto(@Param("list") List<Branchphoto> userPhotoList);
 
-	List<Branchphoto> selectByExample(BranchphotoExample example);
+	JsonResponse getAlbumAndPhotos(String albumid, String branchid);
 
-	int updateByPrimaryKeySelective(Branchphoto record);
+	JsonResponse updateByPrimaryKeySelective(Branchphoto record);
 
 	Branchphoto selectByPrimaryKey(String key);
 
@@ -36,7 +35,7 @@ public interface BranchalbumService {
 	 * @参数 @return
 	 * @return int
 	 */
-	int batchDelete(String[] albumidArray);
+	JsonResponse batchDelete(String[] albumidArray);
 
 	/**
 	 * 修改相册的状态字段
@@ -48,7 +47,7 @@ public interface BranchalbumService {
 	 * @参数 @return
 	 * @return int
 	 */
-	int changeStatus(Branchalbum branchAlbum);
+	JsonResponse changeStatus(Branchalbum branchAlbum);
 
 	/**
 	 * @描述 查询管理分支下的所有相册的url
