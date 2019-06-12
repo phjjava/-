@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.github.pagehelper.PageInfo;
 import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
@@ -1350,7 +1349,6 @@ public class UserController {
 				userList.add(userAddrss);
 			}
 			pageModel.setList(userList);
-			pageModel.setPageInfo(new PageInfo<User>(userList));
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(pageModel);

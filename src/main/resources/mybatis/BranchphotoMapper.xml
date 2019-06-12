@@ -314,11 +314,11 @@
   
   <!-- 自写方法 -->
    <insert id="insertBranchPhoto">
-	     insert into jp_branchphoto (branchid,albumid,imgid,smallimgurl,imgurl,description,createid,createtime,deleteflag)
+	     insert into jp_branchphoto (branchid,albumid,imgid,smallimgurl,imgurl,description,deleteflag,createid,createtime)
 	     values
 	     <foreach collection="list" item="item" index="index" separator=",">
 			(#{item.branchid},#{item.albumid},#{item.imgid},#{item.smallimgurl},#{item.imgurl},#{item.description},
-			#{item.createid},#{item.createtime},#{item.deleteflag}
+			#{item.deleteflag},#{item.createid},#{item.createtime}
 			)
 		</foreach>
   </insert>
