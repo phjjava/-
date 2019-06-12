@@ -316,7 +316,6 @@ public class BranchalbumController {
 	public JsonResponse deletPhoto(Branchphoto branchPhoto) {
 		Result result = null;
 		JsonResponse res = null;
-		String str = "";
 		try {
 			Branchphoto key = new Branchphoto();
 			key.setAlbumid(branchPhoto.getAlbumid());
@@ -324,19 +323,23 @@ public class BranchalbumController {
 			key.setBranchid(branchPhoto.getBranchid());
 			key.setDeleteflag(1);
 			// 删除照片
-			baservice.updateByPrimaryKeySelective(key);
-			str = "1";
+			int num = baservice.updateByPrimaryKeySelective(key);
+			if (num > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+			} else {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				res = new JsonResponse(result);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
-			res.setData("0");
 			return res;
 		}
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
-		res.setData(str);
 		return res;
 	}
 
@@ -461,21 +464,27 @@ public class BranchalbumController {
 	public JsonResponse changeStatus(Branchalbum branchAlbum) {
 		Result result = null;
 		JsonResponse res = null;
-		String str = null;
+		int num = 0;
 		try {
-			str = baservice.changeStatus(branchAlbum) + "";
+			num = baservice.changeStatus(branchAlbum);
 		} catch (Exception e) {
-			str = "0";
+			//
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
-			res.setData(str);
+			// res.setData(str);
 			return res;
 		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(str);
+		if (num > 0) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+		} else {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+		}
+
+		// res.setData(str);
 		return res;
 	}
 
