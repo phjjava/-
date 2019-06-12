@@ -35,6 +35,7 @@ import com.jp.dao.UserDao;
 import com.jp.dao.UserbranchDao;
 import com.jp.dao.UsermatesDao;
 import com.jp.entity.Branch;
+import com.jp.entity.BranchKey;
 import com.jp.entity.SysVersionPrivilege;
 import com.jp.entity.User;
 import com.jp.entity.UserQuery;
@@ -260,7 +261,10 @@ public class UserController {
 			}
 			// 初始化分支
 			PageModel<Branch> pageModel = new PageModel<Branch>();
-			Branch branch = new Branch();
+			BranchKey key = new BranchKey();
+			key.setBranchid(user.getBranchid());
+			key.setFamilyid(user.getFamilyid());
+			Branch branch = branchDao.selectByPrimaryKey(key);
 			// branchService.initBranch(pageModel,branch);
 			// 初始化相册
 			List<Useralbum> userAblumList = userService.selectUseralbum(userid);
