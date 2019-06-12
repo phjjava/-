@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.github.pagehelper.PageInfo;
 import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
@@ -288,6 +287,18 @@ public class UserController {
 			user.setUserEdu(eduList);
 			user.setUserAblumList(userAblumList);
 			user.setMateList(mateList);
+			String area = "";
+			if (branch.getArea() != null)
+				area += branch.getArea();
+			if (branch.getCityname() != null)
+				area += "_" + branch.getCityname();
+			if (branch.getXname() != null)
+				area += "_" + branch.getXname();
+			if (branch.getAddress() != null)
+				area += "_" + branch.getAddress();
+			area += " " + branch.getBranchname();
+			branch.setBranchname(area);
+			user.setBranch(branch);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(user);
@@ -1350,7 +1361,6 @@ public class UserController {
 				userList.add(userAddrss);
 			}
 			pageModel.setList(userList);
-			pageModel.setPageInfo(new PageInfo<User>(userList));
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(pageModel);
