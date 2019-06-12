@@ -291,18 +291,20 @@ public class UserController {
 			user.setUserEdu(eduList);
 			user.setUserAblumList(userAblumList);
 			user.setMateList(mateList);
-			String area = "";
-			if (branch.getArea() != null)
-				area += branch.getArea();
-			if (branch.getCityname() != null)
-				area += "_" + branch.getCityname();
-			if (branch.getXname() != null)
-				area += "_" + branch.getXname();
-			if (branch.getAddress() != null)
-				area += "_" + branch.getAddress();
-			area += " " + branch.getBranchname();
-			branch.setBranchname(area);
-			user.setBranch(branch);
+			if (branch != null) {
+				String area = "";
+				if (branch.getArea() != null)
+					area += branch.getArea();
+				if (branch.getCityname() != null)
+					area += "_" + branch.getCityname();
+				if (branch.getXname() != null)
+					area += "_" + branch.getXname();
+				if (branch.getAddress() != null)
+					area += "_" + branch.getAddress();
+				area += " " + branch.getBranchname();
+				branch.setBranchname(area);
+				user.setBranch(branch);
+			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(user);
