@@ -40,7 +40,7 @@ public class BranchalbumController {
 	private final Logger log_ = LogManager.getLogger(BranchalbumController.class);
 
 	/**
-	 * @描述 分支相册 去新增编辑界面
+	 * @描述 分支相册 去新增编辑界面（回显）
 	 * @作者 sj
 	 * @时间 2017年5月21日下午10:44:17
 	 * @参数 @param request
