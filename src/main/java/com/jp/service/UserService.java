@@ -254,4 +254,17 @@ public interface UserService {
 
 	JsonResponse sendSMSCode(User entity);
 
+	JsonResponse sendSMSCodeForReg(User entity);
+
+	JsonResponse loginWithCaptcha(User entity, String loginType, String internetType, String version, String smscode);
+
+	JsonResponse loginWithThirdParty(User entity);
+
+	JsonResponse bindingWithThirdParty(User entity, String smscode, Integer loginstatus);
+
+	JsonResponse relieveWithThirdParty(User entity);
+
+	JsonResponse isBindingWithUser(User entity);
+
+	JsonResponse checkSMSCode(User entity, String code);
 }

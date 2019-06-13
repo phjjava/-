@@ -63,6 +63,12 @@ public class WebUtil {
 		return request.getServletContext();
 	}
 
+	public static HttpServletRequest getRequest() {
+		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+				.getRequest();
+		return request;
+	}
+
 	public static HttpServletResponse getResponse() {
 		HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
 				.getResponse();

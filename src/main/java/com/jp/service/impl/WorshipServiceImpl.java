@@ -55,7 +55,6 @@ public class WorshipServiceImpl implements WorshipService {
 	public JsonResponse worship(Worship entity) {
 		Result result = null;
 		JsonResponse res = null;
-		int status;
 		try {
 			if (entity.getWorshipid() == null || "".equals(entity.getWorshipid())) {
 				result = new Result(MsgConstants.RESUL_FAIL);
@@ -88,14 +87,19 @@ public class WorshipServiceImpl implements WorshipService {
 			User worshipuser = userDao.selectByPrimaryKey(entity.getWorshipid());
 			entity.setCreatename(createuser.getUsername());
 			entity.setWorshipname(worshipuser.getUsername());
-			status = worshipMapper.insertSelective(entity);
+			int status = worshipMapper.insertSelective(entity);
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
 		} catch (Exception e) {
 			log_.error("[worship方法---异常:]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
 			return res;
 		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
+		result = new Result(MsgConstants.RESUL_FAIL);
 		res = new JsonResponse(result);
 		return res;
 	}

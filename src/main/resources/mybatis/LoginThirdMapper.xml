@@ -263,4 +263,11 @@
       deleteflag = #{deleteflag,jdbcType=INTEGER}
     where id = #{id,jdbcType=VARCHAR}
   </update>
+    <!-- 自写方法 -->
+  <update id="relieveWithThirdParty" parameterType="java.util.Map">
+  	update jp_login_third
+    set deleteflag = 1
+    where openid = #{openid,jdbcType=VARCHAR}
+    and userid = #{userid,jdbcType=VARCHAR}
+  </update>
 </mapper>

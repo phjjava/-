@@ -1504,4 +1504,102 @@ public class UserController {
 		return userService.sendSMSCode(entity);
 	}
 
+	/**
+	 * 发送短信验证码 一天之内最多发10条；注册家族时使用，系统不存在的用户也可以发；一条验证码3分钟内有效，3分钟之内不允许再次发送 by 李鹏
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/sendSMSCodeForReg", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse sendSMSCodeForReg(User entity) {
+		return userService.sendSMSCodeForReg(entity);
+	}
+
+	/**
+	 * 通过验证码登录
+	 * 
+	 * @param req
+	 * @param entity
+	 * @param loginType
+	 * @param internetType
+	 * @param version
+	 * @param usercode
+	 * @return
+	 */
+	@RequestMapping(value = "/loginWithCaptcha", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse loginWithCaptcha(HttpServletRequest req, User entity, String loginType, String internetType,
+			String version, Usercode usercode) {
+		// 先取请求session的id
+		String sessionid = req.getSession().getId();
+		entity.setSessionid(sessionid);
+		return userService.loginWithCaptcha(entity, loginType, internetType, version, usercode.getSmscode());
+	}
+
+	/**
+	 * 通过微信/QQ等授权登陆
+	 * 
+	 * @param req
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/loginWithThirdParty", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse loginWithThirdParty(HttpServletRequest req, User entity) {
+		// 先取请求session的id
+		String sessionid = req.getSession().getId();
+		entity.setSessionid(sessionid);
+		return userService.loginWithThirdParty(entity);
+	}
+
+	/**
+	 * 绑定微信/QQ等的唯一opeinid
+	 * 
+	 * @param entity
+	 * @param usercode
+	 * @param loginstatus
+	 * @return
+	 */
+	@RequestMapping(value = "/bindingWithThirdParty", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse bindingWithThirdParty(User entity, Usercode usercode, Integer loginstatus) {
+		// 进行查询
+		if (usercode != null && usercode.getSmscode() != null && !"".equals(usercode.getSmscode())) {
+			return userService.bindingWithThirdParty(entity, usercode.getSmscode(), loginstatus);
+		} else {
+			return userService.bindingWithThirdParty(entity, null, loginstatus);
+		}
+	}
+
+	/**
+	 * 解除绑定微信/QQ等的唯一opeinid
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/relieveWithThirdParty", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse relieveWithThirdParty(User entity) {
+		return userService.relieveWithThirdParty(entity);
+	}
+
+	/**
+	 * 判断当前openid是否绑定了用户
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/isBindingWithUser", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse isBindingWithUser(User entity) {
+		return userService.isBindingWithUser(entity);
+	}
+
+	@RequestMapping(value = "/checkSMSCode", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse checkSMSCode(User entity, String code) {
+		return userService.checkSMSCode(entity, code);
+	}
+
 }
