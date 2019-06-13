@@ -643,15 +643,19 @@ public class UserController {
 		JsonResponse res = null;
 		try {
 			Integer count = userService.changeStatus(user);
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
-			res.setData(count);
+			if (count > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
 		return res;
 	}
 

@@ -47,19 +47,20 @@ public class EditorialControll {
 				eb.setType(0);
 				status = editorialBoardService.insert(eb);
 			}
-
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
 		} catch (Exception e) {
-			status = 0;
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
-			res.setData(status);
 			return res;
 		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
+		result = new Result(MsgConstants.RESUL_FAIL);
 		res = new JsonResponse(result);
-		res.setData(status);
 		return res;
 	}
 
@@ -97,20 +98,22 @@ public class EditorialControll {
 	public JsonResponse deleteEditorialBoard(EditorialBoard entity) {
 		Result result = null;
 		JsonResponse res = null;
-		Integer status = null;
 		try {
-			status = editorialBoardService.del(entity.getId());
+			int status = editorialBoardService.del(entity.getId());
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
-			res.setData(0);
 			return res;
 		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
+		result = new Result(MsgConstants.RESUL_FAIL);
 		res = new JsonResponse(result);
-		res.setData(status);
 		return res;
 	}
 
@@ -157,6 +160,11 @@ public class EditorialControll {
 		List<EditorialBoard> list = null;
 		try {
 			list = editorialBoardService.selecteditorialBoardList(CurrentUserContext.getCurrentUserId());
+			if (list == null) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				res = new JsonResponse(result);
+				return res;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
