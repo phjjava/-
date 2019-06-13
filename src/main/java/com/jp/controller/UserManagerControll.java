@@ -142,7 +142,7 @@ public class UserManagerControll {
 					manager.setGenlevel(manager.getGenlevel() + "世");
 				}
 			}
-			String familyid = "9ba9172bd1a44e35992d8b1c247adb95";
+			String familyid = CurrentUserContext.getCurrentFamilyId();
 			List<Function> functionList = new ArrayList<>();
 			if (manager == null || (manager.getIsmanager() == 1 && manager.getEbtype() == 1)) {
 				functionList = functionService.selectFunctionListByEbid(familyid, "", "", "");

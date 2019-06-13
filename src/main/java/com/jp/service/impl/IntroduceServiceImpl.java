@@ -74,28 +74,45 @@ public class IntroduceServiceImpl implements IntroduceService {
 	}
 
 	@Override
-	public String saveIntroduce(Introduce introduce) {
-		String result = "";
+	public JsonResponse saveIntroduce(HttpServletRequest request, Introduce introduce) {
+		Result result = null;
+		JsonResponse res = null;
+		int status = 0;
 		// 编辑
-		if (StringTools.trimNotEmpty(introduce.getIntroduceid())) {
-			introduce.setUpdateid(CurrentUserContext.getCurrentUserId());
-			introduce.setUpdatetime(new Date());
-			itdao.updateByPrimaryKeySelective(introduce);
-			result = "0";
-		} else {
-			// 新增
-			String introduceid = UUIDUtils.getUUID();
-			introduce.setIntroduceid(introduceid);
-			introduce.setCreateid(CurrentUserContext.getCurrentUserId());
-			introduce.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-			introduce.setDeleteflag(0);
-			Date insertDate = new Date();
-			introduce.setCreatetime(insertDate);
-			introduce.setType("ELSE");
-			itdao.insertSelective(introduce);
-			result = "0";
+		try {
+			if (request.getCharacterEncoding() == null) {
+				request.setCharacterEncoding("UTF-8");
+			}
+			if (StringTools.trimNotEmpty(introduce.getIntroduceid())) {
+				introduce.setUpdateid(CurrentUserContext.getCurrentUserId());
+				introduce.setUpdatetime(new Date());
+				status = itdao.updateByPrimaryKeySelective(introduce);
+			} else {
+				// 新增
+				String introduceid = UUIDUtils.getUUID();
+				introduce.setIntroduceid(introduceid);
+				introduce.setCreateid(CurrentUserContext.getCurrentUserId());
+				introduce.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				introduce.setDeleteflag(0);
+				Date insertDate = new Date();
+				introduce.setCreatetime(insertDate);
+				introduce.setType("ELSE");
+				status = itdao.insertSelective(introduce);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-		return result;
+		if (status > 0) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
