@@ -86,6 +86,7 @@ import com.jp.util.PinyinUtil;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 import com.jp.util.ValidatorUtil;
+import com.jp.util.WebUtil;
 import com.jp.util.ZodiacUtil;
 
 @Service
@@ -2962,4 +2963,402 @@ public class UserServiceImpl implements UserService {
 		return res;
 	}
 
+	@Override
+	public JsonResponse sendSMSCodeForReg(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		// 检验接口参数
+		if (entity.getPhone() == null || "".equals(entity.getPhone())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("请填写手机号");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (!ValidatorUtil.isMobile(entity.getPhone())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("手机号格式不正确");
+			res = new JsonResponse(result);
+			return res;
+		}
+		String phone = entity.getPhone();
+		UserQuery userExample = new UserQuery();
+		userExample.or().andPhoneEqualTo(phone).andDeleteflagEqualTo(0).andFamilyidIsNull();
+		List<User> users = userDao.selectByExample(userExample);
+		if (users != null && users.size() > 0) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("该手机号已经注册！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		UsercodeQuery userCodeExample = new UsercodeQuery();
+		userCodeExample.or().andPhoneEqualTo(phone).andCreatetimeGreaterThan(DateUtil.getOneDayStratTime(new Date()));
+		userCodeExample.setOrderByClause("createtime desc");
+		List<Usercode> userCodes = usercodeDao.selectByExample(userCodeExample);
+		if (userCodes.size() > 10) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("当天获取验证码已经达到10次，请明天再试！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		long validtime = 180000l;
+		boolean betweenTimeLessThanSetTime = false;
+		if (userCodes.size() > 0) {
+			betweenTimeLessThanSetTime = DateUtil.isBetweenTimeLessThanSetTime(
+					userCodes.get(0).getCreatetime().getTime(), new Date().getTime(), validtime);
+			// 距离上次获取验证码超过3分钟才发送新的验证码
+			if (!betweenTimeLessThanSetTime) {
+				res = sendsms(phone);
+			} else {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("不要频繁发送验证码，请稍后重试！");
+				res = new JsonResponse(result);
+				return res;
+			}
+		} else {
+			res = sendsms(phone);
+		}
+		return res;
+	}
+
+	@Override
+	public JsonResponse loginWithCaptcha(User entity, String loginType, String internetType, String version,
+			String smscode) {
+		Result result = null;
+		JsonResponse res = null;
+		// 参数校验
+		if (entity.getPhone() == null || entity.getPhone().isEmpty()) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少关键参数phone");
+			res = new JsonResponse(result);
+			return res;
+		} else if (smscode == null || smscode.isEmpty()) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("未填写验证码");
+			res = new JsonResponse(result);
+			return res;
+		}
+
+		// 校验验证码
+		Usercode usercode = new Usercode();
+		usercode.setPhone(entity.getPhone());
+		usercode.setSmscode(smscode);
+		JsonResponse checkCodeForMT_Rt = checkCodeForMT(usercode);
+		if (checkCodeForMT_Rt.getCode() == 1) {
+			return checkCodeForMT_Rt;
+		}
+		// 查询对应用户信息
+		UserQuery userExp = new UserQuery();
+		userExp.or().andPhoneEqualTo(entity.getPhone());
+		List<User> dbuserList = userDao.selectByExample(userExp);
+
+		ServletContext application = WebUtil.getApplication();
+		@SuppressWarnings("unchecked")
+		List<OnLineUser> onlineUsers = (List<OnLineUser>) application.getAttribute("onlineUsers");
+		// 第一次使用前，需要初始化
+		if (onlineUsers == null) {
+			onlineUsers = new ArrayList<OnLineUser>();
+			application.setAttribute("onlineUsers", onlineUsers);
+		}
+		// 先删除之前存在的账户，再加入用户
+		if (dbuserList != null && dbuserList.size() > 0) {
+			User user = dbuserList.get(0);
+			if (user.getStatus() != null && user.getStatus() == 1) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("当前用户不可用！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			HttpServletRequest request = WebUtil.getRequest();
+			OnLineUser onLineUser = setLineMsg(request, user, loginType, internetType, version);
+			onlineUsers.remove(new OnLineUser(user.getUserid()));
+			onlineUsers.add(onLineUser);
+			application.setAttribute("onlineUsers", onlineUsers);
+
+			// 记录登录账户的设备类型
+			// Map<String, String> map = new HashMap<String, String>();
+			// map.put("phone", user.getPhone());
+			// map.put("logintype", loginType);
+			// map.put("companyid", user.getCompanyid());
+			// map.put("phonetype", entity.getPhonetype());
+			// map.put("systemversion", entity.getSystemversion());
+			// map.put("appversion", version);
+			// userMapper.updateLoginType(map);
+		}
+		///////////////////////////////////
+		// 单企业用户登录或多企业用户登录获取企业列表
+		return singleCorpLoginOrMultiCorpGetList(dbuserList, entity.getSessionid());
+	}
+
+	@Override
+	public JsonResponse loginWithThirdParty(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		if (StringUtils.isBlank(entity.getOpenid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数openid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringUtils.isBlank(entity.getThirdType())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数第三方登录类型thirdType为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		// 查询openid是否绑定手机号
+		LoginThirdExample example = new LoginThirdExample();
+		example.or().andOpenidEqualTo(entity.getOpenid()).andTypeEqualTo(entity.getThirdType())
+				.andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
+		List<LoginThird> list = loginThirdMapper.selectByExample(example);
+		if (ValidatorUtil.listIsEmpty(list)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("请先绑定用户！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		// LoginThird third = list.get(0);
+		List<User> dbuserList = new ArrayList<User>();
+		for (LoginThird third : list) {
+			User u = userDao.selectByPrimaryKey(third.getUserid());
+			dbuserList.add(u);
+		}
+
+		ServletContext application = WebUtil.getApplication();
+		@SuppressWarnings("unchecked")
+		List<OnLineUser> onlineUsers = (List<OnLineUser>) application.getAttribute("onlineUsers");
+		// 第一次使用前，需要初始化
+		if (onlineUsers == null) {
+			onlineUsers = new ArrayList<OnLineUser>();
+			application.setAttribute("onlineUsers", onlineUsers);
+		}
+		// 先删除之前存在的账户，再加入用户
+		if (dbuserList == null || dbuserList.size() == 0) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户不存在！");
+			res = new JsonResponse(result);
+			return res;
+		} else {
+			User user = dbuserList.get(0);
+			if (user.getStatus() != null && user.getStatus() == 1) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("当前用户不可用！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			HttpServletRequest request = WebUtil.getRequest();
+			OnLineUser onLineUser = setLineMsg(request, user, WebUtil.getHeaderInfo(ConstantUtils.HEADER_LOGINTYPE),
+					WebUtil.getHeaderInfo(ConstantUtils.HEADER_INTERNETTYPE),
+					WebUtil.getHeaderInfo(ConstantUtils.HEADER_VERSION));
+			onlineUsers.remove(new OnLineUser(user.getUserid()));
+			onlineUsers.add(onLineUser);
+			application.setAttribute("onlineUsers", onlineUsers);
+
+			// 记录登录账户的设备类型
+			// Map<String, String> map = new HashMap<String, String>();
+			// map.put("phone", user.getPhone());
+			// map.put("logintype", loginType);
+			// map.put("companyid", user.getCompanyid());
+			// map.put("phonetype", entity.getPhonetype());
+			// map.put("systemversion", entity.getSystemversion());
+			// map.put("appversion", version);
+			// userMapper.updateLoginType(map);
+		}
+		///////////////////////////////////
+		// 单企业用户登录或多企业用户登录获取企业列表
+		return singleCorpLoginOrMultiCorpGetList(dbuserList, entity.getSessionid());
+	}
+
+	@Override
+	public JsonResponse bindingWithThirdParty(User entity, String smscode, Integer loginstatus) {
+		Result result = null;
+		JsonResponse res = null;
+		if (StringUtils.isBlank(entity.getOpenid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数openid为空");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringUtils.isBlank(entity.getThirdType())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数第三方登录类型thirdType为空");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (loginstatus != null && loginstatus == 0) {
+			if (StringUtils.isBlank(entity.getPhone())) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("参数phone为空");
+				res = new JsonResponse(result);
+				return res;
+			}
+			if (StringUtils.isBlank(smscode)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("短信验证码为空");
+				res = new JsonResponse(result);
+				return res;
+			}
+		}
+
+		// 查询openid是否绑定了用户
+		LoginThirdExample example = new LoginThirdExample();
+		example.or().andOpenidEqualTo(entity.getOpenid()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
+		List<LoginThird> thirds = loginThirdMapper.selectByExample(example);
+		if (thirds != null && thirds.size() > 0) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("当前第三方授权登录已经绑定，请更换后重新尝试！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (loginstatus != null && loginstatus == 0) {
+			// 验证验证码
+			Usercode usercode = new Usercode();
+			usercode.setPhone(entity.getPhone());
+			usercode.setSmscode(smscode);
+			JsonResponse checkCodeForMT_Rt = checkCodeForMT(usercode);
+			if (checkCodeForMT_Rt.getCode() == 1) {
+				return checkCodeForMT_Rt;
+			}
+		}
+		List<User> users = null;
+		if (loginstatus != null && loginstatus == 0) {
+			users = userDao.selectByPhone(entity.getPhone());
+		} else {
+			User user = userDao.selectByPrimaryKey(WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID));
+			users = userDao.selectByPhone(user.getPhone());
+		}
+
+		int status = 0;
+		if (users != null && users.size() > 0) {
+			for (User user : users) {
+				LoginThird third = new LoginThird();
+				third.setId(UUIDUtils.getUUID());
+				third.setDeleteflag(ConstantUtils.DELETE_FALSE);
+				third.setCreatetime(new Date());
+				third.setUserid(user.getUserid());
+				third.setOpenid(entity.getOpenid());
+				third.setPhone(entity.getPhone());
+				third.setNinckname(entity.getNickname());
+				third.setType(entity.getThirdType());
+				status = loginThirdMapper.insertSelective(third);
+			}
+		}
+		if (status == 1) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			result.setMsg("绑定成功！");
+			res = new JsonResponse(result);
+			return res;
+		} else {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("绑定失败！");
+			res = new JsonResponse(result);
+			return res;
+		}
+	}
+
+	@Override
+	public JsonResponse relieveWithThirdParty(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (userid == null || "".equals(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("请求失败，header的userid为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (entity.getOpenid() == null || "".equals(entity.getOpenid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("请求失败，openid为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		User user = userDao.selectByPrimaryKey(userid);
+		List<User> users = userDao.selectByPhone(user.getPhone());
+		for (User u : users) {
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("openid", entity.getOpenid());
+			params.put("userid", u.getUserid());
+			loginThirdMapper.relieveWithThirdParty(params);
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		result.setMsg("解绑成功!");
+		res = new JsonResponse(result);
+		return res;
+	}
+
+	@Override
+	public JsonResponse isBindingWithUser(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		if (entity.getOpenid() == null || "".equals(entity.getOpenid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数openid为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		LoginThirdExample example = new LoginThirdExample();
+		example.or().andOpenidEqualTo(entity.getOpenid()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
+		List<LoginThird> list = loginThirdMapper.selectByExample(example);
+		if (list == null || list.size() == 0) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("当前第三方授权未绑定！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		result.setMsg("当前第三方授权已绑定！");
+		res = new JsonResponse(result);
+		return res;
+	}
+
+	@Override
+	public JsonResponse checkSMSCode(User user, String code) {
+		Result result = null;
+		JsonResponse res = null;
+		if ("".equals(user.getPhone()) || user.getPhone() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("请填写手机号码！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if ("".equals(code) || code == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("请填写验证码！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		UsercodeQuery userCodeExample = new UsercodeQuery();
+		userCodeExample.or().andPhoneEqualTo(user.getPhone())
+				.andCreatetimeGreaterThan(DateUtil.getOneDayStratTime(new Date()));
+		userCodeExample.setOrderByClause("createtime desc");
+		List<Usercode> userCodes = usercodeDao.selectByExample(userCodeExample);
+		if (userCodes.size() > 0) {
+			long validtime = 180000l;
+			boolean betweenTimeLessThanSetTime = false;
+			betweenTimeLessThanSetTime = DateUtil.isBetweenTimeLessThanSetTime(
+					userCodes.get(0).getCreatetime().getTime(), new Date().getTime(), validtime);
+			// 最新的验证码距离判断时间超过三分钟则提示验证码过期
+			if (!betweenTimeLessThanSetTime) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("验证码已过期！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			if (!code.equals(userCodes.get(0).getSmscode())) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("验证码不正确！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			result.setMsg("验证成功！");
+			res = new JsonResponse(result);
+			return res;
+		} else {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("当天没有可验证的验证码！");
+			res = new JsonResponse(result);
+			return res;
+		}
+	}
 }
