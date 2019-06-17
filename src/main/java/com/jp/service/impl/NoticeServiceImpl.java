@@ -18,6 +18,7 @@ import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.dao.NoticeMapper;
 import com.jp.dao.NoticefileDao;
+import com.jp.dao.NoticereadDao;
 import com.jp.dao.NoticetopDao;
 import com.jp.entity.Notice;
 import com.jp.entity.NoticeExample;
@@ -25,6 +26,8 @@ import com.jp.entity.NoticeExample.Criteria;
 import com.jp.entity.NoticeVO;
 import com.jp.entity.Noticefile;
 import com.jp.entity.NoticefileQuery;
+import com.jp.entity.Noticeread;
+import com.jp.entity.NoticereadQuery;
 import com.jp.entity.Noticetop;
 import com.jp.entity.NoticetopQuery;
 import com.jp.entity.UserManager;
@@ -40,6 +43,8 @@ public class NoticeServiceImpl implements NoticeService {
 	private NoticefileDao ntfdao;
 	@Autowired
 	private NoticetopDao noticetopDao;
+	@Autowired
+	private NoticereadDao noticeReadMapper;
 
 	@Override
 	public PageModel<NoticeVO> pageQuery(PageModel<NoticeVO> pageModel, Notice notice) throws Exception {
@@ -212,6 +217,57 @@ public class NoticeServiceImpl implements NoticeService {
 	public List<Noticefile> selectntfile(NoticefileQuery example) {
 
 		return ntfdao.selectByExample(example);
+	}
+
+	@Override
+	public JsonResponse getNoticeDetailExt(Notice entity) {
+		Result result = null;
+		JsonResponse res = null;
+		if (entity.getNoticeid() == null || "".equals(entity.getNoticeid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("不存在公告信息");
+			res = new JsonResponse(result);
+			return res;
+		}
+		NoticeVO noticeVO = new NoticeVO();
+		// 获取公告详情
+		NoticeExample noticeExample = new NoticeExample();
+		noticeExample.or()/* .andBranchidEqualTo(entity.getBranchid()) */
+				.andNoticeidEqualTo(entity.getNoticeid()).andDeleteflagEqualTo(0);
+		List<Notice> notices = noticedao.selectByExample(noticeExample);
+		if (notices.size() == 0) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("不存在公告信息");
+			res = new JsonResponse(result);
+			return res;
+		}
+		noticeVO.setNotice(notices.get(0));
+
+		// 设置更新时间
+		// noticeVO.setCreatetime(notices.get(0).getUpdatetime());
+		// 获取公告附件列表
+		NoticefileQuery noticeFileExample = new NoticefileQuery();
+		noticeFileExample.or().andBranchidEqualTo(entity.getBranchid()).andNoticeidEqualTo(entity.getNoticeid());
+		List<Noticefile> noticeFiles = ntfdao.selectByExample(noticeFileExample);
+		noticeVO.setCountFiles(noticeFiles.size());
+
+		// 插入公告已读人员列表
+		// NoticeRead noticeRead = new NoticeRead();
+		// noticeRead.setId(UUIDFactory.getUUIDStr());
+		// noticeRead.setNoticeid(entity.getNoticeid());
+		// noticeRead.setUserid(entity.getUpdateid());
+		// noticeRead.setCreatetime(new Date());
+		// noticeReadMapper.insert(noticeRead);
+
+		NoticereadQuery noticeReadExample = new NoticereadQuery();
+		noticeReadExample.or().andNoticeidEqualTo(entity.getNoticeid());
+		List<Noticeread> noticeReads = noticeReadMapper.selectByExample(noticeReadExample);
+		// noticeVO.setNoticeReads(noticeReads);
+		noticeVO.setCountReads(noticeReads.size());
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(noticeVO);
+		return res;
 	}
 
 }

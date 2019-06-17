@@ -550,5 +550,21 @@
 			offset ${start}
 		</if>
   </select>
-  
+    <!-- 自写方法 -->
+	<select id="findByIdsMap" resultMap="BaseResultMap" parameterType="Map">
+		Select
+		<include refid="Base_Column_List" />
+		from jp_dynamic where deleteflag=0 and branchid in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		order by updatetime desc
+		<if test="count != null">
+			limit ${count}
+		</if>
+		<if test="start != null">
+			offset ${start}
+		</if>
+	</select>
 </mapper>
