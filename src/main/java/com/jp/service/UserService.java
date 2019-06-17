@@ -11,7 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
+import com.jp.entity.SearchComplex;
 import com.jp.entity.User;
+import com.jp.entity.UserClildInfo;
 import com.jp.entity.Useralbum;
 import com.jp.entity.Usercode;
 import com.jp.entity.Userinfo;
@@ -125,7 +127,7 @@ public interface UserService {
 	 * @参数 @throws Exception
 	 * @return PageModel
 	 */
-	PageModel selecUserListToReview(PageModel pageModel, User user) throws Exception;
+	PageModel<User> selecUserListToReview(PageModel<User> pageModel, User user) throws Exception;
 
 	/**
 	 * @描述 保存用户配偶
@@ -267,4 +269,48 @@ public interface UserService {
 	JsonResponse isBindingWithUser(User entity);
 
 	JsonResponse checkSMSCode(User entity, String code);
+
+	JsonResponse getPersonInfoLimit(User entity);
+
+	JsonResponse restPassword(User entity, String firstpwd, String secondpwd);
+
+	JsonResponse getAllPersonInfos(User entity);
+
+	JsonResponse updatePersonsByUpdatetime(User user);
+
+	JsonResponse searchComplex(SearchComplex searchComplex);
+
+	JsonResponse updatePersonsByUpdatetimeExt(User user);
+
+	JsonResponse getPersonInfos(User user);
+
+	JsonResponse changeImgurl(User user);
+
+	JsonResponse changeUserinfos(User user);
+
+	JsonResponse getCityNoticeList(User user);
+
+	JsonResponse getCityNoticeListExt(User user);
+
+	JsonResponse getCityDyList(User user);
+
+	JsonResponse getCityDyListExt(User user);
+
+	JsonResponse getCityAlbumList(User user);
+
+	JsonResponse getCityAlbumListExt(User user);
+
+	JsonResponse addChild(UserClildInfo userChildInfo);
+
+	JsonResponse searchAllBytitle(User user);
+
+	JsonResponse searchBranchBytitle(User user);
+
+	JsonResponse deleteUserWorkExp(User user);
+
+	JsonResponse deleteUserEduExp(User user);
+
+	JsonResponse joinFamily(User entity, String birthday, String nation);
+
+	JsonResponse applyingFamily(User user);
 }

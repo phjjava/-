@@ -78,7 +78,8 @@
 									and ${criterion.condition} #{criterion.value}
 								</when>
 								<when test="criterion.betweenValue">
-									and ${criterion.condition} #{criterion.value} and
+									and ${criterion.condition} #{criterion.value}
+									and
 									#{criterion.secondValue}
 								</when>
 								<when test="criterion.listValue">
@@ -110,7 +111,8 @@
 									and ${criterion.condition} #{criterion.value}
 								</when>
 								<when test="criterion.betweenValue">
-									and ${criterion.condition} #{criterion.value} and
+									and ${criterion.condition} #{criterion.value}
+									and
 									#{criterion.secondValue}
 								</when>
 								<when test="criterion.listValue">
@@ -129,12 +131,16 @@
 	</sql>
 	<sql id="Base_Column_List">
 		<if test="fields == null">
-			userid, sex, livestatus, phone, usedname, createtime, updatetime, createid,
+			userid, sex, livestatus, phone, usedname, createtime,
+			updatetime, createid,
 			updateid,
-			remarkelse, branchid, pid, brotherpos, password, logintime, sessionid, familyid,
-			status, deleteflag, imgurl, username, idcard, isborn, dietime,
+			remarkelse, branchid, pid, brotherpos,
+			password, logintime, sessionid, familyid,
+			status, deleteflag, imgurl,
+			username, idcard, isborn, dietime,
 			fixplace, isdirect,
-			genlevel, familyname, pinyinFirst, pinyinFull, pname, mateid,
+			genlevel,
+			familyname, pinyinFirst, pinyinFull, pname, mateid,
 			matename,matetypeStr, branchname,ismarry
 		</if>
 		<if test="fields != null">
@@ -167,7 +173,8 @@
 		where userid = #{userid,jdbcType=VARCHAR}
 	</select>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-		delete from jp_user
+		delete from
+		jp_user
 		where userid = #{userid,jdbcType=VARCHAR}
 	</delete>
 	<delete id="deleteByExample"
@@ -178,33 +185,42 @@
 		</if>
 	</delete>
 	<insert id="insert" parameterType="com.jp.entity.User">
-		insert into jp_user (userid, sex, livestatus,
+		insert into jp_user (userid,
+		sex, livestatus,
 		phone, usedname, createtime,
-		updatetime, createid, updateid,
+		updatetime, createid,
+		updateid,
 		remarkelse, branchid, pid,
 		brotherpos, password, logintime,
 		sessionid, familyid, status,
 		deleteflag, imgurl, username,
-		idcard, isborn, dietime,
+		idcard,
+		isborn, dietime,
 		fixplace, isdirect, genlevel,
-		familyname, pinyinFirst, pinyinFull,
+		familyname, pinyinFirst,
+		pinyinFull,
 		pname, mateid, matename, matetypeStr,
 		branchname,ismarry)
 		values (#{userid,jdbcType=VARCHAR}, #{sex,jdbcType=TINYINT},
 		#{livestatus,jdbcType=TINYINT},
-		#{phone,jdbcType=VARCHAR}, #{usedname,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP},
+		#{phone,jdbcType=VARCHAR},
+		#{usedname,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP},
 		#{updatetime,jdbcType=TIMESTAMP}, #{createid,jdbcType=VARCHAR},
 		#{updateid,jdbcType=VARCHAR},
-		#{remarkelse,jdbcType=VARCHAR}, #{branchid,jdbcType=VARCHAR}, #{pid,jdbcType=VARCHAR},
+		#{remarkelse,jdbcType=VARCHAR},
+		#{branchid,jdbcType=VARCHAR}, #{pid,jdbcType=VARCHAR},
 		#{brotherpos,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
 		#{logintime,jdbcType=TIMESTAMP},
-		#{sessionid,jdbcType=VARCHAR}, #{familyid,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT},
+		#{sessionid,jdbcType=VARCHAR},
+		#{familyid,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT},
 		#{deleteflag,jdbcType=TINYINT}, #{imgurl,jdbcType=VARCHAR},
 		#{username,jdbcType=VARCHAR},
-		#{idcard,jdbcType=CHAR}, #{isborn,jdbcType=TINYINT}, #{dietime,jdbcType=VARCHAR},
+		#{idcard,jdbcType=CHAR},
+		#{isborn,jdbcType=TINYINT}, #{dietime,jdbcType=VARCHAR},
 		#{fixplace,jdbcType=VARCHAR}, #{isdirect,jdbcType=TINYINT},
 		#{genlevel,jdbcType=INTEGER},
-		#{familyname,jdbcType=VARCHAR}, #{pinyinfirst,jdbcType=CHAR}, #{pinyinfull,jdbcType=VARCHAR},
+		#{familyname,jdbcType=VARCHAR},
+		#{pinyinfirst,jdbcType=CHAR}, #{pinyinfull,jdbcType=VARCHAR},
 		#{pname,jdbcType=VARCHAR}, #{mateid,jdbcType=VARCHAR},
 		#{matename,jdbcType=VARCHAR}, #{matetypeStr,jdbcType=VARCHAR},
 		#{branchname,jdbcType=VARCHAR},#{isMarry,jdbcType=TINYINT})
@@ -558,40 +574,74 @@
 	<update id="updateByExample" parameterType="map">
 		update jp_user
 		set userid = #{record.userid,jdbcType=VARCHAR},
-		sex = #{record.sex,jdbcType=TINYINT},
-		livestatus = #{record.livestatus,jdbcType=TINYINT},
-		phone = #{record.phone,jdbcType=VARCHAR},
-		usedname = #{record.usedname,jdbcType=VARCHAR},
-		createtime = #{record.createtime,jdbcType=TIMESTAMP},
-		updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
-		createid = #{record.createid,jdbcType=VARCHAR},
-		updateid = #{record.updateid,jdbcType=VARCHAR},
-		remarkelse = #{record.remarkelse,jdbcType=VARCHAR},
-		branchid = #{record.branchid,jdbcType=VARCHAR},
-		pid = #{record.pid,jdbcType=VARCHAR},
-		brotherpos = #{record.brotherpos,jdbcType=VARCHAR},
-		password = #{record.password,jdbcType=VARCHAR},
-		logintime = #{record.logintime,jdbcType=TIMESTAMP},
-		sessionid = #{record.sessionid,jdbcType=VARCHAR},
-		familyid = #{record.familyid,jdbcType=VARCHAR},
-		status = #{record.status,jdbcType=TINYINT},
-		deleteflag = #{record.deleteflag,jdbcType=TINYINT},
-		imgurl = #{record.imgurl,jdbcType=VARCHAR},
-		username = #{record.username,jdbcType=VARCHAR},
-		idcard = #{record.idcard,jdbcType=CHAR},
-		isborn = #{record.isborn,jdbcType=TINYINT},
-		dietime = #{record.dietime,jdbcType=VARCHAR},
-		fixplace = #{record.fixplace,jdbcType=VARCHAR},
-		isdirect = #{record.isdirect,jdbcType=TINYINT},
-		genlevel = #{record.genlevel,jdbcType=INTEGER},
-		familyname = #{record.familyname,jdbcType=VARCHAR},
-		pinyinFirst = #{record.pinyinfirst,jdbcType=CHAR},
-		pinyinFull = #{record.pinyinfull,jdbcType=VARCHAR},
-		pname = #{record.pname,jdbcType=VARCHAR},
-		mateid = #{record.mateid,jdbcType=VARCHAR},
-		matename = #{record.matename,jdbcType=VARCHAR},
-		matetypeStr = #{record.matetypeStr,jdbcType=VARCHAR},
-		branchname = #{record.branchname,jdbcType=VARCHAR}
+		sex =
+		#{record.sex,jdbcType=TINYINT},
+		livestatus =
+		#{record.livestatus,jdbcType=TINYINT},
+		phone =
+		#{record.phone,jdbcType=VARCHAR},
+		usedname =
+		#{record.usedname,jdbcType=VARCHAR},
+		createtime =
+		#{record.createtime,jdbcType=TIMESTAMP},
+		updatetime =
+		#{record.updatetime,jdbcType=TIMESTAMP},
+		createid =
+		#{record.createid,jdbcType=VARCHAR},
+		updateid =
+		#{record.updateid,jdbcType=VARCHAR},
+		remarkelse =
+		#{record.remarkelse,jdbcType=VARCHAR},
+		branchid =
+		#{record.branchid,jdbcType=VARCHAR},
+		pid =
+		#{record.pid,jdbcType=VARCHAR},
+		brotherpos =
+		#{record.brotherpos,jdbcType=VARCHAR},
+		password =
+		#{record.password,jdbcType=VARCHAR},
+		logintime =
+		#{record.logintime,jdbcType=TIMESTAMP},
+		sessionid =
+		#{record.sessionid,jdbcType=VARCHAR},
+		familyid =
+		#{record.familyid,jdbcType=VARCHAR},
+		status =
+		#{record.status,jdbcType=TINYINT},
+		deleteflag =
+		#{record.deleteflag,jdbcType=TINYINT},
+		imgurl =
+		#{record.imgurl,jdbcType=VARCHAR},
+		username =
+		#{record.username,jdbcType=VARCHAR},
+		idcard =
+		#{record.idcard,jdbcType=CHAR},
+		isborn =
+		#{record.isborn,jdbcType=TINYINT},
+		dietime =
+		#{record.dietime,jdbcType=VARCHAR},
+		fixplace =
+		#{record.fixplace,jdbcType=VARCHAR},
+		isdirect =
+		#{record.isdirect,jdbcType=TINYINT},
+		genlevel =
+		#{record.genlevel,jdbcType=INTEGER},
+		familyname =
+		#{record.familyname,jdbcType=VARCHAR},
+		pinyinFirst =
+		#{record.pinyinfirst,jdbcType=CHAR},
+		pinyinFull =
+		#{record.pinyinfull,jdbcType=VARCHAR},
+		pname =
+		#{record.pname,jdbcType=VARCHAR},
+		mateid =
+		#{record.mateid,jdbcType=VARCHAR},
+		matename =
+		#{record.matename,jdbcType=VARCHAR},
+		matetypeStr =
+		#{record.matetypeStr,jdbcType=VARCHAR},
+		branchname =
+		#{record.branchname,jdbcType=VARCHAR}
 		<if test="_parameter != null">
 			<include refid="Update_By_Example_Where_Clause" />
 		</if>
@@ -713,38 +763,56 @@
 		update jp_user
 		set sex = #{sex,jdbcType=TINYINT},
 		livestatus = #{livestatus,jdbcType=TINYINT},
-		phone = #{phone,jdbcType=VARCHAR},
+		phone =
+		#{phone,jdbcType=VARCHAR},
 		usedname = #{usedname,jdbcType=VARCHAR},
 		createtime = #{createtime,jdbcType=TIMESTAMP},
-		updatetime = #{updatetime,jdbcType=TIMESTAMP},
-		createid = #{createid,jdbcType=VARCHAR},
+		updatetime =
+		#{updatetime,jdbcType=TIMESTAMP},
+		createid =
+		#{createid,jdbcType=VARCHAR},
 		updateid = #{updateid,jdbcType=VARCHAR},
 		remarkelse = #{remarkelse,jdbcType=VARCHAR},
-		branchid = #{branchid,jdbcType=VARCHAR},
+		branchid =
+		#{branchid,jdbcType=VARCHAR},
 		pid = #{pid,jdbcType=VARCHAR},
-		brotherpos = #{brotherpos,jdbcType=VARCHAR},
-		password = #{password,jdbcType=VARCHAR},
-		logintime = #{logintime,jdbcType=TIMESTAMP},
-		sessionid = #{sessionid,jdbcType=VARCHAR},
+		brotherpos
+		= #{brotherpos,jdbcType=VARCHAR},
+		password =
+		#{password,jdbcType=VARCHAR},
+		logintime =
+		#{logintime,jdbcType=TIMESTAMP},
+		sessionid =
+		#{sessionid,jdbcType=VARCHAR},
 		familyid = #{familyid,jdbcType=VARCHAR},
 		status = #{status,jdbcType=TINYINT},
-		deleteflag = #{deleteflag,jdbcType=TINYINT},
+		deleteflag =
+		#{deleteflag,jdbcType=TINYINT},
 		imgurl = #{imgurl,jdbcType=VARCHAR},
 		username = #{username,jdbcType=VARCHAR},
-		idcard = #{idcard,jdbcType=CHAR},
+		idcard =
+		#{idcard,jdbcType=CHAR},
 		isborn = #{isborn,jdbcType=TINYINT},
-		dietime = #{dietime,jdbcType=VARCHAR},
+		dietime =
+		#{dietime,jdbcType=VARCHAR},
 		fixplace = #{fixplace,jdbcType=VARCHAR},
 		isdirect = #{isdirect,jdbcType=TINYINT},
-		genlevel = #{genlevel,jdbcType=INTEGER},
-		familyname = #{familyname,jdbcType=VARCHAR},
-		pinyinFirst = #{pinyinfirst,jdbcType=CHAR},
-		pinyinFull = #{pinyinfull,jdbcType=VARCHAR},
+		genlevel =
+		#{genlevel,jdbcType=INTEGER},
+		familyname =
+		#{familyname,jdbcType=VARCHAR},
+		pinyinFirst =
+		#{pinyinfirst,jdbcType=CHAR},
+		pinyinFull =
+		#{pinyinfull,jdbcType=VARCHAR},
 		pname = #{pname,jdbcType=VARCHAR},
 		mateid = #{mateid,jdbcType=VARCHAR},
-		matename = #{matename,jdbcType=VARCHAR},
-		matetypeStr = #{matetypeStr,jdbcType=VARCHAR},
-		branchname = #{branchname,jdbcType=VARCHAR},
+		matename =
+		#{matename,jdbcType=VARCHAR},
+		matetypeStr =
+		#{matetypeStr,jdbcType=VARCHAR},
+		branchname =
+		#{branchname,jdbcType=VARCHAR},
 		ismarry = #{isMarry,jdbcType=TINYINT}
 		where userid = #{userid,jdbcType=VARCHAR}
 	</update>
@@ -755,12 +823,16 @@
 		,concat_ws('',z.area,z.cityname,z.xname,ifNULL(z.address,' ')) as
 		address
 		from jp_user `user`
-		left join jp_userinfo userInfo on `user`.userid = userInfo.userid left
-		join jp_branch z on `user`.branchid=z.branchid
-		where `user`.status = 0 and `user`.deleteflag = 0
+		left join jp_userinfo userInfo on
+		`user`.userid = userInfo.userid left
+		join jp_branch z on
+		`user`.branchid=z.branchid
+		where `user`.status = 0 and
+		`user`.deleteflag = 0
 		and `user`.familyid = #{familyid}
 		<if test="ismanager != null">
-			and `user`.userid not in (select userid from jp_user_manager jpur where
+			and `user`.userid not in (select userid from
+			jp_user_manager jpur where
 			jpur.familyid = #{familyid})
 		</if>
 
@@ -774,13 +846,17 @@
 		,concat_ws('',z.area,z.cityname,z.xname,ifNULL(z.address,' ')) as
 		address
 		from jp_user `user`
-		left join jp_userinfo userInfo on `user`.userid = userInfo.userid left
-		join jp_branch z on `user`.branchid=z.branchid
-		where `user`.status = 0 and `user`.deleteflag = 0 and `user`.isdirect = 1
+		left join jp_userinfo userInfo on
+		`user`.userid = userInfo.userid left
+		join jp_branch z on
+		`user`.branchid=z.branchid
+		where `user`.status = 0 and
+		`user`.deleteflag = 0 and `user`.isdirect = 1
 		and `user`.livestatus = 0
 		and `user`.familyid = #{familyid}
 		<if test="ismanager != null">
-			and `user`.userid not in (select userid from jp_user_manager jpur where
+			and `user`.userid not in (select userid from
+			jp_user_manager jpur where
 			jpur.familyid = #{familyid})
 		</if>
 
@@ -788,7 +864,8 @@
 	</select>
 
 	<update id="changeStatus" parameterType="com.jp.entity.User">
-		update jp_user set status =
+		update jp_user set
+		status =
 		#{status,jdbcType=INTEGER},updatetime=#{updatetime,jdbcType=INTEGER},updateid=#{updateid,jdbcType=INTEGER}
 		where userid = #{userid,jdbcType=VARCHAR}
 	</update>
@@ -811,7 +888,8 @@
 		parameterType="java.lang.String">
 		select
 		genlevel,isdirect,userid,username,familyid from jp_user u
-		where u.familyid = #{familyid,jdbcType=VARCHAR}
+		where
+		u.familyid = #{familyid,jdbcType=VARCHAR}
 		<foreach collection="list" item="item" index="index"
 			open="and u.branchid in (" separator="," close=")">
 			#{item}
@@ -831,19 +909,24 @@
 	<select id="selecUserListToReview"
 		resultType="com.jp.entity.User" parameterType="com.jp.entity.User">
 		select
-		user.userid as userid,user.username as username,user.sex as sex,userInfo.birthday
+		user.userid as userid,user.username as username,user.sex as
+		sex,userInfo.birthday
 		as searchBirthday
-		,user.brotherpos as brotherpos,user.genlevel as genlevel,user.branchname as
+		,user.brotherpos as
+		brotherpos,user.genlevel as genlevel,user.branchname as
 		branchname,user.status as status
-		from jp_user user left join jp_userinfo userInfo
+		from jp_user user left join
+		jp_userinfo userInfo
 		on userInfo.userid = user.userid
-		where user.familyid = #{familyid,jdbcType=VARCHAR}
+		where
+		user.familyid = #{familyid,jdbcType=VARCHAR}
 		and status != 0
 		<if test="status != null and status != ''">
 			and user.status = #{status,jdbcType=INTEGER}
 		</if>
 		<if test="username != null and username != ''">
-			and user.username like CONCAT('%', CONCAT(#{username}), '%')
+			and user.username like CONCAT('%', CONCAT(#{username}),
+			'%')
 		</if>
 	</select>
 
@@ -852,7 +935,8 @@
 		parameterType="java.lang.String">
 		select distinct u.genlevel,u.username, uc.* from jp_user u LEFT OUTER
 		JOIN jp_usercontent uc on u.userid=uc.userid
-		where uc.userid is not null and uc.familyid= #{familyid,jdbcType=VARCHAR}
+		where uc.userid is not
+		null and uc.familyid= #{familyid,jdbcType=VARCHAR}
 		<if test="username != null and username != ''">
 			and u.username like CONCAT('%', CONCAT(#{username}), '%')
 		</if>
@@ -865,20 +949,26 @@
 		<!-- select * from jp_user where status = 0 and deleteflag = 0 and livestatus 
 			= 0 and phone = #{phone,jdbcType=VARCHAR} and password = #{password, jdbcType=VARCHAR} -->
 		select u.*,f.`status` familystatus
-		from jp_user u join jp_sys_family f on u.familyid=f.familyid
-		where 1=1 and u.phone = #{phone,jdbcType=VARCHAR} and u.password =
-		#{password, jdbcType=VARCHAR} and u.deleteflag=0 and u.`status`=0 and
+		from jp_user u join jp_sys_family f
+		on u.familyid=f.familyid
+		where 1=1 and u.phone =
+		#{phone,jdbcType=VARCHAR} and u.password =
+		#{password,
+		jdbcType=VARCHAR} and u.deleteflag=0 and u.`status`=0 and
 		u.livestatus=0 and f.`status`=0
 	</select>
 
 	<select id="validatePhone" resultType="com.jp.entity.User">
 		select userid, sex, livestatus, phone, usedname, createtime,
 		updatetime, createid, updateid,
-		remarkelse, branchid, pid, brotherpos, password, logintime, sessionid, familyid,
+		remarkelse, branchid, pid, brotherpos,
+		password, logintime, sessionid, familyid,
 		status,
-		deleteflag, imgurl, username,idcard, isborn, dietime, fixplace, isdirect,
+		deleteflag, imgurl,
+		username,idcard, isborn, dietime, fixplace, isdirect,
 		genlevel,
-		familyname, pinyinFirst, pinyinFull, pname, mateid, matename, branchname
+		familyname, pinyinFirst, pinyinFull, pname, mateid, matename,
+		branchname
 		from jp_user
 		where 1=1 and 'status'=0 and deleteflag=0
 		<if test="familyid != null">
@@ -895,13 +985,15 @@
 	<select id="validatePhoneAddUser"
 		resultType="com.jp.entity.User" parameterType="com.jp.entity.User">
 		select*from jp_user user where user.phone = #{phone}
-		and user.familyid = #{familyid,jdbcType=VARCHAR}
+		and user.familyid
+		= #{familyid,jdbcType=VARCHAR}
 		<!-- <if test="userid != null and userid != ''"> and userid = #{userid,jdbcType=VARCHAR} 
 			</if> -->
 	</select>
 	<update id="addmateid">
 		update jp_user
-		set mateid = #{mateid,jdbcType=VARCHAR},
+		set mateid =
+		#{mateid,jdbcType=VARCHAR},
 		matename = #{matename,jdbcType=VARCHAR}
 		where userid = #{userid,jdbcType=VARCHAR}
 	</update>
@@ -909,7 +1001,8 @@
 	<select id="selectPhoneByFamilyId" resultType="java.lang.String">
 		select
 		phone
-		from jp_user
+		from
+		jp_user
 		where familyid = #{familyId,jdbcType=VARCHAR}
 	</select>
 
@@ -918,7 +1011,8 @@
 		select
 		*
 		from jp_user
-		where familyid = #{familyId,jdbcType=VARCHAR}
+		where familyid =
+		#{familyId,jdbcType=VARCHAR}
 	</select>
 
 
@@ -939,28 +1033,34 @@
 
 	<select id="getAddressByUserid" resultType="java.lang.String"
 		parameterType="java.lang.String">
-		select concat_ws('',z.area,z.cityname,z.xname,ifNULL(z.address,' ')) as
+		select
+		concat_ws('',z.area,z.cityname,z.xname,ifNULL(z.address,' ')) as
 		address
 		from jp_user user
-		left join jp_userinfo userInfo on user.userid =
+		left join jp_userinfo userInfo on user.userid
+		=
 		userInfo.userid left join jp_branch z on user.branchid=z.branchid
 		where user.status = 0 and user.deleteflag = 0
-		and user.userid = #{userid,jdbcType=VARCHAR}
+		and user.userid =
+		#{userid,jdbcType=VARCHAR}
 	</select>
 
 	<!-- 获取某分支下所有人员 -->
 	<select id="selectBranchUsers" parameterType="Map"
 		resultType="com.jp.entity.User">
-		select u.* from jp_user u where u.deleteflag=0 and u.status=0 and
+		select u.* from jp_user u where u.deleteflag=0 and
+		u.status=0 and
 		u.livestatus=0
-		and u.familyid =#{familyid,jdbcType=VARCHAR} and
+		and u.familyid
+		=#{familyid,jdbcType=VARCHAR} and
 		u.branchid=#{branchid,jdbcType=VARCHAR}
 	</select>
 
 	<select id="selectByMapOrder" parameterType="Map"
 		resultType="com.jp.entity.User">
 		select u.* from jp_user u,jp_userposition p
-		where u.pid=#{pid,jdbcType=VARCHAR} and u.status=#{status,jdbcType=VARCHAR}
+		where
+		u.pid=#{pid,jdbcType=VARCHAR} and u.status=#{status,jdbcType=VARCHAR}
 		and u.deleteflag=#{deleteflag,jdbcType=VARCHAR} and u.brotherpos
 		=p.position
 		ORDER BY
@@ -975,20 +1075,27 @@
 		jp_user u,jp_userposition p
 		WHERE
 		(
-		u.brotherpos =p.position
+		u.brotherpos
+		=p.position
 		and u.genlevel > #{genlevel,jdbcType=VARCHAR}
-		AND u.STATUS = #{status,jdbcType=VARCHAR}
-		AND u.isdirect = #{isdirect,jdbcType=VARCHAR}
-		AND u.branchid = #{branchid,jdbcType=VARCHAR}
-		AND u.deleteflag =#{deleteflag,jdbcType=VARCHAR}
+		AND u.STATUS =
+		#{status,jdbcType=VARCHAR}
+		AND u.isdirect =
+		#{isdirect,jdbcType=VARCHAR}
+		AND u.branchid =
+		#{branchid,jdbcType=VARCHAR}
+		AND u.deleteflag
+		=#{deleteflag,jdbcType=VARCHAR}
 		)
 		ORDER BY
-		u.genlevel ASC,u.sex desc,p.sort
+		u.genlevel ASC,u.sex
+		desc,p.sort
 	</select>
 
 	<select id="selectByPhone" parameterType="String"
 		resultType="com.jp.entity.User">
-		select*from jp_user where status = 0 and deleteflag = 0 and familyid is not null
+		select*from jp_user where status = 0 and deleteflag = 0 and
+		familyid is not null
 		and phone = #{phone,jdbcType=VARCHAR}
 	</select>
 
@@ -1060,10 +1167,13 @@
 
 	<select id="selectManagerBranchidsByUserid"
 		resultType="com.jp.entity.EditorialBoard" parameterType="Map">
-		SELECT je.* FROM jp_user_manager jm,`jp_editorial_board` je
-		where jm.familyid= #{familyid}
+		SELECT je.*
+		FROM jp_user_manager jm,`jp_editorial_board` je
+		where jm.familyid=
+		#{familyid}
 		and jm.ebid = je.id and jm.familyid = je.familyid
-		and jm.userid = #{userid}
+		and
+		jm.userid = #{userid}
 	</select>
 
 	<select id="selectUserByBranchids"
@@ -1082,10 +1192,12 @@
 	<select id="selectUserByTag" resultType="com.jp.entity.User">
 		select u.* from jp_user_tag t left join jp_user_tag_user tu on t.id =
 		tu.tag_id left join jp_user u on tu.userid = u.userid
-		where t.deleteflag = 0
+		where
+		t.deleteflag = 0
 		and tu.deleteflag = 0
 		and u.deleteflag = 0
-		and u.status = 0
+		and u.status
+		= 0
 		and t.id in
 		<foreach collection="array" item="item" index="index" open="("
 			separator="," close=")">
@@ -1096,14 +1208,16 @@
 	<select id="selectMateList" resultType="com.jp.entity.User">
 		select * from jp_user
 		where mateid = #{userid,jdbcType=VARCHAR}
-		and userid != #{mateid,jdbcType=VARCHAR}
+		and userid !=
+		#{mateid,jdbcType=VARCHAR}
 	</select>
 
 	<select id="selectByOpenId" resultType="com.jp.entity.User"
 		parameterType="com.jp.entity.User">
 		select m.* from jp_user m,jp_login_third n
 		where m.userid=n.userid
-		and n.openid= #{openid,jdbcType=VARCHAR}
+		and
+		n.openid= #{openid,jdbcType=VARCHAR}
 		<if test="familyid != null">
 			and m.familyid = #{familyid,jdbcType=VARCHAR}
 		</if>
@@ -1122,7 +1236,8 @@
 		AND u.deleteflag = 0
 		AND u.`status` = 0
 		AND u.livestatus = 0
-		AND f.`status`=0
+		AND
+		f.`status`=0
 
 		<if test="familyid != null">
 			and u.familyid=#{familyid,jdbcType=VARCHAR}
@@ -1133,4 +1248,151 @@
 		order by logintime desc
 	</select>
 
+	<!-- 获取某家族最近一次更新时间 -->
+	<select id="getLastUpdateDateTime" parameterType="String"
+		resultType="String">
+		select DATE_FORMAT(updatetime,'%Y-%m-%d %T') updatetime
+		FROM `jp_user` where
+		familyid =#{familyid} and deleteflag =0 ORDER BY
+		updatetime desc LIMIT 1
+	</select>
+	<select id="searchComplex"
+		parameterType="com.jp.entity.SearchComplex"
+		resultType="com.jp.entity.User">
+		SELECT
+		u.*,ur.birthday,year(CURRENT_DATE)-substring_index(ur.birthday,'-',1)
+		age FROM `jp_user` u, jp_branch b,jp_userinfo ur
+		where 1=1 and
+		u.deleteflag=0
+		and u.branchid = b.branchid
+		and u.userid = ur.userid
+
+		<if test="areacode != null">
+			and b.areacode = #{areacode}
+		</if>
+		<if test="branchid != null">
+			and u.branchid = #{branchid}
+		</if>
+		<if test="sex != null">
+			and u.sex = #{sex}
+		</if>
+		<if test="genlevel != null">
+			and u.genlevel = #{genlevel}
+		</if>
+		<if test="isdirect != null">
+			and u.isdirect = #{isdirect}
+		</if>
+		<if test="ismarry != null">
+			and u.ismarry = #{ismarry}
+		</if>
+		<if test="livestatus != null">
+			and u.livestatus = #{livestatus}
+		</if>
+
+		<if test="livestatus == '0'.toString()">
+			and (ur.birthday is not NULL and TRIM(ur.birthday)!='')
+		</if>
+
+		<if test="agefrom !=null">
+
+			and year(CURRENT_DATE)-substring_index(ur.birthday,'-',1) <![CDATA[ >= ]]>
+			#{agefrom}
+		</if>
+		<if test="ageto !=null">
+			and year(CURRENT_DATE)-substring_index(ur.birthday,'-',1) <![CDATA[ <= ]]>
+			#{ageto}
+		</if>
+		<if test="familyid != null">
+			and u.familyid = #{familyid}
+		</if>
+		<if test="education != null">
+			and ur.education = #{education}
+		</if>
+		<if test="count != null">
+			limit ${count}
+		</if>
+		<if test="start != null">
+			offset ${start}
+		</if>
+	</select>
+	<select id="getUseridListOfAfterUpdatedtime"
+		parameterType="com.jp.entity.User" resultType="java.lang.String">
+		SELECT
+		userid
+		FROM
+		jp_user
+		WHERE
+		familyid = #{familyid}
+		AND updatetime >= #{updatetime}
+		AND username
+		IS NOT NULL
+		AND deleteflag=0
+		and status =0
+		and livestatus=0
+	</select>
+	<select id="getUseridListByFamilyid"
+		parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT
+		userid
+		FROM
+		jp_user
+		WHERE
+		familyid = #{familyid}
+		AND username IS NOT NULL
+		AND deleteflag=0
+		and status =0
+		and livestatus=0
+	</select>
+	<select id="getUserListByUserids" parameterType="Map"
+		resultType="com.jp.entity.User">
+		SELECT
+		u.*
+		FROM
+		jp_user u
+		WHERE
+		u.userid in (#{userlist})
+		AND
+		u.username IS NOT NULL
+		and u.familyid = #{familyid}
+		and u.deleteflag = 0
+		and u.status =0
+		and u.livestatus=0
+	</select>
+	<select id="selectByTitle" parameterType="Map"
+		resultType="com.jp.entity.User">
+		select u.* from jp_user u where `status` =0 and
+		deleteflag=0 and
+		u.livestatus =0 and (u.username like
+		CONCAT('%',#{title},'%' )
+		or u.pinyinFirst like CONCAT('%',#{title},'%'
+		)
+		or u.pinyinFull like CONCAT('%',#{title},'%' )
+		or u.phone LIKE
+		CONCAT('%',#{title},'%' )
+		) and u.familyid=#{familyid,jdbcType=VARCHAR}
+		order by u.pinyinfirst
+	</select>
+	<select id="selectBranchByTitle" parameterType="Map"
+		resultType="com.jp.entity.User">
+		select u.* from jp_user u where `status` =0 and
+		deleteflag=0 and
+		u.livestatus =0 and (u.username like
+		CONCAT('%',#{title},'%' )
+		or u.pinyinFirst like CONCAT('%',#{title},'%'
+		)
+		or u.pinyinFull like CONCAT('%',#{title},'%' )
+		or u.phone LIKE
+		CONCAT('%',#{title},'%' )
+		) and u.familyid=#{familyid,jdbcType=VARCHAR}
+		and
+		u.branchid=#{branchid,jdbcType=VARCHAR} order by u.pinyinfirst
+	</select>
+	<select id="selectFamilycode" resultMap="BaseResultMap">
+		select
+		t1.*,t2.familycode from jp_user t1
+		LEFT JOIN jp_sys_family t2 ON
+		t1.familyid = t2.familyid
+		where phone = #{phone} and t1.status=
+		#{status}
+	</select>
 </mapper>

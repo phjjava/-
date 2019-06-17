@@ -5,12 +5,15 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +42,12 @@ import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.controller.UserController;
 import com.jp.dao.BranchDao;
+import com.jp.dao.BranchalbumMapper;
+import com.jp.dao.BranchphotoMapper;
+import com.jp.dao.DynamicMapper;
 import com.jp.dao.LoginThirdMapper;
+import com.jp.dao.NoticeMapper;
+import com.jp.dao.NoticetopDao;
 import com.jp.dao.SysFamilyDao;
 import com.jp.dao.SysVersionPrivilegeMapper;
 import com.jp.dao.UserDao;
@@ -52,17 +60,35 @@ import com.jp.dao.UserinfoMapper;
 import com.jp.dao.UsermatesDao;
 import com.jp.dao.UserphotoDao;
 import com.jp.dao.UserworkexpDao;
+import com.jp.entity.AddressBook;
 import com.jp.entity.Branch;
 import com.jp.entity.BranchKey;
+import com.jp.entity.BranchQuery;
+import com.jp.entity.BranchValidArea;
+import com.jp.entity.Branchalbum;
+import com.jp.entity.Branchphoto;
+import com.jp.entity.BranchphotoExample;
+import com.jp.entity.Dynamic;
+import com.jp.entity.DynamicVO;
+import com.jp.entity.EditorialBoard;
 import com.jp.entity.LoginThird;
 import com.jp.entity.LoginThirdExample;
+import com.jp.entity.Notice;
+import com.jp.entity.NoticeVO;
+import com.jp.entity.Noticetop;
+import com.jp.entity.NoticetopQuery;
 import com.jp.entity.OnLineUser;
+import com.jp.entity.SearchComplex;
 import com.jp.entity.SysFamily;
 import com.jp.entity.SysVersionPrivilege;
 import com.jp.entity.User;
 import com.jp.entity.UserAppLimit;
+import com.jp.entity.UserClildInfo;
+import com.jp.entity.UserDetail;
 import com.jp.entity.UserImportExample;
+import com.jp.entity.UserLimitVO;
 import com.jp.entity.UserQuery;
+import com.jp.entity.UserVO;
 import com.jp.entity.Useralbum;
 import com.jp.entity.Usercode;
 import com.jp.entity.UsercodeQuery;
@@ -74,6 +100,8 @@ import com.jp.entity.Usermates;
 import com.jp.entity.Userphoto;
 import com.jp.entity.Userworkexp;
 import com.jp.entity.UserworkexpQuery;
+import com.jp.service.DynamicService;
+import com.jp.service.NoticeService;
 import com.jp.service.UserService;
 import com.jp.util.DateUtil;
 import com.jp.util.DateUtils;
@@ -120,6 +148,20 @@ public class UserServiceImpl implements UserService {
 	private SysVersionPrivilegeMapper sysVersionPrivilegeMapper;
 	@Autowired
 	private UsercodeDao usercodeDao;
+	@Autowired
+	private NoticeMapper noticeMapper;
+	@Autowired
+	private NoticeService noticeService;
+	@Autowired
+	private NoticetopDao noticeTopMapper;
+	@Autowired
+	private DynamicMapper dynamicMapper;
+	@Autowired
+	private DynamicService dynamicService;
+	@Autowired
+	private BranchalbumMapper branchAlbumMapper;
+	@Autowired
+	private BranchphotoMapper branchPhotoMapper;
 
 	// 导入用户时重复的用户
 	private ArrayList<String> userStringList;
@@ -1544,7 +1586,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public PageModel selecUserListToReview(PageModel pageModel, User user) throws Exception {
+	public PageModel<User> selecUserListToReview(PageModel<User> pageModel, User user) throws Exception {
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		List<User> userList = userDao.selecUserListToReview(user);
 		pageModel.setList(userList);
@@ -3360,5 +3402,1356 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
+	}
+
+	@Override
+	public JsonResponse getPersonInfoLimit(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		if (entity.getUserid() == null || "".equals(entity.getUserid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少用户ID参数");
+			res = new JsonResponse(result);
+			return res;
+		}
+
+		UserLimitVO userLimitVO = new UserLimitVO();
+		User user = userDao.selectByPrimaryKey(entity.getUserid());
+		// User user1 =
+		// userMapper.selectByPrimaryKey(WebUtil.getHeaderInfo(Constants.HEADER_USERID));
+		if (!hasRights(user)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("不具备查看权限,请联系管理员!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		userLimitVO.setName(user.getUsername());
+		Integer isdirect = Integer.valueOf(user.getIsdirect());
+		Integer sex = Integer.valueOf(user.getSex());
+		// 直系用户
+		if (user.getIsdirect() == 1) {
+			User pUser = userDao.selectByPrimaryKey(user.getPid());
+			Userinfo userInfo = userInfoDao.selectByPrimaryKey(entity.getUserid());
+			if (user.getLivestatus() != null)
+				userLimitVO.setLivestatus(Integer.valueOf(user.getLivestatus()));
+			if (user.getGenlevel() != null)
+				userLimitVO.setGenlevel(user.getGenlevel().toString());
+			if (userInfo != null)
+				userLimitVO.setHomeplace(userInfo.getHomeplace().replace("@", ""));
+			userLimitVO.setImgurl(user.getImgurl());
+			if (pUser != null) {
+				userLimitVO.setParentmatename(pUser.getMatename());
+				userLimitVO.setParentname(pUser.getUsername());
+			}
+			userLimitVO.setPostision(user.getBrotherpos());
+		}
+		// 非直系用户（配偶用户）
+		if (user.getIsdirect() == 0) {
+			User usermate = userDao.selectByPrimaryKey(user.getMateid());
+			Userinfo userInfo = userInfoDao.selectByPrimaryKey(usermate.getUserid());
+			if (user.getLivestatus() != null)
+				userLimitVO.setLivestatus(Integer.valueOf(user.getLivestatus()));
+			if (user.getGenlevel() != null)
+				userLimitVO.setGenlevel(user.getGenlevel().toString());
+			if (userInfo != null)
+				userLimitVO.setHomeplace(userInfo.getHomeplace().replace("@", ""));
+			userLimitVO.setImgurl(user.getImgurl());
+			// 设置直系用户暨配偶的名字
+			userLimitVO.setMatename(usermate.getUsername());
+			// 排行
+			userLimitVO.setPostision(usermate.getBrotherpos());
+		}
+		BranchKey branchKey = new BranchKey();
+		branchKey.setFamilyid(user.getFamilyid());
+		branchKey.setBranchid(user.getBranchid());
+		Branch branch = branchDao.selectByPrimaryKey(branchKey);
+		if (branch != null)
+			userLimitVO.setBranchname(
+					branch.getArea() + branch.getCityname() + branch.getXname() + branch.getBranchname());
+		userLimitVO.setIsdirect(isdirect);
+		userLimitVO.setSex(sex);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		result.setMsg("获取成功");
+		res = new JsonResponse(result);
+		res.setData(userLimitVO);
+		return res;
+	}
+
+	/**
+	 * 判断时候具备查看分支数据的权限
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	private boolean hasRights(User entity) {
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		// 查询是否具备当前分支查看权限
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("userid", userid);
+		map.put("familyid", entity.getFamilyid());
+		List<EditorialBoard> editorialBoards = userDao.selectManagerBranchidsByUserid(map);
+
+		// 定义当前用户具备权限的分支列表
+		Set<String> branchids = new HashSet<String>();
+		for (EditorialBoard editorialBoard : editorialBoards) {
+			if (editorialBoard.getCodetype().equals("0"))
+				return true;
+			else {
+				if ("1".equals(editorialBoard.getCodetype())) // 0总1省2市3区4分支
+				{
+					List<String> areaBranchids = branchDao.selectBranchidsByAreacode(editorialBoard.getCode(),
+							entity.getFamilyid());
+					branchids.addAll(areaBranchids);
+				}
+				if ("2".equals(editorialBoard.getCodetype())) // 0总1省2市3区4分支
+				{
+					List<String> areaBranchids = branchDao.selectBranchidsByCitycode(editorialBoard.getCode(),
+							entity.getFamilyid());
+					branchids.addAll(areaBranchids);
+				}
+				if ("3".equals(editorialBoard.getCodetype())) // 0总1省2市3区4分支
+				{
+					List<String> areaBranchids = branchDao.selectBranchidsByQxcode(editorialBoard.getCode(),
+							entity.getFamilyid());
+					branchids.addAll(areaBranchids);
+				}
+				if ("4".equals(editorialBoard.getCodetype())) // 0总1省2市3区4分支
+					branchids.add(editorialBoard.getCode());
+			}
+		}
+		// 查询当前用户所属分支
+		User user = userDao.selectByPrimaryKey(userid);
+		if (entity.getBranchid() != null && !"".equals(entity.getBranchid())) {
+			branchids.add(entity.getBranchid());
+		}
+
+		// 如果既不是总编委也不在管理范围内并且个人不在当前分支的分支列表，则认为没有权限,
+		if (branchids.contains(user.getBranchid()))
+			return true;
+		else
+			return false;
+	}
+
+	@Override
+	public JsonResponse restPassword(User entity, String password, String newpassword) {
+		Result result = null;
+		JsonResponse res = null;
+		if ("".equals(entity.getPhone()) || entity.getPhone() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("没有获取到手机号！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if ("".equals(password) || password == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("请填写新密码！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if ("".equals(newpassword) || newpassword == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("请填写新密码！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (!password.equals(newpassword)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("新密码不一致，请重新输入！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		UserQuery userExample = new UserQuery();
+		userExample.or().andPhoneEqualTo(entity.getPhone());
+		List<User> users = userDao.selectByExample(userExample);
+		if (users.size() <= 0) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("不存在的用户！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		for (User user : users) {
+			user.setPassword(MD5Util.string2MD5(password));
+			user.setUpdatetime(new Date());
+			userDao.updateByPrimaryKey(user);
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		result.setMsg("密码重置成功！");
+		res = new JsonResponse(result);
+		return res;
+	}
+
+	@Override
+	public JsonResponse getAllPersonInfos(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		if ("".equals(entity.getFamilyid()) || entity.getFamilyid() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("家族信息不存在！");
+			res = new JsonResponse(result);
+			return res;
+		}
+
+		// 查询正式用户、未删除用户、在世用户组合查询的结果
+		UserQuery userExample = new UserQuery();
+		userExample.or().andFamilyidEqualTo(entity.getFamilyid()).andStatusEqualTo(0).andDeleteflagEqualTo(0)
+				.andLivestatusEqualTo(0);
+		userExample.setOrderByClause("pinyinfirst desc");
+		// userExample.setStartRow((int) (entity.getStart() - 1) *
+		// entity.getCount().intValue());
+		userExample.setPageNo(entity.getStart().intValue());// start是页码
+		userExample.setPageSize(entity.getCount().intValue());
+		// 获取当前家族所有有效用户
+		List<User> users = userDao.selectByExample(userExample);
+		String lastDateTime = userDao.getLastUpdateDateTime(entity.getFamilyid());
+		if (StringUtils.isBlank(lastDateTime))
+			lastDateTime = (new Date()).toString();
+		AddressBook addressBook = new AddressBook();
+		addressBook.setUsersadd(users);
+		addressBook.setUpdatetime(lastDateTime);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		result.setMsg("获取成功！");
+		res = new JsonResponse(result);
+		res.setData(addressBook);
+		return res;
+	}
+
+	@Override
+	public JsonResponse updatePersonsByUpdatetime(User user) {
+		Result result = null;
+		JsonResponse res = null;
+		if (user == null || user.getFamilyid() == null || user.getUpdatetime() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少参数");
+			res = new JsonResponse(result);
+			return res;
+		}
+		// 只获取在世的、可用的、未删除的用户，不区分直系非直系用户，新增的用户
+		UserQuery userExampleadd = new UserQuery();
+		userExampleadd.or().andUpdatetimeGreaterThan(user.getUpdatetime()).andFamilyidEqualTo(user.getFamilyid())
+				.andStatusEqualTo(0).andDeleteflagEqualTo(0).andLivestatusEqualTo(0);
+
+		List<User> usersAdd = userDao.selectByExample(userExampleadd);
+
+		// 获取逻辑删除的数据，物理删除的不考虑
+		UserQuery userExampledel = new UserQuery();
+		userExampledel.or().andUpdatetimeGreaterThanOrEqualTo(user.getUpdatetime())
+				.andFamilyidEqualTo(user.getFamilyid()).andDeleteflagEqualTo(1).andLivestatusEqualTo(0);
+
+		List<User> usersDel = userDao.selectByExample(userExampledel);
+
+		String lastDateTime = userDao.getLastUpdateDateTime(user.getFamilyid());
+		if (StringUtils.isBlank(lastDateTime))
+			lastDateTime = (new Date()).toString();
+		AddressBook addressBook = new AddressBook();
+		addressBook.setUsersadd(usersAdd);
+		addressBook.setUserdel(usersDel);
+		addressBook.setUpdatetime(lastDateTime);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		result.setMsg("查询成功");
+		res = new JsonResponse(result);
+		res.setData(addressBook);
+		return res;
+	}
+
+	@Override
+	public JsonResponse searchComplex(SearchComplex searchComplex) {
+		Result result = null;
+		JsonResponse res = null;
+		if (searchComplex == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("请选择搜索条件");
+			res = new JsonResponse(result);
+			return res;
+		}
+		// 执行搜索
+		List<User> users = userDao.searchComplex(searchComplex);
+
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(users);
+		return res;
+	}
+
+	public static String ListtoString(List<String> sList) {
+		String re = "";
+		if (sList != null && sList.size() > 0) {
+			for (int i = 0; i < sList.size(); i++) {
+				String string = sList.get(i);
+				if (i == 0) {
+					re += '"' + string + '"';
+				} else {
+					re += ",\"" + string + '"';
+				}
+			}
+		}
+		return re;
+	}
+
+	@Override
+	public JsonResponse updatePersonsByUpdatetimeExt(User entity) {
+		// 1.创建结果集
+		Result result = null;
+		JsonResponse res = null;
+		// 2.数据校验
+		if (entity == null || entity.getFamilyid() == null || entity.getUpdatetime() == null
+				|| entity.getUserid() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少参数");
+			res = new JsonResponse(result);
+			return res;
+		}
+		// 获得id字符串
+		String ids = entity.getUserid().trim();
+
+		// 创建删除和修改集合
+		List<String> useridList_del = new ArrayList<String>();
+		List<String> useridList_update = new ArrayList<String>();
+		List<User> userList_update = new ArrayList<User>();
+		// 3.查询
+		if (!"".equals(ids)) {// 判断传入的ids是否为空
+			// 获取id集合
+			String[] idArr = entity.getUserid().split(",");
+			List<String> idList = Arrays.asList(idArr);
+			// 不为空，查询比对
+			// 3.1查询所有更新时间在传入时间之后的
+			List<String> useridList_afterUpdatedtime = userDao.getUseridListOfAfterUpdatedtime(entity);
+			// 3.2查询所有已存在用户ids
+			List<String> useridList_company = userDao.getUseridListByFamilyid(entity.getFamilyid());
+			// 3.3获取需要删除的id列表和需要更新的id列表
+			// 1[1,2,3] 2[2,4] 3[2,3,4,5] 删除：[1] 修改[2,4]
+			if (useridList_company != null && useridList_company.size() > 0) {
+				for (String userid_company : useridList_company) {
+					// 判断公司员工是否传入的用户id里
+					if (!idList.contains(userid_company)) {
+						// 不在，添加到更新集合中
+						useridList_update.add(userid_company);
+					}
+				}
+				for (String userid : idList) {
+					// 判断传入的员工是否传入的公司id里
+					if (!useridList_company.contains(userid)) {
+						// 不在，添加到删除集合中
+						useridList_del.add(userid);
+					}
+				}
+				// 添加需要更新的id
+				useridList_update.addAll(useridList_afterUpdatedtime);
+				// Array去重
+				HashSet<String> temp = new HashSet<String>();
+				temp.addAll(useridList_update);
+				useridList_update.clear();
+				useridList_update.addAll(temp);
+			} else {
+				useridList_del = idList;
+			}
+		} else {
+			// 为空，全部更新
+			useridList_update = userDao.getUseridListByFamilyid(entity.getFamilyid());
+		}
+
+		// 3.4查询所需要更新的用户的信息
+		if (useridList_update.size() > 0) {
+			Map<String, String> map = new HashMap<String, String>();
+
+			String useridList_update_String = ListtoString(useridList_update);
+			map.put("userlist", useridList_update_String);
+			map.put("familyid", entity.getFamilyid());
+			userList_update = userDao.getUserListByUserids(map);
+		}
+		String lastDateTime = userDao.getLastUpdateDateTime(entity.getFamilyid());
+		if (StringUtils.isBlank(lastDateTime))
+			lastDateTime = (new Date()).toString();
+
+		AddressBook addressBook = new AddressBook();
+		addressBook.setUsersadd(userList_update);
+		addressBook.setIds_del(useridList_del);
+		addressBook.setUpdatetime(lastDateTime);
+		// result.setData(userList_update);
+		// result.setData1(useridList_del);
+		// result.setData2(new Date());
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(addressBook);
+		return res;
+	}
+
+	/**
+	 * 通过调用getPersonInfosByUserid方法获取用户详细信息
+	 */
+	@Override
+	public JsonResponse getPersonInfos(User entity) {
+		return getPersonInfosByUserid(entity.getUserid());
+	}
+
+	/**
+	 * 通过UserID唯一键值获取用户详细信息，独立出来以备其他调用
+	 * 
+	 * @param userid
+	 * @return
+	 */
+	public JsonResponse getPersonInfosByUserid(String userid) {
+		Result result = null;
+		JsonResponse res = null;
+		if ("".equals(userid) || userid == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户ID不存在！");
+			res = new JsonResponse(result);
+			return res;
+		}
+
+		// 获取用户基本信息
+		User user = userDao.selectByPrimaryKey(userid);
+		if (user == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户不存在！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		// User user1 =
+		// userMapper.selectByPrimaryKey(WebUtil.getHeaderInfo(Constants.HEADER_USERID));
+		if (!hasRights(user)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("不具备查看权限,请联系管理员!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		// 获取用户联系信息和其他信息
+		Userinfo userInfo = userInfoDao.selectByPrimaryKey(userid);
+		UserDetail userDetail = new UserDetail();
+		if (userInfo != null) {
+			userDetail.setUserid(user.getUserid());
+			userDetail.setLivestatus(user.getLivestatus().byteValue());
+			userDetail.setDietime(user.getDietime());
+			userDetail.setFixplace(user.getFixplace());
+			userDetail.setUsedname(user.getUsedname());
+			userDetail.setBackground(userInfo.getBackground());
+			userDetail.setBirthday(userInfo.getBirthday());
+			if (userInfo.getBirthday() != null)
+				userDetail.setBirthdayStr(userInfo.getBirthday());
+			userDetail
+					.setBirthplace(userInfo.getBirthplace() == null ? null : userInfo.getBirthplace().replace("@", ""));
+			userDetail.setHomeplace(userInfo.getHomeplace() == null ? null : userInfo.getHomeplace().replace("@", ""));
+			userDetail.setMail(userInfo.getMail());
+			userDetail.setMailsee(userInfo.getMailsee());
+			userDetail.setNation(userInfo.getNation());
+			userDetail.setQq(userInfo.getQq());
+			userDetail.setQqsee(userInfo.getQqsee());
+			userDetail.setRemark(userInfo.getRemark());
+			userDetail.setRemarksee(userInfo.getRemarksee());
+			userDetail.setTel(userInfo.getTel());
+			userDetail.setTelsee(userInfo.getTelsee());
+			userDetail.setWeixin(userInfo.getWeixin());
+			userDetail.setWxsee(userInfo.getWxsee());
+		}
+		// 获取用户教育信息
+		UsereduQuery userEduExample = new UsereduQuery();
+		userEduExample.or().andUseridEqualTo(userid);
+		List<Useredu> userEdus = userEduDao.selectByExample(userEduExample);
+		// 获取用户工作信息
+		UserworkexpQuery userWorkexpExample = new UserworkexpQuery();
+		userWorkexpExample.or().andUseridEqualTo(userid);
+		List<Userworkexp> userWorkexps = userworkDao.selectByExample(userWorkexpExample);
+
+		// // 获取用户群英录
+		// UserContent userContent =
+		// UserContentMapper.selectByPrimaryKey(userid);
+		// // 获取用户相册
+		// UserAlbumExample userAlbumExample = new UserAlbumExample();
+		// userAlbumExample.or().andUseridEqualTo(userid);
+		// List<UserAlbum> userAlbums =
+		// UserAlbumMapper.selectByExample(userAlbumExample);
+
+		// 汇总信息到VO
+		UserVO userVO = new UserVO();
+		userVO.setUser(user);
+		// userVO.setUserAlbum(userAlbums);
+		// userVO.setUserContent(userContent);
+		userVO.setUserEdu(userEdus);
+		userVO.setUserInfo(userDetail);
+		userVO.setUserWorkexp(userWorkexps);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(userVO);
+		return res;
+	}
+
+	@Override
+	public JsonResponse changeImgurl(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		if ("".equals(entity.getImgurl()) || entity.getImgurl() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户imgurl不存在！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if ("".equals(entity.getUserid()) || entity.getUserid() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户ID不存在！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		User user = userDao.selectByPrimaryKey(entity.getUserid());
+		user.setImgurl(entity.getImgurl());
+		int status = userDao.updateByPrimaryKey(user);
+		if (status > 0) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
+	}
+
+	@Override
+	public JsonResponse changeUserinfos(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		int status = 0;
+		if (entity.getUserid() == null || "".equals(entity.getUserid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户ID不存在！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			// 用户表
+
+			entity.setPinyinfull(PinyinUtil.getPinyinFull(entity.getUsedname()));
+			status = userDao.updateByPrimaryKeySelective(entity);
+
+			// 用户信息表
+			status = userInfoDao.updateByPrimaryKeySelective(entity.getUserInfo());
+
+			// 教育经历
+			for (Useredu userEdu : entity.getUserEdu()) {
+				// 新增工作经历
+				if (userEdu.getEduid() == null || userEdu.getEduid().equals("")) {
+					Useredu userEdu2 = new Useredu();
+					userEdu2.setUserid(entity.getUserid());
+					userEdu2.setEduid(UUIDUtils.getUUID());
+					userEdu2.setDatefrom(userEdu.getDatefrom());
+					userEdu2.setDateto(userEdu.getDateto());
+					userEdu2.setDegree(userEdu.getDegree());
+					userEdu2.setIssecret(userEdu.getIssecret());
+					userEdu2.setMajor(userEdu.getMajor());
+					userEdu2.setUniversity(userEdu.getUniversity());
+					status = userEduDao.insert(userEdu2);
+				} else {// 修改工作经历
+					status = userEduDao.updateByPrimaryKeySelective(userEdu);
+				}
+			}
+
+			for (Userworkexp userWorkexp : entity.getUserWorkexp()) {
+				if (userWorkexp.getWorkid() == null || userWorkexp.getWorkid().equals("")) {
+					Userworkexp userWorkexp2 = new Userworkexp();
+					userWorkexp2.setWorkid(UUIDUtils.getUUID());
+					userWorkexp2.setUserid(entity.getUserid());
+					userWorkexp2.setCompany(userWorkexp.getCompany());
+					userWorkexp2.setDatefrom(userWorkexp.getDatefrom());
+					userWorkexp2.setDateto(userWorkexp2.getDateto());
+					userWorkexp2.setIssecret(userWorkexp.getIssecret());
+					userWorkexp2.setPosition(userWorkexp.getPosition());
+					userWorkexp2.setWorkcontent(userWorkexp.getWorkcontent());
+					status = userworkDao.insert(userWorkexp2);
+				} else {
+					status = userworkDao.updateByPrimaryKeySelective(userWorkexp);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (status > 0) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
+	}
+
+	@Override
+	public JsonResponse getCityNoticeList(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		if ("".equals(entity.getFamilyid()) || entity.getFamilyid() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少家族ID参数！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if ("".equals(entity.getUserid()) || entity.getUserid() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少用户ID参数！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		// 获取当前用户所在的城市编码和名称
+		res = getCitycodeOfUser(entity.getUserid(), entity.getFamilyid());
+		if (res.getCode() == ConstantUtils.RESULT_FAIL)
+			return res;
+		BranchValidArea branchValidArea = (BranchValidArea) res.getData();
+		// 获取城市下的所有分支的动态列表
+		return getNoticeListByCity(branchValidArea, entity);
+	}
+
+	/**
+	 * 获取指定城市的下的所有分支的公告
+	 * 
+	 * @author 李鹏 17-03-21
+	 * @param branchValidArea
+	 * @param familyid
+	 * @return
+	 */
+	public JsonResponse getNoticeListByCity(BranchValidArea branchValidArea, User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		// 查询当前城市下的所有分支列表
+		BranchQuery branchExample = new BranchQuery();
+		branchExample.or().andFamilyidEqualTo(entity.getFamilyid()).andCitycodeEqualTo(branchValidArea.getAreacode())
+				.andStatusEqualTo(0);
+		List<Branch> branchs = branchDao.selectByExample(branchExample);
+		if (branchs.size() == 0) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("当前城市下不存在分支！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		List<String> branchids = new ArrayList<String>();
+		for (Branch branch : branchs) {
+			branchids.add(branch.getBranchid());
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("start", entity.getStart());
+		map.put("count", entity.getCount());
+		map.put("list", branchids);
+		// List<Dynamic> dynamics = dynamicMapper.findByIdsMap(branchids);
+		List<Notice> notices = noticeMapper.findByIdsMap(map);
+		if (notices.size() == 0) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("当前城市下不存在公告！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		// 获取当前用户的分支ID
+		String branchid = userDao.selectByPrimaryKey(entity.getUserid()).getBranchid();
+		if (branchid == null || "".equals(branchid)) {
+
+		}
+
+		List<NoticeVO> noticeVOs = new ArrayList<NoticeVO>();
+		for (Notice notice : notices) {
+			res = noticeService.getNoticeDetailExt(notice);
+			if (res.getCode() == ConstantUtils.RESULT_SUCCESS) {
+				noticeVOs.add((NoticeVO) res.getData());
+			}
+		}
+		for (NoticeVO noticeVO : noticeVOs) {
+			Notice notice = noticeVO.getNotice();
+			NoticetopQuery noticeTopExample = new NoticetopQuery();
+			noticeTopExample.or().andNoticeidEqualTo(notice.getNoticeid());
+			List<Noticetop> noticeTops = noticeTopMapper.selectByExample(noticeTopExample);
+			if (IsInclude(branchid, noticeTops)) {
+				notice.setType(1);
+			}
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(noticeVOs);
+		return res;
+	}
+
+	/**
+	 * 判断列表中有无分支ID指定数值
+	 * 
+	 * @param branchid
+	 * @param noticeTops
+	 * @return
+	 */
+
+	private boolean IsInclude(String branchid, List<Noticetop> noticeTops) {
+		for (Noticetop noticeTop : noticeTops) {
+			if (branchid.equals(noticeTop.getBranchid()))
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 获取用户所在的城市编码
+	 * 
+	 * @author 李鹏 17-03-21
+	 * @param userid
+	 * @param familyid
+	 * @return
+	 */
+	public JsonResponse getCitycodeOfUser(String userid, String familyid) {
+		Result result = null;
+		JsonResponse res = null;
+		User user = userDao.selectByPrimaryKey(userid);
+		if (user == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("当前用户不存在！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		// 获取所在分支信息
+		if (user.getBranchid() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("当前用户不存在任何分支！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		BranchQuery branchExample = new BranchQuery();
+		branchExample.or().andFamilyidEqualTo(familyid).andBranchidEqualTo(user.getBranchid()).andStatusEqualTo(0);
+		List<Branch> branchs = branchDao.selectByExample(branchExample);
+		if (branchs.size() == 0) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("当前用户不存在任何分支！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		Branch branch = branchs.get(0);
+		BranchValidArea branchValidArea = new BranchValidArea();
+		branchValidArea.setAreacode(branch.getCitycode());
+		branchValidArea.setAreaname(branch.getCityname());
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(branchValidArea);
+		return res;
+	}
+
+	@Override
+	public JsonResponse getCityNoticeListExt(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		if ("".equals(entity.getFamilyid()) || entity.getFamilyid() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少家族ID参数！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if ("".equals(entity.getIdcard()) || entity.getIdcard() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少城市ID参数！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		BranchValidArea branchValidArea = new BranchValidArea();
+		branchValidArea.setAreacode(entity.getIdcard());
+		return getNoticeListByCity(branchValidArea, entity);
+	}
+
+	@Override
+	public JsonResponse getCityDyList(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		if ("".equals(entity.getFamilyid()) || entity.getFamilyid() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少家族ID参数！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if ("".equals(entity.getUserid()) || entity.getUserid() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少用户ID参数！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		// 获取当前用户所在的城市编码和名称
+		JsonResponse result2 = getCitycodeOfUser(entity.getUserid(), entity.getFamilyid());
+		if (result2.getCode() == ConstantUtils.RESULT_FAIL)
+			return result2;
+		BranchValidArea branchValidArea = (BranchValidArea) result2.getData();
+		// 获取城市下的所有分支的动态列表
+		return getDyListByCity(branchValidArea, entity);
+	}
+
+	/**
+	 * 获取指定城市的下的所有分支的动态
+	 * 
+	 * @author 李鹏 17-03-21
+	 * @param branchValidArea
+	 * @param familyid
+	 * @return
+	 */
+	public JsonResponse getDyListByCity(BranchValidArea branchValidArea, User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		// 查询当前城市下的所有分支列表
+		BranchQuery branchExample = new BranchQuery();
+		branchExample.or().andFamilyidEqualTo(entity.getFamilyid()).andCitycodeEqualTo(branchValidArea.getAreacode())
+				.andStatusEqualTo(0);
+		List<Branch> branchs = branchDao.selectByExample(branchExample);
+		if (branchs.size() == 0) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("当前城市下不存在分支！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		List<String> branchids = new ArrayList<String>();
+		for (Branch branch : branchs) {
+			branchids.add(branch.getBranchid());
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("start", entity.getStart());
+		map.put("count", entity.getCount());
+		map.put("list", branchids);
+		// List<Dynamic> dynamics = dynamicMapper.findByIdsMap(branchids);
+		List<Dynamic> dynamics = dynamicMapper.findByIdsMap(map);
+		if (dynamics.size() == 0) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("当前城市下不存在动态！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		List<DynamicVO> dynamicVOs = new ArrayList<DynamicVO>();
+		for (Dynamic dynamic : dynamics) {
+			JsonResponse result2 = dynamicService.getDyDetailExt(dynamic);
+			if (result2.getCode() == ConstantUtils.RESULT_SUCCESS) {
+				dynamicVOs.add((DynamicVO) result2.getData());
+			}
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(dynamicVOs);
+		return res;
+	}
+
+	@Override
+	public JsonResponse getCityDyListExt(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		if ("".equals(entity.getFamilyid()) || entity.getFamilyid() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少家族ID参数！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if ("".equals(entity.getIdcard()) || entity.getIdcard() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少城市ID参数！");
+			res = new JsonResponse(result);
+		}
+		BranchValidArea branchValidArea = new BranchValidArea();
+		branchValidArea.setAreacode(entity.getIdcard());
+		return getDyListByCity(branchValidArea, entity);
+	}
+
+	@Override
+	public JsonResponse getCityAlbumList(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		if ("".equals(entity.getFamilyid()) || entity.getFamilyid() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少家族ID参数！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if ("".equals(entity.getUserid()) || entity.getUserid() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少用户ID参数！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		// 获取当前用户所在的城市编码和名称
+		JsonResponse result2 = getCitycodeOfUser(entity.getUserid(), entity.getFamilyid());
+		if (result2.getCode() == ConstantUtils.RESULT_FAIL)
+			return result2;
+		BranchValidArea branchValidArea = (BranchValidArea) result2.getData();
+		// 获取城市下的所有分支的动态列表
+		return getAlbumListByCity(branchValidArea, entity);
+	}
+
+	/**
+	 * 获取指定城市的下的所有分支的公告
+	 * 
+	 * @author 李鹏 17-03-21
+	 * @param branchValidArea
+	 * @param familyid
+	 * @return
+	 */
+	public JsonResponse getAlbumListByCity(BranchValidArea branchValidArea, User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		// 查询当前城市下的所有分支列表
+		BranchQuery branchExample = new BranchQuery();
+		branchExample.or().andFamilyidEqualTo(entity.getFamilyid()).andCitycodeEqualTo(branchValidArea.getAreacode())
+				.andStatusEqualTo(0);
+		List<Branch> branchs = branchDao.selectByExample(branchExample);
+		if (branchs.size() == 0) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("当前城市下不存在分支！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		List<String> branchids = new ArrayList<String>();
+		for (Branch branch : branchs) {
+			branchids.add(branch.getBranchid());
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("start", entity.getStart());
+		map.put("count", entity.getCount());
+		map.put("list", branchids);
+		// List<Dynamic> dynamics = dynamicMapper.findByIdsMap(branchids);
+		List<Branchalbum> branchAlbumList = branchAlbumMapper.findByIdsMap(map);
+		if (branchAlbumList.size() == 0) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("当前城市下不存在相册！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		// 填充头图与图片数量
+		addAlbumNumAndPreImg(branchAlbumList);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(branchAlbumList);
+		return res;
+	}
+
+	/**
+	 * 填充头图与图片数量
+	 * 
+	 * @描述
+	 * @作者 jinlizhi
+	 * @时间 2017年9月6日下午5:05:16
+	 * @参数 @param branchAlbumList
+	 * @return void
+	 */
+	private void addAlbumNumAndPreImg(List<Branchalbum> branchAlbumList) {
+		// 填充图片数量
+		BranchphotoExample photoEp = new BranchphotoExample();
+		for (Branchalbum branchAlbum : branchAlbumList) {
+			photoEp.clear();
+			photoEp.setOrderByClause("createtime asc");
+			photoEp.or().andAlbumidEqualTo(branchAlbum.getAlbumid()).andBranchidEqualTo(branchAlbum.getBranchid())
+					.andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
+			List<Branchphoto> photeList = branchPhotoMapper.selectByExample(photoEp);
+			if (photeList != null) {
+				// 填充头图
+				branchAlbum.setPhotoNum(photeList.size());
+				if (photeList.size() > 0) {
+					String smallimgurl = photeList.get(0).getSmallimgurl();
+					branchAlbum.setPrePhotoImg(smallimgurl);
+				}
+			}
+
+		}
+	}
+
+	@Override
+	public JsonResponse getCityAlbumListExt(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		if ("".equals(entity.getFamilyid()) || entity.getFamilyid() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少家族ID参数！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if ("".equals(entity.getIdcard()) || entity.getIdcard() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少城市ID参数！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		BranchValidArea branchValidArea = new BranchValidArea();
+		branchValidArea.setAreacode(entity.getIdcard());
+		return getAlbumListByCity(branchValidArea, entity);
+	}
+
+	@Override
+	public JsonResponse addChild(UserClildInfo userChildInfo) {
+		Result result = null;
+		JsonResponse res = null;
+		if (userChildInfo.getPid() == null || "".equals(userChildInfo.getPid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少父亲ID信息！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		/*
+		 * if (userChildInfo.getPhone() == null || "".equals(userChildInfo.getPhone()))
+		 * { result.setStatus(Constants.RESULT_FAIL); result.setMsg("缺少手机号信息！"); return
+		 * result; }
+		 */
+		if (userChildInfo.getUsername() == null || "".equals(userChildInfo.getUsername())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("需要填写用户姓名！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		// 判断提交手机号码是否有效
+		/*
+		 * UserExample userExample = new UserExample();
+		 * userExample.or().andPhoneEqualTo(userChildInfo.getPhone()).
+		 * andDeleteflagEqualTo((byte) 0); if
+		 * (userMapper.selectByExample(userExample).size() > 0) {
+		 * result.setStatus(Constants.RESULT_FAIL); result.setMsg("该手机号码已存在！"); return
+		 * result; }
+		 */
+
+		// 获取父节点实例
+		User pUser = userDao.selectByPrimaryKey(userChildInfo.getPid());
+		///////////////////
+		User user = new User();
+		// 初始化密码
+		int initpwd = new Random().nextInt(900000);
+		initpwd = initpwd + 100000;
+		user.setPassword(MD5Util.string2MD5(String.valueOf(initpwd)));
+		String userid = UUIDUtils.getUUID();
+		user.setUserid(userid);
+		user.setSex(userChildInfo.getSex());
+		user.setBrotherpos(userChildInfo.getBrotherpos());
+		// 是否在世： 不填写，默认为在世
+		user.setLivestatus((userChildInfo.getLivestatus() == null || "".equals(userChildInfo.getLivestatus())) ? 0
+				: userChildInfo.getLivestatus());
+		// 是否直系： 不填写，默认为直系
+		user.setIsdirect((userChildInfo.getIsdirect() == null || "".equals(userChildInfo.getIsdirect())) ? 0
+				: userChildInfo.getIsdirect());
+		// 是否亲生： 不填写，默认为亲生
+		user.setIsborn((userChildInfo.getIsborn() == null || "".equals(userChildInfo.getIsborn())) ? 0
+				: userChildInfo.getIsborn());
+		// 状态为待审核
+		user.setStatus(1);
+		user.setDeleteflag(0);
+		user.setPinyinfirst(PinyinUtil.getPinYinFirstChar(userChildInfo.getUsername()));
+		user.setPinyinfull(PinyinUtil.getPinyinFull(userChildInfo.getUsername()));
+		user.setUsername(userChildInfo.getUsername());
+		user.setUsedname(userChildInfo.getUsedname());
+		user.setIdcard(userChildInfo.getIdcard());
+		user.setGenlevel(pUser.getGenlevel() + 1);
+		user.setPhone(userChildInfo.getPhone());
+		user.setPid(pUser.getUserid());
+		user.setPname(pUser.getUsername());
+		user.setFamilyid(pUser.getFamilyid());
+		user.setFamilyname(pUser.getFamilyname());
+		user.setBranchid(pUser.getBranchid());
+		user.setBranchname(pUser.getBranchname());
+		user.setCreateid(pUser.getUserid());
+		user.setUpdateid(pUser.getUserid());
+		user.setCreatetime(new Date());
+		user.setUpdatetime(new Date());
+		int icount = userDao.insert(user);
+
+		Userinfo userInfo = new Userinfo();
+		userInfo.setUserid(userid);
+
+		// SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		if (userChildInfo.getBirthdayStr() == null || userChildInfo.getBirthdayStr().equals(""))
+			userInfo.setBirthday(userChildInfo.getBirthday());
+		else {
+			userInfo.setBirthday(userChildInfo.getBirthdayStr());
+			// userInfo.setBirthday(format.parse(userChildInfo.getBirthdayStr() + "
+			// 00:00:00"));
+		}
+
+		if (userChildInfo.getBirthday() != null)
+			userInfo.setBirthdayStr(userChildInfo.getBirthday());
+		userInfo.setNation(userChildInfo.getNation());
+		userInfo.setBirthplace(userChildInfo.getBirthplace().replace("@", ""));
+		userInfo.setBackground(userChildInfo.getBackground());
+		userInfo.setHomeplace(userChildInfo.getHomeplace().replace("@", ""));
+		userInfo.setMail(userChildInfo.getMail());
+		userInfo.setMailsee((userChildInfo.getMailsee() == null || "".equals(userChildInfo.getMailsee())) ? 0
+				: userChildInfo.getMailsee());
+		userInfo.setWeixin(userChildInfo.getWeixin());
+		userInfo.setWxsee((userChildInfo.getWxsee() == null || "".equals(userChildInfo.getWxsee())) ? 0
+				: userChildInfo.getWxsee());
+		userInfo.setQq(userChildInfo.getQQ());
+		userInfo.setQqsee((userChildInfo.getQqsee() == null || "".equals(userChildInfo.getQqsee())) ? 0
+				: userChildInfo.getQqsee());
+		userInfo.setTel(userChildInfo.getTel());
+		userInfo.setTelsee((userChildInfo.getTelsee() == null || "".equals(userChildInfo.getTelsee())) ? 0
+				: userChildInfo.getTelsee());
+		userInfoDao.insert(userInfo);
+		userInfo.setRemark(userChildInfo.getRemark());
+		userInfo.setRemarksee((userChildInfo.getRemarksee() == null || "".equals(userChildInfo.getRemarksee())) ? 0
+				: userChildInfo.getRemarksee());
+
+		if (icount == 0) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("添加失败");
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		result.setMsg("添加成功");
+		res = new JsonResponse(result);
+		return res;
+	}
+
+	@Override
+	public JsonResponse searchAllBytitle(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		// 参数校验
+		if (entity.getUsername() == null || entity.getUsername().isEmpty()) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少关键参数");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (entity.getFamilyid() == null || entity.getFamilyid().isEmpty()) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少家族ID关键参数");
+			res = new JsonResponse(result);
+			return res;
+		}
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("title", entity.getUsername());
+		map.put("familyid", entity.getFamilyid());
+		List<User> users = userDao.selectByTitle(map);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(users);
+		return res;
+	}
+
+	@Override
+	public JsonResponse searchBranchBytitle(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		// 参数校验
+		if (entity.getUsername() == null || entity.getUsername().isEmpty()) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少关键参数");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (entity.getFamilyid() == null || entity.getFamilyid().isEmpty()) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少家族ID关键参数");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (entity.getBranchid() == null || entity.getBranchid().isEmpty()) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("缺少分支ID关键参数");
+			res = new JsonResponse(result);
+			return res;
+		}
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("title", entity.getUsername());
+		map.put("familyid", entity.getFamilyid());
+		map.put("branchid", entity.getBranchid());
+		List<User> users = userDao.selectBranchByTitle(map);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(users);
+		return res;
+	}
+
+	@Override
+	public JsonResponse deleteUserWorkExp(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		if ("".equals(entity.getUpdateid()) || entity.getUpdateid() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("工作经历id不存在！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		UserworkexpQuery userWorkexpExample = new UserworkexpQuery();
+		userWorkexpExample.or().andWorkidEqualTo(entity.getUpdateid());
+		int status = userworkDao.deleteByExample(userWorkexpExample);
+		if (status > 0) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			result.setMsg("删除成功");
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		result.setMsg("删除失败");
+		res = new JsonResponse(result);
+		return res;
+	}
+
+	@Override
+	public JsonResponse deleteUserEduExp(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		if ("".equals(entity.getUpdateid()) || entity.getUpdateid() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("教育经历id不存在！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		UsereduQuery userEduExample = new UsereduQuery();
+		userEduExample.or().andEduidEqualTo(entity.getUpdateid());
+		int status = userEduDao.deleteByExample(userEduExample);
+		if (status > 0) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
+	}
+
+	@Override
+	public JsonResponse joinFamily(User entity, String birthday, String nation) {
+		Result result = null;
+		JsonResponse res = null;
+		// 参数校验
+		if (StringUtils.isBlank(entity.getFamilyid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("家族id不能为空，请重设后再试");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringUtils.isBlank(entity.getFamilyname())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("家族名称不能为空，请重设后再试");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringUtils.isBlank(entity.getPhone())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("手机号不能为空，请重设后再试");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringUtils.isBlank(entity.getUsername())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户姓名不能为空，请重设后再试");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringUtils.isBlank(entity.getSex().toString())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("性别不能为空，请重设后再试");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringUtils.isBlank(entity.getBrotherpos())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("排行不能为空，请重设后再试");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringUtils.isBlank(birthday)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("出生日期不能为空，请重设后再试");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringUtils.isBlank(nation)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("民族不能为空，请重设后再试");
+			res = new JsonResponse(result);
+			return res;
+		}
+		List<User> byPhone = userDao.selectByPhone(entity.getPhone());
+		if (byPhone.size() >= 2) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("一个用户最多只能加入两个家族！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		List<User> byPhoneAndStatus = userDao.selectByPhoneInStatus(entity.getPhone());
+		for (User user : byPhoneAndStatus) {
+			if (user.getFamilyid().equals(entity.getFamilyid())) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("你已申请过该家族，请不要重复申请！！");
+				res = new JsonResponse(result);
+				return res;
+			}
+		}
+		List<User> byPhoneToStatus = userDao.selectByPhoneToStatus(entity.getPhone(), entity.getFamilyid());
+		if (byPhoneToStatus.size() >= 3) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("该家族已拒绝你三次，不能申请了！！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		String userid = WebUtil.getRequest().getHeader("userid");
+		User user1 = userDao.selectByPrimaryKey(userid);
+		int status = 0;
+		if (user1.getFamilyid() == null || "".equals(user1.getFamilyid())) {
+			// 用户注册的时候应该已经创建了，此处做修改操作
+			entity.setUserid(userid);
+			entity.setUpdatetime(new Date());
+			entity.setStatus(ConstantUtils.USER_STATUS_WAIT.intValue());
+			status = userDao.updateByPrimaryKeySelective(entity);
+			Userinfo userInfo = new Userinfo();
+			userInfo.setUserid(userid);
+			userInfo.setBirthday(birthday);
+			userInfo.setNation(nation);
+			status = userInfoDao.updateByPrimaryKeySelective(userInfo);
+		} /*
+			 * else if(entity.getFamilyid().equals(user1.getFamilyid())){
+			 * result.setStatus(Constants.RESULT_FAIL); result.setMsg("你已申请过该家族，请不要重复申请！");
+			 * return result; }
+			 */else {
+			// 新建用户
+			User user = new User();
+			String userId = UUIDUtils.getUUID();
+			user.setUserid(userId);
+			user.setFamilyid(entity.getFamilyid());
+			user.setFamilyname(entity.getFamilyname());
+			user.setUsername(entity.getUsername());
+			user.setBrotherpos(entity.getBrotherpos());
+			user.setSex(entity.getSex());
+			user.setPhone(entity.getPhone());
+			user.setCreateid(userId);
+			user.setCreatetime(new Date());
+			user.setDeleteflag(ConstantUtils.DELETE_FALSE);
+			user.setStatus(ConstantUtils.USER_STATUS_WAIT.intValue());
+			user.setPassword(user1.getPassword());
+			status = userDao.insertSelective(user);
+			Userinfo userinfo = new Userinfo();
+			userinfo.setUserid(userId);
+			userinfo.setBirthday(birthday);
+			userinfo.setNation(nation);
+			status = userInfoDao.insertSelective(userinfo);
+		}
+
+		if (status > 0) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			result.setMsg("申请成功！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		result.setMsg("申请成功！");
+		res = new JsonResponse(result);
+		return res;
+	}
+
+	@Override
+	public JsonResponse applyingFamily(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		String userid = WebUtil.getRequest().getHeader("userid");
+		if (StringUtils.isBlank(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		/*
+		 * UserExample userExample = new UserExample();
+		 * userExample.or().andPhoneEqualTo(entity.getPhone()).andStatusEqualTo((byte)
+		 * Constants.USER_STATUS_WAIT.intValue()); List<User> users =
+		 * userMapper.selectByExample(userExample);
+		 */
+		List<User> users = userDao.selectFamilycode(entity.getPhone(), ConstantUtils.USER_STATUS_WAIT);
+		if (users.size() > 0) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(users);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		result.setMsg("您当前还没有申请过家族！");
+		res = new JsonResponse(result);
+		return res;
 	}
 }
