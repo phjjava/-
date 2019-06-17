@@ -280,13 +280,15 @@
       <if test="dateto != null" >
         dateto = #{dateto,jdbcType=DATE},
       </if>
+       <if test="issecret != null" >
+        issecret = #{issecret,jdbcType=INTEGER},
+      </if>
       <if test="workcontent != null" >
         workcontent = #{workcontent,jdbcType=LONGVARCHAR},
       </if>
     </set>
     where userId = #{userid,jdbcType=VARCHAR}
       and workid = #{workid,jdbcType=VARCHAR}
-      and phone = #{phone,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.jp.entity.Userworkexp" >
     update jp_userworkexp
