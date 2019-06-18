@@ -139,7 +139,7 @@ public class UserManagerControll {
 			if (id != null && !"".equals(id)) {
 				manager = userManagerService.getUserManager(id);
 				if (manager != null) {
-					manager.setGenlevel(manager.getGenlevel() + "世");
+					manager.setGenlevel(manager.getGenlevel());
 				}
 			}
 			String familyid = CurrentUserContext.getCurrentFamilyId();

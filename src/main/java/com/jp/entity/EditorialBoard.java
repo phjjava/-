@@ -1,6 +1,7 @@
 package com.jp.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class EditorialBoard implements Serializable {
 	/**
@@ -42,6 +43,16 @@ public class EditorialBoard implements Serializable {
 	 * 排序
 	 */
 	private String sort;
+	// 自属性
+	List<UserManager> userManager;
+
+	public List<UserManager> getUserManager() {
+		return userManager;
+	}
+
+	public void setUserManager(List<UserManager> userManager) {
+		this.userManager = userManager;
+	}
 
 	private static final long serialVersionUID = 1L;
 

@@ -142,6 +142,9 @@
       <if test="eddesc != null" >
         eddesc,
       </if>
+      <if test="sort != null" >
+        sort,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -164,6 +167,9 @@
       </if>
       <if test="eddesc != null" >
         #{eddesc,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -235,6 +241,9 @@
       </if>
       <if test="eddesc != null" >
         eddesc = #{eddesc,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
       </if>
     </set>
     where id = #{id,jdbcType=VARCHAR}

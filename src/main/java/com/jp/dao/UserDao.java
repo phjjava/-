@@ -146,4 +146,8 @@ public interface UserDao {
 
 	@Select("select*from jp_user where status =2 and deleteflag = 0 and familyid is not null and phone = #{phone} and familyid = #{familyid}")
 	List<User> selectByPhoneToStatus(@Param("phone") String phone, @Param("familyid") String familyid);
+
+	int countBranch(Map<String, String> totalparams);
+
+	List<User> selectUserByAreaCode(Map<String, String> params);
 }

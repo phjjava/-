@@ -1,6 +1,7 @@
 package com.jp.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class UserManager implements Serializable {
 	private String id;
@@ -60,7 +61,25 @@ public class UserManager implements Serializable {
 	 */
 	private String address; // 地址
 
-	private String genlevel; // 世系
+	private Integer genlevel;// 世系
+	private String imgurl;
+	private List<Userbranch> branchs;
+
+	public String getImgurl() {
+		return imgurl;
+	}
+
+	public void setImgurl(String imgurl) {
+		this.imgurl = imgurl;
+	}
+
+	public List<Userbranch> getBranchs() {
+		return branchs;
+	}
+
+	public void setBranchs(List<Userbranch> branchs) {
+		this.branchs = branchs;
+	}
 
 	public Integer getSort() {
 		return sort;
@@ -78,11 +97,11 @@ public class UserManager implements Serializable {
 		this.address = address;
 	}
 
-	public String getGenlevel() {
+	public Integer getGenlevel() {
 		return genlevel;
 	}
 
-	public void setGenlevel(String genlevel) {
+	public void setGenlevel(Integer genlevel) {
 		this.genlevel = genlevel;
 	}
 
@@ -173,6 +192,6 @@ public class UserManager implements Serializable {
 		return "UserManager [id=" + id + ", userid=" + userid + ", username=" + username + ", familyid=" + familyid
 				+ ", postid=" + postid + ", postname=" + postname + ", ebid=" + ebid + ", ebname=" + ebname
 				+ ", ebtype=" + ebtype + ", ismanager=" + ismanager + ", sort=" + sort + ", address=" + address
-				+ ", genlevel=" + genlevel + "]";
+				+ ", genlevel=" + genlevel + ", imgurl=" + imgurl + ", branchs=" + branchs + "]";
 	}
 }

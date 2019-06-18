@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -15,12 +15,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jp.common.CurrentUserContext;
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
-import com.jp.entity.Branch;
 import com.jp.entity.Function;
 import com.jp.entity.Role;
-import com.jp.entity.SysFunction;
-import com.jp.entity.SysVersion;
 import com.jp.entity.User;
 import com.jp.service.FunctionService;
 import com.jp.service.RoleService;
@@ -40,8 +38,6 @@ public class RoleController {
 
 	@Autowired
 	private FunctionService functionService;
-	
-	
 
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -109,9 +105,9 @@ public class RoleController {
 	@ResponseBody
 	@RequestMapping(value = "/del", method = RequestMethod.POST)
 	public Result deleteUserRole(User user) {
-		Result result=new Result();
+		Result result = new Result();
 		try {
-			int status =roleService.del(user.getRoleid());
+			int status = roleService.del(user.getRoleid());
 			result.setData(status);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -121,7 +117,7 @@ public class RoleController {
 		}
 		return result;
 	}
-	
+
 	@RequestMapping(value = "/get", method = RequestMethod.GET)
 	public String get(HttpServletRequest request, ModelMap model) {
 		try {
@@ -181,6 +177,46 @@ public class RoleController {
 			log_.error("[JPSYSTEM]", e);
 		}
 		return gsonStr;
+	}
+
+	/**
+	 * api方法分割线--------------------------------------------------------
+	 */
+
+	/**
+	 * 获取编委会列表以及成员
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/getAdminList", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getAdminList(Role entity) {
+		return roleService.getAdminListNew(entity);
+	}
+
+	/**
+	 * 获取编委会列表以及成员(新)
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/getEditorilaBoardList", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getEditorilaBoardList(Role entity) {
+		return roleService.getEditorilaBoardList(entity);
+	}
+
+	/**
+	 * 获取分支编委会所在的所有省、市列表
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/getBranchAdminCityList", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getBranchAdminCityList(Role entity) {
+		return roleService.getBranchAdminCityList(entity);
 	}
 
 }
