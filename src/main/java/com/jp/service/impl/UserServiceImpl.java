@@ -2716,7 +2716,7 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 
-		if (res.getCode() == ConstantUtils.RESULT_FAIL) {
+		if (res.getCode() == 1) {
 			return res;
 		}
 		@SuppressWarnings("unchecked")
@@ -3590,6 +3590,18 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		if ("".equals(entity.getStart()) || entity.getStart() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数start不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if ("".equals(entity.getCount()) || entity.getCount() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数count不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 
 		// 查询正式用户、未删除用户、在世用户组合查询的结果
 		UserQuery userExample = new UserQuery();
@@ -3631,7 +3643,6 @@ public class UserServiceImpl implements UserService {
 				.andStatusEqualTo(0).andDeleteflagEqualTo(0).andLivestatusEqualTo(0);
 
 		List<User> usersAdd = userDao.selectByExample(userExampleadd);
-
 		// 获取逻辑删除的数据，物理删除的不考虑
 		UserQuery userExampledel = new UserQuery();
 		userExampledel.or().andUpdatetimeGreaterThanOrEqualTo(user.getUpdatetime())
@@ -3640,8 +3651,9 @@ public class UserServiceImpl implements UserService {
 		List<User> usersDel = userDao.selectByExample(userExampledel);
 
 		String lastDateTime = userDao.getLastUpdateDateTime(user.getFamilyid());
-		if (StringUtils.isBlank(lastDateTime))
+		if (StringUtils.isBlank(lastDateTime)) {
 			lastDateTime = (new Date()).toString();
+		}
 		AddressBook addressBook = new AddressBook();
 		addressBook.setUsersadd(usersAdd);
 		addressBook.setUserdel(usersDel);
@@ -3993,7 +4005,7 @@ public class UserServiceImpl implements UserService {
 		}
 		// 获取当前用户所在的城市编码和名称
 		res = getCitycodeOfUser(entity.getUserid(), entity.getFamilyid());
-		if (res.getCode() == ConstantUtils.RESULT_FAIL)
+		if (res.getCode() == 1)
 			return res;
 		BranchValidArea branchValidArea = (BranchValidArea) res.getData();
 		// 获取城市下的所有分支的动态列表
@@ -4165,7 +4177,7 @@ public class UserServiceImpl implements UserService {
 		}
 		// 获取当前用户所在的城市编码和名称
 		JsonResponse result2 = getCitycodeOfUser(entity.getUserid(), entity.getFamilyid());
-		if (result2.getCode() == ConstantUtils.RESULT_FAIL)
+		if (result2.getCode() == 1)
 			return result2;
 		BranchValidArea branchValidArea = (BranchValidArea) result2.getData();
 		// 获取城市下的所有分支的动态列表
@@ -4261,7 +4273,7 @@ public class UserServiceImpl implements UserService {
 		}
 		// 获取当前用户所在的城市编码和名称
 		JsonResponse result2 = getCitycodeOfUser(entity.getUserid(), entity.getFamilyid());
-		if (result2.getCode() == ConstantUtils.RESULT_FAIL)
+		if (result2.getCode() == 1)
 			return result2;
 		BranchValidArea branchValidArea = (BranchValidArea) result2.getData();
 		// 获取城市下的所有分支的动态列表
@@ -4658,16 +4670,14 @@ public class UserServiceImpl implements UserService {
 		List<User> byPhoneAndStatus = userDao.selectByPhoneInStatus(entity.getPhone());
 		for (User user : byPhoneAndStatus) {
 			if (user.getFamilyid().equals(entity.getFamilyid())) {
-				result = new Result(MsgConstants.RESUL_FAIL);
-				result.setMsg("你已申请过该家族，请不要重复申请！！");
+				result = new Result(MsgConstants.REPETITION);
 				res = new JsonResponse(result);
 				return res;
 			}
 		}
 		List<User> byPhoneToStatus = userDao.selectByPhoneToStatus(entity.getPhone(), entity.getFamilyid());
 		if (byPhoneToStatus.size() >= 3) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("该家族已拒绝你三次，不能申请了！！");
+			result = new Result(MsgConstants.REPULSE);
 			res = new JsonResponse(result);
 			return res;
 		}
@@ -4720,7 +4730,7 @@ public class UserServiceImpl implements UserService {
 			return res;
 		}
 		result = new Result(MsgConstants.RESUL_FAIL);
-		result.setMsg("申请成功！");
+		result.setMsg("申请失败！");
 		res = new JsonResponse(result);
 		return res;
 	}

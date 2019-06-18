@@ -1654,7 +1654,7 @@ public class UserController {
 	 * @param user
 	 * @return
 	 */
-	@RequestMapping(value = "/updatePersonsByUpdatetime", method = RequestMethod.GET)
+	@RequestMapping(value = "/updatePersonsByUpdatetime", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse updatePersonsByUpdatetime(@RequestBody User user) {
 		return userService.updatePersonsByUpdatetime(user);
@@ -1666,7 +1666,7 @@ public class UserController {
 	 * @param searchComplex
 	 * @return
 	 */
-	@RequestMapping(value = "/searchComplex", method = RequestMethod.GET)
+	@RequestMapping(value = "/searchComplex", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse searchComplex(@RequestBody SearchComplex searchComplex) {
 		return userService.searchComplex(searchComplex);
@@ -1678,7 +1678,7 @@ public class UserController {
 	 * @param searchComplex
 	 * @return
 	 */
-	@RequestMapping(value = "/updatePersonsByUpdatetimeExt", method = RequestMethod.GET)
+	@RequestMapping(value = "/updatePersonsByUpdatetimeExt", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse updatePersonsByUpdatetimeExt(@RequestBody User user) {
 		return userService.updatePersonsByUpdatetimeExt(user);
@@ -1708,7 +1708,13 @@ public class UserController {
 		return userService.changeImgurl(user);
 	}
 
-	@RequestMapping(value = "/changeUserinfos", method = RequestMethod.GET)
+	/**
+	 * 修改个人详细资料
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "/changeUserinfos", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse changeUserinfos(@RequestBody User user) {
 		return userService.changeUserinfos(user);
@@ -1792,7 +1798,7 @@ public class UserController {
 	 * @param userChildInfo
 	 * @return
 	 */
-	@RequestMapping(value = "/addChild", method = RequestMethod.GET)
+	@RequestMapping(value = "/addChild", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse addChild(@RequestBody UserClildInfo userChildInfo) {
 		return userService.addChild(userChildInfo);
@@ -1854,7 +1860,7 @@ public class UserController {
 	 * @param nation
 	 * @return
 	 */
-	@RequestMapping(value = "/joinFamily", method = RequestMethod.GET)
+	@RequestMapping(value = "/joinFamily", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse joinFamily(User user, String birthday, String nation) {
 		return userService.joinFamily(user, birthday, nation);
@@ -1868,7 +1874,7 @@ public class UserController {
 	 * @param nation
 	 * @return
 	 */
-	@RequestMapping(value = "/applyingFamily", method = RequestMethod.GET)
+	@RequestMapping(value = "/applyingFamily", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse applyingFamily(User user) {
 		return userService.applyingFamily(user);

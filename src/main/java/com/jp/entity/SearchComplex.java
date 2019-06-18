@@ -23,6 +23,25 @@ public class SearchComplex {
 	String familyid;
 	// 学历
 	String education;
+	// 分页参数
+	String start;// 角标
+	String count;
+
+	public String getStart() {
+		return start;
+	}
+
+	public void setStart(String start) {
+		this.start = start;
+	}
+
+	public String getCount() {
+		return count;
+	}
+
+	public void setCount(String count) {
+		this.count = count;
+	}
 
 	public String getEducation() {
 		return education;
