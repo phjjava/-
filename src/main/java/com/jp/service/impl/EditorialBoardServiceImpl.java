@@ -36,7 +36,7 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 
 			example.or().andFamilyidEqualTo(entity.getFamilyid());
 		}
-		example.setOrderByClause("type desc");
+		example.setOrderByClause("type desc,sort asc");
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		List<EditorialBoard> list = editorialBoardMapper.selectByExample(example);
 
