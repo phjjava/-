@@ -25,6 +25,7 @@ import com.jp.entity.UserManager;
 import com.jp.entity.UserManagerExample;
 import com.jp.service.UserManagerService;
 import com.jp.util.StringTools;
+import com.jp.util.UUIDUtils;
 
 @Service
 public class UserManagerServiceImpl implements UserManagerService {
@@ -217,7 +218,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 	public JsonResponse save(UserManager entity, String[] functionids) {
 		Result result = null;
 		JsonResponse res = null;
-		if (functionids != null && functionids.length > 0) {
+		if (functionids == null || functionids.length == 0) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数functionids不能为空，请至少指定一个权限！");
 			res = new JsonResponse(result);
@@ -248,6 +249,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 				res = new JsonResponse(result);
 				return res;
 			} else {// 新增
+				entity.setId(UUIDUtils.getUUID());
 				int status = userManagerMapper.insertSelective(entity);
 				if (status > 0) {
 					result = new Result(MsgConstants.RESUL_SUCCESS);

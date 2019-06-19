@@ -54,4 +54,7 @@ public interface NoticeMapper {
 	List<NoticeVO> selectNoticeMangeList(NoticeExample nq);
 
 	List<Notice> findByIdsMap(Map<String, Object> map);
+
+	List<Notice> selectByCityCode(Map<String, Object> params);
+
 }

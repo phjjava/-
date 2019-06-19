@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -26,6 +27,7 @@ import com.jp.entity.Noticetop;
 import com.jp.entity.NoticetopQuery;
 import com.jp.service.NoticeService;
 import com.jp.util.StringTools;
+import com.jp.util.WebUtil;
 
 @Controller
 @RequestMapping("notice")
@@ -190,4 +192,70 @@ public class NoticeController {
 		res = new JsonResponse(result);
 		return res;
 	}
+
+	/**
+	 * api方法分割线--------------------------------------------------------
+	 */
+
+	/**
+	 * 发布公告
+	 * 
+	 * @param notice
+	 * @return
+	 */
+	@RequestMapping(value = "/sendNotice", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse sendNotice(@RequestBody Notice notice) {
+		notice.setFamilyid(WebUtil.getHeaderInfo("familyid"));
+		return noticeservice.sendNotice(notice);
+	}
+
+	/**
+	 * 获取指定分支的公告列表（包括置顶的和本分支的公告）
+	 * 
+	 * @param notice
+	 * @return
+	 */
+	@RequestMapping(value = "/getNoticelistOfBranch", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse getNoticelistOfBranch(Notice notice) {
+		return noticeservice.getNoticelistOfBranch(notice);
+	}
+
+	/**
+	 * 获取公告详情
+	 * 
+	 * @param notice
+	 * @return
+	 */
+	@RequestMapping(value = "/getNoticeDetail", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse getNoticeDetail(Notice notice) {
+		return noticeservice.getNoticeDetail(notice);
+	}
+
+	/**
+	 * 获取我发布的公告列表
+	 * 
+	 * @param notice
+	 * @return
+	 */
+	@RequestMapping(value = "/getMyPublishl", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse getMyPublishl(Notice notice) {
+		return noticeservice.getMyPublishl(notice);
+	}
+
+	/**
+	 * 获取指定分支的公告列表（包括置顶的和本分支的公告）
+	 * 
+	 * @param notice
+	 * @return
+	 */
+	@RequestMapping(value = "/getNoticelist", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse getNoticelist(Notice notice) {
+		return noticeservice.getNoticelist(notice);
+	}
+
 }

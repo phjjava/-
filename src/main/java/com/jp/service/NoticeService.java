@@ -25,4 +25,14 @@ public interface NoticeService {
 	List<Noticefile> selectntfile(NoticefileQuery example);
 
 	JsonResponse getNoticeDetailExt(Notice notice);
+
+	JsonResponse sendNotice(Notice notice);
+
+	JsonResponse getNoticelistOfBranch(Notice notice);
+
+	JsonResponse getNoticeDetail(Notice notice);
+
+	JsonResponse getMyPublishl(Notice notice);
+
+	JsonResponse getNoticelist(Notice notice);
 }
