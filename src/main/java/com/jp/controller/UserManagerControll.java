@@ -45,7 +45,8 @@ public class UserManagerControll {
 	 */
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse save(UserManager manager, String[] functionids) {
+	public JsonResponse save(UserManager manager, HttpServletRequest request) {
+		String[] functionids = request.getParameterValues("functionids[]");
 		return userManagerService.save(manager, functionids);
 	}
 

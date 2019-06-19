@@ -8,6 +8,7 @@
     <result column="filetype" property="filetype" jdbcType="TINYINT" />
     <result column="fileurl" property="fileurl" jdbcType="VARCHAR" />
     <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="filename" property="filename" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -94,7 +95,7 @@
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.jp.entity.NoticefileKey" >
     select 
-    noticeid,fileid,branchid,filetype,fileurl,sort
+    noticeid,fileid,branchid,filetype,fileurl,sort,filename
     from jp_noticefile
     where noticeid = #{noticeid,jdbcType=VARCHAR}
       and fileid = #{fileid,jdbcType=VARCHAR}
@@ -114,10 +115,10 @@
   </delete>
   <insert id="insert" parameterType="com.jp.entity.Noticefile" >
     insert into jp_noticefile (noticeid, fileid, branchid, 
-      filetype, fileurl, sort
+      filetype, fileurl, sort,filename
       )
     values (#{noticeid,jdbcType=VARCHAR}, #{fileid,jdbcType=VARCHAR}, #{branchid,jdbcType=VARCHAR}, 
-      #{filetype,jdbcType=TINYINT}, #{fileurl,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}
+      #{filetype,jdbcType=TINYINT}, #{fileurl,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}, #{filename,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective"  parameterType="com.jp.entity.Noticefile">
@@ -141,6 +142,9 @@
       <if test="sort != null" >
         sort,
       </if>
+      <if test="filename != null" >
+        filename,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="noticeid != null" >
@@ -160,6 +164,9 @@
       </if>
       <if test="sort != null" >
         #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="filename != null" >
+        #{filename,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -190,6 +197,9 @@
       <if test="record.sort != null" >
         sort = #{record.sort,jdbcType=INTEGER},
       </if>
+      <if test="record.filename != null" >
+        sort = #{record.filename,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -202,7 +212,8 @@
       branchid = #{record.branchid,jdbcType=VARCHAR},
       filetype = #{record.filetype,jdbcType=TINYINT},
       fileurl = #{record.fileurl,jdbcType=VARCHAR},
-      sort = #{record.sort,jdbcType=INTEGER}
+      sort = #{record.sort,jdbcType=INTEGER},
+      filename = #{record.filename,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -219,6 +230,9 @@
       <if test="sort != null" >
         sort = #{sort,jdbcType=INTEGER},
       </if>
+      <if test="filename != null" >
+        filename = #{filename,jdbcType=VARCHAR},
+      </if>
     </set>
     where noticeid = #{noticeid,jdbcType=VARCHAR}
       and fileid = #{fileid,jdbcType=VARCHAR}
@@ -228,17 +242,18 @@
     update jp_noticefile
     set filetype = #{filetype,jdbcType=TINYINT},
       fileurl = #{fileurl,jdbcType=VARCHAR},
-      sort = #{sort,jdbcType=INTEGER}
+      sort = #{sort,jdbcType=INTEGER},
+      filename = #{filename,jdbcType=VARCHAR}
     where noticeid = #{noticeid,jdbcType=VARCHAR}
       and fileid = #{fileid,jdbcType=VARCHAR}
       and branchid = #{branchid,jdbcType=VARCHAR}
   </update>
   <insert id="insertnoticefileSelective">
-    insert into jp_noticefile (noticeid,fileurl,fileid,branchid,filetype,filename,sort)
+    insert into jp_noticefile (noticeid,fileurl,fileid,branchid,filetype,filename,sort,filename)
     values
      <foreach collection="list" item="item" index="index" separator=",">
 		(#{item.noticeid},#{item.fileurl},#{item.fileid},#{item.branchid},
-		#{item.filetype},#{item.filename},#{item.sort})
+		#{item.filetype},#{item.filename},#{item.sort}),#{item.filename}
 	</foreach>
   </insert>
   <delete id="deletefile">
