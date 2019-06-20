@@ -119,7 +119,6 @@ public class DynamicController {
 			// String subname = sbname.substring(0, sbname.length() - 1);
 			dynamic.setTobranchid(substring);
 			dynamic.setDytops(list);
-			;
 		}
 	}
 
