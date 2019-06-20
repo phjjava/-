@@ -100,15 +100,18 @@ public class NoticeServiceImpl implements NoticeService {
 	@Override
 	public Notice get(String noticeid) throws Exception {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		NoticeExample nq = new NoticeExample();
-		Criteria createCriteria = nq.createCriteria();
-		createCriteria.andNoticeidEqualTo(noticeid);
-		List<Notice> notice = noticeMapper.selectByExample(nq);
-		if (notice != null && notice.size() > 0) {
-			if (notice.get(0).getCreatetime() != null) {
-				notice.get(0).setCreatetimeStr(formatter.format(notice.get(0).getCreatetime()));
+		Notice notice = noticeMapper.selectByPrimaryKey(noticeid);
+		if (notice != null) {
+			BranchKey key = new BranchKey();
+			key.setBranchid(notice.getBranchid());
+			key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			Branch branch = branchMapper.selectByPrimaryKey(key);
+			if (branch != null) {
+				notice.setBranchnamePlus(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname() + "_"
+						+ branch.getAddress() + "_" + branch.getBranchname());
 			}
-			return notice.get(0);
+			notice.setCreatetimeStr(formatter.format(notice.getCreatetime()));
+			return notice;
 		} else {
 			return null;
 		}

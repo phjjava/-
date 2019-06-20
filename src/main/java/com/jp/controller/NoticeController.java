@@ -1,5 +1,6 @@
 package com.jp.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,11 +15,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
+import com.jp.dao.BranchDao;
 import com.jp.dao.NoticetopDao;
+import com.jp.entity.Branch;
+import com.jp.entity.BranchKey;
 import com.jp.entity.Notice;
 import com.jp.entity.NoticeVO;
 import com.jp.entity.Noticefile;
@@ -37,6 +42,8 @@ public class NoticeController {
 	private NoticeService noticeservice;
 	@Autowired
 	private NoticetopDao noticetopDao;
+	@Autowired
+	private BranchDao branchDao;
 
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
@@ -111,13 +118,25 @@ public class NoticeController {
 		List<Noticetop> noticetopList = noticetopDao.selectByExample(example);
 		if (noticetopList != null && !noticetopList.isEmpty()) {
 			StringBuffer sb = new StringBuffer();
+			List<Noticetop> list = new ArrayList<>();
 			for (Noticetop noticetop : noticetopList) {
+				BranchKey key = new BranchKey();
+				key.setBranchid(noticetop.getBranchid());
+				key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				Branch branch = branchDao.selectByPrimaryKey(key);
+				if (branch != null) {
+					noticetop.setTobranchName(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname()
+							+ "_" + branch.getAddress() + "_" + branch.getBranchname());
+				}
+				list.add(noticetop);
+
 				sb.append(noticetop.getBranchid());
 				sb.append(",");
 			}
 			String braStr = sb.toString();
 			String substring = braStr.substring(0, braStr.length() - 1);
 			notice.setTobranchid(substring);
+			notice.setNoticetops(list);
 		}
 	}
 

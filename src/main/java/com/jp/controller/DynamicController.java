@@ -104,10 +104,11 @@ public class DynamicController {
 				key.setBranchid(dytop.getBranchid());
 				key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 				Branch branch = branchDao.selectByPrimaryKey(key);
-				dytop.setTobranchName(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname() + "_"
-						+ branch.getAddress() + "_" + branch.getBranchname());
+				if (branch != null) {
+					dytop.setTobranchName(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname() + "_"
+							+ branch.getAddress() + "_" + branch.getBranchname());
+				}
 				list.add(dytop);
-
 				// sbname.append(branch.getArea() + "_" + branch.getCityname() + "_" +
 				// branch.getXname() + "_" + branch.getBranchname());
 				// sbname.append(",");
@@ -173,7 +174,6 @@ public class DynamicController {
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST, produces = { "application/json;charset=UTF-8" })
 	public JsonResponse saveDynamic(HttpServletRequest request) throws IOException {
-		String dyfidArray[] = null;
 		BufferedReader reader = request.getReader();
 		StringBuilder sb = new StringBuilder();
 		String line = null;
@@ -184,12 +184,7 @@ public class DynamicController {
 		try {
 			Dynamic dynamic = JacksonUtil.fromJsonToObject(jsonstr, Dynamic.class);
 			List<Dynamicfile> dyList = dynamic.getDynamicFiles();
-			if (StringTools.trimNotEmpty(dynamic.getDyid())) {
-				for (int i = 0; i < dyList.size(); i++) {
-					dyfidArray[i] = dyList.get(i).getFileid(); // 更新动态时，如果有附件，先删除附件再重新写入
-				}
-			}
-			return dyservice.saveDynamic(dynamic, dyList, dyfidArray);
+			return dyservice.saveDynamic(dynamic, dyList);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);

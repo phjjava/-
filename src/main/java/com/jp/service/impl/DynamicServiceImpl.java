@@ -116,8 +116,10 @@ public class DynamicServiceImpl implements DynamicService {
 			key.setBranchid(dynamic.getBranchid());
 			key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 			Branch branch = branchDao.selectByPrimaryKey(key);
-			dynamic.setBranchnamePlus(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname() + "_"
-					+ branch.getAddress() + "_" + branch.getBranchname());
+			if (branch != null) {
+				dynamic.setBranchnamePlus(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname() + "_"
+						+ branch.getAddress() + "_" + branch.getBranchname());
+			}
 			dynamic.setCreatetimeStr(formatter.format(dynamic.getCreatetime()));
 			return dynamic;
 		} else {
@@ -136,7 +138,7 @@ public class DynamicServiceImpl implements DynamicService {
 	}
 
 	@Override
-	public JsonResponse saveDynamic(Dynamic dynamic, List<Dynamicfile> dylist, String[] dyfids) {
+	public JsonResponse saveDynamic(Dynamic dynamic, List<Dynamicfile> dylist) {
 		Result result = null;
 		JsonResponse res = null;
 		int status = 0;
@@ -154,16 +156,16 @@ public class DynamicServiceImpl implements DynamicService {
 				dynamic.setUpdateid(CurrentUserContext.getCurrentUserId());
 				dynamic.setUpdatetime(new Date());
 				status = dydao.updateByPrimaryKeySelective(dynamic);
-				for (int i = 0; i < dylist.size(); i++) {
-					dylist.get(i).setDyid(dynamic.getDyid());
-					dylist.get(i).setFileid(UUIDUtils.getUUID());
-					dylist.get(i).setBranchid(dynamic.getBranchid());
-				}
+				// 先删除，原有的附件
+				dyfdao.deleteFileByDyid(dynamic.getDyid());
 				if (dylist != null && dylist.size() > 0) {
+					for (int i = 0; i < dylist.size(); i++) {
+						dylist.get(i).setDyid(dynamic.getDyid());
+						dylist.get(i).setFileid(UUIDUtils.getUUID());
+						dylist.get(i).setBranchid(dynamic.getBranchid());
+					}
+					// 把新的附件新增
 					status = dyfdao.insertdyfileSelective(dylist);
-				}
-				if (dyfids != null) {
-					status = dyfdao.deletefile(dyfids);
 				}
 				// 维护修改dytop表关系
 				if (StringTools.trimNotEmpty(dynamic.getTobranchid())) {
