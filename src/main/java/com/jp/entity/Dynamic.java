@@ -44,6 +44,8 @@ public class Dynamic implements Serializable {
 
 	private String branchname;
 
+	private String branchnamePlus;
+
 	private String createid;
 
 	private Date createtime;
@@ -74,6 +76,14 @@ public class Dynamic implements Serializable {
 	private int countFiles;// 文件
 	private Long start;// 页数
 	private Long count;// 每页条数
+
+	public String getBranchnamePlus() {
+		return branchnamePlus;
+	}
+
+	public void setBranchnamePlus(String branchnamePlus) {
+		this.branchnamePlus = branchnamePlus;
+	}
 
 	public String getTobranchName() {
 		return tobranchName;
