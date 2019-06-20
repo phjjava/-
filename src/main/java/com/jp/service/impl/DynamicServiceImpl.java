@@ -117,7 +117,7 @@ public class DynamicServiceImpl implements DynamicService {
 			key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 			Branch branch = branchDao.selectByPrimaryKey(key);
 			dynamic.setBranchnamePlus(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname() + "_"
-					+ branch.getBranchname());
+					+ branch.getAddress() + "_" + branch.getBranchname());
 			dynamic.setCreatetimeStr(formatter.format(dynamic.getCreatetime()));
 			return dynamic;
 		} else {

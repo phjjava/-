@@ -63,7 +63,7 @@ public class Dynamic implements Serializable {
 	private String dycontent;
 
 	private String tobranchid;
-	private String tobranchName;
+	private List<Dytop> dytops;
 	private Integer readNum;
 
 	private List<Dynamicfile> dynamicFiles;
@@ -77,20 +77,20 @@ public class Dynamic implements Serializable {
 	private Long start;// 页数
 	private Long count;// 每页条数
 
+	public List<Dytop> getDytops() {
+		return dytops;
+	}
+
+	public void setDytops(List<Dytop> dytops) {
+		this.dytops = dytops;
+	}
+
 	public String getBranchnamePlus() {
 		return branchnamePlus;
 	}
 
 	public void setBranchnamePlus(String branchnamePlus) {
 		this.branchnamePlus = branchnamePlus;
-	}
-
-	public String getTobranchName() {
-		return tobranchName;
-	}
-
-	public void setTobranchName(String tobranchName) {
-		this.tobranchName = tobranchName;
 	}
 
 	public Long getStart() {
