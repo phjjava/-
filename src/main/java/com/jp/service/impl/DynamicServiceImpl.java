@@ -31,12 +31,13 @@ import com.jp.dao.DypriseDao;
 import com.jp.dao.DyreadDao;
 import com.jp.dao.DytopDao;
 import com.jp.dao.UserManagerMapper;
+import com.jp.entity.Branch;
+import com.jp.entity.BranchKey;
 import com.jp.entity.Dycomment;
 import com.jp.entity.DycommentQuery;
 import com.jp.entity.Dynamic;
 import com.jp.entity.DynamicDetailVO;
 import com.jp.entity.DynamicExample;
-import com.jp.entity.DynamicExample.Criteria;
 import com.jp.entity.DynamicVO;
 import com.jp.entity.Dynamicfile;
 import com.jp.entity.DynamicfileQuery;
@@ -109,15 +110,16 @@ public class DynamicServiceImpl implements DynamicService {
 	@Override
 	public Dynamic get(String dyid) throws Exception {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		DynamicExample dq = new DynamicExample();
-		Criteria createCriteria = dq.createCriteria();
-		createCriteria.andDyidEqualTo(dyid);
-		List<Dynamic> dynamic = dydao.selectByExample(dq);
-		if (dynamic != null && dynamic.size() > 0) {
-			if (dynamic.get(0).getCreatetime() != null) {
-				dynamic.get(0).setCreatetimeStr(formatter.format(dynamic.get(0).getCreatetime()));
-			}
-			return dynamic.get(0);
+		Dynamic dynamic = dydao.selectByPrimaryKey(dyid);
+		if (dynamic != null) {
+			BranchKey key = new BranchKey();
+			key.setBranchid(dynamic.getBranchid());
+			key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			Branch branch = branchDao.selectByPrimaryKey(key);
+			dynamic.setBranchnamePlus(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname() + "_"
+					+ branch.getBranchname());
+			dynamic.setCreatetimeStr(formatter.format(dynamic.getCreatetime()));
+			return dynamic;
 		} else {
 			return null;
 		}
@@ -192,6 +194,8 @@ public class DynamicServiceImpl implements DynamicService {
 				 */
 				status = dydao.insertSelective(dynamic);
 				for (int i = 0; i < dylist.size(); i++) {
+					dylist.get(i).setFileid(UUIDUtils.getUUID());
+					dylist.get(i).setBranchid(dynamic.getBranchid());
 					dylist.get(i).setDyid(dyid);
 				}
 				if (dylist != null && dylist.size() > 0) {
