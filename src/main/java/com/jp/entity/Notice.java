@@ -39,6 +39,7 @@ public class Notice implements Serializable {
 	private String imgurl;
 
 	private String branchname;
+	private String branchnamePlus;
 
 	private Integer type;
 
@@ -48,6 +49,7 @@ public class Notice implements Serializable {
 	 * 用于存储复选栏分支id,可存多个用逗号间隔
 	 */
 	private String tobranchid;
+	private List<Noticetop> noticetops;
 
 	private List<Noticefile> noticeFiles;
 
@@ -56,6 +58,22 @@ public class Notice implements Serializable {
 	// 分页参数
 	private Integer start;
 	private Integer count;
+
+	public List<Noticetop> getNoticetops() {
+		return noticetops;
+	}
+
+	public void setNoticetops(List<Noticetop> noticetops) {
+		this.noticetops = noticetops;
+	}
+
+	public String getBranchnamePlus() {
+		return branchnamePlus;
+	}
+
+	public void setBranchnamePlus(String branchnamePlus) {
+		this.branchnamePlus = branchnamePlus;
+	}
 
 	public Integer getMeautype() {
 		return meautype;
@@ -221,28 +239,14 @@ public class Notice implements Serializable {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(getClass().getSimpleName());
-		sb.append(" [");
-		sb.append("Hash = ").append(hashCode());
-		sb.append(", noticeid=").append(noticeid);
-		sb.append(", branchid=").append(branchid);
-		sb.append(", familyid=").append(familyid);
-		sb.append(", noticetype=").append(noticetype);
-		sb.append(", noticetitle=").append(noticetitle);
-		sb.append(", deleteflag=").append(deleteflag);
-		sb.append(", createid=").append(createid);
-		sb.append(", createtime=").append(createtime);
-		sb.append(", updateid=").append(updateid);
-		sb.append(", updatetime=").append(updatetime);
-		sb.append(", createname=").append(createname);
-		sb.append(", imgurl=").append(imgurl);
-		sb.append(", branchname=").append(branchname);
-		sb.append(", type=").append(type);
-		sb.append(", noticecontent=").append(noticecontent);
-		sb.append(", serialVersionUID=").append(serialVersionUID);
-		sb.append("]");
-		return sb.toString();
+		return "Notice [noticeid=" + noticeid + ", branchid=" + branchid + ", familyid=" + familyid + ", noticetype="
+				+ noticetype + ", noticetitle=" + noticetitle + ", deleteflag=" + deleteflag + ", createid=" + createid
+				+ ", createtime=" + createtime + ", createtimeStr=" + createtimeStr + ", updateid=" + updateid
+				+ ", updatetime=" + updatetime + ", createname=" + createname + ", imgurl=" + imgurl + ", branchname="
+				+ branchname + ", branchnamePlus=" + branchnamePlus + ", type=" + type + ", noticecontent="
+				+ noticecontent + ", tobranchid=" + tobranchid + ", noticetops=" + noticetops + ", noticeFiles="
+				+ noticeFiles + ", meautype=" + meautype + ", countReads=" + countReads + ", start=" + start
+				+ ", count=" + count + "]";
 	}
 
 	public String getTobranchid() {

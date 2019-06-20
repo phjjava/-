@@ -52,7 +52,7 @@ public interface DynamicService {
 	 * @参数 @return
 	 * @return String
 	 */
-	JsonResponse saveDynamic(Dynamic dynamic, List<Dynamicfile> dylist, @Param("array") String dyfids[]);
+	JsonResponse saveDynamic(Dynamic dynamic, List<Dynamicfile> dylist);
 
 	/**
 	 * @描述 批量删除
