@@ -97,23 +97,29 @@ public class DynamicController {
 		List<Dytop> dytopList = dytopDao.selectByExample(example);
 		if (dytopList != null && !dytopList.isEmpty()) {
 			StringBuffer sb = new StringBuffer();
-			StringBuffer sbname = new StringBuffer();
+			// StringBuffer sbname = new StringBuffer();
+			List<Dytop> list = new ArrayList<>();
 			for (Dytop dytop : dytopList) {
 				BranchKey key = new BranchKey();
 				key.setBranchid(dytop.getBranchid());
 				key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 				Branch branch = branchDao.selectByPrimaryKey(key);
-				sbname.append(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname() + "_"
-						+ branch.getBranchname());
-				sbname.append(",");
+				dytop.setTobranchName(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname() + "_"
+						+ branch.getAddress() + "_" + branch.getBranchname());
+				list.add(dytop);
+
+				// sbname.append(branch.getArea() + "_" + branch.getCityname() + "_" +
+				// branch.getXname() + "_" + branch.getBranchname());
+				// sbname.append(",");
 				sb.append(dytop.getBranchid());
 				sb.append(",");
 			}
 			String braStr = sb.toString();
 			String substring = braStr.substring(0, braStr.length() - 1);
-			String subname = sbname.substring(0, sbname.length() - 1);
+			// String subname = sbname.substring(0, sbname.length() - 1);
 			dynamic.setTobranchid(substring);
-			dynamic.setTobranchName(subname);
+			dynamic.setDytops(list);
+			;
 		}
 	}
 
