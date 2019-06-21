@@ -523,10 +523,8 @@
 
 	<select id="getBranchsByFamilyAndUserid"
 		resultType="com.jp.entity.Branch">
-		SELECT
-		b.*
-		FROM
-		jp_branch b
+		SELECT	b.*
+		FROM jp_branch b
 		INNER JOIN ( SELECT m.CODE,m.familyid FROM
 		jp_editorial_board m,
 		jp_user_manager n WHERE m.id = n.ebid AND
@@ -623,16 +621,11 @@
 		resultType="com.jp.entity.Branch">
 		select distinct
 		branch.branchid, branch.familyid, branch.branchname,
-		branch.status, branch.area,
-		branch.areacode,
-		branch.beginuserid,
+		branch.status, branch.area,	branch.areacode, branch.beginuserid,
 		branch.beginname, branch.parentid, branch.sort, branch.citycode,
 		branch.cityname, branch.xcode, branch.xname,branch.address
-		from
-		jp_branch branch
-		left join jp_userbranch userbranch on branch.branchid
-		=
-		userbranch.branchid
+		from jp_branch branch
+		left join jp_userbranch userbranch on branch.branchid =	userbranch.branchid
 		where 1=1 and 'status'=0
 		<if test="familyid != null">
 			and branch.familyid = #{familyid,jdbcType=VARCHAR}

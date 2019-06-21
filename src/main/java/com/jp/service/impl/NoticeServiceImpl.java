@@ -67,7 +67,7 @@ public class NoticeServiceImpl implements NoticeService {
 	@Override
 	public PageModel<NoticeVO> pageQuery(PageModel<NoticeVO> pageModel, Notice notice) throws Exception {
 		NoticeExample nq = new NoticeExample();
-		Criteria criteria = nq.createCriteria();
+		Criteria criteria = nq.or();
 		if (StringTools.trimNotEmpty(notice.getType())) {
 			criteria.andTypeEqualTo(notice.getType());
 		}

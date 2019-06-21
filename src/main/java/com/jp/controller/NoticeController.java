@@ -47,7 +47,7 @@ public class NoticeController {
 
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse list(PageModel<NoticeVO> pageModel, Notice notice, ModelMap model) {
+	public JsonResponse list(PageModel<NoticeVO> pageModel, Notice notice) {
 		Result result = null;
 		JsonResponse res = null;
 		try {
@@ -170,7 +170,7 @@ public class NoticeController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public JsonResponse saveNotice(Notice notice, String fileids) {
+	public JsonResponse saveNotice(@RequestBody Notice notice) {
 		return noticeservice.saveNotice(notice);
 	}
 
