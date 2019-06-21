@@ -18,7 +18,7 @@ public interface NoticeService {
 
 	int changeStatus(Notice notice);
 
-	JsonResponse saveNotice(Notice notice, List<Noticefile> ntlist, @Param("array") String ntfids[]);
+	JsonResponse saveNotice(Notice notice);
 
 	int batchDelete(@Param("array") String noticeids[]) throws Exception;
 
