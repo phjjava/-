@@ -185,6 +185,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 	public List<UserManager> selectManagerByUserid(String userid) {
 		UserManagerExample example = new UserManagerExample();
 		example.or().andUseridEqualTo(userid);
+		example.setOrderByClause("ebtype desc");
 		return userManagerMapper.selectByExample(example);
 	}
 
