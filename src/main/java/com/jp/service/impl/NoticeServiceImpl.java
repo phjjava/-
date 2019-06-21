@@ -129,16 +129,12 @@ public class NoticeServiceImpl implements NoticeService {
 	}
 
 	@Override
-	public JsonResponse saveNotice(Notice notice, List<Noticefile> ntlist, String[] ntfids) {
+	public JsonResponse saveNotice(Notice notice) {
 		Result result = null;
 		JsonResponse res = null;
 		int status = 0;
 		try {
 			if (StringTools.trimNotEmpty(notice.getNoticeid())) {
-				if (notice.getCreatetimeStr() != null) {
-					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-					notice.setCreatetime(formatter.parse(notice.getCreatetimeStr()));
-				}
 				notice.setUpdateid(CurrentUserContext.getCurrentUserId());
 				notice.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 				if (notice.getNoticetype() == 0) {
@@ -146,22 +142,13 @@ public class NoticeServiceImpl implements NoticeService {
 				}
 				notice.setUpdatetime(new Date());
 				status = noticeMapper.updateByPrimaryKeySelective(notice);
-				for (int i = 0; i < ntlist.size(); i++) {
-					ntlist.get(i).setNoticeid(notice.getNoticeid());
-				}
-				if (ntlist != null && ntlist.size() > 0) {
-					status = noticeFileMapper.insertnoticefileSelective(ntlist);
-				}
-				if (ntfids != null && ntfids.length > 0) {
-					status = noticeFileMapper.deletefile(ntfids);
-				}
 				// 维护修改noticetop表关系
 				if (StringTools.trimNotEmpty(notice.getTobranchid())) {
 					// 先删除再重新添加
 					NoticetopQuery dq = new NoticetopQuery();
 					dq.or().andNoticeidEqualTo(notice.getNoticeid());
 					status = noticeTopMapper.deleteByExample(dq);
-					saveNoticetop(notice, notice.getNoticeid());
+					status = saveNoticetop(notice, notice.getNoticeid());
 				}
 			} else {
 				String noticeid = UUIDUtils.getUUID();
@@ -183,12 +170,6 @@ public class NoticeServiceImpl implements NoticeService {
 					notice.setCreatetime(formatter.parse(notice.getCreatetimeStr()));
 				}
 				status = noticeMapper.insertSelective(notice);
-				for (int i = 0; i < ntlist.size(); i++) {
-					ntlist.get(i).setNoticeid(noticeid);
-				}
-				if (ntlist != null && ntlist.size() > 0) {
-					status = noticeFileMapper.insertnoticefileSelective(ntlist);
-				}
 				// 维护保存dytop表关系
 				if (StringTools.trimNotEmpty(notice.getTobranchid())) {
 					status = saveNoticetop(notice, noticeid);

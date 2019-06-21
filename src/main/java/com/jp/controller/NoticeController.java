@@ -171,14 +171,7 @@ public class NoticeController {
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public JsonResponse saveNotice(Notice notice, String fileids) {
-		String ntfidArray[] = null;
-		List<Noticefile> nfList = notice.getNoticeFiles();
-		if (StringTools.trimNotEmpty(notice.getNoticeid())) {
-			for (int i = 0; i < nfList.size(); i++) {
-				ntfidArray[i] = nfList.get(i).getFileid(); // 更新公告时，如果有附件，先删除附件再重新写入
-			}
-		}
-		return noticeservice.saveNotice(notice, nfList, ntfidArray);
+		return noticeservice.saveNotice(notice);
 	}
 
 	/**
