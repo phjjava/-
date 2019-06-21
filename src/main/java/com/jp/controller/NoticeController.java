@@ -170,7 +170,7 @@ public class NoticeController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public JsonResponse saveNotice(Notice notice, String fileids) {
+	public JsonResponse saveNotice(@RequestBody Notice notice) {
 		return noticeservice.saveNotice(notice);
 	}
 
