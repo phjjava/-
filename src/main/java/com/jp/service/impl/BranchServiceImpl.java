@@ -169,7 +169,7 @@ public class BranchServiceImpl implements BranchService {
 		List<Branch> rtnlist = new ArrayList<Branch>();
 		UserManagerExample example = new UserManagerExample();
 		example.or().andUseridEqualTo(userid);
-		example.setOrderByClause("ebtype desc");
+		example.setOrderByClause("ebtype desc,ismanager desc");
 		List<UserManager> managers = userManagerMapper.selectByExample(example);
 		// List<String> managerids =new ArrayList<String>();
 		for (UserManager manager : managers) {

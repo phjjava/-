@@ -134,6 +134,7 @@ public class BranchController {
 					break;
 				} else {
 					branchService.selectBranchListByFamilyAndUserid(pageModel, branch);
+					break;
 				}
 			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
