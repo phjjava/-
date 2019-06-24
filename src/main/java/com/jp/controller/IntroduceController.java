@@ -78,62 +78,42 @@ public class IntroduceController {
 	@RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse batchDelete(String introduceids) {
-		String str = null;
 		Result result = null;
 		JsonResponse res = null;
 		try {
 			String introduceid = introduceids.substring(0, introduceids.length());
 			String introduceArray[] = introduceid.split(",");
-			itservice.batchDelete(introduceArray);
-			str = "1";
+			int status = itservice.batchDelete(introduceArray);
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
 		} catch (Exception e) {
-			str = "0";
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
-			res.setData(str);
 			return res;
 		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
+		result = new Result(MsgConstants.RESUL_FAIL);
 		res = new JsonResponse(result);
-		res.setData(str);
 		return res;
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse saveIntroduce(Introduce introduce, HttpServletRequest request) {
-		String str = null;
-		Result result = null;
-		JsonResponse res = null;
-		try {
-			if (request.getCharacterEncoding() == null) {
-				request.setCharacterEncoding("UTF-8");
-			}
-			itservice.saveIntroduce(introduce);
-			str = "1";
-		} catch (Exception e) {
-			str = "0";
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			res.setData(str);
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(str);
-		return res;
+		return itservice.saveIntroduce(request, introduce);
 	}
-	
+
 	/**
-	* 以下方法用于api
-	*/
-	
+	 * 以下方法用于api
+	 */
+
 	/**
 	 * 获取家谱章节列表 - 家族谱章节列表
+	 * 
 	 * @param entity
 	 * @return
 	 */
@@ -142,9 +122,10 @@ public class IntroduceController {
 	public JsonResponse getIntroduceList(Introduce entity) {
 		return itservice.getIntroduceList(entity);
 	}
-	
+
 	/**
 	 * 获取家谱章节详细信息 - 家族谱某章节详情
+	 * 
 	 * @param entity
 	 * @return
 	 */
@@ -153,16 +134,17 @@ public class IntroduceController {
 	public JsonResponse getIntroduceDetail(Introduce entity) {
 		return itservice.getIntroduceDetail(entity);
 	}
-	
+
 	/**
 	 * 获取菜单列表 - 获取首页菜单列表
+	 * 
 	 * @param entity
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/getMenuList", method = RequestMethod.GET)
-	public JsonResponse getMenuList(Introduce entity,HttpServletRequest request) {
-		return itservice.getMenuList(entity,request);
+	public JsonResponse getMenuList(Introduce entity, HttpServletRequest request) {
+		return itservice.getMenuList(entity, request);
 	}
-	
+
 }

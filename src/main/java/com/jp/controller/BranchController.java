@@ -105,7 +105,7 @@ public class BranchController {
 
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse list(PageModel<Branch> pageModel, Branch branch, ModelMap model) {
+	public JsonResponse list(PageModel<Branch> pageModel, Branch branch) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		try {
@@ -131,8 +131,10 @@ public class BranchController {
 			for (UserManager manager : managers) {
 				if (manager.getEbtype() == 1) {
 					branchService.pageQuery(pageModel, branch);
+					break;
 				} else {
 					branchService.selectBranchListByFamilyAndUserid(pageModel, branch);
+					break;
 				}
 			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
@@ -207,7 +209,7 @@ public class BranchController {
 		JsonResponse res = null;
 		try {
 			PageModel<Branch> pageModelBranch = new PageModel<Branch>();
-			
+
 			branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 			branchService.initBranch(pageModelBranch, branch);
 			result = new Result(MsgConstants.RESUL_SUCCESS);

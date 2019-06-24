@@ -20,7 +20,7 @@ public interface FunctionDao {
 
 	List<Function> selectByExample(FunctionQuery example);
 
-	Function selectByPrimaryKey(String functionid);
+	Function selectByPrimaryKey(@Param("functionid") String functionid, @Param("familyid") String familyid);
 
 	int updateByExampleSelective(@Param("record") Function record, @Param("example") FunctionQuery example);
 
@@ -31,10 +31,12 @@ public interface FunctionDao {
 	int updateByPrimaryKey(Function record);
 
 	List<Function> selectFunctionListByRoleid(@Param("familyid") String familyid, @Param("roleid") String roleid);
-	
-	List<Function> selectFunctionListByRoleidAndFamilyid(@Param("familyid") String familyid, @Param("roleid") String roleid);
 
-	List<Function> selectFunctionByUserid(@Param("familyid")String familyid ,@Param("userid") String userid);
+	List<Function> selectFunctionListByRoleidAndFamilyid(@Param("familyid") String familyid,
+			@Param("roleid") String roleid);
 
-	List<Function> selectFunctionListByEbid(@Param("familyid") String familyid, @Param("userid") String userid,@Param("ebid") String ebid,@Param("postid") String postid);
+	List<Function> selectFunctionByUserid(@Param("familyid") String familyid, @Param("userid") String userid);
+
+	List<Function> selectFunctionListByEbid(@Param("familyid") String familyid, @Param("userid") String userid,
+			@Param("ebid") String ebid, @Param("postid") String postid);
 }

@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -94,11 +93,10 @@ public class PostController {
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse save(HttpServletRequest request, Post post, ModelMap model) {
+	public JsonResponse save(HttpServletRequest request, Post post) {
 		Result result = null;
 		JsonResponse res = null;
 		Integer status = null;
-		// String[] functionids = request.getParameterValues("functionids[]");
 		try {
 			if (StringTools.notEmpty(post.getId())) {// 修改
 
@@ -109,18 +107,20 @@ public class PostController {
 				post.setCreatetime(new Date());
 				status = postService.insert(post);
 			}
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
 		} catch (Exception e) {
-			status = 0;
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
-			res.setData(status);
 			return res;
 		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
+		result = new Result(MsgConstants.RESUL_FAIL);
 		res = new JsonResponse(result);
-		res.setData(status);
 		return res;
 	}
 
@@ -155,20 +155,23 @@ public class PostController {
 	public JsonResponse deleteEditorialBoard(Post entity) {
 		Result result = null;
 		JsonResponse res = null;
-		int status;
+
 		try {
-			status = postService.del(entity);
+			int status = postService.del(entity);
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
-			res.setData(0);
 			return res;
 		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
+		result = new Result(MsgConstants.RESUL_FAIL);
 		res = new JsonResponse(result);
-		res.setData(status);
 		return res;
 	}
 

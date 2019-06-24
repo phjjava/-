@@ -3,30 +3,30 @@ package com.jp.entity;
 import java.io.Serializable;
 
 public class Platform implements Serializable {
-    
+
 	private static final long serialVersionUID = 1L;
 	private String fileRealName;
-	
-    private String versionName;
-    
-    private Integer versionNo;
-    
-    private Integer minUpdateVersion;
-    
-    private String upgradeDes;
-    
-    private String uploadMan;
-    
-    private String uploadTime;
-    
-    private String downloadUrl;
-    
-    private String fileSize;
-    
-    private String fileType;
-    
-    private Integer id;
-    private Integer isUsed;
+
+	private String versionName;
+
+	private Integer versionNo;
+
+	private Integer minUpdateVersion;
+
+	private String upgradeDes;
+
+	private String uploadMan;
+
+	private String uploadTime;
+
+	private String downloadUrl;
+
+	private String fileSize;
+
+	private Integer fileType;
+
+	private Integer id;
+	private Integer isUsed;
 
 	public String getVersionName() {
 		return versionName;
@@ -92,11 +92,11 @@ public class Platform implements Serializable {
 		this.fileSize = fileSize;
 	}
 
-	public String getFileType() {
+	public Integer getFileType() {
 		return fileType;
 	}
 
-	public void setFileType(String fileType) {
+	public void setFileType(Integer fileType) {
 		this.fileType = fileType;
 	}
 
@@ -127,6 +127,5 @@ public class Platform implements Serializable {
 	public void setIsUsed(Integer isUsed) {
 		this.isUsed = isUsed;
 	}
-    
-    
+
 }

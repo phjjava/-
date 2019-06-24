@@ -2,6 +2,7 @@ package com.jp.service;
 
 import java.util.List;
 
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.Role;
 
@@ -16,7 +17,7 @@ public interface RoleService {
 	 * @参数 @throws Exception
 	 * @return PageModel<Role>
 	 */
-	PageModel<Role> pageQuery(PageModel<Role> pageModel,Role role) throws Exception;
+	PageModel<Role> pageQuery(PageModel<Role> pageModel, Role role) throws Exception;
 
 	/**
 	 * @描述 新增角色数据
@@ -27,8 +28,8 @@ public interface RoleService {
 	 * @参数 @throws Exception
 	 * @return int
 	 */
-	int insert(Role role, String [] functionids) throws Exception;
-	
+	int insert(Role role, String[] functionids) throws Exception;
+
 	/**
 	 * @描述 根据id获取角色详细信息
 	 * @作者 wumin
@@ -49,9 +50,8 @@ public interface RoleService {
 	 * @参数 @throws Exception
 	 * @return int
 	 */
-	int update(Role role, String [] functionids) throws Exception;
-	
-	
+	int update(Role role, String[] functionids) throws Exception;
+
 	/**
 	 * @描述 获取role集合
 	 * @作者 wumin
@@ -62,7 +62,7 @@ public interface RoleService {
 	 * @return List<Role>
 	 */
 	List<Role> selectRoleList(String familyid) throws Exception;
-	
+
 	/**
 	 * @描述 根据familyid 与userid 获取角色信息
 	 * @作者 wumin
@@ -76,4 +76,10 @@ public interface RoleService {
 	Role selectRoleByUserid(String familyid, String userid) throws Exception;
 
 	int del(String roleid);
+
+	JsonResponse getAdminListNew(Role entity);
+
+	JsonResponse getEditorilaBoardList(Role entity);
+
+	JsonResponse getBranchAdminCityList(Role entity);
 }

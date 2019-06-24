@@ -27,10 +27,8 @@ import com.jp.common.Result;
 import com.jp.common.UploadReturnEntity;
 import com.jp.entity.Branchalbum;
 import com.jp.entity.Branchphoto;
-import com.jp.entity.BranchphotoExample;
 import com.jp.service.BranchalbumService;
 import com.jp.util.GsonUtil;
-import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 import com.jp.util.UploadUtil;
 
@@ -42,7 +40,7 @@ public class BranchalbumController {
 	private final Logger log_ = LogManager.getLogger(BranchalbumController.class);
 
 	/**
-	 * @描述 分支相册 去新增编辑界面
+	 * @描述 分支相册 去新增编辑界面（回显）
 	 * @作者 sj
 	 * @时间 2017年5月21日下午10:44:17
 	 * @参数 @param request
@@ -52,32 +50,8 @@ public class BranchalbumController {
 	 */
 	@RequestMapping(value = "/get", method = RequestMethod.GET)
 	@ResponseBody
-	public JsonResponse get(HttpServletRequest request) {
-		Result result = null;
-		JsonResponse res = null;
-		Branchalbum branchalbum = null;
-		try {
-			String albumid = request.getParameter("albumid");
-			String branchid = request.getParameter("branchid");// 没用到，不知道为什么
-			if (StringTools.trimNotEmpty(albumid) && StringTools.trimNotEmpty(branchid)) {
-				branchalbum = baservice.get(albumid, branchid);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPGL]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			return res;
-		}
-		if (branchalbum == null) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			res = new JsonResponse(result);
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(branchalbum);
-		return res;
+	public JsonResponse get(String albumid) {
+		return baservice.get(albumid);
 	}
 
 	/**
@@ -215,7 +189,22 @@ public class BranchalbumController {
 	@RequestMapping(value = "/batchSavePhoto", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse batchSavePhoto(@RequestBody List<Branchphoto> userPhotoList) {
-		return baservice.insertBranchPhoto(userPhotoList);
+		List<Branchphoto> branchphotos = new ArrayList<Branchphoto>();
+		for (Branchphoto bp : userPhotoList) {
+			Branchphoto branchPhoto = new Branchphoto();
+			branchPhoto.setImgid(UUIDUtils.getUUID());
+			branchPhoto.setAlbumid(bp.getAlbumid());
+			branchPhoto.setBranchid(bp.getBranchid());
+			branchPhoto.setImgurl(bp.getImgurl());
+			branchPhoto.setSmallimgurl(bp.getSmallimgurl());
+			branchPhoto.setDescription(bp.getDescription());
+			branchPhoto.setCreatetime(new Date());
+			branchPhoto.setCreateid(CurrentUserContext.getCurrentUserId());
+			branchPhoto.setDeleteflag(0);
+			branchphotos.add(branchPhoto);
+		}
+
+		return baservice.insertBranchPhoto(branchphotos);
 	}
 
 	/**
@@ -249,7 +238,7 @@ public class BranchalbumController {
 	}
 
 	/**
-	 * @描述 相册照片列表
+	 * @描述 相册信息和照片列表
 	 * @作者 sj
 	 * @时间 2017年5月22日上午12:52:29
 	 * @参数 @param albumid
@@ -261,31 +250,7 @@ public class BranchalbumController {
 	@RequestMapping(value = "/showPhoto", method = RequestMethod.GET)
 	@ResponseBody
 	public JsonResponse showPhoto(String albumid, String branchid) {
-		Result result = null;
-		JsonResponse res = null;
-		List<Branchphoto> photoList = null;
-		Branchalbum branchalbum = null;
-		try {
-			BranchphotoExample example = new BranchphotoExample();
-			com.jp.entity.BranchphotoExample.Criteria criteria = example.createCriteria();
-			if (StringTools.trimNotEmpty(albumid)) {
-				criteria.andAlbumidEqualTo(albumid);
-			}
-			criteria.andDeleteflagEqualTo(0);
-			photoList = baservice.selectByExample(example);
-			branchalbum = baservice.get(albumid, branchid);
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(photoList);
-		res.setEntity(branchalbum);
-		return res;
+		return baservice.getAlbumAndPhotos(albumid, branchid);
 	}
 
 	/**
@@ -299,42 +264,14 @@ public class BranchalbumController {
 	@RequestMapping(value = "/deletPhoto", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse deletPhoto(Branchphoto branchPhoto) {
-		Result result = null;
-		JsonResponse res = null;
-		String str = "";
-		try {
-			Branchphoto key = new Branchphoto();
-			key.setAlbumid(branchPhoto.getAlbumid());
-			key.setImgid(branchPhoto.getImgid());
-			key.setBranchid(branchPhoto.getBranchid());
-			key.setDeleteflag(1);
-			// 删除照片
-			int num = baservice.updateByPrimaryKeySelective(key);
-			if(num > 0) {
-				result = new Result(MsgConstants.RESUL_SUCCESS);
-				res = new JsonResponse(result);
-			}else {
-				result = new Result(MsgConstants.RESUL_FAIL);
-				res = new JsonResponse(result);
-			}
-			//str = "1";
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			//res.setData("0");
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		//res.setData(str);
-		return res;
+		// 删除时改变删除标记
+		branchPhoto.setDeleteflag(1);
+		return baservice.updateByPrimaryKeySelective(branchPhoto);
 	}
 
 	/**
 	 * 
-	 * @描述 去单张照片编辑界面
+	 * @描述 去单张照片编辑界面（编辑回显？）
 	 * @作者 sj
 	 * @时间 2017年5月21日下午4:01:46
 	 * @参数 @param request
@@ -367,7 +304,6 @@ public class BranchalbumController {
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
 		res.setData(branchphoto);
-		System.out.println(branchphoto);
 		return res;
 	}
 
@@ -382,25 +318,7 @@ public class BranchalbumController {
 	@RequestMapping(value = "/mergeBranchPhoto", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse mergeUserPhoto(Branchphoto branchphoto) {
-		Result result = null;
-		JsonResponse res = null;
-		String str = "";
-		try {
-			baservice.updateByPrimaryKeySelective(branchphoto);
-			str = "1";
-		} catch (Exception e) {
-			str = "0";
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			res.setData(str);
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(str);
-		return res;
+		return baservice.updateByPrimaryKeySelective(branchphoto);
 	}
 
 	/**
@@ -415,27 +333,9 @@ public class BranchalbumController {
 	@RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse batchDelete(String albumids) {
-		Result result = null;
-		JsonResponse res = null;
-		String str = null;
-		try {
-			String albumid = albumids.substring(0, albumids.length());
-			String albumidArray[] = albumid.split(",");
-			baservice.batchDelete(albumidArray);
-			str = "1";
-		} catch (Exception e) {
-			str = "0";
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			res.setData(str);
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(str);
-		return res;
+		String albumid = albumids.substring(0, albumids.length());
+		String albumidArray[] = albumid.split(",");
+		return baservice.batchDelete(albumidArray);
 	}
 
 	/**
@@ -451,30 +351,7 @@ public class BranchalbumController {
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse changeStatus(Branchalbum branchAlbum) {
-		Result result = null;
-		JsonResponse res = null;
-		int num = 0;
-		try {
-			num = baservice.changeStatus(branchAlbum) ;
-		} catch (Exception e) {
-			//
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			//res.setData(str);
-			return res;
-		}
-		if(num >0) {
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
-		}else {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			res = new JsonResponse(result);
-		}
-		
-		//res.setData(str);
-		return res;
+		return baservice.changeStatus(branchAlbum);
 	}
 
 	/**

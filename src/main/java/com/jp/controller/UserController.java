@@ -4,7 +4,6 @@ package com.jp.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.security.interfaces.RSAPrivateKey;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,12 +17,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.github.pagehelper.PageInfo;
 import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
@@ -36,8 +35,11 @@ import com.jp.dao.UserDao;
 import com.jp.dao.UserbranchDao;
 import com.jp.dao.UsermatesDao;
 import com.jp.entity.Branch;
+import com.jp.entity.BranchKey;
+import com.jp.entity.SearchComplex;
 import com.jp.entity.SysVersionPrivilege;
 import com.jp.entity.User;
+import com.jp.entity.UserClildInfo;
 import com.jp.entity.UserQuery;
 import com.jp.entity.Useralbum;
 import com.jp.entity.UseralbumKey;
@@ -180,7 +182,7 @@ public class UserController {
 	public JsonResponse editUser(HttpServletRequest request, ModelMap modelMap) {
 		Result result = null;
 		JsonResponse res = null;
-		SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
+		// SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
 		try {
 			String userid = request.getParameter("userid");
 			User user = null;
@@ -261,7 +263,10 @@ public class UserController {
 			}
 			// 初始化分支
 			PageModel<Branch> pageModel = new PageModel<Branch>();
-			Branch branch = new Branch();
+			BranchKey key = new BranchKey();
+			key.setBranchid(user.getBranchid());
+			key.setFamilyid(user.getFamilyid());
+			Branch branch = branchDao.selectByPrimaryKey(key);
 			// branchService.initBranch(pageModel,branch);
 			// 初始化相册
 			List<Useralbum> userAblumList = userService.selectUseralbum(userid);
@@ -288,6 +293,20 @@ public class UserController {
 			user.setUserEdu(eduList);
 			user.setUserAblumList(userAblumList);
 			user.setMateList(mateList);
+			if (branch != null) {
+				String area = "";
+				if (branch.getArea() != null)
+					area += branch.getArea();
+				if (branch.getCityname() != null)
+					area += "_" + branch.getCityname();
+				if (branch.getXname() != null)
+					area += "_" + branch.getXname();
+				if (branch.getAddress() != null)
+					area += "_" + branch.getAddress();
+				area += " " + branch.getBranchname();
+				branch.setBranchname(area);
+				user.setBranch(branch);
+			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(user);
@@ -582,7 +601,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/listToReview", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse listToReview(PageModel<User> pageModel, User user, ModelMap model) {
+	public JsonResponse listToReview(PageModel<User> pageModel, User user) {
 		Result result = null;
 		JsonResponse res = null;
 		try {
@@ -626,15 +645,19 @@ public class UserController {
 		JsonResponse res = null;
 		try {
 			Integer count = userService.changeStatus(user);
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
-			res.setData(count);
+			if (count > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
 		return res;
 	}
 
@@ -1350,7 +1373,6 @@ public class UserController {
 				userList.add(userAddrss);
 			}
 			pageModel.setList(userList);
-			pageModel.setPageInfo(new PageInfo<User>(userList));
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(pageModel);
@@ -1482,6 +1504,380 @@ public class UserController {
 	@ResponseBody
 	public JsonResponse sendSMSCode(User entity) {
 		return userService.sendSMSCode(entity);
+	}
+
+	/**
+	 * 发送短信验证码 一天之内最多发10条；注册家族时使用，系统不存在的用户也可以发；一条验证码3分钟内有效，3分钟之内不允许再次发送 by 李鹏
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/sendSMSCodeForReg", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse sendSMSCodeForReg(User entity) {
+		return userService.sendSMSCodeForReg(entity);
+	}
+
+	/**
+	 * 通过验证码登录
+	 * 
+	 * @param req
+	 * @param entity
+	 * @param loginType
+	 * @param internetType
+	 * @param version
+	 * @param usercode
+	 * @return
+	 */
+	@RequestMapping(value = "/loginWithCaptcha", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse loginWithCaptcha(HttpServletRequest req, User entity, String loginType, String internetType,
+			String version, Usercode usercode) {
+		// 先取请求session的id
+		String sessionid = req.getSession().getId();
+		entity.setSessionid(sessionid);
+		return userService.loginWithCaptcha(entity, loginType, internetType, version, usercode.getSmscode());
+	}
+
+	/**
+	 * 通过微信/QQ等授权登陆
+	 * 
+	 * @param req
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/loginWithThirdParty", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse loginWithThirdParty(HttpServletRequest req, User entity) {
+		// 先取请求session的id
+		String sessionid = req.getSession().getId();
+		entity.setSessionid(sessionid);
+		return userService.loginWithThirdParty(entity);
+	}
+
+	/**
+	 * 绑定微信/QQ等的唯一opeinid
+	 * 
+	 * @param entity
+	 * @param usercode
+	 * @param loginstatus
+	 * @return
+	 */
+	@RequestMapping(value = "/bindingWithThirdParty", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse bindingWithThirdParty(User entity, Usercode usercode, Integer loginstatus) {
+		// 进行查询
+		if (usercode != null && usercode.getSmscode() != null && !"".equals(usercode.getSmscode())) {
+			return userService.bindingWithThirdParty(entity, usercode.getSmscode(), loginstatus);
+		} else {
+			return userService.bindingWithThirdParty(entity, null, loginstatus);
+		}
+	}
+
+	/**
+	 * 解除绑定微信/QQ等的唯一opeinid
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/relieveWithThirdParty", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse relieveWithThirdParty(User entity) {
+		return userService.relieveWithThirdParty(entity);
+	}
+
+	/**
+	 * 判断当前openid是否绑定了用户
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/isBindingWithUser", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse isBindingWithUser(User entity) {
+		return userService.isBindingWithUser(entity);
+	}
+
+	/**
+	 * 验证验证码的合法性
+	 * 
+	 * @param entity
+	 * @param code
+	 * @return
+	 */
+	@RequestMapping(value = "/checkSMSCode", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse checkSMSCode(User entity, String code) {
+		return userService.checkSMSCode(entity, code);
+	}
+
+	/**
+	 * 获取用户简要信息
+	 * 
+	 * @param entity
+	 * @param code
+	 * @return
+	 */
+	@RequestMapping(value = "/getPersonInfoLimit", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getPersonInfoLimit(User entity) {
+		return userService.getPersonInfoLimit(entity);
+	}
+
+	/**
+	 * 重置密码
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/restPassword", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse restPassword(User entity, String firstpwd, String secondpwd) {
+		return userService.restPassword(entity, firstpwd, secondpwd);
+	}
+
+	/**
+	 * 获取所有家族成员（在世）的通讯录信息
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/getAllPersonInfos", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getAllPersonInfos(User entity) {
+		return userService.getAllPersonInfos(entity);
+	}
+
+	/**
+	 * 获取更新通讯录信息
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "/updatePersonsByUpdatetime", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse updatePersonsByUpdatetime(@RequestBody User user) {
+		return userService.updatePersonsByUpdatetime(user);
+	}
+
+	/**
+	 * 高级查询
+	 * 
+	 * @param searchComplex
+	 * @return
+	 */
+	@RequestMapping(value = "/searchComplex", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse searchComplex(@RequestBody SearchComplex searchComplex) {
+		return userService.searchComplex(searchComplex);
+	}
+
+	/**
+	 * 获取更新通讯录信息
+	 * 
+	 * @param searchComplex
+	 * @return
+	 */
+	@RequestMapping(value = "/updatePersonsByUpdatetimeExt", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse updatePersonsByUpdatetimeExt(@RequestBody User user) {
+		return userService.updatePersonsByUpdatetimeExt(user);
+	}
+
+	/**
+	 * 获取个人的详细信息
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "/getPersonInfos", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getPersonInfos(User user) {
+		return userService.getPersonInfos(user);
+	}
+
+	/**
+	 * 换头像
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "/changeImgurl", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse changeImgurl(User user) {
+		return userService.changeImgurl(user);
+	}
+
+	/**
+	 * 修改个人详细资料
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "/changeUserinfos", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse changeUserinfos(@RequestBody User user) {
+		return userService.changeUserinfos(user);
+	}
+
+	/**
+	 * 获取用户所在城市下的所有动态列表
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "/getCityNoticeList", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getCityNoticeList(User user) {
+		return userService.getCityNoticeList(user);
+	}
+
+	/**
+	 * 获取用户指定城市下的所有公告列表
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "/getCityNoticeListExt", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getCityNoticeListExt(User user) {
+		return userService.getCityNoticeListExt(user);
+	}
+
+	/**
+	 * 获取用户所在城市下的所有动态列表
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "/getCityDyList", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getCityDyList(User user) {
+		return userService.getCityDyList(user);
+	}
+
+	/**
+	 * 获取用户指定城市下的所有动态列表
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "/getCityDyListExt", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getCityDyListExt(User user) {
+		return userService.getCityDyListExt(user);
+	}
+
+	/**
+	 * 获取用户所在城市下的所有相册列表
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "/getCityAlbumList", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getCityAlbumList(User user) {
+		return userService.getCityAlbumList(user);
+	}
+
+	/**
+	 * 获取用户指定城市下的所有相册列表
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "/getCityAlbumListExt", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getCityAlbumListExt(User user) {
+		return userService.getCityAlbumListExt(user);
+	}
+
+	/**
+	 * 添加子女
+	 * 
+	 * @param userChildInfo
+	 * @return
+	 */
+	@RequestMapping(value = "/addChild", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse addChild(@RequestBody UserClildInfo userChildInfo) {
+		return userService.addChild(userChildInfo);
+	}
+
+	/**
+	 * 全体通讯录查询
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "/searchAllBytitle", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse searchAllBytitle(User user) {
+		return userService.searchAllBytitle(user);
+	}
+
+	/**
+	 * 分之内通讯录查询
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "/searchBranchBytitle", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse searchBranchBytitle(User user) {
+		return userService.searchBranchBytitle(user);
+	}
+
+	/**
+	 * 删除指定工作经历
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "/deleteUserWorkExp", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse deleteUserWorkExp(User user) {
+		return userService.deleteUserWorkExp(user);
+	}
+
+	/**
+	 * 删除教育经历
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "/deleteUserEduExp", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse deleteUserEduExp(User user) {
+		return userService.deleteUserEduExp(user);
+	}
+
+	/**
+	 * 加入家族
+	 * 
+	 * @param user
+	 * @param birthday
+	 * @param nation
+	 * @return
+	 */
+	@RequestMapping(value = "/joinFamily", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse joinFamily(User user, String birthday, String nation) {
+		return userService.joinFamily(user, birthday, nation);
+	}
+
+	/**
+	 * 我申请中的家族
+	 * 
+	 * @param user
+	 * @param birthday
+	 * @param nation
+	 * @return
+	 */
+	@RequestMapping(value = "/applyingFamily", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse applyingFamily(User user) {
+		return userService.applyingFamily(user);
 	}
 
 }

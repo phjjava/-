@@ -45,7 +45,8 @@ public class UserManagerControll {
 	 */
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse save(UserManager manager, String[] functionids) {
+	public JsonResponse save(UserManager manager, HttpServletRequest request) {
+		String[] functionids = request.getParameterValues("functionids[]");
 		return userManagerService.save(manager, functionids);
 	}
 
@@ -139,10 +140,10 @@ public class UserManagerControll {
 			if (id != null && !"".equals(id)) {
 				manager = userManagerService.getUserManager(id);
 				if (manager != null) {
-					manager.setGenlevel(manager.getGenlevel() + "世");
+					manager.setGenlevel(manager.getGenlevel());
 				}
 			}
-			String familyid = "9ba9172bd1a44e35992d8b1c247adb95";
+			String familyid = CurrentUserContext.getCurrentFamilyId();
 			List<Function> functionList = new ArrayList<>();
 			if (manager == null || (manager.getIsmanager() == 1 && manager.getEbtype() == 1)) {
 				functionList = functionService.selectFunctionListByEbid(familyid, "", "", "");

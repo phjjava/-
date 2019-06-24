@@ -98,7 +98,7 @@
     select 
     functionid,functionname,parentid,functionurl,description,sort,familyid,icon
     from jp_function
-    where functionid = #{functionid,jdbcType=VARCHAR}
+    where functionid = #{functionid,jdbcType=VARCHAR} and familyid = #{familyid,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from jp_function

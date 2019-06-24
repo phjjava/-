@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import com.jp.entity.EditorialBoard;
+import com.jp.entity.SearchComplex;
 import com.jp.entity.User;
 import com.jp.entity.UserQuery;
 import com.jp.entity.Usercontent;
@@ -123,4 +125,29 @@ public interface UserDao {
 
 	List<User> selectByFamilyId(Map<String, String> userparams);
 
+	String getLastUpdateDateTime(String familyid);
+
+	List<User> searchComplex(SearchComplex searchComplex);
+
+	List<String> getUseridListOfAfterUpdatedtime(User entity);
+
+	List<String> getUseridListByFamilyid(String familyid);
+
+	List<User> getUserListByUserids(Map<String, String> map);
+
+	List<User> selectByTitle(Map<String, String> map);
+
+	List<User> selectBranchByTitle(Map<String, String> map);
+
+	List<User> selectFamilycode(@Param("phone") String phone, @Param("status") Integer status);
+
+	@Select("select*from jp_user where status in (0,1)  and deleteflag = 0 and familyid is not null and phone = #{phone}")
+	List<User> selectByPhoneInStatus(@Param("phone") String phone);
+
+	@Select("select*from jp_user where status =2 and deleteflag = 0 and familyid is not null and phone = #{phone} and familyid = #{familyid}")
+	List<User> selectByPhoneToStatus(@Param("phone") String phone, @Param("familyid") String familyid);
+
+	int countBranch(Map<String, String> totalparams);
+
+	List<User> selectUserByAreaCode(Map<String, String> params);
 }

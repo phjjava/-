@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.Notice;
 import com.jp.entity.NoticeVO;
@@ -17,10 +18,21 @@ public interface NoticeService {
 
 	int changeStatus(Notice notice);
 
-	String saveNotice(Notice notice,List<Noticefile> ntlist,@Param("array") String ntfids[]);
+	JsonResponse saveNotice(Notice notice);
 
 	int batchDelete(@Param("array") String noticeids[]) throws Exception;
- 
+
 	List<Noticefile> selectntfile(NoticefileQuery example);
 
+	JsonResponse getNoticeDetailExt(Notice notice);
+
+	JsonResponse sendNotice(Notice notice);
+
+	JsonResponse getNoticelistOfBranch(Notice notice);
+
+	JsonResponse getNoticeDetail(Notice notice);
+
+	JsonResponse getMyPublishl(Notice notice);
+
+	JsonResponse getNoticelist(Notice notice);
 }

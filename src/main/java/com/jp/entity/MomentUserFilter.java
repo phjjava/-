@@ -2,158 +2,171 @@ package com.jp.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class MomentUserFilter implements Serializable {
-    /**
-     * 主键id
-     */
-    private String id;
+	/**
+	 * 主键id
+	 */
+	private String id;
 
-    /**
-     * 用户id
-     */
-    private String userid;
+	/**
+	 * 用户id
+	 */
+	private String userid;
 
-    /**
-     * 过滤类型ME不让看我,HE不看他
-     */
-    private String filterType;
+	/**
+	 * 过滤类型ME不让看我,HE不看他
+	 */
+	private String filterType;
 
-    /**
-     * 过滤用户userid
-     */
-    private String filterUserid;
+	/**
+	 * 过滤用户userid
+	 */
+	private String filterUserid;
 
-    /**
-     * 过滤用户名
-     */
-    private String fitlerUserName;
+	/**
+	 * 过滤用户名
+	 */
+	private String fitlerUserName;
 
-    /**
-     * 创建时间
-     */
-    private Date createtime;
+	/**
+	 * 创建时间
+	 */
+	private Date createtime;
 
-    /**
-     * 更新时间
-     */
-    private Date updatetime;
+	/**
+	 * 更新时间
+	 */
+	private Date updatetime;
 
-    /**
-     * 创建者
-     */
-    private String createby;
+	/**
+	 * 创建者
+	 */
+	private String createby;
 
-    /**
-     * 更新者
-     */
-    private String updateby;
+	/**
+	 * 更新者
+	 */
+	private String updateby;
 
-    /**
-     * 停用标记
-     */
-    private Integer deleteflag;
+	/**
+	 * 停用标记
+	 */
+	private Integer deleteflag;
+	/*
+	 * 自属性
+	 */
+	List<MomentUserFilter> filterUsers;
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public String getId() {
-        return id;
-    }
+	public List<MomentUserFilter> getFilterUsers() {
+		return filterUsers;
+	}
 
-    public void setId(String id) {
-        this.id = id == null ? null : id.trim();
-    }
+	public void setFilterUsers(List<MomentUserFilter> filterUsers) {
+		this.filterUsers = filterUsers;
+	}
 
-    public String getUserid() {
-        return userid;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setUserid(String userid) {
-        this.userid = userid == null ? null : userid.trim();
-    }
+	public void setId(String id) {
+		this.id = id == null ? null : id.trim();
+	}
 
-    public String getFilterType() {
-        return filterType;
-    }
+	public String getUserid() {
+		return userid;
+	}
 
-    public void setFilterType(String filterType) {
-        this.filterType = filterType == null ? null : filterType.trim();
-    }
+	public void setUserid(String userid) {
+		this.userid = userid == null ? null : userid.trim();
+	}
 
-    public String getFilterUserid() {
-        return filterUserid;
-    }
+	public String getFilterType() {
+		return filterType;
+	}
 
-    public void setFilterUserid(String filterUserid) {
-        this.filterUserid = filterUserid == null ? null : filterUserid.trim();
-    }
+	public void setFilterType(String filterType) {
+		this.filterType = filterType == null ? null : filterType.trim();
+	}
 
-    public String getFitlerUserName() {
-        return fitlerUserName;
-    }
+	public String getFilterUserid() {
+		return filterUserid;
+	}
 
-    public void setFitlerUserName(String fitlerUserName) {
-        this.fitlerUserName = fitlerUserName == null ? null : fitlerUserName.trim();
-    }
+	public void setFilterUserid(String filterUserid) {
+		this.filterUserid = filterUserid == null ? null : filterUserid.trim();
+	}
 
-    public Date getCreatetime() {
-        return createtime;
-    }
+	public String getFitlerUserName() {
+		return fitlerUserName;
+	}
 
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
-    }
+	public void setFitlerUserName(String fitlerUserName) {
+		this.fitlerUserName = fitlerUserName == null ? null : fitlerUserName.trim();
+	}
 
-    public Date getUpdatetime() {
-        return updatetime;
-    }
+	public Date getCreatetime() {
+		return createtime;
+	}
 
-    public void setUpdatetime(Date updatetime) {
-        this.updatetime = updatetime;
-    }
+	public void setCreatetime(Date createtime) {
+		this.createtime = createtime;
+	}
 
-    public String getCreateby() {
-        return createby;
-    }
+	public Date getUpdatetime() {
+		return updatetime;
+	}
 
-    public void setCreateby(String createby) {
-        this.createby = createby == null ? null : createby.trim();
-    }
+	public void setUpdatetime(Date updatetime) {
+		this.updatetime = updatetime;
+	}
 
-    public String getUpdateby() {
-        return updateby;
-    }
+	public String getCreateby() {
+		return createby;
+	}
 
-    public void setUpdateby(String updateby) {
-        this.updateby = updateby == null ? null : updateby.trim();
-    }
+	public void setCreateby(String createby) {
+		this.createby = createby == null ? null : createby.trim();
+	}
 
-    public Integer getDeleteflag() {
-        return deleteflag;
-    }
+	public String getUpdateby() {
+		return updateby;
+	}
 
-    public void setDeleteflag(Integer deleteflag) {
-        this.deleteflag = deleteflag;
-    }
+	public void setUpdateby(String updateby) {
+		this.updateby = updateby == null ? null : updateby.trim();
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", id=").append(id);
-        sb.append(", userid=").append(userid);
-        sb.append(", filterType=").append(filterType);
-        sb.append(", filterUserid=").append(filterUserid);
-        sb.append(", fitlerUserName=").append(fitlerUserName);
-        sb.append(", createtime=").append(createtime);
-        sb.append(", updatetime=").append(updatetime);
-        sb.append(", createby=").append(createby);
-        sb.append(", updateby=").append(updateby);
-        sb.append(", deleteflag=").append(deleteflag);
-        sb.append(", serialVersionUID=").append(serialVersionUID);
-        sb.append("]");
-        return sb.toString();
-    }
+	public Integer getDeleteflag() {
+		return deleteflag;
+	}
+
+	public void setDeleteflag(Integer deleteflag) {
+		this.deleteflag = deleteflag;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getSimpleName());
+		sb.append(" [");
+		sb.append("Hash = ").append(hashCode());
+		sb.append(", id=").append(id);
+		sb.append(", userid=").append(userid);
+		sb.append(", filterType=").append(filterType);
+		sb.append(", filterUserid=").append(filterUserid);
+		sb.append(", fitlerUserName=").append(fitlerUserName);
+		sb.append(", createtime=").append(createtime);
+		sb.append(", updatetime=").append(updatetime);
+		sb.append(", createby=").append(createby);
+		sb.append(", updateby=").append(updateby);
+		sb.append(", deleteflag=").append(deleteflag);
+		sb.append(", serialVersionUID=").append(serialVersionUID);
+		sb.append("]");
+		return sb.toString();
+	}
 }

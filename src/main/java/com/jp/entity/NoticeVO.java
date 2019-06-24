@@ -1,4 +1,5 @@
 package com.jp.entity;
+
 /**
  * 
  * @功能 公告扩展类便于维护添加新字段
@@ -14,19 +15,51 @@ public class NoticeVO extends Notice {
 	 * 公告浏览量
 	 */
 	private String readCount;
+
+	private Notice notice;
+
+	private Integer countFiles;
+
+	private Integer countReads;
+
+	public Integer getCountReads() {
+		return countReads;
+	}
+
+	public void setCountReads(Integer countReads) {
+		this.countReads = countReads;
+	}
+
+	public Integer getCountFiles() {
+		return countFiles;
+	}
+
+	public void setCountFiles(Integer countFiles) {
+		this.countFiles = countFiles;
+	}
+
+	public Notice getNotice() {
+		return notice;
+	}
+
+	public void setNotice(Notice notice) {
+		this.notice = notice;
+	}
+
 	public String getTobranchid() {
 		return tobranchid;
 	}
+
 	public void setTobranchid(String tobranchid) {
 		this.tobranchid = tobranchid;
 	}
+
 	public String getReadCount() {
 		return readCount;
 	}
+
 	public void setReadCount(String readCount) {
 		this.readCount = readCount;
 	}
-	
-	
 
 }

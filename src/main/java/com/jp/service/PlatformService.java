@@ -1,5 +1,6 @@
 package com.jp.service;
 
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.Platform;
 
@@ -36,5 +37,9 @@ public interface PlatformService {
 
 	void isOpen(Integer id, Integer isUsed);
 
-	void closeAllVersion(String fileType);
+	void closeAllVersion(Integer fileType);
+
+	JsonResponse getPlatform(Integer fileType);
+
+	JsonResponse getCurrentTime();
 }
