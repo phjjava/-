@@ -64,7 +64,7 @@ public class BranchController {
 		JsonResponse res = null;
 		try {
 			if (StringTools.notEmpty(branch.getBranchid())) {// 修改
-				branch.setUpdateid(CurrentUserContext.getCurrentUserId());
+				branch.setUpdateid("04a27de4d43a44849b24d2427eb25c69");
 				branch.setUpdatetime(new Date());
 				count = branchService.update(branch);
 			} else {// 新增
@@ -98,6 +98,7 @@ public class BranchController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
 		}
 		res = new JsonResponse(result);
 		return res;
