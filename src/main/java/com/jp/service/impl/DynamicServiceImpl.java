@@ -168,11 +168,11 @@ public class DynamicServiceImpl implements DynamicService {
 					status = dyfdao.insertdyfileSelective(dylist);
 				}
 				// 维护修改dytop表关系
+				DytopQuery dq = new DytopQuery();
+				dq.or().andDyidEqualTo(dynamic.getDyid());
+				status = dytopDao.deleteByExample(dq);
 				if (StringTools.trimNotEmpty(dynamic.getTobranchid())) {
 					// 先删除再重新添加
-					DytopQuery dq = new DytopQuery();
-					dq.or().andDyidEqualTo(dynamic.getDyid());
-					status = dytopDao.deleteByExample(dq);
 					status = saveDytop(dynamic, dynamic.getDyid());
 				}
 			} else {
