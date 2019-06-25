@@ -98,6 +98,7 @@ public class BranchController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
 		}
 		res = new JsonResponse(result);
 		return res;
