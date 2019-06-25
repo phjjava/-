@@ -20,6 +20,7 @@ import com.jp.dao.FunctionRoleMapper;
 import com.jp.dao.PostMapper;
 import com.jp.dao.UserManagerMapper;
 import com.jp.entity.FunctionRoleExample;
+import com.jp.entity.FunctionRoleKey;
 import com.jp.entity.Post;
 import com.jp.entity.UserManager;
 import com.jp.entity.UserManagerExample;
@@ -153,21 +154,24 @@ public class UserManagerServiceImpl implements UserManagerService {
 			if (manager != null) {
 				FunctionRoleExample roleEx = new FunctionRoleExample();
 				roleEx.or().andUseridEqualTo(manager.getUserid());
-				// 先删除《角色功能》
-				status = functionRoleMapper.deleteByExample(roleEx);
-				if (status < 1) {
-					result = new Result(MsgConstants.RESUL_FAIL);
-					result.setMsg("角色功能删除失败！");
+				List<FunctionRoleKey> functionRoleKey = functionRoleMapper.selectByExample(roleEx);
+				if (functionRoleKey != null) {
+					// 先删除《角色功能》
+					status = functionRoleMapper.deleteByExample(roleEx);
+					if (status < 1) {
+						result = new Result(MsgConstants.RESUL_FAIL);
+						result.setMsg("角色功能删除失败！");
+						res = new JsonResponse(result);
+						return res;
+					}
+				}
+				status = userManagerMapper.deleteByPrimaryKey(id);
+				if (status > 0) {
+					result = new Result(MsgConstants.RESUL_SUCCESS);
+					result.setMsg("管理员删除成功！");
 					res = new JsonResponse(result);
 					return res;
 				}
-			}
-			status = userManagerMapper.deleteByPrimaryKey(id);
-			if (status < 1) {
-				result = new Result(MsgConstants.RESUL_FAIL);
-				result.setMsg("管理员删除失败！");
-				res = new JsonResponse(result);
-				return res;
 			}
 		} catch (Exception e) {
 			log_.error("[del方法(删除管理员)---异常:]", e);
@@ -175,8 +179,8 @@ public class UserManagerServiceImpl implements UserManagerService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		result.setMsg("管理员删除成功！");
+		result = new Result(MsgConstants.RESUL_FAIL);
+		result.setMsg("管理员删除失败！");
 		res = new JsonResponse(result);
 		return res;
 	}
