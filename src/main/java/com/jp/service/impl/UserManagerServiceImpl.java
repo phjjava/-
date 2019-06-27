@@ -94,56 +94,6 @@ public class UserManagerServiceImpl implements UserManagerService {
 		return userManagerMapper.selectByPrimaryKey(id);
 	}
 
-	/**
-	 * 废弃了，后期再删
-	 */
-	@Override
-	public Integer insert(UserManager entity, String[] functionids) throws Exception {
-		entity.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-		if (functionids != null && functionids.length > 0) {
-			FunctionRoleExample example = new FunctionRoleExample();
-			// example.clear();
-			example.or().andUseridEqualTo(entity.getUserid()).andEbidEqualTo(entity.getEbid());
-			functionRoleMapper.deleteByExample(example);
-
-			functionRoleMapper.insertBatch(entity.getUserid(), functionids, entity.getEbid(), entity.getPostid());
-		}
-		Post post = postMapper.selectByPrimaryKey(entity.getPostid());
-		entity.setPostname(post.getName());
-		entity.setIsmanager(post.getIsmanager());
-		return userManagerMapper.insertSelective(entity);
-
-	}
-
-	/**
-	 * 废弃了，后期再删
-	 */
-	@Override
-	public Integer update(UserManager entity, String[] functionids) throws Exception {
-		entity.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-		if (functionids != null && functionids.length > 0) {
-			FunctionRoleExample example = new FunctionRoleExample();
-			// example.clear();
-			example.or().andUseridEqualTo(entity.getUserid()).andEbidEqualTo(entity.getEbid())
-					.andPostidEqualTo(entity.getPostid());
-			functionRoleMapper.deleteByExample(example);
-			// for(String functionid : functionids) {
-			// example.clear();
-			// example.or().andUseridEqualTo(CurrentUserContext.getCurrentUserId())
-			// .andFunctionidEqualTo(functionid)
-			// .andEbidEqualTo(entity.getEbid());
-			// functionRoleMapper.deleteByExample(example);
-			// }
-
-			functionRoleMapper.insertBatch(entity.getUserid(), functionids, entity.getEbid(), entity.getPostid());
-		}
-		Post post = postMapper.selectByPrimaryKey(entity.getPostid());
-		entity.setPostname(post.getName());
-		entity.setIsmanager(post.getIsmanager());
-		return userManagerMapper.updateByPrimaryKeySelective(entity);
-
-	}
-
 	@Override
 	public JsonResponse del(String id) {
 		Result result = null;
@@ -223,6 +173,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 	public JsonResponse save(UserManager entity, String[] functionids) {
 		Result result = null;
 		JsonResponse res = null;
+		int status = 0;
 		if (functionids == null || functionids.length == 0) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数functionids不能为空，请至少指定一个权限！");
@@ -234,15 +185,31 @@ public class UserManagerServiceImpl implements UserManagerService {
 			FunctionRoleExample example = new FunctionRoleExample();
 			example.or().andUseridEqualTo(entity.getUserid()).andEbidEqualTo(entity.getEbid())
 					.andPostidEqualTo(entity.getPostid());
-			// 先把原有的《角色功能》删除
-			functionRoleMapper.deleteByExample(example);
+			List<FunctionRoleKey> functionRole = functionRoleMapper.selectByExample(example);
+			if (functionRole != null && functionRole.size() != 0) {
+				// 先把原有的《角色功能》删除
+				status = functionRoleMapper.deleteByExample(example);
+				if (status == 0) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("角色功能删除失败！");
+					res = new JsonResponse(result);
+					return res;
+				}
+			}
 			// 把新授权或编辑的《角色功能》添加
-			functionRoleMapper.insertBatch(entity.getUserid(), functionids, entity.getEbid(), entity.getPostid());
+			status = functionRoleMapper.insertBatch(entity.getUserid(), functionids, entity.getEbid(),
+					entity.getPostid());
+			if (status == 0) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("角色功能添加失败！");
+				res = new JsonResponse(result);
+				return res;
+			}
 			Post post = postMapper.selectByPrimaryKey(entity.getPostid());
 			entity.setPostname(post.getName());
 			entity.setIsmanager(post.getIsmanager());
 			if (StringTools.notEmpty(entity.getId())) {// 修改
-				int status = userManagerMapper.updateByPrimaryKeySelective(entity);
+				status = userManagerMapper.updateByPrimaryKeySelective(entity);
 				if (status > 0) {
 					result = new Result(MsgConstants.RESUL_SUCCESS);
 					result.setMsg("修改成功");
@@ -255,7 +222,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 				return res;
 			} else {// 新增
 				entity.setId(UUIDUtils.getUUID());
-				int status = userManagerMapper.insertSelective(entity);
+				status = userManagerMapper.insertSelective(entity);
 				if (status > 0) {
 					result = new Result(MsgConstants.RESUL_SUCCESS);
 					result.setMsg("新增成功");

@@ -30,11 +30,7 @@ public interface UserManagerService {
 	 */
 	UserManager getUserManager(String id) throws Exception;
 
-	Integer update(UserManager manager, String[] functionids) throws Exception;// 废弃了，后期再删
-
 	JsonResponse save(UserManager manager, String[] functionids);
-
-	Integer insert(UserManager manager, String[] functionids) throws Exception;// 废弃了，后期再删
 
 	JsonResponse del(String id);
 
