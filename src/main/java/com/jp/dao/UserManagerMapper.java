@@ -1,6 +1,7 @@
 package com.jp.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -33,4 +34,6 @@ public interface UserManagerMapper {
 	List<UserManager> selectMnangers(String userid);
 
 	List<UserManager> selectByEbid(String id);
+
+	List<UserManager> selectByParams(Map<String, Object> params);
 }

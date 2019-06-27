@@ -1,7 +1,9 @@
 package com.jp.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,38 +51,27 @@ public class UserManagerServiceImpl implements UserManagerService {
 		if (managers == null || managers.size() == 0) {
 			return pageModel;
 		}
+		Map<String, Object> params = new HashMap<String, Object>();
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		List<UserManager> list = new ArrayList<UserManager>();
 		// List<UserManager> rtnlist = new ArrayList<UserManager>();
 		for (UserManager manager : managers) {
 			example.clear();
-			example.setOrderByClause("ismanager desc");
-
+			example.setOrderByClause("-sort desc");
+			// 不查询自己
+			params.put("id", manager.getId());
+			if (!StringUtils.isEmpty(entity.getUsername())) {
+				params.put("username", entity.getUsername());
+			}
 			if (manager.getEbtype() == 1) {
 				// 总编委会查询所有
-
-				if (!StringUtils.isEmpty(entity.getUsername())) {
-					example.or().andIdNotEqualTo(manager.getId()).andFamilyidEqualTo(manager.getFamilyid())
-							.andUsernameLike("%" + entity.getUsername() + "%");
-				} else {
-					example.or().andIdNotEqualTo(manager.getId()).andFamilyidEqualTo(manager.getFamilyid());
-				}
-
-				// list = userManagerMapper.selectByExample(example);
-				// rtnlist.addAll(list);
+				params.put("familyid", manager.getFamilyid());
 				break;
 			}
-			if (!StringUtils.isEmpty(entity.getUsername())) {
-				example.or().andEbidEqualTo(manager.getEbid()).andIdNotEqualTo(manager.getId())
-						.andUsernameLike("%" + entity.getUsername() + "%");
-			} else {
-				example.or().andEbidEqualTo(manager.getEbid()).andIdNotEqualTo(manager.getId());
-			}
+			params.put("ebid", entity.getEbid());
 
-			// list = userManagerMapper.selectByExample(example);
-			// rtnlist.addAll(list);
 		}
-		list = userManagerMapper.selectByExample(example);
+		list = userManagerMapper.selectByParams(params);
 
 		pageModel.setList(list);
 		pageModel.setPageInfo(new PageInfo<UserManager>(list));
@@ -174,6 +165,36 @@ public class UserManagerServiceImpl implements UserManagerService {
 		Result result = null;
 		JsonResponse res = null;
 		int status = 0;
+		if (entity.getUserid() == null || "".equals(entity.getUserid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数userid不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (entity.getUsername() == null || "".equals(entity.getUsername())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数getUsername不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (entity.getPostid() == null || "".equals(entity.getPostid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数getPostid不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (entity.getEbid() == null || "".equals(entity.getEbid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数getEbid不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (entity.getEbtype() == null || "".equals(entity.getEbtype().toString())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数getEbtype不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		if (functionids == null || functionids.length == 0) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数functionids不能为空，请至少指定一个权限！");
