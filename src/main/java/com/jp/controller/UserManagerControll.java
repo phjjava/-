@@ -50,42 +50,6 @@ public class UserManagerControll {
 		return userManagerService.save(manager, functionids);
 	}
 
-	//
-	// @RequestMapping(value = "/save", method = RequestMethod.POST)
-	// @ResponseBody
-	// public JsonResponse save(HttpServletRequest request, UserManager manager) {
-	// Result result = null;
-	// JsonResponse res = null;
-	// Integer status = null;
-	// String[] functionids = request.getParameterValues("functionids[]");
-	// try {
-	// if (StringTools.notEmpty(manager.getId())) {// 修改
-	// status = userManagerService.update(manager, functionids);
-	// } else {// 新增
-	// manager.setId(UUIDUtils.getUUID());
-	// status = userManagerService.insert(manager, functionids);
-	// }
-	// } catch (Exception e) {
-	// status = 0;
-	// e.printStackTrace();
-	// log_.error("[JPSYSTEM]", e);
-	// result = new Result(MsgConstants.SYS_ERROR);
-	// res = new JsonResponse(result);
-	// res.setData(status);
-	// return res;
-	// }
-	// if (status == 0) {
-	// result = new Result(MsgConstants.RESUL_FAIL);
-	// res = new JsonResponse(result);
-	// res.setData(status);
-	// return res;
-	// }
-	// result = new Result(MsgConstants.RESUL_SUCCESS);
-	// res = new JsonResponse(result);
-	// res.setData(status);
-	// return res;
-	// }
-
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse list(PageModel<UserManager> pageModel, UserManager entity) {

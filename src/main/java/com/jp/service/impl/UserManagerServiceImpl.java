@@ -1,7 +1,9 @@
 package com.jp.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,38 +51,27 @@ public class UserManagerServiceImpl implements UserManagerService {
 		if (managers == null || managers.size() == 0) {
 			return pageModel;
 		}
+		Map<String, Object> params = new HashMap<String, Object>();
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		List<UserManager> list = new ArrayList<UserManager>();
 		// List<UserManager> rtnlist = new ArrayList<UserManager>();
 		for (UserManager manager : managers) {
 			example.clear();
-			example.setOrderByClause("ismanager desc");
-
+			example.setOrderByClause("-sort desc");
+			// 不查询自己
+			params.put("id", manager.getId());
+			if (!StringUtils.isEmpty(entity.getUsername())) {
+				params.put("username", entity.getUsername());
+			}
 			if (manager.getEbtype() == 1) {
 				// 总编委会查询所有
-
-				if (!StringUtils.isEmpty(entity.getUsername())) {
-					example.or().andIdNotEqualTo(manager.getId()).andFamilyidEqualTo(manager.getFamilyid())
-							.andUsernameLike("%" + entity.getUsername() + "%");
-				} else {
-					example.or().andIdNotEqualTo(manager.getId()).andFamilyidEqualTo(manager.getFamilyid());
-				}
-
-				// list = userManagerMapper.selectByExample(example);
-				// rtnlist.addAll(list);
+				params.put("familyid", manager.getFamilyid());
 				break;
 			}
-			if (!StringUtils.isEmpty(entity.getUsername())) {
-				example.or().andEbidEqualTo(manager.getEbid()).andIdNotEqualTo(manager.getId())
-						.andUsernameLike("%" + entity.getUsername() + "%");
-			} else {
-				example.or().andEbidEqualTo(manager.getEbid()).andIdNotEqualTo(manager.getId());
-			}
+			params.put("ebid", entity.getEbid());
 
-			// list = userManagerMapper.selectByExample(example);
-			// rtnlist.addAll(list);
 		}
-		list = userManagerMapper.selectByExample(example);
+		list = userManagerMapper.selectByParams(params);
 
 		pageModel.setList(list);
 		pageModel.setPageInfo(new PageInfo<UserManager>(list));
@@ -92,56 +83,6 @@ public class UserManagerServiceImpl implements UserManagerService {
 	public UserManager getUserManager(String id) throws Exception {
 
 		return userManagerMapper.selectByPrimaryKey(id);
-	}
-
-	/**
-	 * 废弃了，后期再删
-	 */
-	@Override
-	public Integer insert(UserManager entity, String[] functionids) throws Exception {
-		entity.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-		if (functionids != null && functionids.length > 0) {
-			FunctionRoleExample example = new FunctionRoleExample();
-			// example.clear();
-			example.or().andUseridEqualTo(entity.getUserid()).andEbidEqualTo(entity.getEbid());
-			functionRoleMapper.deleteByExample(example);
-
-			functionRoleMapper.insertBatch(entity.getUserid(), functionids, entity.getEbid(), entity.getPostid());
-		}
-		Post post = postMapper.selectByPrimaryKey(entity.getPostid());
-		entity.setPostname(post.getName());
-		entity.setIsmanager(post.getIsmanager());
-		return userManagerMapper.insertSelective(entity);
-
-	}
-
-	/**
-	 * 废弃了，后期再删
-	 */
-	@Override
-	public Integer update(UserManager entity, String[] functionids) throws Exception {
-		entity.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-		if (functionids != null && functionids.length > 0) {
-			FunctionRoleExample example = new FunctionRoleExample();
-			// example.clear();
-			example.or().andUseridEqualTo(entity.getUserid()).andEbidEqualTo(entity.getEbid())
-					.andPostidEqualTo(entity.getPostid());
-			functionRoleMapper.deleteByExample(example);
-			// for(String functionid : functionids) {
-			// example.clear();
-			// example.or().andUseridEqualTo(CurrentUserContext.getCurrentUserId())
-			// .andFunctionidEqualTo(functionid)
-			// .andEbidEqualTo(entity.getEbid());
-			// functionRoleMapper.deleteByExample(example);
-			// }
-
-			functionRoleMapper.insertBatch(entity.getUserid(), functionids, entity.getEbid(), entity.getPostid());
-		}
-		Post post = postMapper.selectByPrimaryKey(entity.getPostid());
-		entity.setPostname(post.getName());
-		entity.setIsmanager(post.getIsmanager());
-		return userManagerMapper.updateByPrimaryKeySelective(entity);
-
 	}
 
 	@Override
@@ -223,6 +164,37 @@ public class UserManagerServiceImpl implements UserManagerService {
 	public JsonResponse save(UserManager entity, String[] functionids) {
 		Result result = null;
 		JsonResponse res = null;
+		int status = 0;
+		if (entity.getUserid() == null || "".equals(entity.getUserid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数userid不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (entity.getUsername() == null || "".equals(entity.getUsername())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数getUsername不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (entity.getPostid() == null || "".equals(entity.getPostid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数getPostid不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (entity.getEbid() == null || "".equals(entity.getEbid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数getEbid不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (entity.getEbtype() == null || "".equals(entity.getEbtype().toString())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数getEbtype不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		if (functionids == null || functionids.length == 0) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数functionids不能为空，请至少指定一个权限！");
@@ -234,15 +206,31 @@ public class UserManagerServiceImpl implements UserManagerService {
 			FunctionRoleExample example = new FunctionRoleExample();
 			example.or().andUseridEqualTo(entity.getUserid()).andEbidEqualTo(entity.getEbid())
 					.andPostidEqualTo(entity.getPostid());
-			// 先把原有的《角色功能》删除
-			functionRoleMapper.deleteByExample(example);
+			List<FunctionRoleKey> functionRole = functionRoleMapper.selectByExample(example);
+			if (functionRole != null && functionRole.size() != 0) {
+				// 先把原有的《角色功能》删除
+				status = functionRoleMapper.deleteByExample(example);
+				if (status == 0) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("角色功能删除失败！");
+					res = new JsonResponse(result);
+					return res;
+				}
+			}
 			// 把新授权或编辑的《角色功能》添加
-			functionRoleMapper.insertBatch(entity.getUserid(), functionids, entity.getEbid(), entity.getPostid());
+			status = functionRoleMapper.insertBatch(entity.getUserid(), functionids, entity.getEbid(),
+					entity.getPostid());
+			if (status == 0) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("角色功能添加失败！");
+				res = new JsonResponse(result);
+				return res;
+			}
 			Post post = postMapper.selectByPrimaryKey(entity.getPostid());
 			entity.setPostname(post.getName());
 			entity.setIsmanager(post.getIsmanager());
 			if (StringTools.notEmpty(entity.getId())) {// 修改
-				int status = userManagerMapper.updateByPrimaryKeySelective(entity);
+				status = userManagerMapper.updateByPrimaryKeySelective(entity);
 				if (status > 0) {
 					result = new Result(MsgConstants.RESUL_SUCCESS);
 					result.setMsg("修改成功");
@@ -255,7 +243,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 				return res;
 			} else {// 新增
 				entity.setId(UUIDUtils.getUUID());
-				int status = userManagerMapper.insertSelective(entity);
+				status = userManagerMapper.insertSelective(entity);
 				if (status > 0) {
 					result = new Result(MsgConstants.RESUL_SUCCESS);
 					result.setMsg("新增成功");

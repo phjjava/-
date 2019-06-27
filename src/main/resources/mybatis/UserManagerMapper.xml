@@ -397,4 +397,24 @@
 		where
 		u.ebid=#{id} and u.postid=n.id order by -n.sort desc,-u.sort desc
 	</select>
+
+	<select id="selectByParams" parameterType="java.util.Map"
+		resultType="com.jp.entity.UserManager">
+		select um.* from jp_user_manager um,jp_editorial_board eb,jp_post p
+		where um.ebid = eb.id
+		and um.postid = p.id
+		<if test="familyid != null">
+			and um.familyid = #{familyid,jdbcType=VARCHAR}
+		</if>
+		<if test="username != null">
+			and um.username like CONCAT("%",#{username,jdbcType=VARCHAR},"%")
+		</if>
+		<if test="ebid != null">
+			and um.ebid = #{ebid,jdbcType=VARCHAR}
+		</if>
+		<if test="id != null">
+			and um.id &lt;&gt; #{id,jdbcType=VARCHAR}
+		</if>
+		order by -eb.sort desc,-p.sort desc,-um.sort desc
+	</select>
 </mapper>
