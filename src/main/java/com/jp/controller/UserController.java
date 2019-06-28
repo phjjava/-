@@ -33,7 +33,6 @@ import com.jp.dao.BranchDao;
 import com.jp.dao.SysVersionPrivilegeMapper;
 import com.jp.dao.UserDao;
 import com.jp.dao.UserbranchDao;
-import com.jp.dao.UsermatesDao;
 import com.jp.entity.Branch;
 import com.jp.entity.BranchKey;
 import com.jp.entity.SearchComplex;
@@ -84,8 +83,6 @@ public class UserController {
 	private UseralbumService useralbumService;
 	@Autowired
 	private UserDao userDao;
-	@Autowired
-	private UsermatesDao userMatesDao;
 	@Autowired
 	private UserbranchDao userBranchDao;
 	@Autowired

@@ -145,7 +145,7 @@ public class NoticeServiceImpl implements NoticeService {
 				// 维护修改noticetop表关系
 				NoticetopQuery dq = new NoticetopQuery();
 				dq.or().andNoticeidEqualTo(notice.getNoticeid());
-				status = noticeTopMapper.deleteByExample(dq);
+				noticeTopMapper.deleteByExample(dq);
 				if (StringTools.trimNotEmpty(notice.getTobranchid())) {
 					// 先删除再重新添加
 					status = saveNoticetop(notice, notice.getNoticeid());
