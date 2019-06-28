@@ -170,7 +170,7 @@ public class DynamicServiceImpl implements DynamicService {
 				// 维护修改dytop表关系
 				DytopQuery dq = new DytopQuery();
 				dq.or().andDyidEqualTo(dynamic.getDyid());
-				status = dytopDao.deleteByExample(dq);
+				dytopDao.deleteByExample(dq);
 				if (StringTools.trimNotEmpty(dynamic.getTobranchid())) {
 					// 先删除再重新添加
 					status = saveDytop(dynamic, dynamic.getDyid());
@@ -195,12 +195,12 @@ public class DynamicServiceImpl implements DynamicService {
 				 * dynamic.setCreatetime(formatter.parse(dynamic.getCreatetimeStr())); }
 				 */
 				status = dydao.insertSelective(dynamic);
-				for (int i = 0; i < dylist.size(); i++) {
-					dylist.get(i).setFileid(UUIDUtils.getUUID());
-					dylist.get(i).setBranchid(dynamic.getBranchid());
-					dylist.get(i).setDyid(dyid);
-				}
 				if (dylist != null && dylist.size() > 0) {
+					for (int i = 0; i < dylist.size(); i++) {
+						dylist.get(i).setFileid(UUIDUtils.getUUID());
+						dylist.get(i).setBranchid(dynamic.getBranchid());
+						dylist.get(i).setDyid(dyid);
+					}
 					status = dyfdao.insertdyfileSelective(dylist);
 				}
 				// 维护保存dytop表关系
