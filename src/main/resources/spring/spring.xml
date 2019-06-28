@@ -79,12 +79,29 @@
             <mvc:exclude-mapping path="/static/**"/>
             <mvc:exclude-mapping path="/ewebeditor/**"/>
             <!-- 不拦截登录请求 -->
+            <!-- web登录 -->
        	 	<mvc:exclude-mapping path="/code/**"/>
        	 	<mvc:exclude-mapping path="/login/choose"/>
        	 	<mvc:exclude-mapping path="/login/tochoose"/>
        	 	<mvc:exclude-mapping path="/login/login"/>
        	 	<mvc:exclude-mapping path="/login/loginout"/>
        	 	<mvc:exclude-mapping path="/system/login"/>
+       	 	<!-- API登录 -->
+       	 	<mvc:exclude-mapping path="/user/login.action"/>	
+       	 	<mvc:exclude-mapping path="/user/sendSMSCodeForReg.action"/>
+       	 	<mvc:exclude-mapping path="/user/sendSMSCode.action"/>
+       	 	<mvc:exclude-mapping path="/user/checkSMSCode.action"/>
+       	 	<mvc:exclude-mapping path="/user/restPassword.action"/>
+       	 	<mvc:exclude-mapping path="/user/getOnlineUser.action"/>
+       	 	
+       	 	<mvc:exclude-mapping path="/user/loginB.action"/>	<!-- H5登录 -->
+       	 	<mvc:exclude-mapping path="/platform/getPlatform.action"/>	<!-- 获取版本号 -->
+       	 	<mvc:exclude-mapping path="/family/merge.action"/>	<!-- 注册家族 -->
+       	 	<mvc:exclude-mapping path="/user/loginWithCaptcha.action"/>	<!-- 短信验证登录 -->
+       	 	<mvc:exclude-mapping path="/user/loginWithThirdParty.action"/>	<!-- 第三方登录 -->
+       	 	<mvc:exclude-mapping path="/user/bindingWithThirdParty.action"/>	<!-- 第三方登录绑定 -->
+       	 	<mvc:exclude-mapping path="/user/isBindingWithUser.action"/>	<!-- 第三方登录绑定判断 -->
+       	 	<mvc:exclude-mapping path="/user/regist.action"/>	<!-- 注册 -->
            <bean class="com.jp.interceptor.LoginInterceptor"></bean>
         </mvc:interceptor>
         <!-- 当设置多个拦截器时，先按顺序调用preHandle方法，然后逆序调用每个拦截器的postHandle和afterCompletion方法 -->
