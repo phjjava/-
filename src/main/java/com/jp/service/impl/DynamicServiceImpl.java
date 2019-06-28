@@ -153,7 +153,7 @@ public class DynamicServiceImpl implements DynamicService {
 				if (dynamic.getDytype() == 0) {
 					dynamic.setBranchid("0");
 				}
-				dynamic.setUpdateid("04a27de4d43a44849b24d2427eb25c69");
+				dynamic.setUpdateid(CurrentUserContext.getCurrentUserId());
 				dynamic.setUpdatetime(new Date());
 				status = dydao.updateByPrimaryKeySelective(dynamic);
 				// 先删除，原有的附件
