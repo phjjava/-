@@ -139,6 +139,7 @@ public class LoginController {
 							// }
 							userContext.setUsermanagers(managers);
 							userContext.setFunctionList(functionList);
+							userContext.setBranchList(branchList);
 							if (branchList == null) {
 								branchList = new ArrayList<Branch>();
 							}
