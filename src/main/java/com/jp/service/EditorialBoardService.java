@@ -1,10 +1,8 @@
 package com.jp.service;
 
-import java.util.List;
-
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.EditorialBoard;
-import com.jp.entity.Role;
 
 public interface EditorialBoardService {
 
@@ -17,9 +15,7 @@ public interface EditorialBoardService {
 	 * @参数 @throws Exception
 	 * @return PageModel<Role>
 	 */
-	PageModel<EditorialBoard> pageQuery(PageModel<EditorialBoard> pageModel,EditorialBoard role) throws Exception;
-
-	
+	PageModel<EditorialBoard> pageQuery(PageModel<EditorialBoard> pageModel, EditorialBoard role) throws Exception;
 
 	/**
 	 * @描述 获取编委会详情
@@ -42,8 +38,7 @@ public interface EditorialBoardService {
 	 * @return int
 	 */
 	Integer update(EditorialBoard eb) throws Exception;
-	
-	
+
 	/**
 	 * @描述 新增编委会
 	 * @作者 chenxiaobing
@@ -57,16 +52,6 @@ public interface EditorialBoardService {
 
 	int del(String id);
 
-
-
-	List<EditorialBoard> selecteditorialBoardList(String userid);
-
-
-
-	
-
-
-
-	
+	JsonResponse selecteditorialBoardList(String userid);
 
 }

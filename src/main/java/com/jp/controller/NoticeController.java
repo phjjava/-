@@ -54,7 +54,7 @@ public class NoticeController {
 			noticeservice.pageQuery(pageModel, notice);
 			if (pageModel.getList() != null) {
 				if (pageModel.getPageSize() == 0) {
-					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
+					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo().toString())) {
 						pageModel.setPageNo(pageModel.getPageNo() - 1);
 						noticeservice.pageQuery(pageModel, notice);
 					}

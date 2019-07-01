@@ -1,7 +1,5 @@
 package com.jp.controller;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
@@ -155,27 +153,7 @@ public class EditorialControll {
 	@RequestMapping(value = "/selecteditorialBoardList", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse selectRoleList() {
-		Result result = null;
-		JsonResponse res = null;
-		List<EditorialBoard> list = null;
-		try {
-			list = editorialBoardService.selecteditorialBoardList(CurrentUserContext.getCurrentUserId());
-			if (list == null) {
-				result = new Result(MsgConstants.RESUL_FAIL);
-				res = new JsonResponse(result);
-				return res;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(list);
-		return res;
+		return editorialBoardService.selecteditorialBoardList(CurrentUserContext.getCurrentUserId());
 	}
 
 }

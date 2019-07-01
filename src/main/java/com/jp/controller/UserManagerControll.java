@@ -60,7 +60,7 @@ public class UserManagerControll {
 			userManagerService.pageQuery(pageModel, entity);
 			if (pageModel.getList() != null) {
 				if (pageModel.getList().size() == 0) {
-					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
+					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo().toString())) {
 						pageModel.setPageNo(pageModel.getPageNo() - 1);
 						userManagerService.pageQuery(pageModel, entity);
 					}
