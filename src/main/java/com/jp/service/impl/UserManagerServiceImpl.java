@@ -96,7 +96,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 				FunctionRoleExample roleEx = new FunctionRoleExample();
 				roleEx.or().andUseridEqualTo(manager.getUserid());
 				List<FunctionRoleKey> functionRoleKey = functionRoleMapper.selectByExample(roleEx);
-				if (functionRoleKey != null) {
+				if (functionRoleKey != null && functionRoleKey.size() != 0) {
 					// 先删除《角色功能》
 					status = functionRoleMapper.deleteByExample(roleEx);
 					if (status < 1) {
