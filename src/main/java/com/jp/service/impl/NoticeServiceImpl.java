@@ -68,6 +68,7 @@ public class NoticeServiceImpl implements NoticeService {
 	public PageModel<NoticeVO> pageQuery(PageModel<NoticeVO> pageModel, Notice notice) throws Exception {
 		NoticeExample nq = new NoticeExample();
 		Criteria criteria = nq.or();
+		criteria.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
 		if (StringTools.trimNotEmpty(notice.getType())) {
 			criteria.andTypeEqualTo(notice.getType());
 		}

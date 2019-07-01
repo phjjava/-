@@ -384,11 +384,9 @@
 		resultType="com.jp.entity.UserManager">
 		select
 		id,userid,username,ebid,ebname,postid,postname,ebtype,ismanager
-		from
-		jp_user_manager
+		from jp_user_manager
 		where userid=#{userid,jdbcType=VARCHAR}
-		order by ebtype
-		desc
+		order by ebtype	desc,ismanager desc
 	</select>
 	<select id="selectByEbid" parameterType="java.lang.String"
 		resultType="com.jp.entity.UserManager">
