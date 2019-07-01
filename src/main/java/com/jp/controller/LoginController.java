@@ -142,8 +142,10 @@ public class LoginController {
 							if (branchList == null) {
 								branchList = new ArrayList<Branch>();
 							}
-							// 重置sessionid到数据库
-							user.setSessionid(session.getId());
+							if (user.getSessionid() == null) {
+								// 重置sessionid到数据库
+								user.setSessionid(session.getId());
+							}
 							// 记录登陆时间
 							user.setLogintime(new Date());
 							userMapper.updateByPrimaryKeySelective(user);
@@ -289,8 +291,10 @@ public class LoginController {
 			userContext.setBranchList(branchList);
 			// 创建session
 			HttpSession session = request.getSession();
-			// 重置sessionid到数据库
-			user.setSessionid(session.getId());
+			if (user.getSessionid() == null) {
+				// 重置sessionid到数据库
+				user.setSessionid(session.getId());
+			}
 			// 记录登陆时间
 			user.setLogintime(new Date());
 			userMapper.updateByPrimaryKeySelective(user);
