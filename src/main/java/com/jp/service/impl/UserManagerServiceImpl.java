@@ -63,6 +63,9 @@ public class UserManagerServiceImpl implements UserManagerService {
 			if (!StringUtils.isEmpty(entity.getUsername())) {
 				params.put("username", entity.getUsername());
 			}
+			if(!StringUtils.isEmpty(entity.getEbid())) {
+				params.put("ebid", entity.getEbid());
+			}
 			if (manager.getEbtype() == 1) {
 				// 总编委会查询所有
 				params.put("familyid", manager.getFamilyid());
