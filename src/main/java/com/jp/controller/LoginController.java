@@ -142,16 +142,13 @@ public class LoginController {
 							if (branchList == null) {
 								branchList = new ArrayList<Branch>();
 							}
-							userContext.setBranchList(branchList);
 							// 重置sessionid到数据库
-							User updateSessionisUser = new User();
-							updateSessionisUser.setUserid(user.getUserid());
-							updateSessionisUser.setSessionid(session.getId());
+							user.setSessionid(session.getId());
 							// 记录登陆时间
-							updateSessionisUser.setLogintime(new Date());
-							userMapper.updateByPrimaryKeySelective(updateSessionisUser);
+							user.setLogintime(new Date());
+							userMapper.updateByPrimaryKeySelective(user);
 							// 保存session作用域
-							session.setAttribute("userContext", userContext);
+							request.getSession().setAttribute("userContext", userContext);
 
 							result = new Result(MsgConstants.RESUL_SUCCESS);
 							res = new JsonResponse(result);
@@ -293,12 +290,10 @@ public class LoginController {
 			// 创建session
 			HttpSession session = request.getSession();
 			// 重置sessionid到数据库
-			User updateSessionisUser = new User();
-			updateSessionisUser.setUserid(userid);
-			updateSessionisUser.setSessionid(session.getId());
+			user.setSessionid(session.getId());
 			// 记录登陆时间
-			updateSessionisUser.setLogintime(new Date());
-			userMapper.updateByPrimaryKeySelective(updateSessionisUser);
+			user.setLogintime(new Date());
+			userMapper.updateByPrimaryKeySelective(user);
 			// 保存session作用域
 			session.setAttribute("userContext", userContext);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
