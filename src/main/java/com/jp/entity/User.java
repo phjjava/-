@@ -448,9 +448,18 @@ public class User implements Serializable {
 
 	private String funcgroupid;
 	private Integer ismanager;
+	private Integer ebtype;
 
 	private Integer type;
 	private Integer matetype;
+
+	public Integer getEbtype() {
+		return ebtype;
+	}
+
+	public void setEbtype(Integer ebtype) {
+		this.ebtype = ebtype;
+	}
 
 	public String getMatetypeStr() {
 		return matetypeStr;
