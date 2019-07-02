@@ -1752,13 +1752,34 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String mergeUserAlbum(Useralbum userAlbum) throws Exception {
+	public JsonResponse mergeUserAlbum(Useralbum userAlbum) {
+		Result result = null;
+		JsonResponse res = null;
+		int status = 0;
 		String ablumId = "";
 		try {
+			if (userAlbum.getUserid() == null || "".equals(userAlbum.getUserid())) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("参数userid不能为空！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			if (userAlbum.getType() == null || "".equals(userAlbum.getType())) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("参数type不能为空！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			if (userAlbum.getRemark() == null || "".equals(userAlbum.getRemark())) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("参数remark不能为空！");
+				res = new JsonResponse(result);
+				return res;
+			}
 			if (StringTools.trimNotEmpty(userAlbum.getAlbumid())) {
 				userAlbum.setUpdatetime(new Date());
 				userAlbum.setUpdateid(CurrentUserContext.getCurrentUserId());
-				userAlbumDao.updateByPrimaryKeySelective(userAlbum);
+				status = userAlbumDao.updateByPrimaryKeySelective(userAlbum);
 			} else {
 				ablumId = UUIDUtils.getUUID();
 				userAlbum.setAlbumid(ablumId);
@@ -1766,15 +1787,25 @@ public class UserServiceImpl implements UserService {
 				userAlbum.setCreateid(CurrentUserContext.getCurrentUserId());
 				// 0未删除
 				userAlbum.setDeleteflag(0);
-
 				// userAlbum.setType(b);
-				userAlbumDao.insertSelective(userAlbum);
+				status = userAlbumDao.insertSelective(userAlbum);
+			}
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(ablumId);
+				return res;
 			}
 		} catch (Exception e) {
-			ablumId = "";
-			e.printStackTrace();
+			log_.error("[mergeUserAlbum方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-		return ablumId;
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		res.setData(ablumId);
+		return res;
 	}
 
 	@Override

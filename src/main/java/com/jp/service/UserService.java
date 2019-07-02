@@ -164,7 +164,7 @@ public interface UserService {
 	 * @参数 @throws Exception
 	 * @return int
 	 */
-	String mergeUserAlbum(Useralbum userAlbum) throws Exception;
+	JsonResponse mergeUserAlbum(Useralbum userAlbum);
 
 	/**
 	 * 

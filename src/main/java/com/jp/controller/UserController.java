@@ -816,21 +816,7 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/mergeUserAlbum", method = RequestMethod.POST)
 	public JsonResponse mergeUserAlbum(Useralbum userAlbum) {
-		String ablumId = null;
-		Result result = null;
-		JsonResponse res = null;
-		try {
-			ablumId = userService.mergeUserAlbum(userAlbum);
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
-			res.setData(ablumId);
-		} catch (Exception e) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			res = new JsonResponse(result);
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		return res;
+		return userService.mergeUserAlbum(userAlbum);
 	}
 
 	/**
