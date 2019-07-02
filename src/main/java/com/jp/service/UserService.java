@@ -188,7 +188,7 @@ public interface UserService {
 	 * @参数 @throws Exception
 	 * @return List<Useralbum>
 	 */
-	List<Useralbum> selectUseralbum(String userid) throws Exception;
+	JsonResponse selectUseralbum(String userid, int type);
 
 	/**
 	 * @描述 新增或编辑用户验证手机号

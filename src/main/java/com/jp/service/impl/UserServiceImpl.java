@@ -1791,8 +1791,22 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<Useralbum> selectUseralbum(String userid) throws Exception {
-		return userAlbumDao.selectUseralbum(userid);
+	public JsonResponse selectUseralbum(String userid, int type) {
+		Result result = null;
+		JsonResponse res = null;
+		List<Useralbum> useralbums = null;
+		try {
+			useralbums = userAlbumDao.selectUseralbum(userid, type);
+		} catch (Exception e) {
+			log_.error("[selectUseralbum方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(useralbums);
+		return res;
 	}
 
 	@Override
