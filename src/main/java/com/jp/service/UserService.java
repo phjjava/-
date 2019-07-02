@@ -176,7 +176,7 @@ public interface UserService {
 	 * @参数 @throws Exception
 	 * @return String
 	 */
-	String mergeUserPhoto(List<Userphoto> userPhotoList) throws Exception;
+	JsonResponse savePhoto(List<Userphoto> userPhotoList);
 
 	/**
 	 * 

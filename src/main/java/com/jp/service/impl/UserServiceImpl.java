@@ -1778,16 +1778,32 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String mergeUserPhoto(List<Userphoto> userPhotoList) throws Exception {
-		String result = "";
+	public JsonResponse savePhoto(List<Userphoto> userPhotoList) {
+		Result result = null;
+		JsonResponse res = null;
 		try {
-			userPtotoDao.insertUserPhoto(userPhotoList);
-			result = "1";
+			for (Userphoto userphoto : userPhotoList) {
+				userphoto.setImgid(UUIDUtils.getUUID());
+				userphoto.setCreatetime(new Date());
+				userphoto.setCreateid(CurrentUserContext.getCurrentUserId());
+				userphoto.setDeleteflag(0);
+			}
+			int status = userPtotoDao.insertUserPhoto(userPhotoList);
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
 		} catch (Exception e) {
-			result = "0";
 			e.printStackTrace();
+			log_.error("[savePhoto方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-		return result;
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override

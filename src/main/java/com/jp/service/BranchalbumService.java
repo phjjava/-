@@ -2,8 +2,6 @@ package com.jp.service;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
-
 import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.Branchalbum;
@@ -17,7 +15,7 @@ public interface BranchalbumService {
 
 	String mergeBranchAlbum(Branchalbum branchalbum);
 
-	JsonResponse insertBranchPhoto(@Param("list") List<Branchphoto> userPhotoList);
+	JsonResponse insertBranchPhoto(List<Branchphoto> userPhotoList);
 
 	JsonResponse getAlbumAndPhotos(String albumid, String branchid);
 
