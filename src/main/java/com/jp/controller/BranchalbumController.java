@@ -189,22 +189,8 @@ public class BranchalbumController {
 	@RequestMapping(value = "/batchSavePhoto", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse batchSavePhoto(@RequestBody List<Branchphoto> userPhotoList) {
-		List<Branchphoto> branchphotos = new ArrayList<Branchphoto>();
-		for (Branchphoto bp : userPhotoList) {
-			Branchphoto branchPhoto = new Branchphoto();
-			branchPhoto.setImgid(UUIDUtils.getUUID());
-			branchPhoto.setAlbumid(bp.getAlbumid());
-			branchPhoto.setBranchid(bp.getBranchid());
-			branchPhoto.setImgurl(bp.getImgurl());
-			branchPhoto.setSmallimgurl(bp.getSmallimgurl());
-			branchPhoto.setDescription(bp.getDescription());
-			branchPhoto.setCreatetime(new Date());
-			branchPhoto.setCreateid(CurrentUserContext.getCurrentUserId());
-			branchPhoto.setDeleteflag(0);
-			branchphotos.add(branchPhoto);
-		}
 
-		return baservice.insertBranchPhoto(branchphotos);
+		return baservice.insertBranchPhoto(userPhotoList);
 	}
 
 	/**

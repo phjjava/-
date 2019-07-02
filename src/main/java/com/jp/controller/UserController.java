@@ -63,7 +63,6 @@ import com.jp.util.MD5Util;
 import com.jp.util.RSAUtils;
 //import com.jp.util.Result;
 import com.jp.util.StringTools;
-import com.jp.util.UUIDUtils;
 
 @Controller
 @RequestMapping("user")
@@ -791,7 +790,7 @@ public class UserController {
 
 	/**
 	 * 
-	 * @描述 用户相册增加
+	 * @描述 用户上传图片保存
 	 * @作者 sj
 	 * @时间 2017年5月15日下午12:02:36
 	 * @参数 @param user
@@ -800,30 +799,9 @@ public class UserController {
 	 * @return String
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/saveAlbum", method = RequestMethod.POST, produces = { "application/json;charset=UTF-8" })
-	public JsonResponse saveAlbum(List<Userphoto> userPhotoList, HttpServletRequest request, String albumid,
-			String userid) {
-		Result result = null;
-		JsonResponse res = null;
-		try {
-			for (Userphoto userphoto : userPhotoList) {
-				userphoto.setUserid(userid);
-				userphoto.setAlbumid(albumid);
-				userphoto.setImgid(UUIDUtils.getUUID());
-				userphoto.setCreatetime(new Date());
-				userphoto.setCreateid(CurrentUserContext.getCurrentUserId());
-				userphoto.setDeleteflag(0);
-			}
-
-			userService.mergeUserPhoto(userPhotoList);
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-		} catch (Exception e) {
-			e.printStackTrace();
-			result = new Result(MsgConstants.RESUL_FAIL);
-			log_.error("[JPSYSTEM]", e);
-		}
-		res = new JsonResponse(result);
-		return res;
+	@RequestMapping(value = "/savePhoto", method = RequestMethod.POST, produces = { "application/json;charset=UTF-8" })
+	public JsonResponse savePhoto(@RequestBody List<Userphoto> userPhotoList) {
+		return userService.savePhoto(userPhotoList);
 	}
 
 	/**

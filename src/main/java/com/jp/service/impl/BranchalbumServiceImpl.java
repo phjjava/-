@@ -180,13 +180,8 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 		JsonResponse res = null;
 		List<Branchphoto> branchphotos = new ArrayList<Branchphoto>();
 		for (Branchphoto bp : userPhotoList) {
-			if (bp.getImgid() == null || "".equals(bp.getImgid())) {
-				result = new Result(MsgConstants.RESUL_FAIL);
-				res = new JsonResponse(result);
-				return res;
-			}
 			Branchphoto branchPhoto = new Branchphoto();
-			branchPhoto.setImgid(bp.getImgid());
+			branchPhoto.setImgid(UUIDUtils.getUUID());
 			branchPhoto.setAlbumid(bp.getAlbumid());
 			branchPhoto.setBranchid(bp.getBranchid());
 			branchPhoto.setImgurl(bp.getImgurl());
