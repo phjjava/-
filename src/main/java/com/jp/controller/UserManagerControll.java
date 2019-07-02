@@ -206,8 +206,8 @@ public class UserManagerControll {
 	 */
 	@RequestMapping(value = "/getPost", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse getPost() {
-		return userManagerService.getPost();
+	public JsonResponse getPost(int type) {
+		return userManagerService.getPost(type, CurrentUserContext.getCurrentFamilyId());
 
 	}
 }

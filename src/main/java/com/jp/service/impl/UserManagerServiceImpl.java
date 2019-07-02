@@ -24,6 +24,7 @@ import com.jp.dao.UserManagerMapper;
 import com.jp.entity.FunctionRoleExample;
 import com.jp.entity.FunctionRoleKey;
 import com.jp.entity.Post;
+import com.jp.entity.PostExample;
 import com.jp.entity.UserManager;
 import com.jp.entity.UserManagerExample;
 import com.jp.service.UserManagerService;
@@ -63,7 +64,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 			if (!StringUtils.isEmpty(entity.getUsername())) {
 				params.put("username", entity.getUsername());
 			}
-			if(!StringUtils.isEmpty(entity.getEbid())) {
+			if (!StringUtils.isEmpty(entity.getEbid())) {
 				params.put("ebid", entity.getEbid());
 			}
 			if (manager.getEbtype() == 1) {
@@ -145,12 +146,14 @@ public class UserManagerServiceImpl implements UserManagerService {
 	}
 
 	@Override
-	public JsonResponse getPost() {
+	public JsonResponse getPost(int type, String familyid) {
 		Result result = null;
 		JsonResponse res = null;
 		List<Post> allPost = null;
+		PostExample example = new PostExample();
+		example.or().andTypeEqualTo(type).andFamilyidEqualTo(familyid);
 		try {
-			allPost = postMapper.selectAllPost();
+			allPost = postMapper.selectByExample(example);
 		} catch (Exception e) {
 			e.printStackTrace();
 			result = new Result(MsgConstants.SYS_ERROR);
