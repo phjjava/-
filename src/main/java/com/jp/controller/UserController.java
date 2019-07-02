@@ -163,6 +163,17 @@ public class UserController {
 	}
 
 	/**
+	 * 获取用户的相册和个人作品
+	 * @param type
+	 * @return
+	 */
+	@RequestMapping(value = "/getUserAblums", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse getUserAblums(int type) {
+		return userService.selectUseralbum(CurrentUserContext.getCurrentUserId(), type);
+	}
+
+	/**
 	 * 
 	 * @描述 去新增修改界面
 	 * @作者 sj
@@ -176,7 +187,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/edit", method = RequestMethod.GET)
 	@ResponseBody
-	public JsonResponse editUser(HttpServletRequest request, ModelMap modelMap) {
+	public JsonResponse editUser(HttpServletRequest request) {
 		Result result = null;
 		JsonResponse res = null;
 		// SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
@@ -265,8 +276,7 @@ public class UserController {
 			key.setFamilyid(user.getFamilyid());
 			Branch branch = branchDao.selectByPrimaryKey(key);
 			// branchService.initBranch(pageModel,branch);
-			// 初始化相册
-			List<Useralbum> userAblumList = userService.selectUseralbum(userid);
+
 			// 判断是否是其他民族
 			if (userInfo != null && userInfo.getNation() != null) {
 				if (ConstantUtils.DEFAULT_NATION_STR.indexOf(userInfo.getNation()) == -1) {
@@ -288,7 +298,6 @@ public class UserController {
 			user.setBranchList((List<Branch>) pageModel.getList());
 			user.setUserWorkexp(workList);
 			user.setUserEdu(eduList);
-			user.setUserAblumList(userAblumList);
 			user.setMateList(mateList);
 			if (branch != null) {
 				String area = "";
@@ -951,7 +960,7 @@ public class UserController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/userAlbumDetail", method = RequestMethod.POST)
-	public JsonResponse userAlbumDetail(String albumid, String userid, String type, ModelMap modelMap) {
+	public JsonResponse userAlbumDetail(String albumid, String userid, String type) {
 		Result result = null;
 		JsonResponse res = null;
 		try {

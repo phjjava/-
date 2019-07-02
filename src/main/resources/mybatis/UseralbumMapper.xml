@@ -311,7 +311,7 @@
     where userid = #{userid,jdbcType=VARCHAR}
       and albumid = #{albumid,jdbcType=VARCHAR}
   </update>
-  <select id="selectUseralbum" parameterType="java.lang.String" resultType="com.jp.entity.Useralbum">
+  <select id="selectUseralbum"  resultType="com.jp.entity.Useralbum">
 	SELECT
 	ablum.* ,a.imgurl,b.photoNumbers
 		FROM
@@ -333,7 +333,7 @@
 		       photoNum.albumid
 
         )b ON ablum.albumid = b.albumid
-		where ablum.userid = #{userid,jdbcType=VARCHAR}
+		where ablum.userid = #{userid,jdbcType=VARCHAR} and ablum.type = #{type}
 		order BY createtime DESC
  </select>
 </mapper>

@@ -41,7 +41,7 @@ public interface UseralbumDao {
 	 * @参数 @return
 	 * @return List<Useralbum>
 	 */
-	List<Useralbum> selectUseralbum(String userid);
+	List<Useralbum> selectUseralbum(@Param("userid") String userid, @Param("type") int type);
 
 	@Select("select * from jp_useralbum where userid = #{userid} and type = #{type} and deleteflag = 0 order by sort asc")
 	List<Useralbum> selectByUseridAndType(@Param("userid") String userid, @Param("type") int type);

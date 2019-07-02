@@ -16,6 +16,10 @@ import com.jp.entity.UserManager;
  */
 public class LoginUserInfo implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private User user;
 	private Role role;
 
