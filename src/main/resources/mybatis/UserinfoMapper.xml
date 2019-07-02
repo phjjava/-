@@ -534,14 +534,14 @@
     user.familyid = #{user.familyid}
     -->
 	
-select user.*,IFNULL(manager.ismanager,0) ismanager from (select
+select user.*,IFNULL(manager.ismanager,0) ismanager ,IFNULL(manager.ebtype,0) ebtype from (select
       uu.userid as userid,uu.username as username,uu.sex as sex,uu.isdirect,userInfo.birthday as searchBirthday
       ,uu.brotherpos as brotherpos,uu.genlevel as genlevel,uu.branchname as branchname,uu.status as status,uu.ismarry,uu.branchid
       ,uu.familyid,uu.phone
      from jp_user uu left join jp_userinfo userInfo
     on userInfo.userid = uu.userid
     where uu.deleteflag=0 and  uu.familyid = #{user.familyid}) user LEFT OUTER JOIN 
-(select r.userid,r.ismanager from jp_user_manager r  where r.ebtype=1 and r.ismanager=1 and r.familyid=#{user.familyid}) manager
+(select r.userid,r.ismanager,r.ebtype from jp_user_manager r  where r.ebtype=1 and r.ismanager=1 and r.familyid=#{user.familyid}) manager
 on user.userid = manager.userid
 	where 1=1
     <if test="user.username != null and user.username != ''" >
