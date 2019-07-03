@@ -168,8 +168,8 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/getUserAblums", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse getUserAblums(int type) {
-		return userService.selectUseralbum(CurrentUserContext.getCurrentUserId(), type);
+	public JsonResponse getUserAblums(int type, String userid) {
+		return userService.selectUseralbum(userid, type);
 	}
 
 	/**
