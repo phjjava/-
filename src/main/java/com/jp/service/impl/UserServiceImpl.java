@@ -1812,7 +1812,9 @@ public class UserServiceImpl implements UserService {
 		JsonResponse res = null;
 		try {
 			for (Userphoto userphoto : userPhotoList) {
-				userphoto.setImgid(UUIDUtils.getUUID());
+				if (userphoto.getImgid() == null || "".equals(userphoto.getImgid())) {
+					userphoto.setImgid(UUIDUtils.getUUID());
+				}
 				userphoto.setCreatetime(new Date());
 				userphoto.setCreateid(CurrentUserContext.getCurrentUserId());
 				userphoto.setDeleteflag(0);

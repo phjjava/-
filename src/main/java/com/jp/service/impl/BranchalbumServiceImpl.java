@@ -178,22 +178,16 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	public JsonResponse insertBranchPhoto(List<Branchphoto> userPhotoList) {
 		Result result = null;
 		JsonResponse res = null;
-		List<Branchphoto> branchphotos = new ArrayList<Branchphoto>();
 		try {
 			for (Branchphoto bp : userPhotoList) {
-				Branchphoto branchPhoto = new Branchphoto();
-				branchPhoto.setImgid(UUIDUtils.getUUID());
-				branchPhoto.setAlbumid(bp.getAlbumid());
-				branchPhoto.setBranchid(bp.getBranchid());
-				branchPhoto.setImgurl(bp.getImgurl());
-				branchPhoto.setSmallimgurl(bp.getSmallimgurl());
-				branchPhoto.setDescription(bp.getDescription());
-				branchPhoto.setCreatetime(new Date());
-				branchPhoto.setCreateid(CurrentUserContext.getCurrentUserId());
-				branchPhoto.setDeleteflag(0);
-				branchphotos.add(branchPhoto);
+				if (bp.getImgid() == null || "".equals(bp.getImgid())) {
+					bp.setImgid(UUIDUtils.getUUID());
+				}
+				bp.setCreatetime(new Date());
+				bp.setCreateid(CurrentUserContext.getCurrentUserId());
+				bp.setDeleteflag(0);
 			}
-			int status = photodao.insertBranchPhoto(branchphotos);
+			int status = photodao.insertBranchPhoto(userPhotoList);
 			if (status > 0) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);
