@@ -1756,7 +1756,7 @@ public class UserServiceImpl implements UserService {
 		Result result = null;
 		JsonResponse res = null;
 		int status = 0;
-		String ablumId = "";
+		String ablumId = UUIDUtils.getUUID();
 		try {
 			if (userAlbum.getUserid() == null || "".equals(userAlbum.getUserid())) {
 				result = new Result(MsgConstants.RESUL_FAIL);
@@ -1764,7 +1764,7 @@ public class UserServiceImpl implements UserService {
 				res = new JsonResponse(result);
 				return res;
 			}
-			if (userAlbum.getType() == null || "".equals(userAlbum.getType())) {
+			if (userAlbum.getType() == null || "".equals(userAlbum.getType() + "")) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数type不能为空！");
 				res = new JsonResponse(result);
@@ -1781,7 +1781,6 @@ public class UserServiceImpl implements UserService {
 				userAlbum.setUpdateid(CurrentUserContext.getCurrentUserId());
 				status = userAlbumDao.updateByPrimaryKeySelective(userAlbum);
 			} else {
-				ablumId = UUIDUtils.getUUID();
 				userAlbum.setAlbumid(ablumId);
 				userAlbum.setCreatetime(new Date());
 				userAlbum.setCreateid(CurrentUserContext.getCurrentUserId());
@@ -1804,7 +1803,6 @@ public class UserServiceImpl implements UserService {
 		}
 		result = new Result(MsgConstants.RESUL_FAIL);
 		res = new JsonResponse(result);
-		res.setData(ablumId);
 		return res;
 	}
 
@@ -1814,9 +1812,8 @@ public class UserServiceImpl implements UserService {
 		JsonResponse res = null;
 		try {
 			for (Userphoto userphoto : userPhotoList) {
-				userphoto.setImgid(UUIDUtils.getUUID());
 				userphoto.setCreatetime(new Date());
-				userphoto.setCreateid(CurrentUserContext.getCurrentUserId());
+				userphoto.setCreateid("04a27de4d43a44849b24d2427eb25c69");
 				userphoto.setDeleteflag(0);
 			}
 			int status = userPtotoDao.insertUserPhoto(userPhotoList);
