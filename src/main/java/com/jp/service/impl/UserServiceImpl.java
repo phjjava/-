@@ -1813,7 +1813,7 @@ public class UserServiceImpl implements UserService {
 		try {
 			for (Userphoto userphoto : userPhotoList) {
 				userphoto.setCreatetime(new Date());
-				userphoto.setCreateid("04a27de4d43a44849b24d2427eb25c69");
+				userphoto.setCreateid(CurrentUserContext.getCurrentUserId());
 				userphoto.setDeleteflag(0);
 			}
 			int status = userPtotoDao.insertUserPhoto(userPhotoList);
