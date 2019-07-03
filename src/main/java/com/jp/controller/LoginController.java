@@ -106,6 +106,7 @@ public class LoginController {
 							if (managers == null || managers.size() == 0) {
 								result = new Result(MsgConstants.LOGIN_NOT_ADMIN);
 								res = new JsonResponse(result);
+								return res;
 							}
 							// userContext.setRole(role);
 							// userContext.setUsermanager(manager);
@@ -156,36 +157,40 @@ public class LoginController {
 							result = new Result(MsgConstants.RESUL_SUCCESS);
 							res = new JsonResponse(result);
 							res.setData(user);
-						} else if (userList.size() == 2) {
+						} else if (userList.size() < 5) {
 
 							request.getSession().setAttribute("loginUserList", userList);
 
 							result = new Result(MsgConstants.LOGIN_USER_CHOOSEFAMILY);
 							res = new JsonResponse(result);
 							res.setData(userList);
-
+							return res;
 						} else {
 							result = new Result(MsgConstants.LOGIN_ABNORMAL);
 							res = new JsonResponse(result);
+							return res;
 						}
 					} else {
 						result = new Result(MsgConstants.LOGIN_USER_WRONG);
 						res = new JsonResponse(result);
+						return res;
 					}
 				} else {
 					result = new Result(MsgConstants.LOGIN_USER_NULL);
 					res = new JsonResponse(result);
+					return res;
 				}
 			} else {
 				result = new Result(MsgConstants.LOGIN_ICODE_WRONG);
 				res = new JsonResponse(result);
+				return res;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[HNFZ_ERROR登录系统失败:]", e);
 			result = new Result(MsgConstants.LOGIN_FAIL);
 			res = new JsonResponse(result);
-
+			return res;
 		}
 		return res;
 	}
