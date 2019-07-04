@@ -229,8 +229,17 @@ public class UserController {
 							userInfo.setBirthplaceC(births[1]);
 							userInfo.setBirthplaceX(births[2]);
 						} else if (births.length == 4) {
-
+							userInfo.setBirthplaceP(births[0]);
+							userInfo.setBirthplaceC(births[1]);
+							userInfo.setBirthplaceX(births[2]);
+							userInfo.setBirthDetail(births[3]);
 						}
+					} else {
+						userInfo.setBirthplace("");
+						userInfo.setBirthplaceP("");
+						userInfo.setBirthplaceC("");
+						userInfo.setBirthplaceX("");
+						userInfo.setBirthDetail("");
 					}
 
 					String home = userInfo.getHomeplace();
@@ -257,6 +266,12 @@ public class UserController {
 							userInfo.setHomeplaceX(homes[2]);
 							userInfo.setHomeDetail(homes[3]);
 						}
+					} else {
+						userInfo.setHomeplace("");
+						userInfo.setHomeplaceP("");
+						userInfo.setHomeplaceC("");
+						userInfo.setHomeplaceX("");
+						userInfo.setHomeDetail("");
 					}
 				}
 				workList = userWorkService.selectByUserId(userid);
