@@ -38,6 +38,6 @@ public interface UserManagerMapper {
 
 	List<UserManager> selectByParams(Map<String, Object> params);
 
-	@Select("SELECT * FROM `jp_user_manager`")
-	UserManager selectByManagerId(String id);
+	@Select("SELECT * FROM `jp_user_manager` WHERE id = #{id}")
+	UserManager selectByManagerId(@Param("id") String id);
 }
