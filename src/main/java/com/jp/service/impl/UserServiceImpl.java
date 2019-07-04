@@ -922,7 +922,7 @@ public class UserServiceImpl implements UserService {
 		// 离世 不需要判断手机号 使用用户名和父亲名字判断
 		List<User> searchRt = userDao.selectUserByFamilyId(user.getFamilyid());
 		for (User userf : searchRt) {
-			if (userf.getDeleteflag() != 0  && StringUtil.isNotEmpty(userf.getUsername()) && userf.getUsername().equals(user.getUsername())
+			if (userf.getDeleteflag() == 0 && StringUtil.isNotEmpty(userf.getUsername()) && userf.getUsername().equals(user.getUsername())
 					&& userf.getGenlevel() == user.getGenlevel()) {
 				if (StringUtil.isNotEmpty(userf.getMatename()) && userf.getMatename().equals(user.getMatename())) {
 					sameFlag = true;
