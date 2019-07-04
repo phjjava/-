@@ -20,6 +20,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -168,7 +169,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/getUserAblums", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse getUserAblums(int type, String userid) {
+	public JsonResponse getUserAblums(@RequestParam(defaultValue = "0") int type, String userid) {
 		return userService.selectUseralbum(userid, type);
 	}
 

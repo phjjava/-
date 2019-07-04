@@ -1,8 +1,9 @@
 package com.jp.service;
 
-import com.jp.entity.SysUser;
+import javax.servlet.http.HttpServletRequest;
 
+import com.jp.common.JsonResponse;
 
 public interface SysUserService {
-	SysUser selectByLoginNameAndPassword(String loginName,String password) throws Exception;
+	JsonResponse selectByLoginNameAndPassword(HttpServletRequest request, String loginName, String password);
 }

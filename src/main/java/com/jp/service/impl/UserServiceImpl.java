@@ -922,8 +922,8 @@ public class UserServiceImpl implements UserService {
 		// 离世 不需要判断手机号 使用用户名和父亲名字判断
 		List<User> searchRt = userDao.selectUserByFamilyId(user.getFamilyid());
 		for (User userf : searchRt) {
-			if (userf.getDeleteflag() == 0 && StringUtil.isNotEmpty(userf.getUsername()) && userf.getUsername().equals(user.getUsername())
-					&& userf.getGenlevel() == user.getGenlevel()) {
+			if (userf.getDeleteflag() == 0 && StringUtil.isNotEmpty(userf.getUsername())
+					&& userf.getUsername().equals(user.getUsername()) && userf.getGenlevel() == user.getGenlevel()) {
 				if (StringUtil.isNotEmpty(userf.getMatename()) && userf.getMatename().equals(user.getMatename())) {
 					sameFlag = true;
 					userStringList.add("第" + user.getGenlevel() + "世:" + user.getUsername() + "已存在");
@@ -1815,6 +1815,36 @@ public class UserServiceImpl implements UserService {
 				if (userphoto.getImgid() == null || "".equals(userphoto.getImgid())) {
 					userphoto.setImgid(UUIDUtils.getUUID());
 				}
+				if (userphoto.getUserid() == null || "".equals(userphoto.getUserid())) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("参数userid不能为空！");
+					res = new JsonResponse(result);
+					return res;
+				}
+				if (userphoto.getAlbumid() == null || "".equals(userphoto.getAlbumid())) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("参数albumid不能为空！");
+					res = new JsonResponse(result);
+					return res;
+				}
+				if (userphoto.getSmallimgurl() == null || "".equals(userphoto.getSmallimgurl())) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("参数smallimgurl不能为空！");
+					res = new JsonResponse(result);
+					return res;
+				}
+				if (userphoto.getImgurl() == null || "".equals(userphoto.getImgurl())) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("参数imgurl不能为空！");
+					res = new JsonResponse(result);
+					return res;
+				}
+				if (userphoto.getDescription() == null || "".equals(userphoto.getDescription())) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("参数description不能为空！");
+					res = new JsonResponse(result);
+					return res;
+				}
 				userphoto.setCreatetime(new Date());
 				userphoto.setCreateid(CurrentUserContext.getCurrentUserId());
 				userphoto.setDeleteflag(0);
@@ -1843,6 +1873,12 @@ public class UserServiceImpl implements UserService {
 		JsonResponse res = null;
 		List<Useralbum> useralbums = null;
 		try {
+			if (userid == null || "".equals(userid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("参数userid不能为空！");
+				res = new JsonResponse(result);
+				return res;
+			}
 			useralbums = userAlbumDao.selectUseralbum(userid, type);
 		} catch (Exception e) {
 			log_.error("[selectUseralbum方法---异常:]", e);
