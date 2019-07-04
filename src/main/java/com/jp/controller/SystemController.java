@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.jp.common.JsonResponse;
 import com.jp.entity.SysUser;
 import com.jp.service.SysUserService;
 import com.jp.util.MD5Util;
@@ -26,22 +27,9 @@ public class SystemController {
 
 	@ResponseBody
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public String login(SysUser sysUser, HttpServletRequest request) {
-		StringBuffer content = new StringBuffer();
-		try {
-			sysUser = sysUserService.selectByLoginNameAndPassword(sysUser.getLoginname(),
-					MD5Util.string2MD5(sysUser.getPassword()));
-			if (sysUser != null) {
-				request.getSession().setAttribute("systemUserContext", sysUser);
-				content.append("{\"result\":\"true\",\"info\":\"登录成功.\",\"indexUrl\":\"system/index\"}");
-			} else {
-				content.append("{\"result\":\"false\",\"info\":\"用户名或密码不正确.\"}");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		return content.toString();
+	public JsonResponse login(SysUser sysUser, HttpServletRequest request) {
+		return sysUserService.selectByLoginNameAndPassword(request, sysUser.getLoginname(),
+				MD5Util.string2MD5(sysUser.getPassword()));
 	}
 
 	@RequestMapping(value = "/index", method = RequestMethod.GET)

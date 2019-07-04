@@ -183,6 +183,36 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 				if (bp.getImgid() == null || "".equals(bp.getImgid())) {
 					bp.setImgid(UUIDUtils.getUUID());
 				}
+				if (bp.getAlbumid() == null || "".equals(bp.getAlbumid())) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("参数albumid不能为空！");
+					res = new JsonResponse(result);
+					return res;
+				}
+				if (bp.getBranchid() == null || "".equals(bp.getBranchid())) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("参数branchid不能为空！");
+					res = new JsonResponse(result);
+					return res;
+				}
+				if (bp.getImgurl() == null || "".equals(bp.getImgurl())) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("参数imgurl不能为空！");
+					res = new JsonResponse(result);
+					return res;
+				}
+				if (bp.getSmallimgurl() == null || "".equals(bp.getSmallimgurl())) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("参数smallimgurl不能为空！");
+					res = new JsonResponse(result);
+					return res;
+				}
+				if (bp.getDescription() == null || "".equals(bp.getDescription())) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("参数description不能为空！");
+					res = new JsonResponse(result);
+					return res;
+				}
 				bp.setCreatetime(new Date());
 				bp.setCreateid(CurrentUserContext.getCurrentUserId());
 				bp.setDeleteflag(0);
