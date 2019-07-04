@@ -95,7 +95,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 		JsonResponse res = null;
 		int status = 0;
 		try {
-			UserManager manager = userManagerMapper.selectByPrimaryKey(id);
+			UserManager manager = userManagerMapper.selectByManagerId(id);
 			if (manager != null) {
 				FunctionRoleExample roleEx = new FunctionRoleExample();
 				roleEx.or().andUseridEqualTo(manager.getUserid());
