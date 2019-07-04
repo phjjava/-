@@ -213,6 +213,12 @@ public class UserController {
 					String birth = userInfo.getBirthplace();
 					if (StringTools.trimNotEmpty(birth)) {
 						String births[] = birth.split("@@");
+						if (births.length == 0) {
+							userInfo.setBirthplaceP("");
+							userInfo.setBirthplaceC("");
+							userInfo.setBirthplaceX("");
+							userInfo.setBirthDetail("");
+						}
 						if (births.length == 1) {
 							userInfo.setBirthplaceP(births[0]);
 						} else if (births.length == 2) {
@@ -223,16 +229,19 @@ public class UserController {
 							userInfo.setBirthplaceC(births[1]);
 							userInfo.setBirthplaceX(births[2]);
 						} else if (births.length == 4) {
-							userInfo.setBirthplaceP(births[0]);
-							userInfo.setBirthplaceC(births[1]);
-							userInfo.setBirthplaceX(births[2]);
-							userInfo.setBirthDetail(births[3]);
+
 						}
 					}
 
 					String home = userInfo.getHomeplace();
 					if (StringTools.trimNotEmpty(home)) {
 						String homes[] = home.split("@@");
+						if (homes.length == 0) {
+							userInfo.setHomeplaceP("");
+							userInfo.setHomeplaceC("");
+							userInfo.setHomeplaceX("");
+							userInfo.setHomeDetail("");
+						}
 						if (homes.length == 1) {
 							userInfo.setHomeplaceP(homes[0]);
 						} else if (homes.length == 2) {
