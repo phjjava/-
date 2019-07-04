@@ -3,8 +3,8 @@ package com.jp.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -19,22 +19,23 @@ import com.jp.util.MD5Util;
 @Controller
 @RequestMapping("system")
 public class SystemController {
-	
+
 	private final Logger log_ = LogManager.getLogger(SystemController.class);
 	@Autowired
 	private SysUserService sysUserService;
+
 	@ResponseBody
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public String login(SysUser sysUser,HttpServletRequest request, ModelMap model) {
+	public String login(SysUser sysUser, HttpServletRequest request) {
 		StringBuffer content = new StringBuffer();
 		try {
-            sysUser = sysUserService.selectByLoginNameAndPassword(sysUser.getLoginname(),
-                    MD5Util.string2MD5(sysUser.getPassword()));
-			if(sysUser != null){
+			sysUser = sysUserService.selectByLoginNameAndPassword(sysUser.getLoginname(),
+					MD5Util.string2MD5(sysUser.getPassword()));
+			if (sysUser != null) {
 				request.getSession().setAttribute("systemUserContext", sysUser);
 				content.append("{\"result\":\"true\",\"info\":\"登录成功.\",\"indexUrl\":\"system/index\"}");
-			}else{
-                content.append("{\"result\":\"false\",\"info\":\"用户名或密码不正确.\"}");
+			} else {
+				content.append("{\"result\":\"false\",\"info\":\"用户名或密码不正确.\"}");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -42,22 +43,22 @@ public class SystemController {
 		}
 		return content.toString();
 	}
-	
+
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, ModelMap model) {
-		
+
 		model.put("menushow", "true");
 		return "system/index";
 	}
-	
+
 	//动态登录跳转manager重定向到index
 	@RequestMapping(value = "/manager", method = RequestMethod.GET)
 	public String manager(HttpServletRequest request, ModelMap model) {
-		
+
 		//model.put("menushow", "true");
 		return "redirect:/system/index";
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(value = "/loginout", method = RequestMethod.GET)
 	public String loginout(HttpServletRequest request) {

@@ -5,18 +5,14 @@
 		type="com.jp.entity.UserManager">
 		<id column="id" property="id" jdbcType="VARCHAR" />
 		<result column="userid" property="userid" jdbcType="VARCHAR" />
-		<result column="username" property="username"
-			jdbcType="VARCHAR" />
-		<result column="familyid" property="familyid"
-			jdbcType="VARCHAR" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="familyid" property="familyid" jdbcType="VARCHAR" />
 		<result column="postid" property="postid" jdbcType="VARCHAR" />
-		<result column="postname" property="postname"
-			jdbcType="VARCHAR" />
+		<result column="postname" property="postname" jdbcType="VARCHAR" />
 		<result column="ebid" property="ebid" jdbcType="VARCHAR" />
 		<result column="ebname" property="ebname" jdbcType="VARCHAR" />
 		<result column="ebtype" property="ebtype" jdbcType="INTEGER" />
-		<result column="ismanager" property="ismanager"
-			jdbcType="INTEGER" />
+		<result column="ismanager" property="ismanager" jdbcType="INTEGER" />
 		<result column="sort" property="sort" jdbcType="INTEGER" />
 	</resultMap>
 	<resultMap id="BaseResultMapForMe"
