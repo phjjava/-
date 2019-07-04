@@ -1011,7 +1011,9 @@
 		select
 		*
 		from jp_user
-		where familyid =
+		where 
+		deleteflag = 0
+		and familyid =
 		#{familyId,jdbcType=VARCHAR}
 	</select>
 
