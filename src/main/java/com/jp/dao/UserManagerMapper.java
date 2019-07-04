@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import com.jp.entity.UserManager;
 import com.jp.entity.UserManagerExample;
@@ -36,4 +37,7 @@ public interface UserManagerMapper {
 	List<UserManager> selectByEbid(String id);
 
 	List<UserManager> selectByParams(Map<String, Object> params);
+
+	@Select("SELECT * FROM `jp_user_manager` WHERE id = #{id}")
+	UserManager selectByManagerId(@Param("id") String id);
 }
