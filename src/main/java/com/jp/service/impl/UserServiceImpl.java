@@ -1572,7 +1572,7 @@ public class UserServiceImpl implements UserService {
 					res.setData(userList);
 					res.setData1(userMatesString);
 				}
-				res.setEntity(userMatesString);
+				//res.setEntity(userMatesString);
 			}
 			/*
 			 * String msString=""; if(userStringList.size()>0){ for (String ms :
