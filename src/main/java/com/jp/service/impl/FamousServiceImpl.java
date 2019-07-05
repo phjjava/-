@@ -35,17 +35,7 @@ public class FamousServiceImpl implements FamousService {
 
 	@Override
 	public Usercontent get(String userid) {
-		Usercontent usercontent = usercontentDao.selectByPrimaryKey(userid);
-		if (usercontent != null) {
-			Integer readcount = usercontent.getReadcount();
-			if (readcount == null || "".equals(readcount.toString())) {
-				usercontent.setReadcount(1);
-			} else {
-				usercontent.setReadcount(readcount + 1);
-			}
-			usercontentDao.updateByPrimaryKey(usercontent);
-		}
-		return usercontent;
+		return usercontentDao.selectByPrimaryKey(userid);
 	}
 
 	@Override
