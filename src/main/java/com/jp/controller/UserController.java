@@ -220,17 +220,26 @@ public class UserController {
 							userInfo.setBirthDetail("");
 						}
 						if (births.length == 1) {
-							userInfo.setBirthplaceP(births[0]);
+							userInfo.setBirthplaceP("null".equals(births[0]) ? "" : births[0]);
 						} else if (births.length == 2) {
-							userInfo.setBirthplaceP(births[0]);
-							userInfo.setBirthplaceC(births[1]);
+							userInfo.setBirthplaceP("null".equals(births[0]) ? "" : births[0]);
+							userInfo.setBirthplaceC("null".equals(births[1]) ? "" : births[1]);
 						} else if (births.length == 3) {
-							userInfo.setBirthplaceP(births[0]);
-							userInfo.setBirthplaceC(births[1]);
-							userInfo.setBirthplaceX(births[2]);
+							userInfo.setBirthplaceP("null".equals(births[0]) ? "" : births[0]);
+							userInfo.setBirthplaceC("null".equals(births[1]) ? "" : births[1]);
+							userInfo.setBirthplaceX("null".equals(births[2]) ? "" : births[2]);
 						} else if (births.length == 4) {
-
+							userInfo.setBirthplaceP("null".equals(births[0]) ? "" : births[0]);
+							userInfo.setBirthplaceC("null".equals(births[1]) ? "" : births[1]);
+							userInfo.setBirthplaceX("null".equals(births[2]) ? "" : births[2]);
+							userInfo.setBirthDetail("null".equals(births[3]) ? "" : births[3]);
 						}
+					} else {
+						userInfo.setBirthplace("");
+						userInfo.setBirthplaceP("");
+						userInfo.setBirthplaceC("");
+						userInfo.setBirthplaceX("");
+						userInfo.setBirthDetail("");
 					}
 
 					String home = userInfo.getHomeplace();
@@ -243,20 +252,26 @@ public class UserController {
 							userInfo.setHomeDetail("");
 						}
 						if (homes.length == 1) {
-							userInfo.setHomeplaceP(homes[0]);
+							userInfo.setHomeplaceP("null".equals(homes[0]) ? "" : homes[0]);
 						} else if (homes.length == 2) {
-							userInfo.setHomeplaceP(homes[0]);
-							userInfo.setHomeplaceC(homes[1]);
+							userInfo.setHomeplaceP("null".equals(homes[0]) ? "" : homes[0]);
+							userInfo.setHomeplaceC("null".equals(homes[1]) ? "" : homes[1]);
 						} else if (homes.length == 3) {
-							userInfo.setHomeplaceP(homes[0]);
-							userInfo.setHomeplaceC(homes[1]);
-							userInfo.setHomeplaceX(homes[2]);
+							userInfo.setHomeplaceP("null".equals(homes[0]) ? "" : homes[0]);
+							userInfo.setHomeplaceC("null".equals(homes[1]) ? "" : homes[1]);
+							userInfo.setHomeplaceX("null".equals(homes[2]) ? "" : homes[2]);
 						} else if (homes.length == 4) {
-							userInfo.setHomeplaceP(homes[0]);
-							userInfo.setHomeplaceC(homes[1]);
-							userInfo.setHomeplaceX(homes[2]);
-							userInfo.setHomeDetail(homes[3]);
+							userInfo.setHomeplaceP("null".equals(homes[0]) ? "" : homes[0]);
+							userInfo.setHomeplaceC("null".equals(homes[1]) ? "" : homes[1]);
+							userInfo.setHomeplaceX("null".equals(homes[2]) ? "" : homes[2]);
+							userInfo.setHomeDetail("null".equals(homes[3]) ? "" : homes[3]);
 						}
+					} else {
+						userInfo.setHomeplace("");
+						userInfo.setHomeplaceP("");
+						userInfo.setHomeplaceC("");
+						userInfo.setHomeplaceX("");
+						userInfo.setHomeDetail("");
 					}
 				}
 				workList = userWorkService.selectByUserId(userid);
