@@ -28,6 +28,8 @@ public class SysUserServiceImpl implements SysUserService {
 		JsonResponse res = null;
 		try {
 			SysUser sysUser = sysUserdao.selectByLoginNameAndPassword(loginName, password);
+			System.out.println("###############loginName=" + loginName);
+			System.out.println("###############password=" + password);
 			if (sysUser != null) {
 				request.getSession().setAttribute("systemUserContext", sysUser);
 				result = new Result(MsgConstants.RESUL_SUCCESS);

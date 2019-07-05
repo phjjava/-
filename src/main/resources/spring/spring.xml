@@ -86,6 +86,7 @@
        	 	<mvc:exclude-mapping path="/login/login"/>
        	 	<mvc:exclude-mapping path="/login/loginout"/>
        	 	<mvc:exclude-mapping path="/system/login"/>
+       	 	<mvc:exclude-mapping path="/system/loginout"/>
        	 	<!-- API登录 -->
        	 	<mvc:exclude-mapping path="/user/login.action"/>	
        	 	<mvc:exclude-mapping path="/user/sendSMSCodeForReg.action"/>
