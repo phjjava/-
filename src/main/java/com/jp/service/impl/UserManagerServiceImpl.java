@@ -151,7 +151,11 @@ public class UserManagerServiceImpl implements UserManagerService {
 		JsonResponse res = null;
 		List<Post> allPost = null;
 		PostExample example = new PostExample();
-		example.or().andTypeEqualTo(type).andFamilyidEqualTo(familyid);
+		if (type == 1) {
+			example.or().andTypeEqualTo(type).andFamilyidEqualTo(familyid).andIsmanagerNotEqualTo(1);
+		} else {
+			example.or().andTypeEqualTo(type).andFamilyidEqualTo(familyid);
+		}
 		try {
 			allPost = postMapper.selectByExample(example);
 		} catch (Exception e) {

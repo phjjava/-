@@ -102,7 +102,8 @@ public class BranchServiceImpl implements BranchService {
 		UserQuery ex = new UserQuery();
 		for (Branch b : list) {
 			ex.clear();
-			ex.or().andBranchidEqualTo(b.getBranchid()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
+			ex.or().andBranchidEqualTo(b.getBranchid()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE)
+					.andStatusEqualTo(ConstantUtils.USER_STATUS_OK);
 			int num = userDao.countByExample(ex);
 			b.setUsercount(num);
 		}

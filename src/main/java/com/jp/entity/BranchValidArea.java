@@ -1,22 +1,16 @@
 package com.jp.entity;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
-@JsonInclude(Include.NON_NULL)
 public class BranchValidArea {
 
-    private String areaname;
+	private String areaname;
 
-    private String areacode;
+	private String areacode;
 
-    private String cityname;
-    
-    private String citycode;
-    
-    
-    
-    public String getCityname() {
+	private String cityname;
+
+	private String citycode;
+
+	public String getCityname() {
 		return cityname;
 	}
 
@@ -33,20 +27,19 @@ public class BranchValidArea {
 	}
 
 	public String getAreaname() {
-        return areaname;
-    }
+		return areaname;
+	}
 
-    public void setAreaname(String areaname) {
-        this.areaname = areaname;
-    }
+	public void setAreaname(String areaname) {
+		this.areaname = areaname;
+	}
 
-    public String getAreacode() {
-        return areacode;
-    }
+	public String getAreacode() {
+		return areacode;
+	}
 
-    public void setAreacode(String areacode) {
-        this.areacode = areacode;
-    }
-
+	public void setAreacode(String areacode) {
+		this.areacode = areacode;
+	}
 
 }

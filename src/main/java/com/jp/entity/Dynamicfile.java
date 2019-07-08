@@ -2,54 +2,50 @@ package com.jp.entity;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
-@JsonInclude(Include.NON_NULL)
 public class Dynamicfile extends DynamicfileKey implements Serializable {
-    /**
-     * 附件类型
-     */
-    private Integer filetype;
+	/**
+	 * 附件类型
+	 */
+	private Integer filetype;
 
-    /**
-     * 文件地址
-     */
-    private String fileurl;
+	/**
+	 * 文件地址
+	 */
+	private String fileurl;
 
-    /**
-     * 显示排序
-     */
-    private Integer sort;
+	/**
+	 * 显示排序
+	 */
+	private Integer sort;
 
-    private String filename;
-    private static final long serialVersionUID = 1L;
+	private String filename;
+	private static final long serialVersionUID = 1L;
 
-    public Integer getFiletype() {
-        return filetype;
-    }
+	public Integer getFiletype() {
+		return filetype;
+	}
 
-    public void setFiletype(Integer filetype) {
-        this.filetype = filetype;
-    }
+	public void setFiletype(Integer filetype) {
+		this.filetype = filetype;
+	}
 
-    public String getFileurl() {
-        return fileurl;
-    }
+	public String getFileurl() {
+		return fileurl;
+	}
 
-    public void setFileurl(String fileurl) {
-        this.fileurl = fileurl == null ? null : fileurl.trim();
-    }
+	public void setFileurl(String fileurl) {
+		this.fileurl = fileurl == null ? null : fileurl.trim();
+	}
 
-    public Integer getSort() {
-        return sort;
-    }
+	public Integer getSort() {
+		return sort;
+	}
 
-    public void setSort(Integer sort) {
-        this.sort = sort;
-    }
+	public void setSort(Integer sort) {
+		this.sort = sort;
+	}
 
-    public String getFilename() {
+	public String getFilename() {
 		return filename;
 	}
 
@@ -58,16 +54,16 @@ public class Dynamicfile extends DynamicfileKey implements Serializable {
 	}
 
 	@Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", filetype=").append(filetype);
-        sb.append(", fileurl=").append(fileurl);
-        sb.append(", sort=").append(sort);
-        sb.append(", serialVersionUID=").append(serialVersionUID);
-        sb.append("]");
-        return sb.toString();
-    }
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getSimpleName());
+		sb.append(" [");
+		sb.append("Hash = ").append(hashCode());
+		sb.append(", filetype=").append(filetype);
+		sb.append(", fileurl=").append(fileurl);
+		sb.append(", sort=").append(sort);
+		sb.append(", serialVersionUID=").append(serialVersionUID);
+		sb.append("]");
+		return sb.toString();
+	}
 }

@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -44,5 +45,13 @@ public class SystemController {
 		result.setMsg("退出成功！");
 		JsonResponse res = new JsonResponse(result);
 		return res;
+	}
+
+	@RequestMapping(value = "/index", method = RequestMethod.GET)
+	public String index(HttpServletRequest request, ModelMap model) {
+
+		System.out.println("############################3");
+		model.put("menushow", "true");
+		return "system/index";
 	}
 }

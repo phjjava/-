@@ -3,40 +3,36 @@ package com.jp.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
-@JsonInclude(Include.NON_NULL)
 public class Branchphoto implements Serializable {
-    private String imgid;
+	private String imgid;
 
-    private String branchid;
+	private String branchid;
 
-    private String albumid;
+	private String albumid;
 
-    private String smallimgurl;
+	private String smallimgurl;
 
-    private String imgurl;
+	private String imgurl;
 
-    private String description;
+	private String description;
 
-    private Integer deleteflag;
+	private Integer deleteflag;
 
-    private String createid;
+	private String createid;
 
-    private Date createtime;
+	private Date createtime;
 
-    private String updateid;
+	private String updateid;
 
-    private Date updatetime;
+	private Date updatetime;
 
-    private static final long serialVersionUID = 1L;
-    
-    private Long start;// 页数
-    
-    private Long count;// 每页条数
+	private static final long serialVersionUID = 1L;
 
-    public Long getStart() {
+	private Long start;// 页数
+
+	private Long count;// 每页条数
+
+	public Long getStart() {
 		return start;
 	}
 
@@ -53,115 +49,116 @@ public class Branchphoto implements Serializable {
 	}
 
 	private String albumname;
-    public String getImgid() {
-        return imgid;
-    }
 
-    public void setImgid(String imgid) {
-        this.imgid = imgid == null ? null : imgid.trim();
-    }
+	public String getImgid() {
+		return imgid;
+	}
 
-    public String getBranchid() {
-        return branchid;
-    }
+	public void setImgid(String imgid) {
+		this.imgid = imgid == null ? null : imgid.trim();
+	}
 
-    public void setBranchid(String branchid) {
-        this.branchid = branchid == null ? null : branchid.trim();
-    }
+	public String getBranchid() {
+		return branchid;
+	}
 
-    public String getAlbumid() {
-        return albumid;
-    }
+	public void setBranchid(String branchid) {
+		this.branchid = branchid == null ? null : branchid.trim();
+	}
 
-    public void setAlbumid(String albumid) {
-        this.albumid = albumid == null ? null : albumid.trim();
-    }
+	public String getAlbumid() {
+		return albumid;
+	}
 
-    public String getSmallimgurl() {
-        return smallimgurl;
-    }
+	public void setAlbumid(String albumid) {
+		this.albumid = albumid == null ? null : albumid.trim();
+	}
 
-    public void setSmallimgurl(String smallimgurl) {
-        this.smallimgurl = smallimgurl == null ? null : smallimgurl.trim();
-    }
+	public String getSmallimgurl() {
+		return smallimgurl;
+	}
 
-    public String getImgurl() {
-        return imgurl;
-    }
+	public void setSmallimgurl(String smallimgurl) {
+		this.smallimgurl = smallimgurl == null ? null : smallimgurl.trim();
+	}
 
-    public void setImgurl(String imgurl) {
-        this.imgurl = imgurl == null ? null : imgurl.trim();
-    }
+	public String getImgurl() {
+		return imgurl;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public void setImgurl(String imgurl) {
+		this.imgurl = imgurl == null ? null : imgurl.trim();
+	}
 
-    public void setDescription(String description) {
-        this.description = description == null ? null : description.trim();
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public Integer getDeleteflag() {
-        return deleteflag;
-    }
+	public void setDescription(String description) {
+		this.description = description == null ? null : description.trim();
+	}
 
-    public void setDeleteflag(Integer deleteflag) {
-        this.deleteflag = deleteflag;
-    }
+	public Integer getDeleteflag() {
+		return deleteflag;
+	}
 
-    public String getCreateid() {
-        return createid;
-    }
+	public void setDeleteflag(Integer deleteflag) {
+		this.deleteflag = deleteflag;
+	}
 
-    public void setCreateid(String createid) {
-        this.createid = createid == null ? null : createid.trim();
-    }
+	public String getCreateid() {
+		return createid;
+	}
 
-    public Date getCreatetime() {
-        return createtime;
-    }
+	public void setCreateid(String createid) {
+		this.createid = createid == null ? null : createid.trim();
+	}
 
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
-    }
+	public Date getCreatetime() {
+		return createtime;
+	}
 
-    public String getUpdateid() {
-        return updateid;
-    }
+	public void setCreatetime(Date createtime) {
+		this.createtime = createtime;
+	}
 
-    public void setUpdateid(String updateid) {
-        this.updateid = updateid == null ? null : updateid.trim();
-    }
+	public String getUpdateid() {
+		return updateid;
+	}
 
-    public Date getUpdatetime() {
-        return updatetime;
-    }
+	public void setUpdateid(String updateid) {
+		this.updateid = updateid == null ? null : updateid.trim();
+	}
 
-    public void setUpdatetime(Date updatetime) {
-        this.updatetime = updatetime;
-    }
+	public Date getUpdatetime() {
+		return updatetime;
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", imgid=").append(imgid);
-        sb.append(", branchid=").append(branchid);
-        sb.append(", albumid=").append(albumid);
-        sb.append(", smallimgurl=").append(smallimgurl);
-        sb.append(", imgurl=").append(imgurl);
-        sb.append(", description=").append(description);
-        sb.append(", deleteflag=").append(deleteflag);
-        sb.append(", createid=").append(createid);
-        sb.append(", createtime=").append(createtime);
-        sb.append(", updateid=").append(updateid);
-        sb.append(", updatetime=").append(updatetime);
-        sb.append(", serialVersionUID=").append(serialVersionUID);
-        sb.append("]");
-        return sb.toString();
-    }
+	public void setUpdatetime(Date updatetime) {
+		this.updatetime = updatetime;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getSimpleName());
+		sb.append(" [");
+		sb.append("Hash = ").append(hashCode());
+		sb.append(", imgid=").append(imgid);
+		sb.append(", branchid=").append(branchid);
+		sb.append(", albumid=").append(albumid);
+		sb.append(", smallimgurl=").append(smallimgurl);
+		sb.append(", imgurl=").append(imgurl);
+		sb.append(", description=").append(description);
+		sb.append(", deleteflag=").append(deleteflag);
+		sb.append(", createid=").append(createid);
+		sb.append(", createtime=").append(createtime);
+		sb.append(", updateid=").append(updateid);
+		sb.append(", updatetime=").append(updatetime);
+		sb.append(", serialVersionUID=").append(serialVersionUID);
+		sb.append("]");
+		return sb.toString();
+	}
 
 	public String getAlbumname() {
 		return albumname;
