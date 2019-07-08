@@ -1,6 +1,10 @@
 package com.jp.entity;
 
 public class UserDetail extends Userinfo {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// 曾用名
 	String usedname;
 	// 在世状态
