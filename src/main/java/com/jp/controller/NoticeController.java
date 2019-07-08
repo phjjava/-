@@ -64,14 +64,16 @@ public class NoticeController {
 			res = new JsonResponse(result);
 			res.setData(pageModel.getList());
 			res.setCount(pageModel.getPageInfo().getTotal());
+			return res;
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
 		return res;
-
 	}
 
 	@RequestMapping(value = "/get", method = RequestMethod.GET)

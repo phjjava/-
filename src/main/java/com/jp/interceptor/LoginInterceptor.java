@@ -55,6 +55,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 			SysUser systemUserContext = CurrentSystemUserContext.getSystemUserContext();
 			if (systemUserContext == null) {
 				log_.info("非法请求：请先登录！");
+				//		request.getRequestDispatcher("/jsp/system/login.jsp").forward(request, response);
 				return false;
 			} else
 				return true;

@@ -2,6 +2,11 @@ package com.jp.entity;
 
 public class UserClildInfo extends User {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private String pid;
 
 	private String birthday;

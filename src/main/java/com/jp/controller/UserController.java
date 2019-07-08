@@ -110,15 +110,15 @@ public class UserController {
 	public JsonResponse mergeUser(HttpServletRequest request) throws IOException {
 		Result result = null;
 		JsonResponse res = null;
-		BufferedReader reader = request.getReader();
-		StringBuilder sb = new StringBuilder();
-		String line = null;
-		while ((line = reader.readLine()) != null) {
-			sb.append(line);
-		}
-		String jsonstr = sb.toString();
-		User user = JacksonUtil.fromJsonToObject(jsonstr, User.class);
 		try {
+			BufferedReader reader = request.getReader();
+			StringBuilder sb = new StringBuilder();
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				sb.append(line);
+			}
+			String jsonstr = sb.toString();
+			User user = JacksonUtil.fromJsonToObject(jsonstr, User.class);
 			result = userService.merge(user); // 除了user，其他参数弃用
 			res = new JsonResponse(result);
 		} catch (Exception e) {
