@@ -11,7 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.jp.common.CurrentSystemUserContext;
 import com.jp.dao.UserDao;
+import com.jp.entity.SysUser;
 import com.jp.entity.User;
 import com.jp.util.DateUtils;
 
@@ -48,6 +50,16 @@ public class LoginInterceptor implements HandlerInterceptor {
 		response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
 		response.setHeader("Access-Control-Allow-Headers", "Content-Type,userid,sessionid");
 		response.addHeader("Access-Control-Max-Age", "1800");
+		if (servletPath.startsWith("/system/")) {//平台系统拦截  （请求地址以system开头的是平台）
+
+			SysUser systemUserContext = CurrentSystemUserContext.getSystemUserContext();
+			if (systemUserContext == null) {
+				log_.info("非法请求：请先登录！");
+				return false;
+			} else
+				return true;
+
+		}
 		if (userid == null || userid.equals("")) {
 			return false;
 		} else {
@@ -64,10 +76,11 @@ public class LoginInterceptor implements HandlerInterceptor {
 		}
 		// 校验session是否失效
 		if (dbsessionid == null) {
+			log_.info("数据库sessionid为空！");
 			return false;
 		} else {
 			if (dbsessionid != null && !dbsessionid.equals(sessionid)) {
-				log_.info("sessionid失效！");
+				log_.info("sessionid不一致！");
 				return false; // sessionid失效
 			} else {
 				return true;
