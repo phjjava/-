@@ -191,8 +191,7 @@ public class UserServiceImpl implements UserService {
 		try {
 			// 点击编辑后保存
 			if (StringTools.trimNotEmpty(user.getUserid())) {
-				Userinfo userinfo = new Userinfo();
-				userinfo = user.getUserInfo();
+				Userinfo userinfo = user.getUserInfo();
 				userinfo.setUserid(user.getUserid());
 				// 编辑用户信息
 				if (StringTools.trimNotEmpty(user.getPhone())) {
@@ -286,7 +285,7 @@ public class UserServiceImpl implements UserService {
 					if (StringTools.trimNotEmpty(user.getPhone())) {
 						user.setPassword(MD5Util.string2MD5(user.getPhone().substring(user.getPhone().length() - 6)));
 					}
-					Userinfo userinfo = new Userinfo();
+					Userinfo userinfo = user.getUserInfo();
 					userinfo.setUserid(userId);
 					Useredu useredu = new Useredu();
 					useredu.setUserid(userId);

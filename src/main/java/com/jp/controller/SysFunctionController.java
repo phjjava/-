@@ -1,9 +1,6 @@
 package com.jp.controller;
 
 import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -94,68 +91,21 @@ public class SysFunctionController {
 	}
 
 	@RequestMapping(value = "/childlist", method = RequestMethod.POST)
-	public String childlist(HttpServletRequest request, ModelMap model) {
-		try {
-
-			String parentid = request.getParameter("parentid");
-			List<SysFunction> childList = sysFunctionService.selectListByParnetid(parentid);
-
-			model.put("childList", childList);
-			model.put("parentid", parentid);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		return "system/functionChildList";
+	@ResponseBody
+	public JsonResponse childlist(String parentid) {
+		return sysFunctionService.selectListByParnetid(parentid);
 	}
 
 	@RequestMapping(value = "/get", method = RequestMethod.GET)
-	public String get(HttpServletRequest request, ModelMap model) {
-		try {
-
-			String functionid = request.getParameter("functionid");
-			SysFunction sysFunction = sysFunctionService.get(functionid);
-			model.put("sysFunction", sysFunction);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		return "system/function";
-	}
-
-	@RequestMapping(value = "/getchild", method = RequestMethod.GET)
-	public String getchild(HttpServletRequest request, ModelMap model) {
-		try {
-
-			String functionid = request.getParameter("functionid");
-			SysFunction sysFunction = sysFunctionService.get(functionid);
-			model.put("sysFunction", sysFunction);
-			model.put("parentid", sysFunction.getParentid());
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		return "system/functionChild";
-	}
-
 	@ResponseBody
+	public JsonResponse get(String functionid) {
+		return sysFunctionService.get(functionid);
+	}
+
 	@RequestMapping(value = "/delete", method = RequestMethod.POST)
-	public String delete(HttpServletRequest request, ModelMap model) {
-		Integer result = null;
-		try {
-
-			String functionid = request.getParameter("functionid");
-			result = sysFunctionService.delete(functionid);
-
-		} catch (Exception e) {
-			result = 0;
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		return result + "";
+	@ResponseBody
+	public JsonResponse delete(String functionid) {
+		return sysFunctionService.delete(functionid);
 	}
 
 }
