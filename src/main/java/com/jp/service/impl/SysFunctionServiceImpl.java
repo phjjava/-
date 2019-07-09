@@ -1,5 +1,6 @@
 package com.jp.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +20,7 @@ import com.jp.entity.SysFunctionQuery;
 import com.jp.entity.SysFunctionQuery.Criteria;
 import com.jp.service.SysFunctionService;
 import com.jp.util.StringTools;
+import com.jp.util.UUIDUtils;
 
 @Service
 public class SysFunctionServiceImpl implements SysFunctionService {
@@ -90,12 +92,6 @@ public class SysFunctionServiceImpl implements SysFunctionService {
 	}
 
 	@Override
-	public int insert(SysFunction sysFunction) throws Exception {
-
-		return sysFunctionDao.insertSelective(sysFunction);
-	}
-
-	@Override
 	public JsonResponse delete(String functionid) {
 		Result result = null;
 		JsonResponse res = null;
@@ -125,11 +121,6 @@ public class SysFunctionServiceImpl implements SysFunctionService {
 	}
 
 	@Override
-	public int update(SysFunction sysFunction) throws Exception {
-		return sysFunctionDao.updateByPrimaryKeySelective(sysFunction);
-	}
-
-	@Override
 	public JsonResponse get(String functionid) {
 		Result result = null;
 		JsonResponse res = null;
@@ -150,6 +141,59 @@ public class SysFunctionServiceImpl implements SysFunctionService {
 			}
 		} catch (Exception e) {
 			log_.error("[get方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
+	}
+
+	@Override
+	public JsonResponse save(SysFunction sysFunction) {
+		Result result = null;
+		JsonResponse res = null;
+		int status = 0;
+		if (sysFunction.getFunctionname() == null || "".equals(sysFunction.getFunctionname())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数functionname不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (sysFunction.getFunctionurl() == null || "".equals(sysFunction.getFunctionurl())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数functionurl不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (sysFunction.getSort() == null || "".equals(sysFunction.getSort() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数sort不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			if (StringTools.notEmpty(sysFunction.getFunctionid())) {//修改
+				sysFunction.setUpdateid("sys_admin");
+				sysFunction.setUpdatetime(new Date());
+				status = sysFunctionDao.updateByPrimaryKeySelective(sysFunction);
+			} else {//新增
+				sysFunction.setCreateid("sys_admin");
+				sysFunction.setCreatetime(new Date());
+				if (!StringTools.notEmpty(sysFunction.getParentid())) {
+					sysFunction.setParentid("00000");
+				}
+				sysFunction.setFunctionid(UUIDUtils.getUUID());
+				status = sysFunctionDao.insertSelective(sysFunction);
+			}
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[save方法---异常:]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
 			return res;
