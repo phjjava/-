@@ -88,12 +88,12 @@
        	 	<mvc:exclude-mapping path="/system/login"/>
        	 	<mvc:exclude-mapping path="/system/loginout"/>
        	 	<!-- API登录 -->
-       	 	<mvc:exclude-mapping path="/user/login.action"/>	
-       	 	<mvc:exclude-mapping path="/user/sendSMSCodeForReg.action"/>
-       	 	<mvc:exclude-mapping path="/user/sendSMSCode.action"/>
-       	 	<mvc:exclude-mapping path="/user/checkSMSCode.action"/>
-       	 	<mvc:exclude-mapping path="/user/restPassword.action"/>
-       	 	<mvc:exclude-mapping path="/user/getOnlineUser.action"/>
+       	 	<mvc:exclude-mapping path="/user/login"/>	
+       	 	<mvc:exclude-mapping path="/user/sendSMSCodeForReg"/>
+       	 	<mvc:exclude-mapping path="/user/sendSMSCode"/>
+       	 	<mvc:exclude-mapping path="/user/checkSMSCode"/>
+       	 	<mvc:exclude-mapping path="/user/restPassword"/>
+       	 	<mvc:exclude-mapping path="/user/getOnlineUser"/>
        	 	
        	 	<mvc:exclude-mapping path="/user/loginB"/>	<!-- H5登录 -->
        	 	<mvc:exclude-mapping path="/platform/getPlatform"/>	<!-- 获取版本号 -->
@@ -111,13 +111,14 @@
     
     <!-- 视图解析器ViewResolver -->  
     <!-- 解析jsp,默认支持jstl -->  
+    <!-- 
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
 		<property name="prefix" value="/jsp/"></property>
 		<property name="suffix" value=".jsp"></property>
 		  <property name="redirectHttp10Compatible" value="false" />  
 	</bean>
-
+ 	-->
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<property name="defaultEncoding" value="UTF-8" />
