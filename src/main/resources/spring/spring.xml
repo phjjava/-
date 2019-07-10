@@ -88,12 +88,12 @@
        	 	<mvc:exclude-mapping path="/system/login"/>
        	 	<mvc:exclude-mapping path="/system/loginout"/>
        	 	<!-- API登录 -->
-       	 	<mvc:exclude-mapping path="/user/login.action"/>	
-       	 	<mvc:exclude-mapping path="/user/sendSMSCodeForReg.action"/>
-       	 	<mvc:exclude-mapping path="/user/sendSMSCode.action"/>
-       	 	<mvc:exclude-mapping path="/user/checkSMSCode.action"/>
-       	 	<mvc:exclude-mapping path="/user/restPassword.action"/>
-       	 	<mvc:exclude-mapping path="/user/getOnlineUser.action"/>
+       	 	<mvc:exclude-mapping path="/user/login"/>	
+       	 	<mvc:exclude-mapping path="/user/sendSMSCodeForReg"/>
+       	 	<mvc:exclude-mapping path="/user/sendSMSCode"/>
+       	 	<mvc:exclude-mapping path="/user/checkSMSCode"/>
+       	 	<mvc:exclude-mapping path="/user/restPassword"/>
+       	 	<mvc:exclude-mapping path="/user/getOnlineUser"/>
        	 	
        	 	<mvc:exclude-mapping path="/user/loginB"/>	<!-- H5登录 -->
        	 	<mvc:exclude-mapping path="/platform/getPlatform"/>	<!-- 获取版本号 -->
