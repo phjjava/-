@@ -1,5 +1,6 @@
 package com.jp.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,9 +16,11 @@ import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.dao.SysFunctionDao;
+import com.jp.dao.SysVersionDao;
 import com.jp.entity.SysFunction;
 import com.jp.entity.SysFunctionQuery;
 import com.jp.entity.SysFunctionQuery.Criteria;
+import com.jp.entity.SysVersion;
 import com.jp.service.SysFunctionService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
@@ -29,6 +32,8 @@ public class SysFunctionServiceImpl implements SysFunctionService {
 
 	@Autowired
 	private SysFunctionDao sysFunctionDao;
+	@Autowired
+	private SysVersionDao sysVersionDao;
 
 	@Override
 	public PageModel<SysFunction> pageQuery(PageModel<SysFunction> pageModel, SysFunction sysFunction)
@@ -86,9 +91,71 @@ public class SysFunctionServiceImpl implements SysFunctionService {
 	}
 
 	@Override
-	public List<SysFunction> selectFunctionListByVersionid(String versionid) throws Exception {
+	public JsonResponse selectFunctionListByVersionid(String versionid) {
+		Result result = null;
+		JsonResponse res = null;
+		List<SysFunction> treeList = new ArrayList<SysFunction>();
+		SysVersion sysVersion = new SysVersion();
+		try {
+			//获取版本详情
+			sysVersion = sysVersionDao.selectByPrimaryKey(versionid);
+			//根据版本id查询功能
+			List<SysFunction> functionList = sysFunctionDao.selectFunctionListByVersionid(versionid);
+			if (functionList != null) {
+				SysFunction sysFunction = new SysFunction();
+				// 先找到所有的一级菜单
+				for (int i = 0; i < functionList.size(); i++) {
+					sysFunction = functionList.get(i);
+					// 一级菜单父ID为00000
+					if ("00000".equals(sysFunction.getParentid())) {
+						treeList.add(sysFunction);
+					}
+				}
+			}
+			// 为一级菜单设置子菜单，getChild是递归调用的
+			for (SysFunction sysFun : treeList) {
+				sysFun.setChildList(getChild(sysFun.getFunctionid(), functionList));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(treeList);
+		res.setEntity(sysVersion);
+		return res;
+	}
 
-		return sysFunctionDao.selectFunctionListByVersionid(versionid);
+	/**
+	 * 子菜单递归
+	 * 
+	 * @param id
+	 * @param rootMenu
+	 * @return
+	 */
+	private List<SysFunction> getChild(String id, List<SysFunction> rootFun) {
+		// 子菜单
+		List<SysFunction> childList = new ArrayList<>();
+		for (SysFunction sysFun : rootFun) {
+			// 遍历所有节点，将父菜单id与传过来的id比较
+			if (sysFun.getParentid().equals(id)) {
+				childList.add(sysFun);
+			}
+		}
+
+		// 把子菜单的子菜单再循环一遍
+		for (SysFunction fun : childList) {
+			fun.setChildList(getChild(fun.getFunctionid(), rootFun));// 递归
+		}
+		// 判断递归结束
+		if (childList.size() == 0) {
+			return null;
+		}
+		return childList;
 	}
 
 	@Override
