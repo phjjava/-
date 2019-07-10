@@ -47,7 +47,7 @@ public class SysVersionServiceImpl implements SysVersionService {
 		}
 
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		List<SysVersion> list = sysVersionDao.selectByExample(null);
+		List<SysVersion> list = sysVersionDao.selectByExample(sfq);
 		pageModel.setList(list);
 		pageModel.setPageInfo(new PageInfo<SysVersion>(list));
 		return pageModel;
@@ -100,14 +100,23 @@ public class SysVersionServiceImpl implements SysVersionService {
 	}
 
 	@Override
-	public List<SysVersion> getSysVersionList() throws Exception {
-
-		SysVersionQuery sfq = new SysVersionQuery();
-		Criteria createCriteria = sfq.createCriteria();
-
-		List<SysVersion> list = sysVersionDao.selectByExample(sfq);
-
-		return list;
+	public JsonResponse getSysVersionList() {
+		Result result = null;
+		JsonResponse res = null;
+		List<SysVersion> list = null;
+		try {
+			SysVersionQuery sfq = new SysVersionQuery();
+			list = sysVersionDao.selectByExample(sfq);
+		} catch (Exception e) {
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(list);
+		return res;
 	}
 
 	@Override

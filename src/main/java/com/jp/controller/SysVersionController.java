@@ -72,7 +72,7 @@ public class SysVersionController {
 			return res;
 
 		} catch (Exception e) {
-			result = new Result(MsgConstants.RESUL_FAIL);
+			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
@@ -100,6 +100,15 @@ public class SysVersionController {
 	@RequestMapping(value = "/delete", method = RequestMethod.POST)
 	public JsonResponse delete(String versionid) {
 		return sysVersionService.delete(versionid);
+	}
+
+	/**
+	 * 获取版本列表
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getSysVersionList", method = RequestMethod.POST)
+	public JsonResponse getSysVersionList() {
+		return sysVersionService.getSysVersionList();
 	}
 
 }

@@ -1,7 +1,5 @@
 package com.jp.service;
 
-import java.util.List;
-
 import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.SysFuncVersion;
@@ -37,14 +35,6 @@ public interface SysVersionService {
 	 */
 	int insertFuncVersion(SysFuncVersion sysFuncVersion) throws Exception;
 
-	/**
-	 * @描述 获取版本列表
-	 * @作者 wumin
-	 * @时间 2017年5月10日下午3:26:38
-	 * @参数 @return
-	 * @参数 @throws Exception
-	 * @return List<SysVersion>
-	 */
-	List<SysVersion> getSysVersionList() throws Exception;
+	JsonResponse getSysVersionList();
 
 }

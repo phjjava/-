@@ -61,7 +61,6 @@ public class SysFunctionServiceImpl implements SysFunctionService {
 	public JsonResponse selectListByParnetid(String parentid) {
 		Result result = null;
 		JsonResponse res = null;
-		List<SysFunction> list = null;
 		if (parentid == null || "".equals(parentid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数parentid不能为空！");
@@ -72,7 +71,7 @@ public class SysFunctionServiceImpl implements SysFunctionService {
 		sfq.or().andParentidEqualTo(parentid);
 		sfq.setOrderByClause(" sort desc");
 		try {
-			list = sysFunctionDao.selectByExample(sfq);
+			List<SysFunction> list = sysFunctionDao.selectByExample(sfq);
 			if (list != null) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);
