@@ -1,13 +1,12 @@
 package com.jp.controller;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.jp.common.PageModel;
 import com.jp.entity.SysFamily;
 import com.jp.entity.SysUser;
-import com.jp.entity.SysVersion;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
 import com.jp.entity.Userinfo;
@@ -41,6 +39,7 @@ public class FamilyController {
 	private UserService userService;
 	@Autowired
 	private UserManagerService userManagerService;
+
 	/**
 	 * 
 	 * @描述 用户列表的查询
@@ -52,8 +51,8 @@ public class FamilyController {
 	 * @return ModelMap
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
-	public String list(PageModel<SysFamily> pageModel,SysFamily sysFamily,ModelMap model)  {
-		try{
+	public String list(PageModel<SysFamily> pageModel, SysFamily sysFamily, ModelMap model) {
+		try {
 			familyService.selectFamilyList(pageModel, sysFamily);
 			if (pageModel.getList() != null) {
 				if (pageModel.getList().size() == 0) {
@@ -65,12 +64,13 @@ public class FamilyController {
 			}
 			model.put("pageModel", pageModel);
 			model.put("user", sysFamily);
-		}catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-	     return "system/familyList";
+		return "system/familyList";
 	}
+
 	/**
 	 * 
 	 * @描述 去家族新增或编辑界面
@@ -82,29 +82,27 @@ public class FamilyController {
 	 * @return String
 	 */
 	@RequestMapping(value = "/edit", method = RequestMethod.GET)
-	public String editFamily(HttpServletRequest request,ModelMap modelMap)  {
-		try{
+	public String editFamily(HttpServletRequest request, ModelMap modelMap) {
+		try {
 			SysFamily family = null;
 			User user = null;
 			String familyid = request.getParameter("familyid");
-			if(StringTools.trimNotEmpty(familyid)){
+			if (StringTools.trimNotEmpty(familyid)) {
 				family = familyService.selectByPrimaryKey(familyid);
 				UserManager manager = userManagerService.selectByFamilyId(familyid);
-				if(manager != null){
+				if (manager != null) {
 					user = userService.selectByPrimaryKey(manager.getUserid());
 				}
 			}
-			//初始化版本
-			List<SysVersion> versionList = sysVersionService.getSysVersionList();
-		    modelMap.put("family", family);
-		    modelMap.put("versionList", versionList);
-		    modelMap.put("user", user);
-		}catch(Exception e){
+			modelMap.put("family", family);
+			modelMap.put("user", user);
+		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
 		return "system/family";
 	}
+
 	/**
 	 * 
 	 * @描述 家族新增或编辑
@@ -119,18 +117,19 @@ public class FamilyController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/merge", method = RequestMethod.POST)
-    public Result mergeUser(User user, Userinfo userInfo, SysFamily family, ModelMap model) {
-        Result result = new Result();
-		try{
-			result = familyService.merge(user, userInfo,family);
-		}catch(Exception e){
-            result.setStatus(1);
-            result.setMsg(e.getMessage());
+	public Result mergeUser(User user, Userinfo userInfo, SysFamily family, ModelMap model) {
+		Result result = new Result();
+		try {
+			result = familyService.merge(user, userInfo, family);
+		} catch (Exception e) {
+			result.setStatus(1);
+			result.setMsg(e.getMessage());
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-        return result;
+		return result;
 	}
+
 	/**
 	 * 
 	 * @描述 停用/启用家族
@@ -142,36 +141,39 @@ public class FamilyController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
-	public String changeStatus(SysFamily family,HttpSession httpSession){
+	public String changeStatus(SysFamily family, HttpSession httpSession) {
 		String result = null;
-		try{
+		try {
 			//HttpSession session=ServletActionContext.getRequest().getSession()；
 			SysUser user = (SysUser) httpSession.getAttribute("systemUserContext");
 			family.setUpdatetime(new Date());
 			family.setUpdateid(user.getUserid());
 			familyService.changeStatus(family);
 			result = "1";
-		}catch(Exception e){
+		} catch (Exception e) {
 			result = "0";
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
 		return result;
 	}
-	
-	
+
 	@ResponseBody
 	@RequestMapping(value = "/validatePhone", method = RequestMethod.POST)
 	public String validateName(HttpServletRequest request) {
 		boolean flag = true;//默认通过验证
-		String userid = StringTools.trimNotEmpty(request.getParameter("userid")) ? request.getParameter("userid").trim() : null;
-		String familyid = StringTools.trimNotEmpty(request.getParameter("familyid")) ? request.getParameter("familyid").trim() : null;	
-		String phone = StringTools.trimNotEmpty(request.getParameter("phone")) ? request.getParameter("phone").trim() : null;
-		
+		String userid = StringTools.trimNotEmpty(request.getParameter("userid")) ? request.getParameter("userid").trim()
+				: null;
+		String familyid = StringTools.trimNotEmpty(request.getParameter("familyid"))
+				? request.getParameter("familyid").trim()
+				: null;
+		String phone = StringTools.trimNotEmpty(request.getParameter("phone")) ? request.getParameter("phone").trim()
+				: null;
+
 		try {
-			
+
 			flag = userService.validatePhone(familyid, userid, phone);
-			
+
 		} catch (Exception e) {
 			log_.error("[PLMERROR:]", e);
 		}
