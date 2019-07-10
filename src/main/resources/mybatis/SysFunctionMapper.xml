@@ -331,10 +331,10 @@
   <!-- 根据版本id查询 功能列表 -->
   <select id="selectFunctionListByVersionid" parameterType="java.lang.String" resultType="com.jp.entity.SysFunction">
   	select 
-	function.functionid, functionname, parentid, functionurl, createid, createtime, updatetime, 
+	tb.functionid, functionname, parentid, functionurl, createid, createtime, updatetime, 
 	updateid, icon, status, sort, description,func_version.functionid as isfunctionid
-	from jp_sys_function function
-	left join jp_sys_func_version func_version on function.functionid = func_version.functionid
+	from jp_sys_function tb
+	left join jp_sys_func_version func_version on tb.functionid = func_version.functionid
 	<if test="versionid != null" >
         and func_version.versionid = #{versionid,jdbcType=VARCHAR}
     </if>
@@ -342,6 +342,6 @@
         and 1=2
     </if>
   
-	where function.status = 0 order by function.sort desc
+	where tb.status = 0 order by tb.sort desc
   </select>
 </mapper>

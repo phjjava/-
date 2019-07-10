@@ -13,16 +13,7 @@ public interface SysVersionService {
 
 	PageModel<SysVersion> pageQuery(PageModel<SysVersion> pageModel, SysVersion sysVersion) throws Exception;
 
-	/**
-	 * @描述 删除
-	 * @作者 wumin
-	 * @时间 2017年5月5日下午3:46:06
-	 * @参数 @param versionid
-	 * @参数 @return
-	 * @参数 @throws Exception
-	 * @return int
-	 */
-	int delete(String versionid) throws Exception;
+	JsonResponse delete(String versionid);
 
 	/**
 	 * @描述 根据版本号删除与功能的关系
@@ -45,17 +36,6 @@ public interface SysVersionService {
 	 * @return int
 	 */
 	int insertFuncVersion(SysFuncVersion sysFuncVersion) throws Exception;
-
-	/**
-	 * @描述 获取版本详情
-	 * @作者 wumin
-	 * @时间 2017年5月8日上午10:09:05
-	 * @参数 @param versionid
-	 * @参数 @return
-	 * @参数 @throws Exception
-	 * @return SysVersion
-	 */
-	SysVersion get(String versionid) throws Exception;
 
 	/**
 	 * @描述 获取版本列表

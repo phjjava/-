@@ -54,8 +54,32 @@ public class SysVersionServiceImpl implements SysVersionService {
 	}
 
 	@Override
-	public int delete(String versionid) throws Exception {
-		return sysVersionDao.deleteByPrimaryKey(versionid);
+	public JsonResponse delete(String versionid) {
+		Result result = null;
+		JsonResponse res = null;
+		int status = 0;
+		if (versionid == null || "".equals(versionid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数versionid不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			status = sysVersionDao.deleteByPrimaryKey(versionid);
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[delete方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
@@ -73,11 +97,6 @@ public class SysVersionServiceImpl implements SysVersionService {
 
 		return sysFuncVersionDao.insert(sysFuncVersion);
 
-	}
-
-	@Override
-	public SysVersion get(String versionid) throws Exception {
-		return sysVersionDao.selectByPrimaryKey(versionid);
 	}
 
 	@Override
