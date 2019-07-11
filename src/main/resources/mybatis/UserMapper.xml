@@ -1011,7 +1011,7 @@
 		select
 		*
 		from jp_user
-		where 
+		where
 		deleteflag = 0
 		and familyid =
 		#{familyId,jdbcType=VARCHAR}
@@ -1408,8 +1408,8 @@
 		</if>
 		group by branchid ) t
 	</select>
-	<select id="selectUserByAreaCode" resultType="com.jp.entity.User"
-		parameterType="Map">
+	<select id="selectUserByAreaCode"
+		resultType="com.jp.entity.User" parameterType="Map">
 		select m.* from jp_user m,jp_branch n
 		where m.branchid=n.branchid
 		<if test="areacode != null">
@@ -1420,6 +1420,56 @@
 		</if>
 		<if test="familyid != null">
 			and m.familyid = #{familyid,jdbcType=VARCHAR}
+		</if>
+	</select>
+	<select id="searchComplexCount"
+		parameterType="com.jp.entity.SearchComplex"
+		resultType="java.lang.Integer">
+		SELECT count(*) as count FROM `jp_user` u, jp_branch b,jp_userinfo ur
+		where 1=1 and u.deleteflag=0
+		and u.branchid = b.branchid
+		and u.userid = ur.userid
+
+		<if test="areacode != null and areacode != ''">
+			and b.areacode = #{areacode}
+		</if>
+		<if test="branchid != null and branchid != ''">
+			and u.branchid = #{branchid}
+		</if>
+		<if test="sex != null and sex != ''">
+			and u.sex = #{sex}
+		</if>
+		<if test="genlevel != null and genlevel != ''">
+			and u.genlevel = #{genlevel}
+		</if>
+		<if test="isdirect != null and isdirect != ''">
+			and u.isdirect = #{isdirect}
+		</if>
+		<if test="ismarry != null and ismarry != ''">
+			and u.ismarry = #{ismarry}
+		</if>
+		<if test="livestatus != null and livestatus != ''">
+			and u.livestatus = #{livestatus}
+		</if>
+
+		<if test="livestatus == '0'.toString()">
+			and (ur.birthday is not NULL and TRIM(ur.birthday)!='')
+		</if>
+
+		<if test="agefrom !=null and agefrom != ''">
+
+			and year(CURRENT_DATE)-substring_index(ur.birthday,'-',1) <![CDATA[ >= ]]>
+			#{agefrom}
+		</if>
+		<if test="ageto !=null and ageto != ''">
+			and year(CURRENT_DATE)-substring_index(ur.birthday,'-',1) <![CDATA[ <= ]]>
+			#{ageto}
+		</if>
+		<if test="familyid != null and familyid != ''">
+			and u.familyid = #{familyid}
+		</if>
+		<if test="education != null and education != ''">
+			and ur.education = #{education}
 		</if>
 	</select>
 </mapper>

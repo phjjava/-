@@ -150,4 +150,6 @@ public interface UserDao {
 	int countBranch(Map<String, String> totalparams);
 
 	List<User> selectUserByAreaCode(Map<String, String> params);
+
+	int searchComplexCount(SearchComplex searchComplex);
 }
