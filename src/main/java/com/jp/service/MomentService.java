@@ -7,9 +7,11 @@ import com.jp.entity.Moment;
 
 public interface MomentService {
 
-	JsonResponse createMoment(Moment entity,HttpServletRequest request);
+	JsonResponse createMoment(Moment entity, HttpServletRequest request);
 
-	JsonResponse getMomentList(Moment entity,HttpServletRequest request);
+	JsonResponse getMomentList(Moment entity, HttpServletRequest request);
 
-	JsonResponse getPersonMomentList(Moment entity,HttpServletRequest request);
+	JsonResponse getPersonMomentList(Moment entity, HttpServletRequest request);
+
+	JsonResponse delMoment(Moment entity, HttpServletRequest request);
 }

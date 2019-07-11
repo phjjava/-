@@ -1412,6 +1412,7 @@
 		resultType="com.jp.entity.User" parameterType="Map">
 		select m.* from jp_user m,jp_branch n
 		where m.branchid=n.branchid
+		and m.deleteflag = 0
 		<if test="areacode != null">
 			and n.areacode = #{areacode,jdbcType=VARCHAR}
 		</if>
@@ -1429,7 +1430,7 @@
 		where 1=1 and u.deleteflag=0
 		and u.branchid = b.branchid
 		and u.userid = ur.userid
-
+		and u.deleteflag = 0
 		<if test="areacode != null and areacode != ''">
 			and b.areacode = #{areacode}
 		</if>
@@ -1472,6 +1473,56 @@
 			and ur.education = #{education}
 		</if>
 	</select>
+	<select id="selectByUserids" resultType="com.jp.entity.User">
+		select * from jp_user
+		where
+		deleteflag = 0
+		and
+		status = 0
+		and userid in
+		<foreach collection="array" item="item" index="index" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<select id="selectUserByNoBranchids"
+		resultType="com.jp.entity.User">
+		select * from jp_user
+		where
+		deleteflag = 0
+		and status = 0
+		and branchid not
+		in
+		<foreach collection="array" item="item" index="index" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	 <select id="selectUserByNoTag" resultType="com.jp.entity.User">
+		select u.* from jp_user_tag t left join jp_user_tag_user tu on t.id =
+		tu.tag_id left join jp_user u on tu.userid = u.userid
+		where t.deleteflag = 0
+		and tu.deleteflag = 0
+		and u.deleteflag = 0
+		and u.status = 0
+		and t.id not in
+		<foreach collection="array" item="item" index="index" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+		<select id="selectByNoUserids" resultType="com.jp.entity.User">
+		select * from jp_user 
+		where
+		deleteflag = 0
+		and
+		status = 0
+		and userid not in
+		<foreach collection="array" item="item" index="index" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+ 	</select>
 	<select id="getUserByAncestor" resultMap="BaseResultMap"
 		parameterType="java.lang.Object">
 		SELECT

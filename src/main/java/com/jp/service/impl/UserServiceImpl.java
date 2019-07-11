@@ -3940,9 +3940,8 @@ public class UserServiceImpl implements UserService {
 			userDetail.setBirthday(userInfo.getBirthday());
 			if (userInfo.getBirthday() != null)
 				userDetail.setBirthdayStr(userInfo.getBirthday());
-			userDetail
-					.setBirthplace(userInfo.getBirthplace() == null ? null : userInfo.getBirthplace().replace("@", ""));
-			userDetail.setHomeplace(userInfo.getHomeplace() == null ? null : userInfo.getHomeplace().replace("@", ""));
+			userDetail.setBirthplace(userInfo.getBirthplace() == null ? "" : userInfo.getBirthplace().replace("@", ""));
+			userDetail.setHomeplace(userInfo.getHomeplace() == null ? "" : userInfo.getHomeplace().replace("@", ""));
 			userDetail.setMail(userInfo.getMail());
 			userDetail.setMailsee(userInfo.getMailsee());
 			userDetail.setNation(userInfo.getNation());

@@ -82,9 +82,11 @@ public class ConstantUtils implements Serializable {
 	public static String HEADER_INTERNETTYPE = "internetType";// 运营商
 
 	// 族圈状态 展示类型ALL,PRIIVATE,SELECT
-	public static String MOMENT_ALL = "ALL"; // INVITE_USER企业管理员邀请用户
-	public static String MOMENT_PRIIVATE = "PRIIVATE"; // ADMIN_ADD后台管理添加
 	public static String MOMENT_SELECT = "SELECT"; // ADMIN_IMPORT后台管理导入
+	public static String MOMENT_ALL = "ALL"; //所有人可见
+	public static String MOMENT_PRIIVATE = "PRIIVATE"; //仅自己可见
+	public static String MOMENT_ISIBLE = "VISIBLE"; //谁可见
+	public static String MOMENT_INVISIBLE = "INVISIBLE";//谁不可见
 
 	public static Map<String, String> SESSION_MAP = new HashMap<String, String>();// 用来保存用户的sessionid,key为用户的id
 

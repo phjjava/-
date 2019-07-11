@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jp.common.ConstantUtils;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
@@ -17,6 +18,7 @@ import com.jp.common.Result;
 import com.jp.dao.BranchDao;
 import com.jp.dao.EditorialBoardMapper;
 import com.jp.dao.FuncRoleDao;
+import com.jp.dao.PostMapper;
 import com.jp.dao.RoleDao;
 import com.jp.dao.UserDao;
 import com.jp.dao.UserManagerMapper;
@@ -27,15 +29,19 @@ import com.jp.entity.EditorialBoard;
 import com.jp.entity.EditorialBoardExample;
 import com.jp.entity.EditorialBoardUser;
 import com.jp.entity.EditorialBoardVO;
+import com.jp.entity.Post;
+import com.jp.entity.PostExample;
 import com.jp.entity.Role;
 import com.jp.entity.RoleQuery;
 import com.jp.entity.RoleQuery.Criteria;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
+import com.jp.entity.UserManagerExample;
 import com.jp.entity.Userbranch;
 import com.jp.entity.UserbranchQuery;
 import com.jp.service.RoleService;
 import com.jp.util.StringTools;
+import com.jp.util.WebUtil;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -54,6 +60,8 @@ public class RoleServiceImpl implements RoleService {
 	private UserDao userMapper;
 	@Autowired
 	private UserbranchDao userBranchMapper;
+	@Autowired
+	private PostMapper postMapper;
 
 	@Override
 	public PageModel<Role> pageQuery(PageModel<Role> pageModel, Role role) throws Exception {
@@ -299,6 +307,74 @@ public class RoleServiceImpl implements RoleService {
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
 		res.setData(branchs);
+		return res;
+	}
+
+	@Override
+	public JsonResponse getEditorilaBoardListNew(Role entity) {
+		Result result = null;
+		JsonResponse res = null;
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (familyid == null || "".equals(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//获取该家族下得所有编委会
+		EditorialBoardExample example = new EditorialBoardExample();
+		example.or().andFamilyidEqualTo(familyid);
+		example.setOrderByClause("-sort desc");
+		List<EditorialBoard> list = editorialBoardMapper.selectByExample(example);
+		PostExample postExample = new PostExample();
+		UserManagerExample userManagerExample = new UserManagerExample();
+		boolean flag = true;
+		for (int k = 0; k < list.size(); k++) {
+			flag = true;
+			EditorialBoard e = list.get(k);
+			//获取职务列表
+			postExample.clear();
+			postExample.or().andFamilyidEqualTo(familyid).andTypeEqualTo(e.getType());
+			postExample.setOrderByClause("-sort desc");
+
+			List<Post> posts = postMapper.selectByExample(postExample);
+			if (posts != null && posts.size() > 0) {
+				for (int i = 0; i < posts.size(); i++) {
+					Post p = posts.get(i);
+					//获取管理员列表
+					userManagerExample.clear();
+					userManagerExample.or().andPostidEqualTo(p.getId()).andEbidEqualTo(e.getId());
+
+					userManagerExample.setOrderByClause("-sort desc");
+					List<UserManager> managers = userManagerMapper.selectByExample(userManagerExample);
+					if (managers != null && managers.size() > 0) {
+						flag = false;
+						for (UserManager m : managers) {
+							//获取用户头像和世系信息
+							User user = userMapper.selectByPrimaryKey(m.getUserid());
+							if (user != null) {
+								m.setImgurl(user.getImgurl());
+								m.setGenlevel(user.getGenlevel());
+							}
+
+						}
+						p.setManagers(managers);
+					} else {
+						posts.remove(i);
+						i = i - 1;
+					}
+
+				}
+			}
+			e.setPosts(posts);
+			if (flag) {
+				list.remove(k);
+				k = k - 1;
+			}
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		res.setData(list);
 		return res;
 	}
 }

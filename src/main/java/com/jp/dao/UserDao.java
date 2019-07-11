@@ -152,9 +152,19 @@ public interface UserDao {
 	List<User> selectUserByAreaCode(Map<String, String> params);
 
 	int searchComplexCount(SearchComplex searchComplex);
+
+	List<User> selectByUserids(@Param("array") String[] strs);
+
+	List<User> selectUserByNoBranchids(@Param("array") String[] strs);
+
+	List<User> selectUserByNoTag(@Param("array") String[] strs);
+
+	List<User> selectByNoUserids(@Param("array") String[] strs);
+
 	//根据用户家族id查询该家族的分支数
 	@Select("select max(genlevel) as genlevel from jp_user where familyid =#{familyid}")
 	int getUserFamilyid(@Param("familyid") String familyid);
+
 	/**
 	* 根据家族id 家族名 世系代数 查找用户
 	* @param familyid
@@ -162,5 +172,6 @@ public interface UserDao {
 	* @param genlevel
 	* @return
 	*/
-	List<User> getUserByAncestor(@Param("familyid")String familyid,@Param("familyname")String familyname,@Param("genlevel")Integer genlevel);
+	List<User> getUserByAncestor(@Param("familyid") String familyid, @Param("familyname") String familyname,
+			@Param("genlevel") Integer genlevel);
 }

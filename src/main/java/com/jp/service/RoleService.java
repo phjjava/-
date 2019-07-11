@@ -82,4 +82,6 @@ public interface RoleService {
 	JsonResponse getEditorilaBoardList(Role entity);
 
 	JsonResponse getBranchAdminCityList(Role entity);
+
+	JsonResponse getEditorilaBoardListNew(Role entity);
 }

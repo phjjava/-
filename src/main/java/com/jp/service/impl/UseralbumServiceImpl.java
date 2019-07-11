@@ -90,18 +90,18 @@ public class UseralbumServiceImpl implements UseralbumService {
 			return res;
 		}
 		/*
-		 * UseralbumQuery userAlbumExample = new UseralbumQuery();
-		 * userAlbumExample.setStart(entity.getStart());
-		 * userAlbumExample.setCount(entity.getCount()); // 获取type为0（个人相册）的相册列表 if
-		 * (entity.getType() == 0) {
-		 * userAlbumExample.or().andUseridEqualTo(entity.getUserid()).
-		 * andDeleteflagEqualTo(0).andTypeEqualTo((byte) 0); } // 获取type为0（个人作品）的相册列表 if
-		 * (entity.getType() == 1)
-		 * userAlbumExample.or().andUseridEqualTo(entity.getUserid()).
-		 * andDeleteflagEqualTo(0).andTypeEqualTo((byte) 1);
-		 * userAlbumExample.setOrderByClause("sort asc"); List<Useralbum> userAlbums =
-		 * useralbumDao.selectByExample(userAlbumExample);
-		 */
+				UseralbumQuery userAlbumExample = new UseralbumQuery();
+				userAlbumExample.setStart(entity.getStart());
+				userAlbumExample.setCount(entity.getCount()); 
+				// 获取type为0（个人相册）的相册列表 
+				if (entity.getType() == 0) {
+					userAlbumExample.or().andUseridEqualTo(entity.getUserid()).andDeleteflagEqualTo(0).andTypeEqualTo((byte) 0);
+				} // 获取type为0（个人作品）的相册列表 
+				if (entity.getType() == 1)
+					userAlbumExample.or().andUseridEqualTo(entity.getUserid()).andDeleteflagEqualTo(0).andTypeEqualTo((byte) 1);
+				userAlbumExample.setOrderByClause("sort asc");
+				List<Useralbum> userAlbums = useralbumDao.selectByExample(userAlbumExample);
+		*/
 		PageHelper.startPage(start, count);
 		List<Useralbum> userAlbums = useralbumDao.selectByUseridAndType(entity.getUserid(), entity.getType());
 		if (userAlbums.size() == 0) {

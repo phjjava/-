@@ -208,6 +208,17 @@ public class RoleController {
 	}
 
 	/**
+	 * 获取编委会列表以及成员(新v2)
+	 * @param entity
+	 * @return
+	 */
+	@RequestMapping(value = "/getEditorilaBoardListNew", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getEditorilaBoardListNew(Role entity) {
+		return roleService.getEditorilaBoardListNew(entity);
+	}
+
+	/**
 	 * 获取分支编委会所在的所有省、市列表
 	 * 
 	 * @param entity

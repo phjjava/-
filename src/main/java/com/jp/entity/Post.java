@@ -2,127 +2,158 @@ package com.jp.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class Post implements Serializable {
-    private String id;
+	private String id;
 
-    /**
-     * 职务的名字
-     */
-    private String name;
+	/**
+	 * 职务的名字
+	 */
+	private String name;
 
-    /**
-     * 描述
-     */
-    private String roledesc;
+	/**
+	 * 描述
+	 */
+	private String roledesc;
 
-    /**
-     * 1：总编委会0：分编委会
-     */
-    private Integer type;
+	/**
+	 * 1：总编委会0：分编委会
+	 */
+	private Integer type;
 
-    /**
-     * 1：主任0：成员
-     */
-    private Integer ismanager;
+	/**
+	 * 1：主任0：成员
+	 */
+	private Integer ismanager;
 
-    /**
-     * 家族
-     */
-    private String familyid;
+	/**
+	 * 家族
+	 */
+	private String familyid;
 
-    /**
-     * 排序
-     */
-    private Integer sort;
+	/**
+	 * 排序
+	 */
+	private Integer sort;
 
-    /**
-     * 创建时间
-     */
-    private Date createtime;
+	/**
+	 * 创建时间
+	 */
+	private Date createtime;
 
-    private static final long serialVersionUID = 1L;
+	/*
+	 * 自属性
+	 */
+	private List<UserManager> managers;
 
-    public String getId() {
-        return id;
-    }
+	public Post() {
 
-    public void setId(String id) {
-        this.id = id == null ? null : id.trim();
-    }
+	}
 
-    public String getName() {
-        return name;
-    }
+	public Post(Post post) {
+		//super();
+		this.id = post.getId();
+		this.name = post.getName();
+		this.roledesc = post.getRoledesc();
+		this.type = post.getType();
+		this.ismanager = post.getIsmanager();
+		this.familyid = post.getFamilyid();
+		this.sort = post.getSort();
+		this.createtime = post.getCreatetime();
+		this.managers = post.getManagers();
+	}
 
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
-    }
+	public List<UserManager> getManagers() {
+		return managers;
+	}
 
-    public String getRoledesc() {
-        return roledesc;
-    }
+	public void setManagers(List<UserManager> managers) {
+		this.managers = managers;
+	}
 
-    public void setRoledesc(String roledesc) {
-        this.roledesc = roledesc == null ? null : roledesc.trim();
-    }
+	private static final long serialVersionUID = 1L;
 
-    public Integer getType() {
-        return type;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setType(Integer type) {
-        this.type = type;
-    }
+	public void setId(String id) {
+		this.id = id == null ? null : id.trim();
+	}
 
-    public Integer getIsmanager() {
-        return ismanager;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setIsmanager(Integer ismanager) {
-        this.ismanager = ismanager;
-    }
+	public void setName(String name) {
+		this.name = name == null ? null : name.trim();
+	}
 
-    public String getFamilyid() {
-        return familyid;
-    }
+	public String getRoledesc() {
+		return roledesc;
+	}
 
-    public void setFamilyid(String familyid) {
-        this.familyid = familyid == null ? null : familyid.trim();
-    }
+	public void setRoledesc(String roledesc) {
+		this.roledesc = roledesc == null ? null : roledesc.trim();
+	}
 
-    public Integer getSort() {
-        return sort;
-    }
+	public Integer getType() {
+		return type;
+	}
 
-    public void setSort(Integer sort) {
-        this.sort = sort;
-    }
+	public void setType(Integer type) {
+		this.type = type;
+	}
 
-    public Date getCreatetime() {
-        return createtime;
-    }
+	public Integer getIsmanager() {
+		return ismanager;
+	}
 
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
-    }
+	public void setIsmanager(Integer ismanager) {
+		this.ismanager = ismanager;
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", id=").append(id);
-        sb.append(", name=").append(name);
-        sb.append(", roledesc=").append(roledesc);
-        sb.append(", type=").append(type);
-        sb.append(", ismanager=").append(ismanager);
-        sb.append(", familyid=").append(familyid);
-        sb.append(", sort=").append(sort);
-        sb.append(", createtime=").append(createtime);
-        sb.append(", serialVersionUID=").append(serialVersionUID);
-        sb.append("]");
-        return sb.toString();
-    }
+	public String getFamilyid() {
+		return familyid;
+	}
+
+	public void setFamilyid(String familyid) {
+		this.familyid = familyid == null ? null : familyid.trim();
+	}
+
+	public Integer getSort() {
+		return sort;
+	}
+
+	public void setSort(Integer sort) {
+		this.sort = sort;
+	}
+
+	public Date getCreatetime() {
+		return createtime;
+	}
+
+	public void setCreatetime(Date createtime) {
+		this.createtime = createtime;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getSimpleName());
+		sb.append(" [");
+		sb.append("Hash = ").append(hashCode());
+		sb.append(", id=").append(id);
+		sb.append(", name=").append(name);
+		sb.append(", roledesc=").append(roledesc);
+		sb.append(", type=").append(type);
+		sb.append(", ismanager=").append(ismanager);
+		sb.append(", familyid=").append(familyid);
+		sb.append(", sort=").append(sort);
+		sb.append(", createtime=").append(createtime);
+		sb.append(", serialVersionUID=").append(serialVersionUID);
+		sb.append("]");
+		return sb.toString();
+	}
 }
