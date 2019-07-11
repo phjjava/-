@@ -110,6 +110,13 @@ public class UserContentServiceImpl implements UserContentService {
 			return res;
 		}
 		userContent.setUsername(userMapper.selectByPrimaryKey(entity.getUserid()).getUsername());
+		if (userContent.getReadcount() != null) {
+			userContent.setReadcount(userContent.getReadcount() + 1);
+		} else {
+			userContent.setReadcount(0);
+		}
+
+		UserContentMapper.updateByPrimaryKeySelective(userContent);
 
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);

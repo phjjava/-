@@ -26,9 +26,9 @@ import com.jp.util.UUIDUtils;
 
 @Service
 public class MomentCommentServiceImpl implements MomentCommentService {
-	
+
 	private final Logger log_ = LogManager.getLogger(MomentCommentServiceImpl.class);
-	
+
 	@Resource
 	private MomentMapper momentMapper;
 	@Resource
@@ -43,25 +43,25 @@ public class MomentCommentServiceImpl implements MomentCommentService {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		try {
-			if(StringUtils.isBlank(entity.getMomentId())) {
+			if (StringUtils.isBlank(entity.getMomentId())) {
 				result.setMsg("参数momentId为空！");
 				res = new JsonResponse(result);
 				return res;
 			}
-			if(StringUtils.isBlank(entity.getUserid())) {
+			if (StringUtils.isBlank(entity.getUserid())) {
 				result.setMsg("参数userId为空！");
 				return res;
 			}
-			if(StringUtils.isBlank(entity.getTargetUserid())) {
-				result.setMsg("参数targetUserid为空！");
-				return res;
-			}
-			if(StringUtils.isBlank(entity.getContent())) {
+			/*		if(StringUtils.isBlank(entity.getTargetUserid())) {
+						result.setMsg("参数targetUserid为空！");
+						return res;
+					}*/
+			if (StringUtils.isBlank(entity.getContent())) {
 				result.setMsg("参数content为空！");
 				return res;
 			}
 			Moment moment = momentMapper.selectByPrimaryKey(entity.getMomentId());
-			if(moment == null) {
+			if (moment == null) {
 				result.setMsg("抱歉，不存在的族圈消息！");
 				return res;
 			}
@@ -71,12 +71,15 @@ public class MomentCommentServiceImpl implements MomentCommentService {
 			User targetUser = userMapper.selectByPrimaryKey(entity.getTargetUserid());
 			//评论主表
 			entity.setId(UUIDUtils.getUUID());
-			entity.setTargetUserName(targetUser.getUsername());
+			entity.setUsername(user.getUsername());
+			if (targetUser != null) {
+				entity.setTargetUserName(targetUser.getUsername());
+			}
 			entity.setCreatetime(new Date());
 			entity.setCreateby(entity.getUserid());
 			entity.setDeleteflag(ConstantUtils.DELETE_FALSE);
 			int status = momentCommentMapper.insert(entity);
-			if(status > 0) {
+			if (status > 0) {
 				//族圈评论时间轴表插入数据
 				MomentCommentTimeline commentTimeline = new MomentCommentTimeline();
 				commentTimeline.setId(UUIDUtils.getUUID());
@@ -86,11 +89,12 @@ public class MomentCommentServiceImpl implements MomentCommentService {
 				commentTimeline.setCreateby(entity.getUserid());
 				commentTimeline.setDeleteflag(ConstantUtils.DELETE_FALSE);
 				status = momentCommentTimelineMapper.insert(commentTimeline);
-				if(status > 0) {
+				if (status > 0) {
 					result = new Result(MsgConstants.RESUL_SUCCESS);
 					res = new JsonResponse(result);
+					res.setData(entity);
 					return res;
-				}else {
+				} else {
 					result.setMsg("网络连接失败！");
 					res = new JsonResponse(result);
 					return res;

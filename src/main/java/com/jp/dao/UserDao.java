@@ -152,4 +152,12 @@ public interface UserDao {
 	List<User> selectUserByAreaCode(Map<String, String> params);
 
 	int searchComplexCount(SearchComplex searchComplex);
+
+	List<User> selectByUserids(@Param("array") String[] strs);
+
+	List<User> selectUserByNoBranchids(@Param("array") String[] strs);
+
+	List<User> selectUserByNoTag(@Param("array") String[] strs);
+
+	List<User> selectByNoUserids(@Param("array") String[] strs);
 }

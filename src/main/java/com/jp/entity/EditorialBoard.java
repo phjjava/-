@@ -43,8 +43,20 @@ public class EditorialBoard implements Serializable {
 	 * 排序
 	 */
 	private String sort;
-	// 自属性
+	/*
+	 * 自属性
+	 */
+	private List<Post> posts;
+
 	List<UserManager> userManager;
+
+	public List<Post> getPosts() {
+		return posts;
+	}
+
+	public void setPosts(List<Post> posts) {
+		this.posts = posts;
+	}
 
 	public List<UserManager> getUserManager() {
 		return userManager;
