@@ -3686,13 +3686,13 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		if ("".equals(entity.getStart()) || entity.getStart() == null) {
+		if ("".equals(entity.getStart() + "") || entity.getStart() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("分页参数start不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if ("".equals(entity.getCount()) || entity.getCount() == null) {
+		if ("".equals(entity.getCount() + "") || entity.getCount() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("分页参数count不能为空！");
 			res = new JsonResponse(result);
@@ -3773,10 +3773,14 @@ public class UserServiceImpl implements UserService {
 		}
 		// 执行搜索
 		List<User> users = userDao.searchComplex(searchComplex);
-
+		int count = userDao.searchComplexCount(searchComplex);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("userList", users);
+		map.put("count", count);
+		//result.setData1(count);
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
-		res.setData(users);
+		res.setData(map);
 		return res;
 	}
 
