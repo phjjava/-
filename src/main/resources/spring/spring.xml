@@ -129,5 +129,16 @@
     <!--统一异常处理-->
     <!-- <bean class="com.hnfz.app.core.aop.GlobalErrorException"/>-->
     
+    <!-- 注册RequestMappingHandlerMapping 和RequestMappingHandlerAdapter 两个bean。-->  
+	<mvc:annotation-driven>  
+	    <mvc:message-converters>  
+	        <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">  
+	            <property name="objectMapper">  
+	                <bean class="com.jp.common.JsonObjectMapper"></bean>  
+	            </property>  
+	        </bean>  
+	    </mvc:message-converters>  
+	</mvc:annotation-driven>  
+    
     
 </beans>
