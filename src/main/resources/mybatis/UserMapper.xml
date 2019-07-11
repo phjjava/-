@@ -1523,4 +1523,16 @@
 			#{item}
 		</foreach>
  	</select>
+	<select id="getUserByAncestor" resultMap="BaseResultMap"
+		parameterType="java.lang.Object">
+		SELECT
+			* 
+		FROM
+			jp_user 
+		WHERE
+			familyid = #{familyid} 
+			AND genlevel = #{genlevel} 
+			AND username LIKE #{familyname} 
+			AND sex = 1 
+	</select>
 </mapper>
