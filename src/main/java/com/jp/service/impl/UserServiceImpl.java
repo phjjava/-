@@ -1741,13 +1741,28 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean validatePhone(String familyid, String userid, String phone) {
-		List<User> userList = userDao.validatePhone(familyid, userid, phone);
-		if (userList != null && userList.size() < 2) {
-			return true;
-		} else {
-			return false;
+	public JsonResponse validatePhone(String familyid, String userid, String phone) {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			List<User> userList = userDao.validatePhone(familyid, userid, phone);
+			if (userList != null && userList.size() < 2) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			} else {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("一个手机号最多创建两个家族！");
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[validatePhone方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
+
 	}
 
 	@Override

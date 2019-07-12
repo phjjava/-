@@ -36,21 +36,45 @@ public class SysVersionServiceImpl implements SysVersionService {
 	private SysFuncVersionDao sysFuncVersionDao;
 
 	@Override
-	public PageModel<SysVersion> pageQuery(PageModel<SysVersion> pageModel, SysVersion sysVersion) throws Exception {
-
-		SysVersionQuery sfq = new SysVersionQuery();
-
-		Criteria createCriteria = sfq.createCriteria();
-
-		if (StringTools.trimNotEmpty(sysVersion.getVersionname())) {
-			createCriteria.andVersionnameLike("%" + sysVersion.getVersionname().trim() + "%");
+	public JsonResponse pageQuery(PageModel<SysVersion> pageModel, SysVersion sysVersion) {
+		Result result = null;
+		JsonResponse res = null;
+		if (pageModel.getPageNo() == null || "".equals(pageModel.getPageNo() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageNo不能为空！");
+			res = new JsonResponse(result);
+			return res;
 		}
-
-		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		List<SysVersion> list = sysVersionDao.selectByExample(sfq);
-		pageModel.setList(list);
-		pageModel.setPageInfo(new PageInfo<SysVersion>(list));
-		return pageModel;
+		if (pageModel.getPageSize() == null || "".equals(pageModel.getPageSize() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageSize不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			SysVersionQuery sfq = new SysVersionQuery();
+			Criteria createCriteria = sfq.createCriteria();
+			if (StringTools.trimNotEmpty(sysVersion.getVersionname())) {
+				createCriteria.andVersionnameLike("%" + sysVersion.getVersionname().trim() + "%");
+			}
+			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			List<SysVersion> list = sysVersionDao.selectByExample(sfq);
+			if (list != null) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(list);
+				res.setCount(new PageInfo<SysVersion>(list).getTotal());
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[pageQuery方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
@@ -86,7 +110,7 @@ public class SysVersionServiceImpl implements SysVersionService {
 	public int deleteFuncVersionByVersionid(String versionid) throws Exception {
 
 		SysFuncVersionQuery sfvq = new SysFuncVersionQuery();
-		com.jp.entity.SysFuncVersionQuery.Criteria createCriteria = sfvq.createCriteria();
+		SysFuncVersionQuery.Criteria createCriteria = sfvq.createCriteria();
 		createCriteria.andVersionidEqualTo(versionid);
 
 		return sysFuncVersionDao.deleteByExample(sfvq);

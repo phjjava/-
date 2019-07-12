@@ -152,7 +152,7 @@ public interface UserService {
 	 */
 	List<User> login(String phone, String password) throws Exception;
 
-	boolean validatePhone(String familyid, String userid, String phone);
+	JsonResponse validatePhone(String familyid, String userid, String phone);
 
 	/**
 	 * 
