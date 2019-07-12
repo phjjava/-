@@ -1,23 +1,19 @@
 package com.jp.service;
 
-
-
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.Index;
 
 public interface FunctionMenuService {
 
-	PageModel<Index> pageQuery(PageModel<Index> pageModel);
+	JsonResponse pageQuery(PageModel<Index> pageModel);
 
-	String save(Index index);
+	JsonResponse save(Index index);
 
-	String update(Index index);
-
-	Index get(String id);
+	JsonResponse get(String id);
 
 	String batchDelete(String[] menuArray);
 
-	String delete(String menuid);
+	JsonResponse delete(String menuid);
 
-	
 }
