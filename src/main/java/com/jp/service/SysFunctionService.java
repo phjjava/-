@@ -6,7 +6,7 @@ import com.jp.entity.SysFunction;
 
 public interface SysFunctionService {
 
-	PageModel<SysFunction> pageQuery(PageModel<SysFunction> pageModel, SysFunction sysFunction) throws Exception;
+	JsonResponse pageQuery(PageModel<SysFunction> pageModel, SysFunction sysFunction);
 
 	JsonResponse delete(String functionid);
 

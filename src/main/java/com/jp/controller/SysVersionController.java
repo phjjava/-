@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jp.common.JsonResponse;
-import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
-import com.jp.common.Result;
 import com.jp.entity.SysVersion;
 import com.jp.service.SysFunctionService;
 import com.jp.service.SysVersionService;
@@ -44,42 +42,15 @@ public class SysVersionController {
 	}
 
 	/**
-	 * 分页查询
+	 * 版本分页列表
 	 * @param pageModel
 	 * @param sysVersion
-	 * @param model
 	 * @return
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse list(PageModel<SysVersion> pageModel, SysVersion sysVersion) {
-		Result result = null;
-		JsonResponse res = null;
-		try {
-			sysVersionService.pageQuery(pageModel, sysVersion);
-			if (pageModel.getList() != null) {
-				if (pageModel.getList().size() == 0) {
-					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo() + "")) {
-						pageModel.setPageNo(pageModel.getPageNo() - 1);
-						sysVersionService.pageQuery(pageModel, sysVersion);
-					}
-				}
-			}
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
-			res.setData(pageModel.getList());
-			res.setCount(pageModel.getPageInfo().getTotal());
-			return res;
-
-		} catch (Exception e) {
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		result = new Result(MsgConstants.RESUL_FAIL);
-		res = new JsonResponse(result);
-		return res;
+		return sysVersionService.pageQuery(pageModel, sysVersion);
 	}
 
 	/**

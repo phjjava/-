@@ -9,7 +9,7 @@ public interface SysVersionService {
 
 	JsonResponse save(SysVersion sysVersion, String[] functionids);
 
-	PageModel<SysVersion> pageQuery(PageModel<SysVersion> pageModel, SysVersion sysVersion) throws Exception;
+	JsonResponse pageQuery(PageModel<SysVersion> pageModel, SysVersion sysVersion);
 
 	JsonResponse delete(String versionid);
 

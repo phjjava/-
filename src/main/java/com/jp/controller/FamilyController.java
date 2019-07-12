@@ -98,8 +98,7 @@ public class FamilyController {
 
 	@RequestMapping(value = "/validatePhone", method = RequestMethod.POST)
 	@ResponseBody
-	public String validateName(HttpServletRequest request) {
-		boolean flag = true;//默认通过验证
+	public JsonResponse validateName(HttpServletRequest request) {
 		String userid = StringTools.trimNotEmpty(request.getParameter("userid")) ? request.getParameter("userid").trim()
 				: null;
 		String familyid = StringTools.trimNotEmpty(request.getParameter("familyid"))
@@ -108,13 +107,6 @@ public class FamilyController {
 		String phone = StringTools.trimNotEmpty(request.getParameter("phone")) ? request.getParameter("phone").trim()
 				: null;
 
-		try {
-
-			flag = userService.validatePhone(familyid, userid, phone);
-
-		} catch (Exception e) {
-			log_.error("[PLMERROR:]", e);
-		}
-		return flag ? "true" : "false";
+		return userService.validatePhone(familyid, userid, phone);
 	}
 }

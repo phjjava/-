@@ -36,25 +36,49 @@ public class SysFunctionServiceImpl implements SysFunctionService {
 	private SysVersionDao sysVersionDao;
 
 	@Override
-	public PageModel<SysFunction> pageQuery(PageModel<SysFunction> pageModel, SysFunction sysFunction)
-			throws Exception {
-
-		SysFunctionQuery sfq = new SysFunctionQuery();
-
-		Criteria createCriteria = sfq.createCriteria();
-
-		if (StringTools.trimNotEmpty(sysFunction.getFunctionname())) {
-			createCriteria.andFunctionnameLike("%" + sysFunction.getFunctionname().trim() + "%");
+	public JsonResponse pageQuery(PageModel<SysFunction> pageModel, SysFunction sysFunction) {
+		Result result = null;
+		JsonResponse res = null;
+		if (pageModel.getPageNo() == null || "".equals(pageModel.getPageNo() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageNo不能为空！");
+			res = new JsonResponse(result);
+			return res;
 		}
-		if (StringTools.notEmpty(sysFunction.getParentid())) {
-			createCriteria.andParentidEqualTo(sysFunction.getParentid());
+		if (pageModel.getPageSize() == null || "".equals(pageModel.getPageSize() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageSize不能为空！");
+			res = new JsonResponse(result);
+			return res;
 		}
-		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		sfq.setOrderByClause(" sort desc");
-		List<SysFunction> list = sysFunctionDao.selectByExample(sfq);
-		pageModel.setList(list);
-		pageModel.setPageInfo(new PageInfo<SysFunction>(list));
-		return pageModel;
+		try {
+			SysFunctionQuery sfq = new SysFunctionQuery();
+			Criteria createCriteria = sfq.createCriteria();
+			if (StringTools.trimNotEmpty(sysFunction.getFunctionname())) {
+				createCriteria.andFunctionnameLike("%" + sysFunction.getFunctionname().trim() + "%");
+			}
+			if (StringTools.notEmpty(sysFunction.getParentid())) {
+				createCriteria.andParentidEqualTo(sysFunction.getParentid());
+			}
+			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			sfq.setOrderByClause(" sort desc");
+			List<SysFunction> list = sysFunctionDao.selectByExample(sfq);
+			if (list != null) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(list);
+				res.setCount(new PageInfo<SysFunction>(list).getTotal());
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[pageQuery方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
@@ -95,6 +119,12 @@ public class SysFunctionServiceImpl implements SysFunctionService {
 		JsonResponse res = null;
 		List<SysFunction> treeList = new ArrayList<SysFunction>();
 		SysVersion sysVersion = new SysVersion();
+		if (versionid == null || "".equals(versionid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数versionid不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			//获取版本详情
 			sysVersion = sysVersionDao.selectByPrimaryKey(versionid);

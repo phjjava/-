@@ -86,6 +86,42 @@ public class FamilyServiceImpl implements FamilyService {
 	public JsonResponse merge(User user, Userinfo userInfo, SysFamily family) {
 		Result result = null;
 		JsonResponse res = null;
+		if (user.getUsername() == null || "".equals(user.getUsername())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数username不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (user.getPhone() == null || "".equals(user.getPhone())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数phone不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (user.getFamilyname() == null || "".equals(user.getFamilyname())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数familyname不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (family.getSurname() == null || "".equals(family.getSurname())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数surname不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (family.getVersion() == null || "".equals(family.getVersion())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数version不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (family.getVersionname() == null || "".equals(family.getVersionname())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数versionname不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
 		try {
 			if (StringTools.trimNotEmpty(family.getFamilyid())) {
@@ -244,6 +280,18 @@ public class FamilyServiceImpl implements FamilyService {
 	public JsonResponse selectFamilyList(PageModel<SysFamily> pageModel, SysFamily family) {
 		Result result = null;
 		JsonResponse res = null;
+		if (pageModel.getPageNo() == null || "".equals(pageModel.getPageNo() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageNo不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (pageModel.getPageSize() == null || "".equals(pageModel.getPageSize() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageSize不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 			List<SysFamily> familyList = sysFamilyDao.selectFamilyList(family);
@@ -275,6 +323,18 @@ public class FamilyServiceImpl implements FamilyService {
 	public JsonResponse changeStatus(SysFamily family, HttpSession httpSession) {
 		Result result = null;
 		JsonResponse res = null;
+		if (family.getStatus() == null || "".equals(family.getStatus() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数status不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (family.getFamilyid() == null || "".equals(family.getFamilyid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数familyid不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			SysUser user = (SysUser) httpSession.getAttribute("systemUserContext");
 			family.setUpdatetime(new Date());
@@ -308,7 +368,7 @@ public class FamilyServiceImpl implements FamilyService {
 
 	@Override
 	public JsonResponse mergeForApi(User user, Userinfo userinfo, SysFamily family) {
-		com.jp.common.Result result = new com.jp.common.Result(MsgConstants.RESUL_FAIL);
+		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		try {
 			SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
@@ -487,7 +547,7 @@ public class FamilyServiceImpl implements FamilyService {
 
 	@Override
 	public JsonResponse searchFamily(SysFamily family) {
-		com.jp.common.Result result = new com.jp.common.Result(MsgConstants.RESUL_FAIL);
+		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		try {
 			if (StringUtils.isBlank(family.getFamilycode())) {
