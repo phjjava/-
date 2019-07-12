@@ -174,4 +174,6 @@ public interface UserDao {
 	*/
 	List<User> getUserByAncestor(@Param("familyid") String familyid, @Param("familyname") String familyname,
 			@Param("genlevel") Integer genlevel);
+	int getUserByAncestorCount(@Param("familyid") String familyid, @Param("familyname") String familyname,
+			@Param("genlevel") Integer genlevel);
 }
