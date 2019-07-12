@@ -1535,4 +1535,16 @@
 			AND username LIKE #{familyname} 
 			AND sex = 1 
 	</select>
+	<select id="getUserByAncestorCount" resultType="java.lang.Integer"
+		parameterType="java.lang.Object">
+		SELECT
+			count(*) 
+		FROM
+			jp_user 
+		WHERE
+			familyid = #{familyid} 
+			AND genlevel = #{genlevel} 
+			AND username LIKE #{familyname} 
+			AND sex = 1 
+	</select>
 </mapper>

@@ -87,7 +87,8 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 	public JsonResponse getWorshipAncestorList(String familyid, Integer genlevel,String familyname,Integer pagesize,Integer pageNo) {
 		Result result = null;
 		JsonResponse res = null;
-		List<GenUserOther> list=new ArrayList<GenUserOther>();;
+		List<GenUserOther> list=new ArrayList<GenUserOther>();
+		Integer userByAncestorCount = 0;
 		try {
 			if(familyid == null || "".equals(familyid)){
 				result=new Result(MsgConstants.RESUL_FAIL);
@@ -122,6 +123,12 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 			String substringBefore = StringUtils.substringBefore(familyname, "氏"); 
 			familyname=substringBefore+"%";
 			System.out.println(familyname);
+			userByAncestorCount = userMapper.getUserByAncestorCount(familyid, familyname, genlevel);
+			if(userByAncestorCount<=0) {
+				result=new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("该世没有插入数据！");
+				return res;
+			}
 			PageHelper.startPage(pageNo, pagesize);
 			List<User> userByAncestor = userMapper.getUserByAncestor(familyid, familyname, genlevel);
 			for (User user : userByAncestor) {
@@ -165,6 +172,7 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 		}
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
+		res.setData1(userByAncestorCount);
 		res.setData(list);
 		return res;
 	}
