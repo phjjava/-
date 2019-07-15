@@ -91,13 +91,13 @@ public class PlatformServiceImpl implements PlatformService {
 	}
 
 	@Override
-	public void save(Platform platform) {
-		platformDao.save(platform);
+	public int save(Platform platform) {
+		return platformDao.save(platform);
 	}
 
 	@Override
-	public void update(Platform platform) {
-		platformDao.update(platform);
+	public int update(Platform platform) {
+		return platformDao.update(platform);
 	}
 
 	@Override
