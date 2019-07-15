@@ -22,7 +22,6 @@ import com.jp.common.Result;
 import com.jp.util.UploadUtil;
 
 @Controller
-@RequestMapping("uploadFile")
 public class UploadFileController {
 	private final Logger log_ = LogManager.getLogger(UploadFileController.class);
 
@@ -35,8 +34,67 @@ public class UploadFileController {
 	 * @return String
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/savePhoto", method = RequestMethod.POST, produces = { "application/json;charset=UTF-8" })
+	@RequestMapping(value = "/uploadFile/savePhoto", method = RequestMethod.POST, produces = {
+			"application/json;charset=UTF-8" })
 	public JsonResponse savePhoto(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			List<String> fileNames = new ArrayList<String>();
+			List<File> fileList = new ArrayList<File>();
+			File file = null;
+			for (MultipartFile fileM : files) {
+				String fileName = fileM.getOriginalFilename();
+				fileNames.add(fileName);
+			}
+			String pathDir = "/upload";
+			String logoRealPathDir = request.getSession().getServletContext().getRealPath(pathDir);
+			for (int i = 0; i < files.length; i++) {
+				MultipartFile fileMe = files[i];
+				file = new File(logoRealPathDir);
+				if (!file.exists()) {
+					file.mkdirs();
+				}
+				file = new File(logoRealPathDir, fileMe.getOriginalFilename());
+				files[i].transferTo(file);
+				fileList.add(file);
+			}
+			// String status = UploadUtil.taskFileUpload(fileList, fileNams);
+			// Map<String, Object> gsonToMaps = GsonUtil.GsonToMaps(status);
+			Map<String, Object> resultMap = UploadUtil.batchFileUpload(fileList, fileNames);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(resultMap);
+			// res.setData(gsonToMaps.get("data"));
+			if ("0".equals(resultMap.get("result").toString())) {
+				// 删除缓存文件
+				boolean flag = file.delete();
+				if (!flag) {
+					log_.error("上传文件缓存删除失败");
+				}
+			}
+
+		} catch (Exception e) {
+			log_.error("[UploadFileController.savePhoto方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		return res;
+	}
+
+	/**
+	 * 
+	 * @描述 图片上传公共方法
+	 * @参数 @param files
+	 * @参数 @param request
+	 * @参数 @return
+	 * @return String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/system/uploadFile/savePhoto", method = RequestMethod.POST, produces = {
+			"application/json;charset=UTF-8" })
+	public JsonResponse sysSavePhoto(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) {
 		Result result = null;
 		JsonResponse res = null;
 		try {
