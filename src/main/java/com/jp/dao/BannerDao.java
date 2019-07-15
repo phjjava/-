@@ -2,7 +2,7 @@ package com.jp.dao;
 
 import com.jp.entity.Banner;
 import com.jp.entity.BannerQuery;
-import com.jp.entity.User;
+
 
 import java.util.List;
 

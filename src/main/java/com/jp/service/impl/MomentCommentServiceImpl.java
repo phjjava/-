@@ -1,6 +1,7 @@
 package com.jp.service.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -10,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.jp.common.ConstantUtils;
+
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.Result;
@@ -19,8 +21,10 @@ import com.jp.dao.MomentMapper;
 import com.jp.dao.UserDao;
 import com.jp.entity.Moment;
 import com.jp.entity.MomentComment;
+import com.jp.entity.MomentCommentExample;
 import com.jp.entity.MomentCommentTimeline;
 import com.jp.entity.User;
+
 import com.jp.service.MomentCommentService;
 import com.jp.util.UUIDUtils;
 
@@ -118,7 +122,22 @@ public class MomentCommentServiceImpl implements MomentCommentService {
 
 	@Override
 	public JsonResponse getAllMomentComment(MomentComment entity) {
-		return null;
+		JsonResponse jsonResponse =new JsonResponse(0, null);
+		//获取回复列表
+		        MomentCommentExample momentCommentExample = new MomentCommentExample();
+				momentCommentExample.or().andMomentIdEqualTo(entity.getMomentId()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
+				momentCommentExample.setOrderByClause("createtime desc");
+				List<MomentComment> momentComments = momentCommentMapper.selectByExample(momentCommentExample);
+				if(momentComments.size()>0) {
+					jsonResponse.setCode(ConstantUtils.RESULT_SUCCESS);
+					jsonResponse.setData(momentComments);
+					jsonResponse.setMsg("请求成功");
+				}else{
+					jsonResponse.setCode(ConstantUtils.RESULT_FAIL);
+					jsonResponse.setMsg("网络连接失败");
+				}
+				return jsonResponse;
+		
 	}
 
 }
