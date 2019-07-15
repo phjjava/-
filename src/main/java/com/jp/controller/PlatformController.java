@@ -19,7 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.jp.common.ConstantUtils;
 import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.entity.Platform;
 import com.jp.service.PlatformService;
 
@@ -61,16 +63,42 @@ public class PlatformController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/merge", method = RequestMethod.POST)
-	public String merge(@RequestParam(value = "file", required = false) MultipartFile file, Platform platform,
+	public JsonResponse merge(@RequestParam(value = "file", required = false) MultipartFile file, Platform platform,
 			HttpServletRequest request) {
-		String result = null;
+		Result result = null;
+		JsonResponse res = null;
+		int status = 0;
+		if (platform.getVersionName() == null || "".equals(platform.getVersionName())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数versionName不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (platform.getVersionNo() == null || "".equals(platform.getVersionNo() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数versionNo不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (platform.getMinUpdateVersion() == null || "".equals(platform.getMinUpdateVersion() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数minUpdateVersion不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (platform.getDownloadUrl() == null || "".equals(platform.getDownloadUrl())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数downloadUrl不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			String path = request.getSession().getServletContext().getRealPath("/upload");
-			if (platform.getId() != null && !platform.getId().equals("")) {//编辑
-				JsonResponse res = platformService.selectone(platform.getId());
+			if (platform.getId() != null && !"".equals(platform.getId() + "")) {//编辑
+				res = platformService.selectone(platform.getId());
 				Platform p = (Platform) res.getData();
 
-				if (!file.getOriginalFilename().equals("") && p.getFileType().equals("2")) {
+				if (p.getFileType() == 2 && !"".equals(file.getOriginalFilename())) {
 					String fileName = file.getOriginalFilename();
 					platform.setFileRealName(fileName);
 					fileName = System.currentTimeMillis() / 1000 + "_" + fileName;
@@ -81,10 +109,9 @@ public class PlatformController {
 					}
 					file.transferTo(targetFile);
 				}
-				platformService.update(platform);
-				result = "1";
+				status = platformService.update(platform);
 			} else {//新增
-				if (platform.getFileType().equals("2")) {
+				if (platform.getFileType() == 2) {
 					String fileName = file.getOriginalFilename();
 					platform.setFileRealName(fileName);
 					fileName = System.currentTimeMillis() / 1000 + "_" + fileName;
@@ -100,14 +127,22 @@ public class PlatformController {
 						platform.setFileRealName(urls[urls.length - 1]);
 					}
 				}
-				platformService.save(platform);
-				result = "1";
+				status = platformService.save(platform);
+			}
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
 			}
 		} catch (Exception e) {
-			result = "0";
-			e.printStackTrace();
+			log_.error("[merge---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-		return result;
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	/**

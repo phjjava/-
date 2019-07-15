@@ -10,9 +10,9 @@ public interface PlatformService {
 
 	JsonResponse deleteVersion(Integer id);
 
-	void save(Platform platform);
+	int save(Platform platform);
 
-	void update(Platform platform);
+	int update(Platform platform);
 
 	JsonResponse selectone(Integer id);
 
