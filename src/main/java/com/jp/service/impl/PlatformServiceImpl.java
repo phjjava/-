@@ -3,6 +3,8 @@ package com.jp.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,29 +20,74 @@ import com.jp.service.PlatformService;
 
 @Service
 public class PlatformServiceImpl implements PlatformService {
+	private final Logger log_ = LogManager.getLogger(PlatformServiceImpl.class);
+
 	@Autowired
 	private PlatformDao platformDao;
 
 	@Override
-	public PageModel selectPlatformList(PageModel pageModel, Platform platform) throws Exception {
+	public JsonResponse selectPlatformList(PageModel<Platform> pageModel, Platform platform) {
+		Result result = null;
+		JsonResponse res = null;
+		if (pageModel.getPageNo() == null || "".equals(pageModel.getPageNo() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageNo不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (pageModel.getPageSize() == null || "".equals(pageModel.getPageSize() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageSize不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		List<Platform> platformList = platformDao.selecPlatformList(platform);
-		pageModel.setList(platformList);
-		pageModel.setPageInfo(new PageInfo<Platform>(platformList));
-		return pageModel;
+		try {
+			List<Platform> platformList = platformDao.selecPlatformList(platform);
+			if (platformList != null) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(platformList);
+				res.setCount(new PageInfo<Platform>(platformList).getTotal());
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[selectPlatformList---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
-	public String deleteVersion(Integer id) {
-		String result = null;
-		try {
-			platformDao.deleteVersion(id);
-			result = "1";
-		} catch (Exception e) {
-			e.printStackTrace();
-			result = "0";
+	public JsonResponse deleteVersion(Integer id) {
+		Result result = null;
+		JsonResponse res = null;
+		if (id == null || "".equals(id + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数id不能为空！");
+			res = new JsonResponse(result);
+			return res;
 		}
-		return result;
+		try {
+			int status = platformDao.deleteVersion(id);
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[deleteVersion---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
@@ -54,13 +101,64 @@ public class PlatformServiceImpl implements PlatformService {
 	}
 
 	@Override
-	public Platform selectone(String id) {
-		return platformDao.selectone(id);
+	public JsonResponse selectone(Integer id) {
+		Result result = null;
+		JsonResponse res = null;
+		if (id == null || "".equals(id + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数id不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			Platform platform = platformDao.selectone(id);
+			if (platform != null) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(platform);
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[selectone---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
-	public void isOpen(Integer id, Integer isUsed) {
-		platformDao.isOpen(id, isUsed);
+	public JsonResponse isOpen(Integer id) {
+		Result result = null;
+		JsonResponse res = null;
+		int status = 0;
+		Platform platform = platformDao.selectone(id);
+		try {
+			if (platform.getIsUsed() == 0) {
+				// 开启操作
+				status = platformDao.closeAllVersion(platform.getFileType());
+				status = platformDao.isOpen(platform.getId(), 1);
+			} else {
+				// 关闭操作
+				status = platformDao.isOpen(platform.getId(), 0);
+			}
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[FunctionMenuServiceImpl---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
+
 	}
 
 	@Override

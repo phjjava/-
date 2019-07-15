@@ -32,57 +32,20 @@ public class PlatformController {
 
 	/**
 	 * @描述 安卓或ios升级版本列表
-	 * @作者 sj
-	 * @时间 2017年11月27日下午5:35:54
-	 * @参数 @param pageModel
-	 * @参数 @param user
-	 * @参数 @param model
-	 * @参数 @return
-	 * @return String
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
-	public String list(PageModel<Platform> pageModel, Platform platform, ModelMap model) {
-		try {
-			platformService.selectPlatformList(pageModel, platform);
-			if (pageModel.getList() != null) {
-				if (pageModel.getList().size() == 0) {
-					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
-						pageModel.setPageNo(pageModel.getPageNo() - 1);
-						platformService.selectPlatformList(pageModel, platform);
-					}
-				}
-			}
-			model.put("pageModel", pageModel);
-			model.put("versionName", platform.getVersionName());
-			model.put("fileType", platform.getFileType());
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		return "system/platform/platformList";
+	@ResponseBody
+	public JsonResponse list(PageModel<Platform> pageModel, Platform platform, ModelMap model) {
+		return platformService.selectPlatformList(pageModel, platform);
 	}
 
 	/**
 	 * @描述 删除版本
-	 * @作者 sj
-	 * @时间 2017年11月28日下午5:22:20
-	 * @参数 @param request
-	 * @参数 @param platform
-	 * @参数 @param model
-	 * @参数 @return
-	 * @return String
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/deleteVersion", method = RequestMethod.POST)
-	public String deleteVersion(HttpServletRequest request, Platform platform, ModelMap model) {
-		String result = null;
-		try {
-			result = platformService.deleteVersion(platform.getId());
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		return result;
+	public JsonResponse deleteVersion(Integer id) {
+		return platformService.deleteVersion(id);
 	}
 
 	/**
@@ -103,8 +66,10 @@ public class PlatformController {
 		String result = null;
 		try {
 			String path = request.getSession().getServletContext().getRealPath("/upload");
-			if (platform.getId() != null && !platform.getId().equals("")) {
-				Platform p = platformService.selectone(String.valueOf(platform.getId()));
+			if (platform.getId() != null && !platform.getId().equals("")) {//编辑
+				JsonResponse res = platformService.selectone(platform.getId());
+				Platform p = (Platform) res.getData();
+
 				if (!file.getOriginalFilename().equals("") && p.getFileType().equals("2")) {
 					String fileName = file.getOriginalFilename();
 					platform.setFileRealName(fileName);
@@ -118,7 +83,7 @@ public class PlatformController {
 				}
 				platformService.update(platform);
 				result = "1";
-			} else {
+			} else {//新增
 				if (platform.getFileType().equals("2")) {
 					String fileName = file.getOriginalFilename();
 					platform.setFileRealName(fileName);
@@ -146,30 +111,13 @@ public class PlatformController {
 	}
 
 	/**
-	 * 去编辑界面
+	 * 编辑回显
 	 * 
-	 * @描述 TODO
-	 * @作者 sj
-	 * @时间 2017年11月28日下午8:39:44
-	 * @参数 @param request
-	 * @参数 @param id
-	 * @参数 @param model
-	 * @参数 @return
-	 * @return String
 	 */
 	@RequestMapping(value = "/edit", method = RequestMethod.GET)
-	public String edit(HttpServletRequest request, String id, ModelMap model) {
-
-		try {
-			Platform platform = platformService.selectone(id);
-			if (platform != null) {
-				model.put("platform", platform);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		return "system/platform/platform";
+	@ResponseBody
+	public JsonResponse edit(Integer id) {
+		return platformService.selectone(id);
 	}
 
 	/**
@@ -184,26 +132,8 @@ public class PlatformController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/isOpen", method = RequestMethod.POST)
-	public String isOpen(HttpServletRequest request, Platform platform, ModelMap model) {
-		String result = null;
-		try {
-			Platform platformOperate = platformService.selectone(String.valueOf(platform.getId()));
-			if (platformOperate.getIsUsed() == 0) {
-				// 开启操作
-				platformService.closeAllVersion(platformOperate.getFileType());
-				platformService.isOpen(platformOperate.getId(), 1);
-				result = "1";
-			} else {
-				// 关闭操作
-				platformService.isOpen(platformOperate.getId(), 0);
-				result = "1";
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-			result = "0";
-		}
-		return result;
+	public JsonResponse isOpen(Integer id) {
+		return platformService.isOpen(id);
 	}
 
 	/**

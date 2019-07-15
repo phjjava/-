@@ -9,17 +9,17 @@ import com.jp.entity.Platform;
 public interface PlatformDao {
 	List<Platform> selecPlatformList(@Param("platform") Platform platform);
 
-	void deleteVersion(@Param("id") Integer id);
+	int deleteVersion(@Param("id") Integer id);
 
-	void save(@Param("platform") Platform platform);
+	int save(@Param("platform") Platform platform);
 
-	void update(@Param("platform") Platform platform);
+	int update(@Param("platform") Platform platform);
 
-	Platform selectone(@Param("id") String id);
+	Platform selectone(@Param("id") Integer id);
 
-	void isOpen(@Param("id") Integer id, @Param("isUsed") Integer isUsed);
+	int isOpen(@Param("id") Integer id, @Param("isUsed") Integer isUsed);
 
-	void closeAllVersion(@Param("fileType") Integer fileType);
+	int closeAllVersion(@Param("fileType") Integer fileType);
 
 	Platform selectPlatform(Integer fileType);
 }
