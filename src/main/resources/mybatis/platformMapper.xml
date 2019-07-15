@@ -53,14 +53,12 @@
 	</select>
 	<update id="isOpen">
 		update jp_platform set isUsed = #{isUsed}
-		where id =
-		#{id}
+		where id = #{id}
 	</update>
 	<update id="closeAllVersion">
 		update jp_platform
 		set isUsed = 0
-		where fileType =
-		#{fileType,jdbcType=INTEGER}
+		where fileType = #{fileType,jdbcType=INTEGER}
 	</update>
 	<select id="selectPlatform" resultMap="BaseResultMap">
 		select
