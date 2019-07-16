@@ -37,10 +37,9 @@
 		)
 	</insert>
 	<update id="update" parameterType="com.jp.entity.Platform">
-		update jp_platform set versionName = #{platform.versionName},versionNo
-		= #{platform.versionNo},
-		minUpdateVersion =
-		#{platform.minUpdateVersion},upgradeDes = #{platform.upgradeDes}
+		update jp_platform set versionName = #{platform.versionName},
+		versionNo = #{platform.versionNo},minUpdateVersion = #{platform.minUpdateVersion},
+		upgradeDes = #{platform.upgradeDes}
 		<if test="platform.fileRealName != null">
 			,fileRealName = #{platform.fileRealName}
 		</if>

@@ -86,20 +86,20 @@ public class PlatformController {
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (platform.getDownloadUrl() == null || "".equals(platform.getDownloadUrl())) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("参数downloadUrl不能为空！");
-			res = new JsonResponse(result);
-			return res;
-		}
 		try {
 			String path = request.getSession().getServletContext().getRealPath("/upload");
 			if (platform.getId() != null && !"".equals(platform.getId() + "")) {//编辑
 				res = platformService.selectone(platform.getId());
 				Platform p = (Platform) res.getData();
 
-				if (p.getFileType() == 2 && !"".equals(file.getOriginalFilename())) {
+				if (p.getFileType() == 2 && file != null) {
 					String fileName = file.getOriginalFilename();
+					if ("".equals(fileName)) {
+						result = new Result(MsgConstants.RESUL_FAIL);
+						result.setMsg("file文件名字不能为空，请检查后重试！");
+						res = new JsonResponse(result);
+						return res;
+					}
 					platform.setFileRealName(fileName);
 					fileName = System.currentTimeMillis() / 1000 + "_" + fileName;
 					File targetFile = new File(path, fileName);
@@ -112,6 +112,12 @@ public class PlatformController {
 				status = platformService.update(platform);
 			} else {//新增
 				if (platform.getFileType() == 2) {
+					if (file == null || "".equals(file.getOriginalFilename())) {
+						result = new Result(MsgConstants.RESUL_FAIL);
+						result.setMsg("参数file为空或文件名字为空，请检查后重试！");
+						res = new JsonResponse(result);
+						return res;
+					}
 					String fileName = file.getOriginalFilename();
 					platform.setFileRealName(fileName);
 					fileName = System.currentTimeMillis() / 1000 + "_" + fileName;
