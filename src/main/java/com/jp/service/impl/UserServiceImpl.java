@@ -53,6 +53,7 @@ import com.jp.dao.SysVersionPrivilegeMapper;
 import com.jp.dao.UserDao;
 import com.jp.dao.UserImportMapper;
 import com.jp.dao.UserInfoImportMapper;
+import com.jp.dao.UserManagerMapper;
 import com.jp.dao.UseralbumDao;
 import com.jp.dao.UsercodeDao;
 import com.jp.dao.UsereduDao;
@@ -87,6 +88,7 @@ import com.jp.entity.UserClildInfo;
 import com.jp.entity.UserDetail;
 import com.jp.entity.UserImportExample;
 import com.jp.entity.UserLimitVO;
+import com.jp.entity.UserManagerExample;
 import com.jp.entity.UserQuery;
 import com.jp.entity.UserVO;
 import com.jp.entity.Useralbum;
@@ -162,6 +164,8 @@ public class UserServiceImpl implements UserService {
 	private BranchalbumMapper branchAlbumMapper;
 	@Autowired
 	private BranchphotoMapper branchPhotoMapper;
+	@Autowired
+	private UserManagerMapper userManagerMapper;
 
 	// 导入用户时重复的用户
 	private ArrayList<String> userStringList;
@@ -2346,7 +2350,10 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Integer del(String[] userids) {
-
+		List<String> strs = Arrays.asList(userids);
+		UserManagerExample example = new UserManagerExample();
+		example.or().andUseridIn(strs);
+		userManagerMapper.deleteByExample(example);
 		return userDao.delUser(userids);
 	}
 
@@ -3721,8 +3728,8 @@ public class UserServiceImpl implements UserService {
 		userExample.setOrderByClause("pinyinfirst desc");
 		// userExample.setStartRow((int) (entity.getStart() - 1) *
 		// entity.getCount().intValue());
-		userExample.setPageNo(entity.getStart().intValue());// start是页码
 		userExample.setPageSize(entity.getCount().intValue());
+		userExample.setStartRow(entity.getStart().intValue());// start是索引
 		// 获取当前家族所有有效用户
 		List<User> users = userDao.selectByExample(userExample);
 		String lastDateTime = userDao.getLastUpdateDateTime(entity.getFamilyid());

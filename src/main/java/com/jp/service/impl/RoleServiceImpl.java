@@ -372,7 +372,7 @@ public class RoleServiceImpl implements RoleService {
 				k = k - 1;
 			}
 		}
-		result = new Result(MsgConstants.RESUL_FAIL);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
 		res.setData(list);
 		return res;

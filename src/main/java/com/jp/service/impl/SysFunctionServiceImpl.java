@@ -119,12 +119,6 @@ public class SysFunctionServiceImpl implements SysFunctionService {
 		JsonResponse res = null;
 		List<SysFunction> treeList = new ArrayList<SysFunction>();
 		SysVersion sysVersion = new SysVersion();
-		if (versionid == null || "".equals(versionid)) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("参数versionid不能为空！");
-			res = new JsonResponse(result);
-			return res;
-		}
 		try {
 			//获取版本详情
 			sysVersion = sysVersionDao.selectByPrimaryKey(versionid);
