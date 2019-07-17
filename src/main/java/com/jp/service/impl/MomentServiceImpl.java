@@ -215,6 +215,8 @@ public class MomentServiceImpl implements MomentService {
 				//获取评论列表
 				List<MomentComment> comments = (List<MomentComment>) momentCommentService
 						.getAllMomentComment(momentComment).getData();
+				System.out.println("输出="+comments);
+				
 				if (comments != null && comments.size() > 0)
 					moment.setComments(comments);
 
