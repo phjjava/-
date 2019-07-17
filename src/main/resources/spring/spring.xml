@@ -129,6 +129,8 @@
     <!--统一异常处理-->
     <!-- <bean class="com.hnfz.app.core.aop.GlobalErrorException"/>-->
     
+    
+    <!-- 将所有返回的null替换为空字符串 -->
     <!-- 注册RequestMappingHandlerMapping 和RequestMappingHandlerAdapter 两个bean。-->  
 	<mvc:annotation-driven>  
 	    <mvc:message-converters>  
