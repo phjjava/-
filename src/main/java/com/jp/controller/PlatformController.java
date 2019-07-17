@@ -15,7 +15,6 @@ import com.jp.entity.Platform;
 import com.jp.service.PlatformService;
 
 @Controller
-@RequestMapping("system/platform")
 public class PlatformController {
 	private final Logger log_ = LogManager.getLogger(PlatformController.class);
 	@Autowired
@@ -24,7 +23,7 @@ public class PlatformController {
 	/**
 	 * @描述 安卓或ios升级版本列表
 	 */
-	@RequestMapping(value = "/list", method = RequestMethod.POST)
+	@RequestMapping(value = "/system/platform/list", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse list(PageModel<Platform> pageModel, Platform platform, ModelMap model) {
 		return platformService.selectPlatformList(pageModel, platform);
@@ -34,7 +33,7 @@ public class PlatformController {
 	 * @描述 删除版本
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/deleteVersion", method = RequestMethod.POST)
+	@RequestMapping(value = "/system/platform/deleteVersion", method = RequestMethod.POST)
 	public JsonResponse deleteVersion(Integer id) {
 		return platformService.deleteVersion(id);
 	}
@@ -43,7 +42,7 @@ public class PlatformController {
 	 * @描述 增加或编辑版本
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/save", method = RequestMethod.POST)
+	@RequestMapping(value = "/system/platform/save", method = RequestMethod.POST)
 	public JsonResponse save(Platform platform) {
 		return platformService.saveOrEdit(platform);
 	}
@@ -52,7 +51,7 @@ public class PlatformController {
 	 * 编辑回显
 	 * 
 	 */
-	@RequestMapping(value = "/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/system/platform/edit", method = RequestMethod.GET)
 	@ResponseBody
 	public JsonResponse edit(Integer id) {
 		return platformService.selectone(id);
@@ -62,7 +61,7 @@ public class PlatformController {
 	 * @描述 开启或关闭版本
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/isOpen", method = RequestMethod.POST)
+	@RequestMapping(value = "/system/platform/isOpen", method = RequestMethod.POST)
 	public JsonResponse isOpen(Integer id) {
 		return platformService.isOpen(id);
 	}
@@ -77,7 +76,7 @@ public class PlatformController {
 	 * @param entity
 	 * @return
 	 */
-	@RequestMapping(value = "/getPlatform", method = RequestMethod.POST)
+	@RequestMapping(value = "/platform/getPlatform", method = RequestMethod.GET)
 	@ResponseBody
 	public JsonResponse getPlatform(Platform entity) {
 		return platformService.getPlatform(entity.getFileType());
@@ -88,7 +87,7 @@ public class PlatformController {
 	 * 
 	 * @return
 	 */
-	@RequestMapping(value = "/getCurrentTime", method = RequestMethod.POST)
+	@RequestMapping(value = "/platform/getCurrentTime", method = RequestMethod.GET)
 	@ResponseBody
 	public JsonResponse getCurrentTime() {
 		return platformService.getCurrentTime();
