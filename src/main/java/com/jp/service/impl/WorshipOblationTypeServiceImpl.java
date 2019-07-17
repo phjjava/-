@@ -146,6 +146,7 @@ public class WorshipOblationTypeServiceImpl implements WorshipOblationTypeServic
 				oblationType.setCraeteid(user.getUserid());
 				oblationType.setCraetename(user.getName());
 				oblationType.setCreatetime(new Date());
+				oblationType.setDeleteflag(ConstantUtils.DELETE_FALSE);
 				status = oblationTypeMapper.insert(oblationType);
 			}
 			if (status > 0) {
@@ -165,20 +166,67 @@ public class WorshipOblationTypeServiceImpl implements WorshipOblationTypeServic
 	}
 
 	@Override
-	public int del(WorshipOblationType oblationType) {
-		oblationType.setDeleteflag(ConstantUtils.DELETE_TRUE);
-		WorshipOblationExample ex = new WorshipOblationExample();
-		ex.or().andOblationtypeidEqualTo(oblationType.getId());
-		WorshipOblation ob = new WorshipOblation();
-		ob.setDeleteflag(ConstantUtils.DELETE_TRUE);
-		oblationMapper.updateByExampleSelective(ob, ex);
-		return oblationTypeMapper.updateByPrimaryKeySelective(oblationType);
+	public JsonResponse del(WorshipOblationType oblationType) {
+		Result result = null;
+		JsonResponse res = null;
+		int status = 0;
+		if (oblationType.getId() == null || "".equals(oblationType.getId())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数id不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			oblationType.setDeleteflag(ConstantUtils.DELETE_TRUE);
+			WorshipOblationExample ex = new WorshipOblationExample();
+			ex.or().andOblationtypeidEqualTo(oblationType.getId());
+			WorshipOblation ob = new WorshipOblation();
+			ob.setDeleteflag(ConstantUtils.DELETE_TRUE);
+			status = oblationTypeMapper.updateByPrimaryKeySelective(oblationType);
+			if (status > 0) {
+				oblationMapper.updateByExampleSelective(ob, ex);
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[del---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
-	public WorshipOblationType getOblationTypeById(String id) {
-
-		return oblationTypeMapper.selectByPrimaryKey(id);
+	public JsonResponse getOblationTypeById(String id) {
+		Result result = null;
+		JsonResponse res = null;
+		if (id == null || "".equals(id)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数id不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			WorshipOblationType oblationType = oblationTypeMapper.selectByPrimaryKey(id);
+			if (oblationType != null) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(oblationType);
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[getOblationTypeById---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 }

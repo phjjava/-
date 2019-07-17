@@ -1,10 +1,7 @@
 package com.jp.controller;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +16,6 @@ import com.jp.service.WorshipOblationTypeService;
 @Controller
 @RequestMapping("system/oblationType")
 public class WorshipOblationTypeController {
-	private final Logger log_ = LogManager.getLogger(WorshipOblationTypeController.class);
 
 	@Resource
 	private WorshipOblationTypeService worshipOblationService;
@@ -48,42 +44,36 @@ public class WorshipOblationTypeController {
 		return worshipOblationService.pageQuery(pageModel);
 	}
 
+	/**
+	 * 祭品分类子菜单列表
+	 * @param oblationtypeid
+	 * @return
+	 */
 	@RequestMapping(value = "/childlist", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse childlist(String oblationtypeid) {
 		return worshipOblationService.selectListByParnetid(oblationtypeid);
 	}
 
-	@ResponseBody
+	/**
+	 * 删除祭品分类
+	 * @param entity
+	 * @return
+	 */
 	@RequestMapping(value = "/del", method = RequestMethod.POST)
-	public String deleteEditorialBoard(WorshipOblationType entity) {
-		Integer result = 0;
-		try {
-			result = worshipOblationService.del(entity);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		return result + "";
+	@ResponseBody
+	public JsonResponse deleteEditorialBoard(WorshipOblationType entity) {
+		return worshipOblationService.del(entity);
 	}
 
+	/**
+	 * 编辑祭品分类回显
+	 * @param id
+	 * @return
+	 */
 	@RequestMapping(value = "/get", method = RequestMethod.GET)
-	public String get(HttpServletRequest request, ModelMap model) {
-		try {
-			String id = request.getParameter("id");
-			WorshipOblationType oblationType = new WorshipOblationType();
-			if (id != null && !"".equals(id)) {
-				oblationType = worshipOblationService.getOblationTypeById(id);
-			}
-
-			model.put("oblationType", oblationType);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-
-		return "system/worship/oblationTypeAdd";
+	@ResponseBody
+	public JsonResponse get(String id) {
+		return worshipOblationService.getOblationTypeById(id);
 	}
 }
