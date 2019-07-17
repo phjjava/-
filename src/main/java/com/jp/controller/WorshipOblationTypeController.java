@@ -3,7 +3,6 @@ package com.jp.controller;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,7 +27,7 @@ public class WorshipOblationTypeController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public JsonResponse save(WorshipOblationType oblationType, ModelMap model) {
+	public JsonResponse save(WorshipOblationType oblationType) {
 		return worshipOblationService.save(oblationType);
 	}
 
@@ -40,7 +39,7 @@ public class WorshipOblationTypeController {
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse list(PageModel<WorshipOblationType> pageModel, ModelMap model) {
+	public JsonResponse list(PageModel<WorshipOblationType> pageModel) {
 		return worshipOblationService.pageQuery(pageModel);
 	}
 

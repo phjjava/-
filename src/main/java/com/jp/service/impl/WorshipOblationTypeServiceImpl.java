@@ -131,7 +131,7 @@ public class WorshipOblationTypeServiceImpl implements WorshipOblationTypeServic
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (oblationType.getSort() == null || "".equals(oblationType.getSort())) {
+		if (oblationType.getSort() == null || "".equals(oblationType.getSort() + "")) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数sort不能为空！");
 			res = new JsonResponse(result);
@@ -140,7 +140,7 @@ public class WorshipOblationTypeServiceImpl implements WorshipOblationTypeServic
 		try {
 			SysUser user = CurrentSystemUserContext.getSystemUserContext();
 			if (StringTools.notEmpty(oblationType.getId())) {//修改
-				status = oblationTypeMapper.updateByPrimaryKey(oblationType);
+				status = oblationTypeMapper.updateByPrimaryKeySelective(oblationType);
 			} else {//新增
 				oblationType.setId(UUIDUtils.getUUID());
 				oblationType.setCraeteid(user.getUserid());
