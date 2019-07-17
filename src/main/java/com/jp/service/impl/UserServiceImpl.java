@@ -3728,8 +3728,8 @@ public class UserServiceImpl implements UserService {
 		userExample.setOrderByClause("pinyinfirst desc");
 		// userExample.setStartRow((int) (entity.getStart() - 1) *
 		// entity.getCount().intValue());
-		userExample.setStartRow(entity.getStart().intValue());// start是索引
 		userExample.setPageSize(entity.getCount().intValue());
+		userExample.setStartRow(entity.getStart().intValue());// start是索引
 		// 获取当前家族所有有效用户
 		List<User> users = userDao.selectByExample(userExample);
 		String lastDateTime = userDao.getLastUpdateDateTime(entity.getFamilyid());
