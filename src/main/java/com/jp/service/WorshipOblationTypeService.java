@@ -17,8 +17,8 @@ public interface WorshipOblationTypeService {
 
 	JsonResponse save(WorshipOblationType oblationType);
 
-	int del(WorshipOblationType oblationType);
+	JsonResponse del(WorshipOblationType oblationType);
 
-	WorshipOblationType getOblationTypeById(String id);
+	JsonResponse getOblationTypeById(String id);
 
 }

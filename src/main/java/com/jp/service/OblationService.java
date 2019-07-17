@@ -1,27 +1,19 @@
 package com.jp.service;
 
-
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import com.jp.common.JsonResponse;
 import com.jp.entity.WorshipOblation;
-
-
-
 
 @Scope("singleton")
 @Service("OblationService")
 public interface OblationService {
 
-	Integer insert(WorshipOblation oblation);
+	JsonResponse save(WorshipOblation oblation);
 
-	Integer update(WorshipOblation oblation);
+	JsonResponse del(WorshipOblation oblation);
 
-	int del(WorshipOblation oblation);
-
-	WorshipOblation getOblationById(String id);
-
-
-
+	JsonResponse getOblationById(String id);
 
 }

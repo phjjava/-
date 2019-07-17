@@ -157,7 +157,7 @@ public class PlatformServiceImpl implements PlatformService {
 				return res;
 			}
 		} catch (Exception e) {
-			log_.error("[merge---异常:]", e);
+			log_.error("[save---异常:]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
 			return res;
