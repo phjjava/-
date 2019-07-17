@@ -42,13 +42,19 @@ public class OblationServiceImpl implements OblationService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (oblation.getDuration() == null || "".equals(oblation.getDuration())) {
+		if (oblation.getOblationtypeid() == null || "".equals(oblation.getOblationtypeid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数oblationtypeid不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (oblation.getDuration() == null || "".equals(oblation.getDuration() + "")) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数duration不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (oblation.getPrice() == null || "".equals(oblation.getPrice())) {
+		if (oblation.getPrice() == null || "".equals(oblation.getPrice() + "")) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数price不能为空！");
 			res = new JsonResponse(result);
@@ -60,7 +66,7 @@ public class OblationServiceImpl implements OblationService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (oblation.getSort() == null || "".equals(oblation.getSort())) {
+		if (oblation.getSort() == null || "".equals(oblation.getSort() + "")) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数sort不能为空！");
 			res = new JsonResponse(result);
