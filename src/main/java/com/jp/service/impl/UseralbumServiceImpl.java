@@ -21,7 +21,6 @@ import com.jp.entity.Userphoto;
 import com.jp.entity.UserphotoKey;
 import com.jp.entity.UserphotoQuery;
 import com.jp.service.UseralbumService;
-import com.jp.util.DateUtil;
 import com.jp.util.UUIDUtils;
 
 @Service
@@ -168,7 +167,7 @@ public class UseralbumServiceImpl implements UseralbumService {
 		PhotosVO vo = new PhotosVO();
 		vo.setAlbumname(album.getAlbumname());
 		vo.setRemake(album.getRemark());
-		vo.setCreatetime(DateUtil.date2shortStr(album.getCreatetime()));
+		vo.setCreatetime(album.getCreatetime());
 
 		if (userPhotos.size() == 0) {
 			result = new Result(MsgConstants.RESUL_FAIL);
