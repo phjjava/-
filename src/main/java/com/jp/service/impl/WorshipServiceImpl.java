@@ -167,7 +167,7 @@ public class WorshipServiceImpl implements WorshipService {
 			List<Worship> rtnlist = new ArrayList<>();
 			for (WorshipOblationType type : types) {
 
-				List<Worship> worships = worshipMapper.selectNoTimeOutByType(type.getId());
+				List<Worship> worships = worshipMapper.selectNoTimeOutByType(entity.getWorshipid(),type.getId());
 				rtnlist.addAll(worships);
 			}
 

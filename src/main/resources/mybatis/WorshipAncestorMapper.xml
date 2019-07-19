@@ -101,7 +101,8 @@
   	select m.*,n.imgurl as imgurl
   	from jp_worship_ancestor m,jp_worship_oblation n 
   	where m.oblationid = n.id and m.familyid=#{familyid,jdbcType=VARCHAR}
-  	and m.oblationtypeid=#{typeid,jdbcType=VARCHAR}
+  	and m.worshipid=#{worshipid,jdbcType=VARCHAR}
+  	and m.oblationtypeid=#{typeid,jdbcType=VARCHAR} 
   	and date_add(m.createtime, interval n.duration minute) &gt; now()
   	order by m.createtime desc
   	limit 0,2

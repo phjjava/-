@@ -89,9 +89,9 @@ public class WorshipAncestorServiceImpl  implements WorshipAncestorService {
 				res = new JsonResponse(result);
 				return res;
 			}
-			//获取请求头中的数据 familyid createid
+			//获取请求头中的数据 familyid userid
 			String familyid = WebUtil.getHeaderInfo("familyid");
-			String createid = WebUtil.getHeaderInfo("createid");
+			String createid = WebUtil.getHeaderInfo("userid");
 			String uuid = UUIDUtils.getUUID();
 			entity.setId(uuid);
 			entity.setCreateid(createid);
@@ -167,9 +167,9 @@ public class WorshipAncestorServiceImpl  implements WorshipAncestorService {
 				res = new JsonResponse(result);
 				return res;
 			}
-			//获取请求头中的数据 familyid createid
+			//获取请求头中的数据 familyid userid
 			String familyid = WebUtil.getHeaderInfo("familyid");
-			String createid = WebUtil.getHeaderInfo("createid");
+			String createid = WebUtil.getHeaderInfo("userid");
 			PageHelper.startPage(start, count);
 			/*
 			 * WorshipExample example = new WorshipExample();
@@ -212,7 +212,7 @@ public class WorshipAncestorServiceImpl  implements WorshipAncestorService {
 			List<WorshipOblationType> types = oblationTypeMapper.selectByExample(example1);
 			List<WorshipAncestor> rtnlist = new ArrayList<>();
 			for (WorshipOblationType type : types) {
-				List<WorshipAncestor> worships = worshipAncestorMapper.selectNoTimeOutByType(familyid,type.getId());
+				List<WorshipAncestor> worships = worshipAncestorMapper.selectNoTimeOutByType(familyid,entity.getWorshipid(),type.getId());
 				
 				rtnlist.addAll(worships);
 			}

@@ -45,8 +45,9 @@ public interface WorshipAncestorMapper  {
 	/**
 	 * 获取祭拜未失效的记录
 	 * @param familyid 家族id
+	 * @param worshipid  祭拜世系图worshipid
 	 * @param typeid  祭品分类id
 	 * @return
 	 */
-	List<WorshipAncestor> selectNoTimeOutByType(@Param("familyid")String familyid,@Param("typeid")String typeid);
+	List<WorshipAncestor> selectNoTimeOutByType(@Param("familyid")String familyid,@Param("worshipid")String worshipid,@Param("typeid")String typeid);
 }
