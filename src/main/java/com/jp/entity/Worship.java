@@ -49,8 +49,17 @@ public class Worship{
 
     //自属性
     private WorshipAnnex annex;
+    private String imgurl;//祭品图片
     
-    public String getId() {
+    public String getImgurl() {
+		return imgurl;
+	}
+
+	public void setImgurl(String imgurl) {
+		this.imgurl = imgurl;
+	}
+
+	public String getId() {
         return id;
     }
 
