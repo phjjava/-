@@ -31,7 +31,6 @@ import com.jp.entity.BranchphotoExample;
 import com.jp.entity.PhotosVO;
 import com.jp.entity.UserManager;
 import com.jp.service.BranchalbumService;
-import com.jp.util.DateUtils;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 
@@ -451,7 +450,7 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 
 			vo.setAlbumname(album.getAlbumname());
 			vo.setRemake(album.getRemark());
-			vo.setCreatetime(DateUtils.date2shortStr(album.getCreatetime()));
+			vo.setCreatetime(album.getCreatetime());
 
 			vo.setPhotos(branchPhotos);
 
