@@ -8,13 +8,21 @@ import com.jp.common.Result;
 import com.jp.dao.UserDao;
 import com.jp.dao.WorshipAncestorMapper;
 import com.jp.dao.WorshipOblationMapper;
+import com.jp.dao.WorshipOblationTypeMapper;
 import com.jp.entity.User;
+import com.jp.entity.UserQuery;
+import com.jp.entity.Worship;
 import com.jp.entity.WorshipAncestor;
+import com.jp.entity.WorshipAncestorVO;
 import com.jp.entity.WorshipOblation;
+import com.jp.entity.WorshipOblationType;
+import com.jp.entity.WorshipOblationTypeExample;
+import com.jp.entity.WorshipVO;
 import com.jp.service.WorshipAncestorService;
 import com.jp.util.UUIDUtils;
 import com.jp.util.WebUtil;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -41,6 +49,8 @@ public class WorshipAncestorServiceImpl  implements WorshipAncestorService {
 	private WorshipAncestorMapper worshipAncestorMapper;
 	@Resource
 	private WorshipOblationMapper oblationMapper;
+	@Resource
+	private WorshipOblationTypeMapper oblationTypeMapper;
 	@Resource
 	private UserDao userDao;
 	
@@ -177,6 +187,46 @@ public class WorshipAncestorServiceImpl  implements WorshipAncestorService {
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
 		res.setData(worships);
+		return res;
+	}
+
+	@Override
+	public JsonResponse getWorshipDetali(WorshipAncestor entity) {
+		Result result = null;
+		JsonResponse res = null;
+		WorshipAncestorVO worshipVo = null;
+		try {
+			if (entity.getWorshipid() == null || "".equals(entity.getWorshipid())) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("参数worishipid不能为空！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			
+			//获取请求头中的数据 familyid createid
+			String familyid = WebUtil.getHeaderInfo("familyid");
+			worshipVo = new WorshipAncestorVO();
+			
+			WorshipOblationTypeExample example1 = new WorshipOblationTypeExample();
+			example1.or().andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
+			List<WorshipOblationType> types = oblationTypeMapper.selectByExample(example1);
+			List<WorshipAncestor> rtnlist = new ArrayList<>();
+			for (WorshipOblationType type : types) {
+				List<WorshipAncestor> worships = worshipAncestorMapper.selectNoTimeOutByType(familyid,type.getId());
+				
+				rtnlist.addAll(worships);
+			}
+
+			worshipVo.setOblationImgs(rtnlist);
+		} catch (Exception e) {
+			log_.error("[getWorshipDetali方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(worshipVo);
 		return res;
 	}
 

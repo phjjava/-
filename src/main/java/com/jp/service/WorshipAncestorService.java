@@ -34,5 +34,13 @@ public interface WorshipAncestorService   {
 	 * @return
 	 */
 	JsonResponse getMyWorshipAncestors(WorshipAncestor entity, int start, int count);
+	/**
+	 * 	获取祭拜图展示祭品信息
+	 * @param entity
+	 * @param start
+	 * @param count
+	 * @return
+	 */
+	JsonResponse getWorshipDetali(WorshipAncestor entity);
 
 }
