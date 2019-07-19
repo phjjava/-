@@ -1,6 +1,8 @@
 package com.jp.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,16 +88,22 @@ public class MomentServiceImpl implements MomentService {
 					return res;
 				}
 			}
-			String userid = WebUtil.getHeaderInfo(request.getHeader("userid"));
-			String familyid = WebUtil.getHeaderInfo(request.getHeader("familyid"));
+			String userid = WebUtil.getHeaderInfo("userid");
+			System.out.println("userid============="+userid);
+			String familyid = WebUtil.getHeaderInfo("familyid");
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+		    String date=df.format(new Date());// new Date()为获取当前系统时间
+		    Date createtime=df.parse(date);//将字符串日期转化为Date类型
 			//族圈主表
 			//			Moment moment = new Moment();
 			String uuid = UUIDUtils.getUUID();
 			entity.setUserid(userid);
 			entity.setId(uuid);
 			entity.setDeleteflag(ConstantUtils.DELETE_FALSE);
-			entity.setCreateby(WebUtil.getHeaderInfo(request.getHeader("userid")));
+			entity.setCreateby(userid);
 			entity.setLikeNum(0);
+			entity.setCreatetime(createtime);
+			System.out.println("entity++++++++++++++++++"+entity);
 			momentMapper.insert(entity);
 			//族圈时间轴插入自己
 			MomentTimeline timeline = new MomentTimeline();
@@ -105,6 +113,7 @@ public class MomentServiceImpl implements MomentService {
 			timeline.setMomentId(uuid);
 			timeline.setUserid(userid);
 			timeline.setCreateby(userid);
+			timeline.setCreatetime(createtime);
 			momentTimelimeMapper.insert(timeline);
 
 			// 插入时间轴
@@ -344,6 +353,8 @@ public class MomentServiceImpl implements MomentService {
 		//查询过滤得用户   不看谁的，不让谁看
 		//List<String> momentusers =  momentUserFilterMapper.selectFilterUsers(userid);
 		if (userList != null && userList.size() > 0) {
+			Date date=new Date();
+					
 			for (User user : userList) {
 				//是否包含不让我看和我不让看的，如果有，则不插入时间轴表
 				//				if(momentusers !=null && momentusers.size()>0 && momentusers.contains(user.getUserid())) {
@@ -355,6 +366,7 @@ public class MomentServiceImpl implements MomentService {
 				timeline.setCreateby(userid);
 				timeline.setIsOwn((byte) 0);
 				timeline.setMomentId(id);
+				timeline.setCreatetime(date);
 				timeline.setUserid(user.getUserid());
 				lines.add(timeline);
 				//				}
