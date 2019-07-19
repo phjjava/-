@@ -262,6 +262,8 @@ public class Moment implements Serializable {
 		sb.append(", createby=").append(createby);
 		sb.append(", updateby=").append(updateby);
 		sb.append(", deleteflag=").append(deleteflag);
+		sb.append(", tagid=").append(tagid);
+		sb.append(", tagtype=").append(tagtype);
 		sb.append(", serialVersionUID=").append(serialVersionUID);
 		sb.append("]");
 		return sb.toString();

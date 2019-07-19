@@ -53,7 +53,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 		response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
 		response.setHeader("Access-Control-Allow-Headers", "Content-Type,userid,sessionid");
 		response.addHeader("Access-Control-Max-Age", "1800");
-		response.setContentType("application/json; charset=UTF-8");
+		//response.setContentType("application/json; charset=UTF-8");
         
 		if (servletPath.startsWith("/system/")) {//平台系统拦截  （请求地址以system开头的是平台）
 
@@ -61,17 +61,17 @@ public class LoginInterceptor implements HandlerInterceptor {
 			if (systemUserContext == null) {
 				log_.info("非法请求：请先登录！");
 				//		request.getRequestDispatcher("/jsp/system/login.jsp").forward(request, response);
-				response.getWriter().print(new JsonResponse(new Result(MsgConstants.RESUL_FAIL)));
+				//response.getWriter().print(new JsonResponse(new Result(MsgConstants.RESUL_FAIL)));
 				return false;
 			} else {
-				response.getWriter().print(new JsonResponse(new Result(MsgConstants.RESUL_SUCCESS)));
+				//response.getWriter().print(new JsonResponse(new Result(MsgConstants.RESUL_SUCCESS)));
 				return true;
 			}
 				
 
 		}
 		if (userid == null || userid.equals("")) {
-			response.getWriter().print(new JsonResponse(new Result(MsgConstants.RESUL_FAIL)));
+			//response.getWriter().print(new JsonResponse(new Result(MsgConstants.RESUL_FAIL)));
 			return false;
 		} else {
 			// 获取数据库中的对应用户的sessionid
@@ -82,22 +82,22 @@ public class LoginInterceptor implements HandlerInterceptor {
 			long timeDifferenceOfMin = DateUtils.timeDifferenceOfMin(new Date(), lastLogintime);
 			if (timeDifferenceOfMin / (60 * 24) >= 30) {
 				log_.info("sessionid过期！");
-				response.getWriter().print(new JsonResponse(new Result(MsgConstants.RESUL_FAIL)));
+				//response.getWriter().print(new JsonResponse(new Result(MsgConstants.RESUL_FAIL)));
 				return false;
 			}
 		}
 		// 校验session是否失效
 		if (dbsessionid == null) {
 			log_.info("数据库sessionid为空！");
-			response.getWriter().print(new JsonResponse(new Result(MsgConstants.RESUL_FAIL)));
+			//response.getWriter().print(new JsonResponse(new Result(MsgConstants.RESUL_FAIL)));
 			return false;
 		} else {
 			if (dbsessionid != null && !dbsessionid.equals(sessionid)) {
 				log_.info("sessionid不一致！");
-				response.getWriter().print(new JsonResponse(new Result(MsgConstants.RESUL_FAIL)));
+				//response.getWriter().print(new JsonResponse(new Result(MsgConstants.RESUL_FAIL)));
 				return false; // sessionid失效
 			} else {
-				response.getWriter().print(new JsonResponse(new Result(MsgConstants.RESUL_SUCCESS)));
+				//response.getWriter().print(new JsonResponse(new Result(MsgConstants.RESUL_SUCCESS)));
 				return true;
 			}
 		}

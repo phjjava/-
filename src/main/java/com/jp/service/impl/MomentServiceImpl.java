@@ -89,11 +89,11 @@ public class MomentServiceImpl implements MomentService {
 				}
 			}
 			String userid = WebUtil.getHeaderInfo("userid");
-			System.out.println("userid============="+userid);
 			String familyid = WebUtil.getHeaderInfo("familyid");
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
 		    String date=df.format(new Date());// new Date()为获取当前系统时间
 		    Date createtime=df.parse(date);//将字符串日期转化为Date类型
+		    
 			//族圈主表
 			//			Moment moment = new Moment();
 			String uuid = UUIDUtils.getUUID();
@@ -103,7 +103,6 @@ public class MomentServiceImpl implements MomentService {
 			entity.setCreateby(userid);
 			entity.setLikeNum(0);
 			entity.setCreatetime(createtime);
-			System.out.println("entity++++++++++++++++++"+entity);
 			momentMapper.insert(entity);
 			//族圈时间轴插入自己
 			MomentTimeline timeline = new MomentTimeline();
@@ -150,6 +149,8 @@ public class MomentServiceImpl implements MomentService {
 			params.put("userid", userid);
 			//查询族圈时间轴获取对应族圈内容
 			List<Moment> moments = momentTimelimeMapper.selectMomentByUserid(params);
+			//查询人是否可见动态的权限
+			
 			//添加点赞和评论
 			getMomentTail(moments);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
@@ -250,13 +251,31 @@ public class MomentServiceImpl implements MomentService {
 	 */
 	public boolean checkJsonFormat(String json) {
 		boolean checkResult = false;
-		if (JsonValidator.validate(json) && JsonValidator.isJsonObject(json)) {
-			JsonObject jsonObj = new JsonParser().parse(json).getAsJsonObject();
-			JsonArray imgArray = jsonObj.getAsJsonArray("imgUrl");
-			if (imgArray != null && imgArray.size() > 0) {
-				checkResult = true;
+		try {
+			if(JsonValidator.validate(json) && JsonValidator.isJsonObject(json)) {
+				JsonObject jsonObj = new JsonParser().parse(json).getAsJsonObject();
+				JsonArray imgArray = jsonObj.getAsJsonArray("imgUrl");
+				JsonArray soundArray = jsonObj.getAsJsonArray("sounds");
+				JsonArray videoArray = jsonObj.getAsJsonArray("vedio");
+				JsonObject url = jsonObj.getAsJsonObject("url");
+				if(imgArray != null && imgArray.size() > 0) {
+					checkResult = true;
+				}	
+				if(soundArray != null && soundArray.size() > 0) {
+					checkResult = true;
+				}	
+				if(videoArray != null && videoArray.size() > 0) {
+					checkResult = true;
+				}	
+				if(url != null ) {
+					checkResult = true;
+				}	
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		}
+		
 		return checkResult;
 	}
 
@@ -292,7 +311,8 @@ public class MomentServiceImpl implements MomentService {
 						//选择分支branch    选择标签tag   个人person
 						//tagid为branchid tagid为标签id tagid为用户id
 						String[] strs = StringUtils.split(tagid, ",");
-						if ("branch".equals(tagtype)) {
+						
+					  if ("branch".equals(tagtype)) {
 							userList = userMapper.selectUserByBranchids(strs);
 						} else if ("tag".equals(tagtype)) {
 							userList = userMapper.selectUserByTag(strs);
@@ -315,7 +335,7 @@ public class MomentServiceImpl implements MomentService {
 					}
 					lines = getMomentUser(userList, userid, id);
 					momentTimelimeMapper.insertBatch(lines);
-					System.out.println("插入完成！");
+					System.out.println("插入完成！"+lines);
 				} catch (Exception e) {
 
 					e.printStackTrace();
