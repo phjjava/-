@@ -15,6 +15,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSON;
 import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
@@ -1649,6 +1651,13 @@ public class UserController {
 	 * @param user
 	 * @return
 	 */
+	/*@RequestMapping(value = "/updatePersonsByUpdatetime", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse updatePersonsByUpdatetime(@RequestBody User user) {
+		
+		return userService.updatePersonsByUpdatetime(user);
+	}*/
+	
 	@RequestMapping(value = "/updatePersonsByUpdatetime", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse updatePersonsByUpdatetime(@RequestBody User user) {
