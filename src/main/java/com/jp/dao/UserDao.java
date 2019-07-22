@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.jp.entity.EditorialBoard;
+import com.jp.entity.GenUserOtherVO;
 import com.jp.entity.SearchComplex;
 import com.jp.entity.User;
 import com.jp.entity.UserQuery;
@@ -172,7 +173,7 @@ public interface UserDao {
 	* @param genlevel
 	* @return
 	*/
-	List<User> getUserByAncestor(@Param("familyid") String familyid, @Param("familyname") String familyname,
+	List<GenUserOtherVO> getUserByAncestor(@Param("familyid") String familyid, @Param("familyname") String familyname,
 			@Param("genlevel") Integer genlevel);
 	int getUserByAncestorCount(@Param("familyid") String familyid, @Param("familyname") String familyname,
 			@Param("genlevel") Integer genlevel);

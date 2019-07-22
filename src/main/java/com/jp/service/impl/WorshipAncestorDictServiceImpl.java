@@ -141,52 +141,26 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 				res = new JsonResponse(result);
 				return res;
 			}
-			PageHelper.startPage(pageNo, pagesize);
-			List<User> userByAncestor = userMapper.getUserByAncestor(familyid, familyname, genlevel);
-			for (User user : userByAncestor) {
-				// 初始化起始人实例
-				GenUserOtherVO genUserOther = new GenUserOtherVO();
-				genUserOther.setGenlevel(user.getGenlevel());
-				genUserOther.setImgurl(user.getImgurl());
-				genUserOther.setSex(user.getSex());
-				genUserOther.setUserid(user.getUserid());
-				genUserOther.setUsername(user.getUsername());
-				
-				genUserOther.setDietime(user.getDietime());
-				//根据用户主键查询出生日期
-				Userinfo userinfo = userinfoMapper.selectByPrimaryKey(user.getUserid());
-				if(userinfo!=null) {
-					genUserOther.setBirthday(userinfo.getBirthday());
-				}
-				
-				User mate_user = new User();
-				// 初始化配偶实例
-				if (user.getMateid() == null || "".equals(user.getMateid())) {
-					// 不存在配偶的情况
-				} else {
-					UserQuery userExample = new UserQuery();
-					userExample.or().andUseridEqualTo(user.getMateid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
-					List<User> users2 = userMapper.selectByExample(userExample);
-					if (users2.size() > 0) {
-						mate_user = users2.get(0);
+			//PageHelper.startPage(pageNo, pagesize);
+//			List<GenUserOtherVO> listVO=new ArrayList<GenUserOtherVO>();
+			List<GenUserOtherVO> userByAncestor = userMapper.getUserByAncestor(familyid, familyname, genlevel);
+			//list=userByAncestor;
+
+			//筛选数据
+			List<GenUserOtherVO> listSX=new ArrayList<GenUserOtherVO>();
+			for (GenUserOtherVO user : userByAncestor) {
+				if(user.getLivestatus()==1) {
+					listSX.add(user);
+				}else {
+					if(user.getMatelivestatus()!=null&&user.getMatelivestatus()==1) {
+						listSX.add(user);
 					}
 				}
-				//查询对象出生日期
-				Userinfo userinfomate = userinfoMapper.selectByPrimaryKey(mate_user.getUserid());
 				
-				genUserOther.setMategenlevel(mate_user.getGenlevel());
-				genUserOther.setMateimgurl(mate_user.getImgurl());
-				genUserOther.setMatesex(mate_user.getSex());
-				genUserOther.setMateuserid(mate_user.getUserid());
-				genUserOther.setMateusername(mate_user.getUsername());
-				genUserOther.setMatedietime(mate_user.getDietime());
-				if(userinfomate!=null) {
-					genUserOther.setMatebirthday(userinfomate.getBirthday());
-				}
-				
-				
-				list.add(genUserOther);
 			}
+			//listSX数据分页
+			 list = startPage(listSX,pageNo,pagesize);
+			 userByAncestorCount=listSX.size();
 			
 		} catch (Exception e) {
 			log_.error("[getWorshipAncestorList方法---异常:]", e);
@@ -202,5 +176,50 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 		res.setData(list);
 		return res;
 	}
+//	@SuppressWarnings("null")
+//	public static void main(String[] args) {
+//		Integer a =null;
+//		System.out.println(a!=null&&a==1);
+//	}
+	/**
+     * 开始分页
+     *
+     * @param list
+     * @param pageNum  页码
+     * @param pageSize 每页多少条数据
+     * @return
+     */
+    public static List<GenUserOtherVO> startPage(List<GenUserOtherVO> list, Integer pageNum, Integer pageSize) {
+        if(list == null){
+            return null;
+        }
+        if(list.size() == 0){
+            return null;
+        }
+ 
+        Integer count = list.size(); //记录总数
+        Integer pageCount = 0; //页数
+        if (count % pageSize == 0) {
+            pageCount = count / pageSize;
+        } else {
+            pageCount = count / pageSize + 1;
+        }
+ 
+        int fromIndex = 0; //开始索引
+        int toIndex = 0; //结束索引
+ 
+        if (pageNum != pageCount) {
+            fromIndex = (pageNum - 1) * pageSize;
+            toIndex = fromIndex + pageSize;
+        } else {
+            fromIndex = (pageNum - 1) * pageSize;
+            toIndex = count;
+        }
+ 
+        List<GenUserOtherVO> pageList = list.subList(fromIndex, toIndex);
+ 
+        return pageList;
+    }
+
 
 }

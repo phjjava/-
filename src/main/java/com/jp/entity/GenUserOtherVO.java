@@ -29,11 +29,6 @@ public class GenUserOtherVO {
 		this.livestatus = livestatus;
 	}
 
-	
-
-
-  
-
     public String getMateusername() {
 		return mateusername;
 	}
