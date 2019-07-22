@@ -132,7 +132,7 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 			System.out.println("userByAncestorCount==="+userByAncestorCount);
 			if(userByAncestorCount==0) {
 				result = new Result(MsgConstants.RESUL_FAIL);
-				result.setMsg("该世没有插入数据！");
+				result.setMsg("该世目前没有数据,请联系家族管理员添加！");
 				res = new JsonResponse(result);
 				return res;
 			}
