@@ -57,6 +57,7 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 			if(familyid == null || "".equals(familyid)){
 				result=new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数familyid为空！");
+				res = new JsonResponse(result);
 				return res;
 			}
 		    genlevel = userMapper.getUserFamilyid(familyid);
@@ -93,21 +94,25 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 			if(familyid == null || "".equals(familyid)){
 				result=new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数familyid为空！");
+				res = new JsonResponse(result);
 				return res;
 			}
 			if(genlevel == null ){
 				result=new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数genlevel为空！");
+				res = new JsonResponse(result);
 				return res;
 			}
 			if(familyname == null || "".equals(familyname)){
 				result=new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数familyid为空！");
+				res = new JsonResponse(result);
 				return res;
 			}
 			if(pagesize == null ){
 				result=new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数pagesize为空！");
+				res = new JsonResponse(result);
 				return res;
 			}
 //			if(pageNo == null ){
@@ -124,9 +129,11 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 			familyname=substringBefore+"%";
 			System.out.println(familyname);
 			userByAncestorCount = userMapper.getUserByAncestorCount(familyid, familyname, genlevel);
-			if(userByAncestorCount<=0) {
-				result=new Result(MsgConstants.RESUL_FAIL);
-				result.setMsg("该世没有插入数据！");
+			System.out.println("userByAncestorCount==="+userByAncestorCount);
+			if(userByAncestorCount==0) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("该世目前没有数据,请联系家族管理员添加！");
+				res = new JsonResponse(result);
 				return res;
 			}
 			PageHelper.startPage(pageNo, pagesize);
@@ -170,9 +177,11 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 			res = new JsonResponse(result);
 			return res;
 		}
+		
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
 		res.setData1(userByAncestorCount);
+		
 		res.setData(list);
 		return res;
 	}
