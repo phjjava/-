@@ -41,7 +41,7 @@ public class WorshipAncestorController {
 	 */
 	@RequestMapping(value = "/getWorshipAncestors", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse getWorships(WorshipAncestor worship, int start, int count) {
+	public JsonResponse getWorshipAncestors(WorshipAncestor worship, int start, int count) {
 		return worshipAncestorService.getWorshipAncestors(worship, start, count);
 	}
 
@@ -57,8 +57,18 @@ public class WorshipAncestorController {
 	 */
 	@RequestMapping(value = "/getMyWorshipAncestors", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse getMyWorships(WorshipAncestor worship, int start, int count) {
+	public JsonResponse getMyWorshipAncestors(WorshipAncestor worship, int start, int count) {
 		return worshipAncestorService.getMyWorshipAncestors(worship, start, count);
+	}
+	/**
+	 * 获取祭拜图展示祭品信息
+	 * @param worship
+	 * @return
+	 */
+	@RequestMapping(value = "/getWorshipDetali", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse getWorshipDetali(WorshipAncestor worship) {
+		return worshipAncestorService.getWorshipDetali(worship);
 	}
 
 	

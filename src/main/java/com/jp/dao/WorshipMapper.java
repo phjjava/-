@@ -33,7 +33,7 @@ public interface WorshipMapper {
 
 	List<Worship> getActiveUserOblations(Worship entity);
 
-	List<Worship> selectNoTimeOutByType(String id);
+	List<Worship> selectNoTimeOutByType(@Param("worshipid") String worshipid,@Param("id")String id);
 
 	@Select("select * from jp_worship where worshipid = #{worshipid} and deleteflag = 0 ORDER BY createtime desc")
 	List<Worship> selectByWorshipid(@Param("worshipid") String worshipid);

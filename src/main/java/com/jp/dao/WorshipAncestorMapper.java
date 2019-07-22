@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import com.jp.entity.Worship;
 import com.jp.entity.WorshipAncestor;
 
 /**
@@ -41,4 +42,12 @@ public interface WorshipAncestorMapper  {
 	@Select("select * from jp_worship_ancestor where worshipid = #{worshipid}  and familyid = #{familyid} and createid = #{createid} and deleteflag = 0 ORDER BY createtime desc")
 	List<WorshipAncestor> selectByWorshipidAndCreateid(@Param("worshipid") String worshipid,
 			@Param("familyid")String familyid,@Param("createid") String createid);
+	/**
+	 * 获取祭拜未失效的记录
+	 * @param familyid 家族id
+	 * @param worshipid  祭拜世系图worshipid
+	 * @param typeid  祭品分类id
+	 * @return
+	 */
+	List<WorshipAncestor> selectNoTimeOutByType(@Param("familyid")String familyid,@Param("worshipid")String worshipid,@Param("typeid")String typeid);
 }

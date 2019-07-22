@@ -333,6 +333,7 @@
   	select m.*,n.imgurl as imgurl
   	from jp_worship m,jp_worship_oblation n 
   	where m.oblationid = n.id
+  	and m.worshipid=#{worshipid,jdbcType=VARCHAR}
   	and m.oblationtypeid=#{id,jdbcType=VARCHAR}
   	and date_add(m.createtime, interval n.duration minute) &gt; now()
   	order by m.createtime desc

@@ -52,8 +52,18 @@ public class WorshipAncestor implements Serializable {
      */
     private Integer deleteflag;
 
+    //自有属性
+    private String imgurl;//祭品图片
+    
+    public String getImgurl() {
+		return imgurl;
+	}
 
-    public String getId() {
+	public void setImgurl(String imgurl) {
+		this.imgurl = imgurl;
+	}
+
+	public String getId() {
         return id;
     }
 
@@ -164,6 +174,7 @@ public class WorshipAncestor implements Serializable {
         ", worshipname=" + worshipname +
         ", createtime=" + createtime +
         ", deleteflag=" + deleteflag +
+        ", imgurl=" + imgurl +
         "}";
     }
 }

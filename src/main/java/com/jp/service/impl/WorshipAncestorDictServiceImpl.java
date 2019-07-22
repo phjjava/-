@@ -1,14 +1,17 @@
 package com.jp.service.impl;
 
 import com.jp.entity.GenUserOther;
+import com.jp.entity.GenUserOtherVO;
 import com.jp.entity.User;
 import com.jp.entity.UserQuery;
+import com.jp.entity.Userinfo;
 import com.jp.entity.WorshipAncestorDict;
 import com.github.pagehelper.PageHelper;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.Result;
 import com.jp.dao.UserDao;
+import com.jp.dao.UserinfoMapper;
 import com.jp.dao.WorshipAncestorDictMapper;
 import com.jp.dao.WorshipAnnexMapper;
 import com.jp.dao.WorshipOblationMapper;
@@ -47,6 +50,8 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
     private WorshipAnnexMapper annexMapper;
     @Resource
     private UserDao userMapper;
+    @Resource
+    private UserinfoMapper userinfoMapper;
 	@Override
 	public JsonResponse getWorshipAncestorDictList(String familyid) {
 		Result result = null;
@@ -57,6 +62,7 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 			if(familyid == null || "".equals(familyid)){
 				result=new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数familyid为空！");
+				res = new JsonResponse(result);
 				return res;
 			}
 		    genlevel = userMapper.getUserFamilyid(familyid);
@@ -87,27 +93,31 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 	public JsonResponse getWorshipAncestorList(String familyid, Integer genlevel,String familyname,Integer pagesize,Integer pageNo) {
 		Result result = null;
 		JsonResponse res = null;
-		List<GenUserOther> list=new ArrayList<GenUserOther>();
+		List<GenUserOtherVO> list=new ArrayList<GenUserOtherVO>();
 		Integer userByAncestorCount = 0;
 		try {
 			if(familyid == null || "".equals(familyid)){
 				result=new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数familyid为空！");
+				res = new JsonResponse(result);
 				return res;
 			}
 			if(genlevel == null ){
 				result=new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数genlevel为空！");
+				res = new JsonResponse(result);
 				return res;
 			}
 			if(familyname == null || "".equals(familyname)){
 				result=new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数familyid为空！");
+				res = new JsonResponse(result);
 				return res;
 			}
 			if(pagesize == null ){
 				result=new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数pagesize为空！");
+				res = new JsonResponse(result);
 				return res;
 			}
 //			if(pageNo == null ){
@@ -124,23 +134,31 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 			familyname=substringBefore+"%";
 			System.out.println(familyname);
 			userByAncestorCount = userMapper.getUserByAncestorCount(familyid, familyname, genlevel);
-			if(userByAncestorCount<=0) {
-				result=new Result(MsgConstants.RESUL_FAIL);
-				result.setMsg("该世没有插入数据！");
+			System.out.println("userByAncestorCount==="+userByAncestorCount);
+			if(userByAncestorCount==0) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("该世目前没有数据,请联系家族管理员添加！");
+				res = new JsonResponse(result);
 				return res;
 			}
 			PageHelper.startPage(pageNo, pagesize);
 			List<User> userByAncestor = userMapper.getUserByAncestor(familyid, familyname, genlevel);
 			for (User user : userByAncestor) {
 				// 初始化起始人实例
-				GenUserOther genUserOther = new GenUserOther();
+				GenUserOtherVO genUserOther = new GenUserOtherVO();
 				genUserOther.setGenlevel(user.getGenlevel());
 				genUserOther.setImgurl(user.getImgurl());
 				genUserOther.setSex(user.getSex());
 				genUserOther.setUserid(user.getUserid());
 				genUserOther.setUsername(user.getUsername());
-				genUserOther.setPid(user.getPid());
-
+				
+				genUserOther.setDietime(user.getDietime());
+				//根据用户主键查询出生日期
+				Userinfo userinfo = userinfoMapper.selectByPrimaryKey(user.getUserid());
+				if(userinfo!=null) {
+					genUserOther.setBirthday(userinfo.getBirthday());
+				}
+				
 				User mate_user = new User();
 				// 初始化配偶实例
 				if (user.getMateid() == null || "".equals(user.getMateid())) {
@@ -153,14 +171,20 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 						mate_user = users2.get(0);
 					}
 				}
+				//查询对象出生日期
+				Userinfo userinfomate = userinfoMapper.selectByPrimaryKey(mate_user.getUserid());
 				
-				GenUserOther mateuser = new GenUserOther();
-				mateuser.setGenlevel(mate_user.getGenlevel());
-				mateuser.setImgurl(mate_user.getImgurl());
-				mateuser.setSex(mate_user.getSex());
-				mateuser.setUserid(mate_user.getUserid());
-				mateuser.setUsername(mate_user.getUsername());
-				genUserOther.setMate(mateuser);
+				genUserOther.setMategenlevel(mate_user.getGenlevel());
+				genUserOther.setMateimgurl(mate_user.getImgurl());
+				genUserOther.setMatesex(mate_user.getSex());
+				genUserOther.setMateuserid(mate_user.getUserid());
+				genUserOther.setMateusername(mate_user.getUsername());
+				genUserOther.setMatedietime(mate_user.getDietime());
+				if(userinfomate!=null) {
+					genUserOther.setMatebirthday(userinfomate.getBirthday());
+				}
+				
+				
 				list.add(genUserOther);
 			}
 			
@@ -170,9 +194,11 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 			res = new JsonResponse(result);
 			return res;
 		}
+		
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
 		res.setData1(userByAncestorCount);
+		
 		res.setData(list);
 		return res;
 	}
