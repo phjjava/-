@@ -141,10 +141,8 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 				res = new JsonResponse(result);
 				return res;
 			}
-			//PageHelper.startPage(pageNo, pagesize);
-//			List<GenUserOtherVO> listVO=new ArrayList<GenUserOtherVO>();
+			//获取某世所有人及其配偶信息
 			List<GenUserOtherVO> userByAncestor = userMapper.getUserByAncestor(familyid, familyname, genlevel);
-			//list=userByAncestor;
 
 			//筛选数据
 			List<GenUserOtherVO> listSX=new ArrayList<GenUserOtherVO>();
@@ -176,11 +174,6 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 		res.setData(list);
 		return res;
 	}
-//	@SuppressWarnings("null")
-//	public static void main(String[] args) {
-//		Integer a =null;
-//		System.out.println(a!=null&&a==1);
-//	}
 	/**
      * 开始分页
      *

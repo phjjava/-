@@ -33,8 +33,8 @@ public class WorshipAncestorDictController {
 	 * @param familyid
 	 * @param genlevel
 	 * @param familyname
-	 * @param count
-	 * @param start
+	 * @param count 条数
+	 * @param start 页码
 	 * @return
 	 */
 	@RequestMapping(value = "/getWorshipAncestorList", method = RequestMethod.POST)
