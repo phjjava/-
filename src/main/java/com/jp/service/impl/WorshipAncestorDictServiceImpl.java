@@ -157,6 +157,12 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 				
 			}
 			//listSX数据分页
+			//System.out.println("pageNo=start=="+pageNo);
+			if(pageNo==0) {
+				pageNo=1;
+			}
+			//System.out.println("pageNo=start=="+pageNo);
+			//System.out.println("pagesize=count=="+pagesize);
 			 list = startPage(listSX,pageNo,pagesize);
 			 userByAncestorCount=listSX.size();
 			
@@ -169,7 +175,7 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 		
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
-		res.setData1(userByAncestorCount);
+		//res.setData1(userByAncestorCount);
 		
 		res.setData(list);
 		return res;
@@ -197,7 +203,9 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
         } else {
             pageCount = count / pageSize + 1;
         }
- 
+        if(pageNum>pageCount) {
+        	return null;
+        }
         int fromIndex = 0; //开始索引
         int toIndex = 0; //结束索引
  
@@ -213,6 +221,5 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
  
         return pageList;
     }
-
-
+    
 }
