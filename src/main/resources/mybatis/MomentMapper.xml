@@ -14,6 +14,7 @@
     <result column="createby" property="createby" jdbcType="VARCHAR" />
     <result column="updateby" property="updateby" jdbcType="VARCHAR" />
     <result column="deleteflag" property="deleteflag" jdbcType="INTEGER" />
+    <result column="tagid" property="tagid" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -119,12 +120,12 @@
     insert into jp_moment (id, userid, show_type, 
       content, picture, location, 
       like_num, createtime, updatetime, 
-      createby, updateby, deleteflag
+      createby, updateby, deleteflag,tagid
       )
     values (#{id,jdbcType=VARCHAR}, #{userid,jdbcType=VARCHAR}, #{showType,jdbcType=VARCHAR}, 
       #{content,jdbcType=VARCHAR}, #{picture,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR}, 
       #{likeNum,jdbcType=INTEGER}, #{createtime,jdbcType=TIMESTAMP}, #{updatetime,jdbcType=TIMESTAMP}, 
-      #{createby,jdbcType=VARCHAR}, #{updateby,jdbcType=VARCHAR}, #{deleteflag,jdbcType=INTEGER}
+      #{createby,jdbcType=VARCHAR}, #{updateby,jdbcType=VARCHAR}, #{deleteflag,jdbcType=INTEGER}, #{tagid,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.jp.entity.Moment" >
