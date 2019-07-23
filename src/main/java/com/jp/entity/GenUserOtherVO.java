@@ -108,9 +108,6 @@ public class GenUserOtherVO {
     public void setUserid(String userid) {
         this.userid = userid;
     }
-
-
-
     public String getImgurl() {
         return imgurl == null ? "" : imgurl;
     }
