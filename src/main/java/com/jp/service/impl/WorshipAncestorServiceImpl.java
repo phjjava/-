@@ -90,8 +90,8 @@ public class WorshipAncestorServiceImpl  implements WorshipAncestorService {
 				return res;
 			}
 			//获取请求头中的数据 familyid userid
-			String familyid = WebUtil.getHeaderInfo("familyid");
-			String createid = WebUtil.getHeaderInfo("userid");
+			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+			String createid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
 			String uuid = UUIDUtils.getUUID();
 			entity.setId(uuid);
 			entity.setCreateid(createid);
@@ -134,14 +134,8 @@ public class WorshipAncestorServiceImpl  implements WorshipAncestorService {
 				return res;
 			}
 			//获取请求头中的数据 familyid createid
-			String familyid = WebUtil.getHeaderInfo("familyid");
+			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
 			PageHelper.startPage(start, count);
-			/*
-			 * WorshipExample example = new WorshipExample();
-			 * example.or().andWorshipidEqualTo(entity.getWorshipid()).andDeleteflagEqualTo(
-			 * ConstantUtils.DELETE_FALSE); example.setOrderByClause("createtime desc");
-			 * worships = worshipMapper.selectByExample(example);
-			 */
 			worships = worshipAncestorMapper.selectByWorshipid(entity.getWorshipid(),familyid);
 		} catch (Exception e) {
 			log_.error("[getWorshipAncestors方法---异常:]", e);
@@ -168,8 +162,8 @@ public class WorshipAncestorServiceImpl  implements WorshipAncestorService {
 				return res;
 			}
 			//获取请求头中的数据 familyid userid
-			String familyid = WebUtil.getHeaderInfo("familyid");
-			String createid = WebUtil.getHeaderInfo("userid");
+			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+			String createid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
 			PageHelper.startPage(start, count);
 			/*
 			 * WorshipExample example = new WorshipExample();
@@ -204,7 +198,7 @@ public class WorshipAncestorServiceImpl  implements WorshipAncestorService {
 			}
 			
 			//获取请求头中的数据 familyid createid
-			String familyid = WebUtil.getHeaderInfo("familyid");
+			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
 			worshipVo = new WorshipAncestorVO();
 			
 			WorshipOblationTypeExample example1 = new WorshipOblationTypeExample();
