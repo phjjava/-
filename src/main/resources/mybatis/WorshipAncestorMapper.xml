@@ -107,4 +107,16 @@
   	order by m.createtime desc
   	limit 0,2
   </select>
+  <select id="selectByWorshipid" parameterType="java.lang.String" resultType="com.jp.entity.WorshipAncestor">
+  	select m.*,n.imgurl as oblationurl,u.imgurl as imgurl
+  	from jp_worship_ancestor m,jp_worship_oblation n,jp_user u
+  	where m.oblationid = n.id
+  	and m.createid = u.userid and m.worshipid = #{worshipid} and m.familyid = #{familyid} and m.deleteflag = 0 ORDER BY createtime desc
+  </select>
+  <select id="selectByWorshipidAndCreateid" parameterType="java.lang.String" resultType="com.jp.entity.WorshipAncestor">
+  	select m.*,n.imgurl as oblationurl,u.imgurl as imgurl
+  	from jp_worship_ancestor m,jp_worship_oblation n,jp_user u
+  	where m.oblationid = n.id
+  	and m.createid = u.userid and m.worshipid = #{worshipid}  and m.familyid = #{familyid} and m.createid = #{createid} and m.deleteflag = 0 ORDER BY createtime desc
+  </select>
 </mapper>

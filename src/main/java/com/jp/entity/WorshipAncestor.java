@@ -53,9 +53,18 @@ public class WorshipAncestor implements Serializable {
     private Integer deleteflag;
 
     //自有属性
-    private String imgurl;//祭品图片
+    private String imgurl;//头像
+    private String oblationurl;//祭品图片
     
-    public String getImgurl() {
+    public String getOblationurl() {
+		return oblationurl;
+	}
+
+	public void setOblationurl(String oblationurl) {
+		this.oblationurl = oblationurl;
+	}
+
+	public String getImgurl() {
 		return imgurl;
 	}
 
