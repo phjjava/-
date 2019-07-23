@@ -157,12 +157,12 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 				
 			}
 			//listSX数据分页
-			System.out.println("pageNo=start=="+pageNo);
+			//System.out.println("pageNo=start=="+pageNo);
 			if(pageNo==0) {
 				pageNo=1;
 			}
-			System.out.println("pageNo=start=="+pageNo);
-			System.out.println("pagesize=count=="+pagesize);
+			//System.out.println("pageNo=start=="+pageNo);
+			//System.out.println("pagesize=count=="+pagesize);
 			 list = startPage(listSX,pageNo,pagesize);
 			 userByAncestorCount=listSX.size();
 			

@@ -40,7 +40,7 @@ public class WorshipAncestorDictController {
 	@RequestMapping(value = "/getWorshipAncestorList", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse getWorshipAncestorList(String familyid, Integer genlevel,String familyname,Integer count,Integer start) {
-		System.out.println("pagesize=count="+count+"pageNo=start="+start);
+		//System.out.println("pagesize=count="+count+"pageNo=start="+start);
 		return worshipAncestorDictService.getWorshipAncestorList(familyid,  genlevel, familyname,count,start);
 	}
 }
