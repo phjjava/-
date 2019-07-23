@@ -24,12 +24,16 @@ public class FamousServiceImpl implements FamousService {
 
 	@Override
 	public PageModel<Usercontent> selectContentList(PageModel<Usercontent> pageModel, Usercontent usercontent) {
-
-		usercontent.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		List<Usercontent> list = userDao.selectUserContentList(usercontent);
-		pageModel.setList(list);
-		pageModel.setPageInfo(new PageInfo<Usercontent>(list));
+		try {
+			usercontent.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			List<Usercontent> list = userDao.selectUserContentList(usercontent);
+			pageModel.setList(list);
+			pageModel.setPageInfo(new PageInfo<Usercontent>(list));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return pageModel;
 	}
 
