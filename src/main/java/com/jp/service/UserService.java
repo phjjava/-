@@ -314,5 +314,5 @@ public interface UserService {
 
 	JsonResponse applyingFamily(User user);
 
-	JsonResponse joinedFamily(User entity);
+	JsonResponse joinedFamily(User user);
 }
