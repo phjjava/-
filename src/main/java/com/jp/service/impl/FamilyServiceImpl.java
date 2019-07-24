@@ -169,6 +169,7 @@ public class FamilyServiceImpl implements FamilyService {
 				// user
 				user.setUserid(userId);
 				user.setFamilyid(familyId);
+				user.setSex(1);
 				user.setStatus(0);
 				user.setIsdirect(1);
 				user.setDeleteflag(0);
