@@ -14,6 +14,7 @@ public class MsgConstants {
 	public static final Result LOGIN_USER_NULL = new Result(1005, "用户帐号密码不能为空");
 	public static final Result LOGIN_ICODE_WRONG = new Result(1006, "验证码不正确");
 	public static final Result LOGIN_USER_CHOOSEFAMILY = new Result(1007, "该用户存在多个家族，请选择");
+	public static final Result LOGIN_STATUS = new Result(1008, "未登录状态首页Banner,成功");
 
 	// 用户管理异常码
 	public static final Result USER_SAVE_FAIL = new Result(2001, "系统异常，用户信息保存失败");
@@ -51,5 +52,6 @@ public class MsgConstants {
 
 	public static final Result REPETITION = new Result(6001, "重复申请家族");
 	public static final Result REPULSE = new Result(6002, "拒绝超过三次");
+	
 
 }
