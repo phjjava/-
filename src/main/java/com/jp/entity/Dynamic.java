@@ -277,15 +277,28 @@ public class Dynamic implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Dynamic [dyid=" + dyid + ", branchid=" + branchid + ", familyid=" + familyid + ", dytype=" + dytype
-				+ ", dytitle=" + dytitle + ", deleteflag=" + deleteflag + ", imgurl=" + imgurl + ", branchname="
-				+ branchname + ", branchnamePlus=" + branchnamePlus + ", createid=" + createid + ", createtime="
-				+ createtime + ", createtimeStr=" + createtimeStr + ", updateid=" + updateid + ", updatetime="
-				+ updatetime + ", createname=" + createname + ", type=" + type + ", dycontent=" + dycontent
-				+ ", tobranchid=" + tobranchid + ", dytops=" + dytops + ", readNum=" + readNum + ", dynamicFiles="
-				+ dynamicFiles + ", meautype=" + meautype + ", countComments=" + countComments + ", countReads="
-				+ countReads + ", countPrises=" + countPrises + ", countFiles=" + countFiles + ", start=" + start
-				+ ", count=" + count + "]";
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getSimpleName());
+		sb.append(" [");
+		sb.append("Hash = ").append(hashCode());
+		sb.append(", dyid=").append(dyid);
+		sb.append(", branchid=").append(branchid);
+		sb.append(", familyid=").append(familyid);
+		sb.append(", dytype=").append(dytype);
+		sb.append(", dytitle=").append(dytitle);
+		sb.append(", deleteflag=").append(deleteflag);
+		sb.append(", imgurl=").append(imgurl);
+		sb.append(", branchname=").append(branchname);
+		sb.append(", createid=").append(createid);
+		sb.append(", createtime=").append(createtime);
+		sb.append(", updateid=").append(updateid);
+		sb.append(", updatetime=").append(updatetime);
+		sb.append(", createname=").append(createname);
+		sb.append(", type=").append(type);
+		sb.append(", dycontent=").append(dycontent);
+		sb.append(", serialVersionUID=").append(serialVersionUID);
+		sb.append("]");
+		return sb.toString();
 	}
 
 	public String getCreatetimeStr() {
