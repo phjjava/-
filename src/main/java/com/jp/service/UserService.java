@@ -313,4 +313,6 @@ public interface UserService {
 	JsonResponse joinFamily(User entity, String birthday, String nation);
 
 	JsonResponse applyingFamily(User user);
+
+	JsonResponse joinedFamily(User user);
 }

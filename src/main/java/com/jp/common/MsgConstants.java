@@ -50,6 +50,6 @@ public class MsgConstants {
 	public static final Result ALBUMID_IS_NULL = new Result(5014, "参数albumid不能为空");
 
 	public static final Result REPETITION = new Result(6001, "重复申请家族");
-	public static final Result REPULSE = new Result(6002, "拒绝超过三次");
+	public static final Result REPULSE = new Result(6002, "拒绝两次，不能再重复申请了");
 
 }
