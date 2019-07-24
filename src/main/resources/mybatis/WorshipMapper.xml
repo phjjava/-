@@ -339,4 +339,28 @@
   	order by m.createtime desc
   	limit 0,2
   </select>
+  
+  <select id="getWorships" parameterType="java.util.Map" resultType="com.jp.entity.Worship">
+  	select m.*,n.imgurl as oblationurl,u.imgurl as imgurl
+  	from jp_worship m,jp_worship_oblation n,jp_user u
+  	where m.oblationid = n.id
+  	and m.createid = u.userid
+  	
+  	<if test="worshipid != null">
+  		and m.worshipid=#{worshipid,jdbcType=VARCHAR}
+  	</if>
+  	<if test="createid != null">
+  		and m.createid=#{createid,jdbcType=VARCHAR}
+  	</if>
+  	<if test="deleteflag != null">
+  		and m.deleteflag=#{deleteflag,jdbcType=VARCHAR}
+  	</if>
+  	order by m.createtime desc
+  	<if test="count != null" >
+		limit ${count}
+	</if>
+	<if test="start != null" >
+		offset ${start}
+	</if>
+  </select>
 </mapper>

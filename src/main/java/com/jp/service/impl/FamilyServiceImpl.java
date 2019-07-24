@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
@@ -81,6 +82,8 @@ public class FamilyServiceImpl implements FamilyService {
 	private IntroduceDao introduceDao;
 	@Autowired
 	private PostMapper postMapper;
+	@Resource
+	private BranchDao branchMapper;
 
 	@Override
 	public JsonResponse merge(User user, Userinfo userInfo, SysFamily family) {
@@ -144,12 +147,13 @@ public class FamilyServiceImpl implements FamilyService {
 				sysFamilyDao.insertFunction(family.getFamilyid(), family.getVersion());
 
 			} else {
-				UserQuery userQuery = new UserQuery();
-				userQuery.or().andPhoneEqualTo(user.getPhone()).andStatusEqualTo(0).andDeleteflagEqualTo(0);
-				List<User> users = userDao.selectByExample(userQuery);
-				if (users.size() > 0) {
-
-					for (User user1 : users) {
+                UserQuery userQuery = new UserQuery();
+                userQuery.or().andPhoneEqualTo(user.getPhone()).andStatusEqualTo(0)
+                        .andDeleteflagEqualTo(0);
+                List<User> users = userDao.selectByExample(userQuery);
+                if (users.size() > 0) {
+                    
+                	for (User user1 : users) {
 						if (user1.getFamilyname().equals(family.getFamilyname())) {
 							result = new Result(MsgConstants.RESUL_FAIL);
 							result.setMsg("当前用户管理的家族名称已存在，请重试");
@@ -157,14 +161,15 @@ public class FamilyServiceImpl implements FamilyService {
 							return res;
 						}
 					}
-
-				}
+                    
+                }
 				String userId = UUIDUtils.getUUID();
 				String familyId = UUIDUtils.getUUID();
-
+				
 				// user
 				user.setUserid(userId);
 				user.setFamilyid(familyId);
+				user.setSex(1);
 				user.setStatus(0);
 				user.setIsdirect(1);
 				user.setDeleteflag(0);
@@ -181,17 +186,28 @@ public class FamilyServiceImpl implements FamilyService {
 				// userinfo
 				userInfo.setUserid(userId);
 				// 保存 user userinfo
-				userDao.insertSelective(user);
-				userInfoDao.insertSelective(userInfo);
+				
 				// 保存家族
-				family.setCreatetime(new Date());
+                family.setCreatetime(new Date());
 				family.setFamilyid(familyId);
 				family.setStatus(0);
-				family.setCreateid("sys_admin");
-				family.setFamilycode(sysFamilyDao.nextVal() + "");
+                family.setCreateid("sys_admin");
+                family.setFamilycode(sysFamilyDao.nextVal()+"");
 
-				// 保存总编委会主任信息 role userrole
-				Post post = new Post();
+                Branch branch = new Branch();
+                String branchid = UUIDUtils.getUUID();
+                branch.setBranchid(branchid);
+                branch.setBranchname("默认分支");
+                branch.setStatus(0);
+                branch.setFamilyid(familyId);
+                branch.setBeginuserid(user.getUserid());
+                branch.setBeginname(user.getUsername());
+                user.setBranchid(branch.getBranchid());
+                user.setBranchname(branch.getBranchname());
+                
+                
+				// 保存总编委会主任信息 post userManager
+                Post post = new Post();
 				post.setId(UUIDUtils.getUUID());
 				post.setFamilyid(familyId);
 				post.setCreatetime(new Date());
@@ -200,15 +216,15 @@ public class FamilyServiceImpl implements FamilyService {
 				post.setSort(0);
 				post.setType(1);
 				postMapper.insertSelective(post);
-				EditorialBoard eb = new EditorialBoard();
-				String ebid = UUIDUtils.getUUID();
+                EditorialBoard eb = new EditorialBoard();
+                String ebid = UUIDUtils.getUUID();
 				eb.setId(ebid);
 				eb.setFamilyid(familyId);
 				eb.setName("总编委会");
 				eb.setCodetype("0");
 				eb.setCode("0");
 				eb.setType(1);
-				editorialBoardMapper.insertSelective(eb);
+				
 				UserManager manager = new UserManager();
 				manager.setId(UUIDUtils.getUUID());
 				manager.setUserid(userId);
@@ -220,13 +236,18 @@ public class FamilyServiceImpl implements FamilyService {
 				manager.setEbtype(1);
 				manager.setIsmanager(1);
 				manager.setFamilyid(familyId);
+				
+				userDao.insertSelective(user);
+				userInfoDao.insertSelective(userInfo);
+				editorialBoardMapper.insertSelective(eb);
+				branchMapper.insertSelective(branch);
 				userManagerMapper.insertSelective(manager);
 				sysFamilyDao.insertSelective(family);
 				sysFamilyDao.insertFunction(familyId, family.getVersion());
-
+				
 				//创建章节模版
 				createIntroudce(familyId);
-
+				
 			}
 		} catch (Exception e) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

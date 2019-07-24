@@ -29,11 +29,6 @@ public class GenUserOtherVO {
 		this.livestatus = livestatus;
 	}
 
-	
-
-
-  
-
     public String getMateusername() {
 		return mateusername;
 	}
@@ -113,9 +108,6 @@ public class GenUserOtherVO {
     public void setUserid(String userid) {
         this.userid = userid;
     }
-
-
-
     public String getImgurl() {
         return imgurl == null ? "" : imgurl;
     }

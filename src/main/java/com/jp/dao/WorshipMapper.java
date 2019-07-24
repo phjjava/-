@@ -1,6 +1,7 @@
 package com.jp.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -34,6 +35,8 @@ public interface WorshipMapper {
 	List<Worship> getActiveUserOblations(Worship entity);
 
 	List<Worship> selectNoTimeOutByType(@Param("worshipid") String worshipid,@Param("id")String id);
+	
+	List<Worship> getWorships(Map<String, Object> params);
 
 	@Select("select * from jp_worship where worshipid = #{worshipid} and deleteflag = 0 ORDER BY createtime desc")
 	List<Worship> selectByWorshipid(@Param("worshipid") String worshipid);

@@ -30,7 +30,7 @@ public interface WorshipAncestorMapper  {
 	 * @param familyid  世图家族id
 	 * @return
 	 */
-	@Select("select * from jp_worship_ancestor where worshipid = #{worshipid} and familyid = #{familyid} and deleteflag = 0 ORDER BY createtime desc")
+	//@Select("select * from jp_worship_ancestor where worshipid = #{worshipid} and familyid = #{familyid} and deleteflag = 0 ORDER BY createtime desc")
 	List<WorshipAncestor> selectByWorshipid(@Param("worshipid") String worshipid,@Param("familyid")String familyid);
 	/**
 	 * 获取我的祭拜记录
@@ -39,7 +39,7 @@ public interface WorshipAncestorMapper  {
 	 * @param createid  查询用户id
 	 * @return
 	 */
-	@Select("select * from jp_worship_ancestor where worshipid = #{worshipid}  and familyid = #{familyid} and createid = #{createid} and deleteflag = 0 ORDER BY createtime desc")
+	//@Select("select * from jp_worship_ancestor where worshipid = #{worshipid}  and familyid = #{familyid} and createid = #{createid} and deleteflag = 0 ORDER BY createtime desc")
 	List<WorshipAncestor> selectByWorshipidAndCreateid(@Param("worshipid") String worshipid,
 			@Param("familyid")String familyid,@Param("createid") String createid);
 	/**
