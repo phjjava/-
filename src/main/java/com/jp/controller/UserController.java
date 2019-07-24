@@ -1649,13 +1649,6 @@ public class UserController {
 	 * @param user
 	 * @return
 	 */
-	/*@RequestMapping(value = "/updatePersonsByUpdatetime", method = RequestMethod.POST)
-	@ResponseBody
-	public JsonResponse updatePersonsByUpdatetime(@RequestBody User user) {
-		
-		return userService.updatePersonsByUpdatetime(user);
-	}*/
-	
 	@RequestMapping(value = "/updatePersonsByUpdatetime", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse updatePersonsByUpdatetime(@RequestBody User user) {
