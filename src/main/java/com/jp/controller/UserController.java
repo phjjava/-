@@ -1649,6 +1649,13 @@ public class UserController {
 	 * @param user
 	 * @return
 	 */
+	/*@RequestMapping(value = "/updatePersonsByUpdatetime", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse updatePersonsByUpdatetime(@RequestBody User user) {
+		
+		return userService.updatePersonsByUpdatetime(user);
+	}*/
+	
 	@RequestMapping(value = "/updatePersonsByUpdatetime", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse updatePersonsByUpdatetime(@RequestBody User user) {
@@ -1873,17 +1880,6 @@ public class UserController {
 	@ResponseBody
 	public JsonResponse applyingFamily(User user) {
 		return userService.applyingFamily(user);
-	}
-
-	/**
-	 * 我已关联过的家族
-	 * @param user
-	 * @return
-	 */
-	@RequestMapping(value = "/joinedFamily", method = RequestMethod.POST)
-	@ResponseBody
-	public JsonResponse joinedFamily(User user) {
-		return userService.joinedFamily(user);
 	}
 
 }
