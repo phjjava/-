@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.jp.dao.MomentMapper" >
-  <resultMap id="BaseResultMap" type="com.jp.entity.Moment" >
+<mapper namespace="com.jp.dao.MomentCommentTimelineMapper" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.MomentCommentTimeline" >
     <id column="id" property="id" jdbcType="VARCHAR" />
-    <result column="userid" property="userid" jdbcType="VARCHAR" />
-    <result column="show_type" property="showType" jdbcType="VARCHAR" />
-    <result column="content" property="content" jdbcType="VARCHAR" />
-    <result column="picture" property="picture" jdbcType="VARCHAR" />
-    <result column="location" property="location" jdbcType="VARCHAR" />
-    <result column="like_num" property="likeNum" jdbcType="INTEGER" />
+    <result column="moment_id" property="momentId" jdbcType="VARCHAR" />
+    <result column="moment_comment_id" property="momentCommentId" jdbcType="VARCHAR" />
     <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
     <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
     <result column="createby" property="createby" jdbcType="VARCHAR" />
     <result column="updateby" property="updateby" jdbcType="VARCHAR" />
     <result column="deleteflag" property="deleteflag" jdbcType="INTEGER" />
-    <result column="tagid" property="tagid" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -76,20 +71,19 @@
   </sql>
   <sql id="Base_Column_List" >
     <if test="fields == null" >
-      id, userid, show_type, content, picture, location, like_num, createtime, updatetime, 
-      createby, updateby, deleteflag
+      id, moment_id, moment_comment_id, createtime, updatetime, createby, updateby, deleteflag
     </if>
     <if test="fields != null" >
       ${fields}
     </if>
   </sql>
-  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.MomentExample" >
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.MomentCommentTimelineExample" >
     select
     <if test="distinct" >
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from jp_moment
+    from jp_moment_comment_timeline
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
@@ -102,55 +96,39 @@
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
-    id,userid,show_type,content,picture,location,like_num,createtime,updatetime,createby,updateby,deleteflag
-    from jp_moment
+    id,moment_id,moment_comment_id,createtime,updatetime,createby,updateby,deleteflag
+    from jp_moment_comment_timeline
     where id = #{id,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
-    delete from jp_moment
+    delete from jp_moment_comment_timeline
     where id = #{id,jdbcType=VARCHAR}
   </delete>
-  <delete id="deleteByExample" parameterType="com.jp.entity.MomentExample" >
-    delete from jp_moment
+  <delete id="deleteByExample" parameterType="com.jp.entity.MomentCommentTimelineExample" >
+    delete from jp_moment_comment_timeline
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.jp.entity.Moment" >
-    insert into jp_moment (id, userid, show_type, 
-      content, picture, location, 
-      like_num, createtime, updatetime, 
-      createby, updateby, deleteflag,tagid
-      )
-    values (#{id,jdbcType=VARCHAR}, #{userid,jdbcType=VARCHAR}, #{showType,jdbcType=VARCHAR}, 
-      #{content,jdbcType=VARCHAR}, #{picture,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR}, 
-      #{likeNum,jdbcType=INTEGER}, #{createtime,jdbcType=TIMESTAMP}, #{updatetime,jdbcType=TIMESTAMP}, 
-      #{createby,jdbcType=VARCHAR}, #{updateby,jdbcType=VARCHAR}, #{deleteflag,jdbcType=INTEGER}, #{tagid,jdbcType=VARCHAR}
-      )
+  <insert id="insert" parameterType="com.jp.entity.MomentCommentTimeline" >
+    insert into jp_moment_comment_timeline (id, moment_id, moment_comment_id, 
+      createtime, updatetime, createby, 
+      updateby, deleteflag)
+    values (#{id,jdbcType=VARCHAR}, #{momentId,jdbcType=VARCHAR}, #{momentCommentId,jdbcType=VARCHAR}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{updatetime,jdbcType=TIMESTAMP}, #{createby,jdbcType=VARCHAR}, 
+      #{updateby,jdbcType=VARCHAR}, #{deleteflag,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" parameterType="com.jp.entity.Moment" >
-    insert into jp_moment
+  <insert id="insertSelective" parameterType="com.jp.entity.MomentCommentTimeline" >
+    insert into jp_moment_comment_timeline
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
         id,
       </if>
-      <if test="userid != null" >
-        userid,
+      <if test="momentId != null" >
+        moment_id,
       </if>
-      <if test="showType != null" >
-        show_type,
-      </if>
-      <if test="content != null" >
-        content,
-      </if>
-      <if test="picture != null" >
-        picture,
-      </if>
-      <if test="location != null" >
-        location,
-      </if>
-      <if test="likeNum != null" >
-        like_num,
+      <if test="momentCommentId != null" >
+        moment_comment_id,
       </if>
       <if test="createtime != null" >
         createtime,
@@ -172,23 +150,11 @@
       <if test="id != null" >
         #{id,jdbcType=VARCHAR},
       </if>
-      <if test="userid != null" >
-        #{userid,jdbcType=VARCHAR},
+      <if test="momentId != null" >
+        #{momentId,jdbcType=VARCHAR},
       </if>
-      <if test="showType != null" >
-        #{showType,jdbcType=VARCHAR},
-      </if>
-      <if test="content != null" >
-        #{content,jdbcType=VARCHAR},
-      </if>
-      <if test="picture != null" >
-        #{picture,jdbcType=VARCHAR},
-      </if>
-      <if test="location != null" >
-        #{location,jdbcType=VARCHAR},
-      </if>
-      <if test="likeNum != null" >
-        #{likeNum,jdbcType=INTEGER},
+      <if test="momentCommentId != null" >
+        #{momentCommentId,jdbcType=VARCHAR},
       </if>
       <if test="createtime != null" >
         #{createtime,jdbcType=TIMESTAMP},
@@ -207,35 +173,23 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.jp.entity.MomentExample" resultType="java.lang.Integer" >
-    select count(*) from jp_moment
+  <select id="countByExample" parameterType="com.jp.entity.MomentCommentTimelineExample" resultType="java.lang.Integer" >
+    select count(*) from jp_moment_comment_timeline
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map" >
-    update jp_moment
+    update jp_moment_comment_timeline
     <set >
       <if test="record.id != null" >
         id = #{record.id,jdbcType=VARCHAR},
       </if>
-      <if test="record.userid != null" >
-        userid = #{record.userid,jdbcType=VARCHAR},
+      <if test="record.momentId != null" >
+        moment_id = #{record.momentId,jdbcType=VARCHAR},
       </if>
-      <if test="record.showType != null" >
-        show_type = #{record.showType,jdbcType=VARCHAR},
-      </if>
-      <if test="record.content != null" >
-        content = #{record.content,jdbcType=VARCHAR},
-      </if>
-      <if test="record.picture != null" >
-        picture = #{record.picture,jdbcType=VARCHAR},
-      </if>
-      <if test="record.location != null" >
-        location = #{record.location,jdbcType=VARCHAR},
-      </if>
-      <if test="record.likeNum != null" >
-        like_num = #{record.likeNum,jdbcType=INTEGER},
+      <if test="record.momentCommentId != null" >
+        moment_comment_id = #{record.momentCommentId,jdbcType=VARCHAR},
       </if>
       <if test="record.createtime != null" >
         createtime = #{record.createtime,jdbcType=TIMESTAMP},
@@ -258,14 +212,10 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map" >
-    update jp_moment
+    update jp_moment_comment_timeline
     set id = #{record.id,jdbcType=VARCHAR},
-      userid = #{record.userid,jdbcType=VARCHAR},
-      show_type = #{record.showType,jdbcType=VARCHAR},
-      content = #{record.content,jdbcType=VARCHAR},
-      picture = #{record.picture,jdbcType=VARCHAR},
-      location = #{record.location,jdbcType=VARCHAR},
-      like_num = #{record.likeNum,jdbcType=INTEGER},
+      moment_id = #{record.momentId,jdbcType=VARCHAR},
+      moment_comment_id = #{record.momentCommentId,jdbcType=VARCHAR},
       createtime = #{record.createtime,jdbcType=TIMESTAMP},
       updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
       createby = #{record.createby,jdbcType=VARCHAR},
@@ -275,26 +225,14 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.Moment" >
-    update jp_moment
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.MomentCommentTimeline" >
+    update jp_moment_comment_timeline
     <set >
-      <if test="userid != null" >
-        userid = #{userid,jdbcType=VARCHAR},
+      <if test="momentId != null" >
+        moment_id = #{momentId,jdbcType=VARCHAR},
       </if>
-      <if test="showType != null" >
-        show_type = #{showType,jdbcType=VARCHAR},
-      </if>
-      <if test="content != null" >
-        content = #{content,jdbcType=VARCHAR},
-      </if>
-      <if test="picture != null" >
-        picture = #{picture,jdbcType=VARCHAR},
-      </if>
-      <if test="location != null" >
-        location = #{location,jdbcType=VARCHAR},
-      </if>
-      <if test="likeNum != null" >
-        like_num = #{likeNum,jdbcType=INTEGER},
+      <if test="momentCommentId != null" >
+        moment_comment_id = #{momentCommentId,jdbcType=VARCHAR},
       </if>
       <if test="createtime != null" >
         createtime = #{createtime,jdbcType=TIMESTAMP},
@@ -314,14 +252,10 @@
     </set>
     where id = #{id,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.jp.entity.Moment" >
-    update jp_moment
-    set userid = #{userid,jdbcType=VARCHAR},
-      show_type = #{showType,jdbcType=VARCHAR},
-      content = #{content,jdbcType=VARCHAR},
-      picture = #{picture,jdbcType=VARCHAR},
-      location = #{location,jdbcType=VARCHAR},
-      like_num = #{likeNum,jdbcType=INTEGER},
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.MomentCommentTimeline" >
+    update jp_moment_comment_timeline
+    set moment_id = #{momentId,jdbcType=VARCHAR},
+      moment_comment_id = #{momentCommentId,jdbcType=VARCHAR},
       createtime = #{createtime,jdbcType=TIMESTAMP},
       updatetime = #{updatetime,jdbcType=TIMESTAMP},
       createby = #{createby,jdbcType=VARCHAR},

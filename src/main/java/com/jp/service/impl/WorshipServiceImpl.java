@@ -2,7 +2,9 @@ package com.jp.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -116,14 +118,15 @@ public class WorshipServiceImpl implements WorshipService {
 				res = new JsonResponse(result);
 				return res;
 			}
-			PageHelper.startPage(start, count);
-			/*
-			 * WorshipExample example = new WorshipExample();
-			 * example.or().andWorshipidEqualTo(entity.getWorshipid()).andDeleteflagEqualTo(
-			 * ConstantUtils.DELETE_FALSE); example.setOrderByClause("createtime desc");
-			 * worships = worshipMapper.selectByExample(example);
-			 */
-			worships = worshipMapper.selectByWorshipid(entity.getWorshipid());
+			Map<String,Object> params = new HashMap<String,Object>();
+			params.put("worshipid", entity.getWorshipid());
+			//params.put("createid",WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID));
+			params.put("deleteflag", ConstantUtils.DELETE_FALSE);
+			params.put("start", start);
+			params.put("count", count);
+			
+			worships = worshipMapper.getWorships(params);
+		
 		} catch (Exception e) {
 			log_.error("[getWorships方法---异常:]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
@@ -167,7 +170,7 @@ public class WorshipServiceImpl implements WorshipService {
 			List<Worship> rtnlist = new ArrayList<>();
 			for (WorshipOblationType type : types) {
 
-				List<Worship> worships = worshipMapper.selectNoTimeOutByType(type.getId());
+				List<Worship> worships = worshipMapper.selectNoTimeOutByType(entity.getWorshipid(),type.getId());
 				rtnlist.addAll(worships);
 			}
 
@@ -325,18 +328,14 @@ public class WorshipServiceImpl implements WorshipService {
 				res = new JsonResponse(result);
 				return res;
 			}
-			PageHelper.startPage(start, count);
-			/*
-			 * WorshipExample example = new WorshipExample();
-			 * example.or().andWorshipidEqualTo(entity.getWorshipid())
-			 * .andCreateidEqualTo(WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID))
-			 * .andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
-			 * 
-			 * example.setOrderByClause("createtime desc"); list =
-			 * worshipMapper.selectByExample(example);
-			 */
-			list = worshipMapper.selectByWorshipidAndCreateid(entity.getWorshipid(),
-					WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID));
+			Map<String,Object> params = new HashMap<String,Object>();
+			params.put("worshipid", entity.getWorshipid());
+			params.put("createid",WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID));
+			params.put("deleteflag", ConstantUtils.DELETE_FALSE);
+			params.put("start", start);
+			params.put("count", count);
+			
+			list = worshipMapper.getWorships(params);
 		} catch (Exception e) {
 			log_.error("[getMyWorships方法---异常:]", e);
 			result = new Result(MsgConstants.SYS_ERROR);

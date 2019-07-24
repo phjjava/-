@@ -33,14 +33,14 @@ public class WorshipAncestorDictController {
 	 * @param familyid
 	 * @param genlevel
 	 * @param familyname
-	 * @param count
-	 * @param start
+	 * @param count 条数
+	 * @param start 页码
 	 * @return
 	 */
 	@RequestMapping(value = "/getWorshipAncestorList", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse getWorshipAncestorList(String familyid, Integer genlevel,String familyname,Integer count,Integer start) {
-		System.out.println("pagesize="+count+"pageNo="+start);
+		//System.out.println("pagesize=count="+count+"pageNo=start="+start);
 		return worshipAncestorDictService.getWorshipAncestorList(familyid,  genlevel, familyname,count,start);
 	}
 }

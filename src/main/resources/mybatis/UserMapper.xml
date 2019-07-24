@@ -1523,17 +1523,57 @@
 			#{item}
 		</foreach>
  	</select>
-	<select id="getUserByAncestor" resultMap="BaseResultMap"
+	<select id="getUserByAncestor" resultType="com.jp.entity.GenUserOtherVO"
 		parameterType="java.lang.Object">
+		
 		SELECT
-			* 
+			m.*,
+			n.username AS mateusername,
+			n.livestatus AS matelivestatus,
+			n.sex AS matesex,
+			n.imgurl AS mateimgurl,
+			n.genlevel AS mategenlevel,
+			n.dietime AS matedietime,
+			n.birthday AS matebirthday 
 		FROM
-			jp_user 
+			(
+		SELECT
+			g.userid AS userid,
+			g.username AS username,
+			g.livestatus AS livestatus,
+			g.sex AS sex,
+			g.imgurl AS imgurl,
+			g.genlevel AS genlevel,
+			g.dietime AS dietime,
+			g.mateid AS mateuserid,
+			f.birthday AS birthday 
+		FROM
+			jp_user g,
+			jp_userinfo f 
 		WHERE
-			familyid = #{familyid} 
-			AND genlevel = #{genlevel} 
-			AND username LIKE #{familyname} 
-			AND sex = 1 
+			g.userid = f.userid 
+			AND g.familyid = #{familyid} 
+			AND g.genlevel = #{genlevel} 
+			AND g.username LIKE #{familyname} 
+			) m
+			LEFT JOIN (
+		SELECT
+			g.userid AS userid,
+			g.username AS username,
+			g.livestatus AS livestatus,
+			g.sex AS sex,
+			g.imgurl AS imgurl,
+			g.genlevel AS genlevel,
+			g.dietime AS dietime,
+			g.mateid AS mateuserid,
+			f.birthday AS birthday 
+		FROM
+			jp_user g,
+			jp_userinfo f 
+		WHERE
+			g.userid = f.userid 
+			) n ON m.mateuserid = n.userid
+			
 	</select>
 	<select id="getUserByAncestorCount" resultType="java.lang.Integer"
 		parameterType="java.lang.Object">
@@ -1545,6 +1585,6 @@
 			familyid = #{familyid} 
 			AND genlevel = #{genlevel} 
 			AND username LIKE #{familyname} 
-			AND sex = 1 
+			
 	</select>
 </mapper>

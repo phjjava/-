@@ -2,7 +2,8 @@ package com.jp.common;
 
 public class MsgConstants {
 	public static final Result RESUL_SUCCESS = new Result(0, "成功");
-	public static final Result RESUL_FAIL = new Result(1, "失败");
+	public static final Result RESUL_FAIL = new Result(1, "失败"); 
+	public static final Result SESSION_FAIL = new Result(-400, "您的信息已过期，请重新登录！");
 	public static final Result SYS_ERROR = new Result(1000, "系统错误或异常");
 
 	// 用户登录异常码

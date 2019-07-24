@@ -1,14 +1,17 @@
 package com.jp.service.impl;
 
 import com.jp.entity.GenUserOther;
+import com.jp.entity.GenUserOtherVO;
 import com.jp.entity.User;
 import com.jp.entity.UserQuery;
+import com.jp.entity.Userinfo;
 import com.jp.entity.WorshipAncestorDict;
 import com.github.pagehelper.PageHelper;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.Result;
 import com.jp.dao.UserDao;
+import com.jp.dao.UserinfoMapper;
 import com.jp.dao.WorshipAncestorDictMapper;
 import com.jp.dao.WorshipAnnexMapper;
 import com.jp.dao.WorshipOblationMapper;
@@ -47,6 +50,8 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
     private WorshipAnnexMapper annexMapper;
     @Resource
     private UserDao userMapper;
+    @Resource
+    private UserinfoMapper userinfoMapper;
 	@Override
 	public JsonResponse getWorshipAncestorDictList(String familyid) {
 		Result result = null;
@@ -57,6 +62,7 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 			if(familyid == null || "".equals(familyid)){
 				result=new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数familyid为空！");
+				res = new JsonResponse(result);
 				return res;
 			}
 		    genlevel = userMapper.getUserFamilyid(familyid);
@@ -87,27 +93,31 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 	public JsonResponse getWorshipAncestorList(String familyid, Integer genlevel,String familyname,Integer pagesize,Integer pageNo) {
 		Result result = null;
 		JsonResponse res = null;
-		List<GenUserOther> list=new ArrayList<GenUserOther>();
+		List<GenUserOtherVO> list=new ArrayList<GenUserOtherVO>();
 		Integer userByAncestorCount = 0;
 		try {
 			if(familyid == null || "".equals(familyid)){
 				result=new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数familyid为空！");
+				res = new JsonResponse(result);
 				return res;
 			}
 			if(genlevel == null ){
 				result=new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数genlevel为空！");
+				res = new JsonResponse(result);
 				return res;
 			}
 			if(familyname == null || "".equals(familyname)){
 				result=new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数familyid为空！");
+				res = new JsonResponse(result);
 				return res;
 			}
 			if(pagesize == null ){
 				result=new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数pagesize为空！");
+				res = new JsonResponse(result);
 				return res;
 			}
 //			if(pageNo == null ){
@@ -124,45 +134,37 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 			familyname=substringBefore+"%";
 			System.out.println(familyname);
 			userByAncestorCount = userMapper.getUserByAncestorCount(familyid, familyname, genlevel);
-			if(userByAncestorCount<=0) {
-				result=new Result(MsgConstants.RESUL_FAIL);
-				result.setMsg("该世没有插入数据！");
+			System.out.println("userByAncestorCount==="+userByAncestorCount);
+			if(userByAncestorCount==0) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("该世目前没有数据,请联系家族管理员添加！");
+				res = new JsonResponse(result);
 				return res;
 			}
-			PageHelper.startPage(pageNo, pagesize);
-			List<User> userByAncestor = userMapper.getUserByAncestor(familyid, familyname, genlevel);
-			for (User user : userByAncestor) {
-				// 初始化起始人实例
-				GenUserOther genUserOther = new GenUserOther();
-				genUserOther.setGenlevel(user.getGenlevel());
-				genUserOther.setImgurl(user.getImgurl());
-				genUserOther.setSex(user.getSex());
-				genUserOther.setUserid(user.getUserid());
-				genUserOther.setUsername(user.getUsername());
-				genUserOther.setPid(user.getPid());
+			//获取某世所有人及其配偶信息
+			List<GenUserOtherVO> userByAncestor = userMapper.getUserByAncestor(familyid, familyname, genlevel);
 
-				User mate_user = new User();
-				// 初始化配偶实例
-				if (user.getMateid() == null || "".equals(user.getMateid())) {
-					// 不存在配偶的情况
-				} else {
-					UserQuery userExample = new UserQuery();
-					userExample.or().andUseridEqualTo(user.getMateid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
-					List<User> users2 = userMapper.selectByExample(userExample);
-					if (users2.size() > 0) {
-						mate_user = users2.get(0);
+			//筛选数据
+			List<GenUserOtherVO> listSX=new ArrayList<GenUserOtherVO>();
+			for (GenUserOtherVO user : userByAncestor) {
+				if(user.getLivestatus()==1) {
+					listSX.add(user);
+				}else {
+					if(user.getMatelivestatus()!=null&&user.getMatelivestatus()==1) {
+						listSX.add(user);
 					}
 				}
 				
-				GenUserOther mateuser = new GenUserOther();
-				mateuser.setGenlevel(mate_user.getGenlevel());
-				mateuser.setImgurl(mate_user.getImgurl());
-				mateuser.setSex(mate_user.getSex());
-				mateuser.setUserid(mate_user.getUserid());
-				mateuser.setUsername(mate_user.getUsername());
-				genUserOther.setMate(mateuser);
-				list.add(genUserOther);
 			}
+			//listSX数据分页
+			//System.out.println("pageNo=start=="+pageNo);
+			if(pageNo==0) {
+				pageNo=1;
+			}
+			//System.out.println("pageNo=start=="+pageNo);
+			//System.out.println("pagesize=count=="+pagesize);
+			 list = startPage(listSX,pageNo,pagesize);
+			 userByAncestorCount=listSX.size();
 			
 		} catch (Exception e) {
 			log_.error("[getWorshipAncestorList方法---异常:]", e);
@@ -170,11 +172,54 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 			res = new JsonResponse(result);
 			return res;
 		}
+		
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
-		res.setData1(userByAncestorCount);
+		//res.setData1(userByAncestorCount);
+		
 		res.setData(list);
 		return res;
 	}
-
+	/**
+     * 开始分页
+     *
+     * @param list
+     * @param pageNum  页码
+     * @param pageSize 每页多少条数据
+     * @return
+     */
+    public static List<GenUserOtherVO> startPage(List<GenUserOtherVO> list, Integer pageNum, Integer pageSize) {
+        if(list == null){
+            return null;
+        }
+        if(list.size() == 0){
+            return null;
+        }
+ 
+        Integer count = list.size(); //记录总数
+        Integer pageCount = 0; //页数
+        if (count % pageSize == 0) {
+            pageCount = count / pageSize;
+        } else {
+            pageCount = count / pageSize + 1;
+        }
+        if(pageNum>pageCount) {
+        	return null;
+        }
+        int fromIndex = 0; //开始索引
+        int toIndex = 0; //结束索引
+ 
+        if (pageNum != pageCount) {
+            fromIndex = (pageNum - 1) * pageSize;
+            toIndex = fromIndex + pageSize;
+        } else {
+            fromIndex = (pageNum - 1) * pageSize;
+            toIndex = count;
+        }
+ 
+        List<GenUserOtherVO> pageList = list.subList(fromIndex, toIndex);
+ 
+        return pageList;
+    }
+    
 }

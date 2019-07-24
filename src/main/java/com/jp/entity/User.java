@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class User implements Serializable {
 	/**
 	 * 用户ID
@@ -38,6 +40,7 @@ public class User implements Serializable {
 	/**
 	 * 更新日期
 	 */
+	@JsonFormat(pattern="yy-MM-dd HH:mm:ss")
 	private Date updatetime;
 
 	/**
