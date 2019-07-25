@@ -92,7 +92,6 @@ public class CurrentUserContext implements Serializable {
 
 			userContext = (LoginUserInfo) session.getAttribute("userContext");
 			familyid = userContext.getUser().getFamilyid();
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[HNFZERROR-获取登录用户信息失败：]", e);

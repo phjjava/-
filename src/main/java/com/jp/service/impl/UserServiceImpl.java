@@ -2712,57 +2712,16 @@ public class UserServiceImpl implements UserService {
 		}
 		// 通过手机号查询当前用户信息
 		UserQuery phoneExample = new UserQuery();
-		phoneExample.or().andPhoneEqualTo(entity.getPhone()).andFamilyidIsNotNull().andDeleteflagEqualTo(0);
+		phoneExample.or().andPhoneEqualTo(entity.getPhone()).andDeleteflagEqualTo(0);
 		List<User> list = userDao.selectByExample(phoneExample);
-		User user = new User();
-		List<SysFamily> sysFamilyList = new ArrayList<SysFamily>();
 		if (list != null && list.size() > 0) {
-			// 多企业用户,查询选择的企业列表然后返回
-			for (User u : list) {
-				// 如果有注册过未添加家族的用户，则不在新建用户
-				if (StringUtils.isBlank(u.getFamilyid())) {
-					result = new Result(MsgConstants.RESUL_FAIL);
-					result.setMsg("该手机号已经注册！");
-					res = new JsonResponse(result);
-					return res;
-				} else {
-					SysFamily dbCorp = sysFamilyDao.selectByPrimaryKey(u.getFamilyid());
-					if (dbCorp != null) {
-						// 返回只返回企业id和企业名称
-						SysFamily retCorp = new SysFamily();
-						retCorp.setFamilyid(dbCorp.getFamilyid());
-						retCorp.setFamilyname(dbCorp.getFamilyname());
-						sysFamilyList.add(retCorp);
-					}
-				}
-				u.setPassword(MD5Util.string2MD5(entity.getPhone().substring(entity.getPhone().length() - 6)));
-				userDao.updateByPrimaryKey(u);
-			}
-
-			// user.setUserAppLimit(userAppLimit);
-
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("该手机号已经注册！");
+			res = new JsonResponse(result);
+			return res;
 		}
-		// 新建用户
-		Date date = new Date();
-		String userid = UUIDUtils.getUUID();
-		user.setUserid(userid);
-		user.setSex(1);
-		user.setPhone(entity.getPhone());
-		user.setCreateid(userid);
-		user.setCreatetime(date);
-		user.setDeleteflag(0);
-		user.setStatus(ConstantUtils.USER_STATUS_WAIT.intValue());
-		user.setPassword(MD5Util.string2MD5(entity.getPhone().substring(entity.getPhone().length() - 6)));
-		userDao.insertSelective(user);
-		Userinfo userinfo = new Userinfo();
-		userinfo.setUserid(userid);
-		userInfoDao.insertSelective(userinfo);
-
-		user.setFamilys(sysFamilyList);
-		user.setPassword(null);
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
-		res.setData(user);
 		return res;
 	}
 
@@ -4797,7 +4756,7 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 		List<User> byPhoneToStatus = userDao.selectByPhoneToStatus(entity.getPhone(), entity.getFamilyid());
-		if (byPhoneToStatus.size() >= 3) {
+		if (byPhoneToStatus.size() >= 2) {
 			result = new Result(MsgConstants.REPULSE);
 			res = new JsonResponse(result);
 			return res;
@@ -4867,12 +4826,7 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		/*
-		 * UserExample userExample = new UserExample();
-		 * userExample.or().andPhoneEqualTo(entity.getPhone()).andStatusEqualTo((byte)
-		 * Constants.USER_STATUS_WAIT.intValue()); List<User> users =
-		 * userMapper.selectByExample(userExample);
-		 */
+
 		List<User> users = userDao.selectFamilycode(entity.getPhone(), ConstantUtils.USER_STATUS_WAIT);
 		if (users.size() > 0) {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
@@ -4885,4 +4839,32 @@ public class UserServiceImpl implements UserService {
 		res = new JsonResponse(result);
 		return res;
 	}
+
+	@Override
+	public JsonResponse joinedFamily(User entity) {
+		Result result = null;
+		JsonResponse res = null;
+		String userid = WebUtil.getRequest().getHeader("userid");
+		if (StringUtils.isBlank(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		UserQuery userQuery = new UserQuery();
+		userQuery.or().andPhoneEqualTo(entity.getPhone()).andFamilyidIsNotNull().andDeleteflagEqualTo(0)
+				.andStatusEqualTo(ConstantUtils.USER_STATUS_OK);
+		List<User> users = userDao.selectByExample(userQuery);
+		if (users.size() > 0) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(users);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		result.setMsg("您当前还没有关联过家族！");
+		res = new JsonResponse(result);
+		return res;
+	}
+
 }
