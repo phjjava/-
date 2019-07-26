@@ -2584,6 +2584,11 @@ public class UserServiceImpl implements UserService {
 				result.setMsg("当前手机号用户不存在，请重设后再试！");
 				res = new JsonResponse(result);
 				return res;
+			} else {
+				result = new Result(MsgConstants.LOGIN_USER_STATUS);
+				res = new JsonResponse(result);
+				res.setData(selectByExample);
+				return res;
 			}
 
 		}
@@ -2660,8 +2665,13 @@ public class UserServiceImpl implements UserService {
 			queryByPhoneUserList = userDao.selectByExample(phoneExample);
 			if (queryByPhoneUserList == null || queryByPhoneUserList.isEmpty()) {
 				result = new Result(MsgConstants.RESUL_FAIL);
-				result.setMsg("用户不存在或家族已被停用！");
+				result.setMsg("用户不存在！");
 				res = new JsonResponse(result);
+				return res;
+			} else {
+				result = new Result(MsgConstants.LOGIN_USER_STATUS);
+				res = new JsonResponse(result);
+				res.setData(queryByPhoneUserList);
 				return res;
 			}
 		}
@@ -2712,11 +2722,12 @@ public class UserServiceImpl implements UserService {
 		}
 		// 通过手机号查询当前用户信息
 		UserQuery phoneExample = new UserQuery();
-		phoneExample.or().andPhoneEqualTo(entity.getPhone()).andDeleteflagEqualTo(0);
+		phoneExample.or().andPhoneEqualTo(entity.getPhone()).andDeleteflagEqualTo(0)
+				.andStatusEqualTo(ConstantUtils.USER_STATUS_OK).andFamilyidIsNotNull();
 		List<User> list = userDao.selectByExample(phoneExample);
 		if (list != null && list.size() > 0) {
 			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("该手机号已经注册！");
+			result.setMsg("该手机号已经有家族，快去登录吧！");
 			res = new JsonResponse(result);
 			return res;
 		}
@@ -2798,6 +2809,24 @@ public class UserServiceImpl implements UserService {
 		}
 		@SuppressWarnings("unchecked")
 		List<User> dbuserList = (List<User>) res.getData();
+		if (res.getCode() == 1009) {
+			for (User user : dbuserList) {
+				if (user.getStatus() == 1) {
+					result = new Result(MsgConstants.LOGIN_USER_STATUS_CHECK);
+					res = new JsonResponse(result);
+					return res;
+				}
+				if (user.getStatus() == 2) {
+					result = new Result(MsgConstants.LOGIN_USER_STATUS_REPULSE);
+					res = new JsonResponse(result);
+					return res;
+				} else {
+					result = new Result(MsgConstants.LOGIN_USER_STATUS_STOP);
+					res = new JsonResponse(result);
+					return res;
+				}
+			}
+		}
 		////////////////////////// 添加api登录的app用户
 		ServletContext application = req.getServletContext();
 		@SuppressWarnings("unchecked")
@@ -4740,72 +4769,51 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		List<User> byPhone = userDao.selectByPhone(entity.getPhone());
-		if (byPhone.size() >= 2) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("一个用户最多只能加入两个家族！");
-			res = new JsonResponse(result);
-			return res;
-		}
-		List<User> byPhoneAndStatus = userDao.selectByPhoneInStatus(entity.getPhone());
-		for (User user : byPhoneAndStatus) {
-			if (user.getFamilyid().equals(entity.getFamilyid())) {
-				result = new Result(MsgConstants.REPETITION);
+		//	List<User> byPhone = userDao.selectByPhone(entity.getPhone());
+		int status;
+		try {
+			List<User> byPhoneAndStatus = userDao.selectByPhoneInStatus(entity.getPhone());
+			if (byPhoneAndStatus.size() >= 2) {
+				result = new Result(MsgConstants.FAMILYID_RESTRICT);
 				res = new JsonResponse(result);
 				return res;
 			}
-		}
-		List<User> byPhoneToStatus = userDao.selectByPhoneToStatus(entity.getPhone(), entity.getFamilyid());
-		if (byPhoneToStatus.size() >= 2) {
-			result = new Result(MsgConstants.REPULSE);
-			res = new JsonResponse(result);
-			return res;
-		}
-		String userid = WebUtil.getRequest().getHeader("userid");
-		User user1 = userDao.selectByPrimaryKey(userid);
-		int status = 0;
-		if (user1.getFamilyid() == null || "".equals(user1.getFamilyid())) {
-			// 用户注册的时候应该已经创建了，此处做修改操作
+			for (User user : byPhoneAndStatus) {
+				if (user.getFamilyid().equals(entity.getFamilyid())) {
+					result = new Result(MsgConstants.FAMILYID_REPETITION);
+					res = new JsonResponse(result);
+					return res;
+				}
+			}
+			List<User> byPhoneToStatus = userDao.selectByPhoneToStatus(entity.getPhone(), entity.getFamilyid());
+			if (byPhoneToStatus.size() >= 1) {
+				result = new Result(MsgConstants.FAMILYID_REPULSE);
+				res = new JsonResponse(result);
+				return res;
+			}
+			status = 0;
+			// 创建用户
+			String userid = UUIDUtils.getUUID();
 			entity.setUserid(userid);
-			entity.setUpdatetime(new Date());
-			entity.setStatus(ConstantUtils.USER_STATUS_WAIT.intValue());
-			status = userDao.updateByPrimaryKeySelective(entity);
+			entity.setCreateid(userid);
+			entity.setCreatetime(new Date());
+			entity.setDeleteflag(0);
+			entity.setStatus(ConstantUtils.USER_STATUS_WAIT);
+			entity.setPassword(MD5Util.string2MD5(entity.getPhone().substring(entity.getPhone().length() - 6)));
+			status = userDao.insertSelective(entity);
 			Userinfo userInfo = new Userinfo();
 			userInfo.setUserid(userid);
 			userInfo.setBirthday(birthday);
 			userInfo.setNation(nation);
-			status = userInfoDao.updateByPrimaryKeySelective(userInfo);
-		} /*
-			 * else if(entity.getFamilyid().equals(user1.getFamilyid())){
-			 * result.setStatus(Constants.RESULT_FAIL); result.setMsg("你已申请过该家族，请不要重复申请！");
-			 * return result; }
-			 */else {
-			// 新建用户
-			User user = new User();
-			String userId = UUIDUtils.getUUID();
-			user.setUserid(userId);
-			user.setFamilyid(entity.getFamilyid());
-			user.setFamilyname(entity.getFamilyname());
-			user.setUsername(entity.getUsername());
-			user.setBrotherpos(entity.getBrotherpos());
-			user.setSex(entity.getSex());
-			user.setPhone(entity.getPhone());
-			user.setCreateid(userId);
-			user.setCreatetime(new Date());
-			user.setDeleteflag(ConstantUtils.DELETE_FALSE);
-			user.setStatus(ConstantUtils.USER_STATUS_WAIT.intValue());
-			user.setPassword(user1.getPassword());
-			status = userDao.insertSelective(user);
-			Userinfo userinfo = new Userinfo();
-			userinfo.setUserid(userId);
-			userinfo.setBirthday(birthday);
-			userinfo.setNation(nation);
-			status = userInfoDao.insertSelective(userinfo);
-		}
-
-		if (status > 0) {
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			result.setMsg("申请成功！");
+			status = userInfoDao.insertSelective(userInfo);
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				result.setMsg("申请成功！");
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
 			return res;
 		}
@@ -4819,13 +4827,6 @@ public class UserServiceImpl implements UserService {
 	public JsonResponse applyingFamily(User entity) {
 		Result result = null;
 		JsonResponse res = null;
-		String userid = WebUtil.getRequest().getHeader("userid");
-		if (StringUtils.isBlank(userid)) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("用户非法！");
-			res = new JsonResponse(result);
-			return res;
-		}
 
 		List<User> users = userDao.selectFamilycode(entity.getPhone(), ConstantUtils.USER_STATUS_WAIT);
 		if (users.size() > 0) {
@@ -4851,10 +4852,12 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		UserQuery userQuery = new UserQuery();
-		userQuery.or().andPhoneEqualTo(entity.getPhone()).andFamilyidIsNotNull().andDeleteflagEqualTo(0)
-				.andStatusEqualTo(ConstantUtils.USER_STATUS_OK);
-		List<User> users = userDao.selectByExample(userQuery);
+		/*	UserQuery userQuery = new UserQuery();
+			userQuery.or().andPhoneEqualTo(entity.getPhone()).andFamilyidIsNotNull().andDeleteflagEqualTo(0)
+					.andStatusEqualTo(ConstantUtils.USER_STATUS_OK);
+			List<User> users = userDao.selectByExample(userQuery);*/
+		List<User> users = userDao.selectFamilycode(entity.getPhone(), ConstantUtils.USER_STATUS_OK);
+
 		if (users.size() > 0) {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);

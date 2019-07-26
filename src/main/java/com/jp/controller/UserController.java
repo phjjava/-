@@ -118,7 +118,8 @@ public class UserController {
 				sb.append(line);
 			}
 			String jsonstr = sb.toString();
-			User user = JacksonUtil.fromJsonToObject(jsonstr, User.class);
+			String jsonReplace = jsonstr.replace("\"\"", "null");
+			User user = JacksonUtil.fromJsonToObject(jsonReplace, User.class);
 			result = userService.merge(user); // 除了user，其他参数弃用
 			res = new JsonResponse(result);
 		} catch (Exception e) {
@@ -801,7 +802,8 @@ public class UserController {
 			sb.append(line);
 		}
 		String jsonstr = sb.toString();
-		User user = JacksonUtil.fromJsonToObject(jsonstr, User.class);
+		String jsonReplace = jsonstr.replace("\"\"", "null");
+		User user = JacksonUtil.fromJsonToObject(jsonReplace, User.class);
 		try {
 			result = userService.mergeMate(user, user.getUserInfo(), "");
 		} catch (Exception e) {
