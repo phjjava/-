@@ -147,13 +147,12 @@ public class FamilyServiceImpl implements FamilyService {
 				sysFamilyDao.insertFunction(family.getFamilyid(), family.getVersion());
 
 			} else {
-                UserQuery userQuery = new UserQuery();
-                userQuery.or().andPhoneEqualTo(user.getPhone()).andStatusEqualTo(0)
-                        .andDeleteflagEqualTo(0);
-                List<User> users = userDao.selectByExample(userQuery);
-                if (users.size() > 0) {
-                    
-                	for (User user1 : users) {
+				UserQuery userQuery = new UserQuery();
+				userQuery.or().andPhoneEqualTo(user.getPhone()).andStatusEqualTo(0).andDeleteflagEqualTo(0);
+				List<User> users = userDao.selectByExample(userQuery);
+				if (users.size() > 0) {
+
+					for (User user1 : users) {
 						if (user1.getFamilyname().equals(family.getFamilyname())) {
 							result = new Result(MsgConstants.RESUL_FAIL);
 							result.setMsg("当前用户管理的家族名称已存在，请重试");
@@ -161,11 +160,11 @@ public class FamilyServiceImpl implements FamilyService {
 							return res;
 						}
 					}
-                    
-                }
+
+				}
 				String userId = UUIDUtils.getUUID();
 				String familyId = UUIDUtils.getUUID();
-				
+
 				// user
 				user.setUserid(userId);
 				user.setFamilyid(familyId);
@@ -186,28 +185,27 @@ public class FamilyServiceImpl implements FamilyService {
 				// userinfo
 				userInfo.setUserid(userId);
 				// 保存 user userinfo
-				
+
 				// 保存家族
-                family.setCreatetime(new Date());
+				family.setCreatetime(new Date());
 				family.setFamilyid(familyId);
 				family.setStatus(0);
-                family.setCreateid("sys_admin");
-                family.setFamilycode(sysFamilyDao.nextVal()+"");
+				family.setCreateid("sys_admin");
+				family.setFamilycode(sysFamilyDao.nextVal() + "");
 
-                Branch branch = new Branch();
-                String branchid = UUIDUtils.getUUID();
-                branch.setBranchid(branchid);
-                branch.setBranchname("默认分支");
-                branch.setStatus(0);
-                branch.setFamilyid(familyId);
-                branch.setBeginuserid(user.getUserid());
-                branch.setBeginname(user.getUsername());
-                user.setBranchid(branch.getBranchid());
-                user.setBranchname(branch.getBranchname());
-                
-                
+				Branch branch = new Branch();
+				String branchid = UUIDUtils.getUUID();
+				branch.setBranchid(branchid);
+				branch.setBranchname("默认分支");
+				branch.setStatus(0);
+				branch.setFamilyid(familyId);
+				branch.setBeginuserid(user.getUserid());
+				branch.setBeginname(user.getUsername());
+				user.setBranchid(branch.getBranchid());
+				user.setBranchname(branch.getBranchname());
+
 				// 保存总编委会主任信息 post userManager
-                Post post = new Post();
+				Post post = new Post();
 				post.setId(UUIDUtils.getUUID());
 				post.setFamilyid(familyId);
 				post.setCreatetime(new Date());
@@ -216,15 +214,15 @@ public class FamilyServiceImpl implements FamilyService {
 				post.setSort(0);
 				post.setType(1);
 				postMapper.insertSelective(post);
-                EditorialBoard eb = new EditorialBoard();
-                String ebid = UUIDUtils.getUUID();
+				EditorialBoard eb = new EditorialBoard();
+				String ebid = UUIDUtils.getUUID();
 				eb.setId(ebid);
 				eb.setFamilyid(familyId);
 				eb.setName("总编委会");
 				eb.setCodetype("0");
 				eb.setCode("0");
 				eb.setType(1);
-				
+
 				UserManager manager = new UserManager();
 				manager.setId(UUIDUtils.getUUID());
 				manager.setUserid(userId);
@@ -236,7 +234,7 @@ public class FamilyServiceImpl implements FamilyService {
 				manager.setEbtype(1);
 				manager.setIsmanager(1);
 				manager.setFamilyid(familyId);
-				
+
 				userDao.insertSelective(user);
 				userInfoDao.insertSelective(userInfo);
 				editorialBoardMapper.insertSelective(eb);
@@ -244,10 +242,10 @@ public class FamilyServiceImpl implements FamilyService {
 				userManagerMapper.insertSelective(manager);
 				sysFamilyDao.insertSelective(family);
 				sysFamilyDao.insertFunction(familyId, family.getVersion());
-				
+
 				//创建章节模版
 				createIntroudce(familyId);
-				
+
 			}
 		} catch (Exception e) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -579,19 +577,21 @@ public class FamilyServiceImpl implements FamilyService {
 			SysFamilyQuery sysFamilyExample = new SysFamilyQuery();
 			sysFamilyExample.or().andFamilycodeEqualTo(family.getFamilycode());
 			List<SysFamily> sysFamilys = sysFamilyDao.selectByExample(sysFamilyExample);
-			if (sysFamilys.size() == 0) {
-				result.setMsg("没有该家族");
+			if (sysFamilys != null && sysFamilys.size() > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);
+				res.setData(sysFamilys.get(0));
 				return res;
 			}
-			result = new com.jp.common.Result(MsgConstants.RESUL_SUCCESS);
+			result.setMsg("没有该家族");
 			res = new JsonResponse(result);
-			res.setData(sysFamilys.get(0));
+			return res;
 		} catch (Exception e) {
-			res = new JsonResponse(result);
 			log_.error("[FamilyServiceImpl---Error:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-		return res;
 	}
 
 }

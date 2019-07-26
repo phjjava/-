@@ -2,7 +2,7 @@ package com.jp.common;
 
 public class MsgConstants {
 	public static final Result RESUL_SUCCESS = new Result(0, "成功");
-	public static final Result RESUL_FAIL = new Result(1, "失败"); 
+	public static final Result RESUL_FAIL = new Result(1, "失败");
 	public static final Result SESSION_FAIL = new Result(-400, "您的信息已过期，请重新登录！");
 	public static final Result SYS_ERROR = new Result(1000, "系统错误或异常");
 
@@ -15,6 +15,10 @@ public class MsgConstants {
 	public static final Result LOGIN_ICODE_WRONG = new Result(1006, "验证码不正确");
 	public static final Result LOGIN_USER_CHOOSEFAMILY = new Result(1007, "该用户存在多个家族，请选择");
 	public static final Result LOGIN_STATUS = new Result(1008, "未登录状态首页Banner,成功");
+	public static final Result LOGIN_USER_STATUS = new Result(1009, "非正常登录状态");
+	public static final Result LOGIN_USER_STATUS_CHECK = new Result(1010, "您的账号正在审核中，请耐心等待");
+	public static final Result LOGIN_USER_STATUS_REPULSE = new Result(1011, "您的申请已被拒绝，请重新申请");
+	public static final Result LOGIN_USER_STATUS_STOP = new Result(1012, "您已被该家族停用，请重新申请一个家族或联系管理员");
 
 	// 用户管理异常码
 	public static final Result USER_SAVE_FAIL = new Result(2001, "系统异常，用户信息保存失败");
@@ -50,8 +54,8 @@ public class MsgConstants {
 	public static final Result MEAUTYPE_IS_NULL = new Result(5013, "参数meautype不能为空");
 	public static final Result ALBUMID_IS_NULL = new Result(5014, "参数albumid不能为空");
 
-	public static final Result REPETITION = new Result(6001, "重复申请家族");
-	public static final Result REPULSE = new Result(6002, "拒绝超过三次");
-	
+	public static final Result FAMILYID_REPETITION = new Result(6001, "请不要重复申请该家族");
+	public static final Result FAMILYID_REPULSE = new Result(6002, "该家族已拒绝您的申请");
+	public static final Result FAMILYID_RESTRICT = new Result(6003, "一个用户最多只能加入两个家族");
 
 }

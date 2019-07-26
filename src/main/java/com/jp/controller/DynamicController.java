@@ -182,7 +182,8 @@ public class DynamicController {
 		}
 		String jsonstr = sb.toString();
 		try {
-			Dynamic dynamic = JacksonUtil.fromJsonToObject(jsonstr, Dynamic.class);
+			String jsonReplace = jsonstr.replace("\"\"", "null");
+			Dynamic dynamic = JacksonUtil.fromJsonToObject(jsonReplace, Dynamic.class);
 			List<Dynamicfile> dyList = dynamic.getDynamicFiles();
 			return dyservice.saveDynamic(dynamic, dyList);
 		} catch (Exception e) {
