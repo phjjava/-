@@ -58,6 +58,12 @@
 			<artifactId>spring-session-data-redis</artifactId>
 			<version>1.2.0.RELEASE</version>
 		</dependency>
+		<dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+       
 
 		<!-- 添加servlet jar -->
 		<dependency>
