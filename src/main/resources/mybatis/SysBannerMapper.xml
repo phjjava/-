@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.jp.dao.BannerPageHomeDao" >
+<mapper namespace="com.jp.dao.SysBannerDao" >
   <resultMap id="BaseResultMap" type="com.jp.entity.BannerHomePage" >
     <id column="bannerid" property="bannerid" jdbcType="VARCHAR" />
     <result column="bannername" property="bannername" jdbcType="VARCHAR" />
@@ -104,7 +104,7 @@
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
     bannerid,bannername,bannerweburl,bannerphoneurl,bannerurl,bannerdesc,createid,createtime,updateid,updatetime,remark,gotype,deleteflag
-    from jp_bannner_homepage
+    from jp_sys_bannner
     where bannerid = #{bannerid,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
@@ -112,7 +112,7 @@
     where bannerid = #{bannerid,jdbcType=VARCHAR}
   </delete>
   <delete id="deleteByExample" parameterType="com.jp.entity.BannerQuery" >
-    delete from jp_bannner_homepage
+    delete from jp_sys_bannner
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
