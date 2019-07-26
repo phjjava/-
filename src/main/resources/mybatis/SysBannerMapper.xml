@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.jp.dao.BannerPageHomeDao" >
+<mapper namespace="com.jp.dao.SysBannerDao" >
   <resultMap id="BaseResultMap" type="com.jp.entity.BannerHomePage" >
     <id column="bannerid" property="bannerid" jdbcType="VARCHAR" />
     <result column="bannername" property="bannername" jdbcType="VARCHAR" />
@@ -90,7 +90,7 @@
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from jp_bannner_homepage
+    from jp_sys_bannner
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
@@ -104,21 +104,21 @@
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
     bannerid,bannername,bannerweburl,bannerphoneurl,bannerurl,bannerdesc,createid,createtime,updateid,updatetime,remark,gotype,deleteflag
-    from jp_bannner_homepage
+    from jp_sys_bannner
     where bannerid = #{bannerid,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
-    delete from jp_bannner_homepage
+    delete from jp_sys_bannner
     where bannerid = #{bannerid,jdbcType=VARCHAR}
   </delete>
   <delete id="deleteByExample" parameterType="com.jp.entity.BannerQuery" >
-    delete from jp_bannner_homepage
+    delete from jp_sys_bannner
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
   <insert id="insert" parameterType="com.jp.entity.BannerHomePage" >
-    insert into jp_bannner_homepage (bannerid, bannername, bannerweburl, 
+    insert into jp_sys_bannner (bannerid, bannername, bannerweburl, 
       bannerphoneurl, bannerurl, bannerdesc, 
       createid, createtime, updateid, 
       updatetime, remark, 
@@ -130,7 +130,7 @@
       #{deleteflag,jdbcType=INTEGER},#{goname,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.jp.entity.BannerHomePage" >
-    insert into jp_bannner_homepage
+    insert into jp_sys_bannner
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="bannerid != null" >
         bannerid,
@@ -227,13 +227,13 @@
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.jp.entity.BannerQuery" resultType="java.lang.Integer" >
-    select count(*) from jp_bannner_homepage
+    select count(*) from jp_sys_bannner
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map" >
-    update jp_bannner_homepage
+    update jp_sys_bannner
     <set >
       <if test="record.bannerid != null" >
         bannerid = #{record.bannerid,jdbcType=VARCHAR},
@@ -283,7 +283,7 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map" >
-    update jp_bannner_homepage
+    update jp_sys_bannner
     set bannerid = #{record.bannerid,jdbcType=VARCHAR},
       bannername = #{record.bannername,jdbcType=VARCHAR},
       bannerweburl = #{record.bannerweburl,jdbcType=VARCHAR},
@@ -302,7 +302,7 @@
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.BannerHomePage" >
-    update jp_bannner_homepage
+    update jp_sys_bannner
     <set >
       <if test="bannername != null" >
         bannername = #{bannername,jdbcType=VARCHAR},
@@ -347,7 +347,7 @@
     where bannerid = #{bannerid,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.jp.entity.BannerHomePage" >
-    update jp_bannner_homepage
+    update jp_sys_bannner
     set bannername = #{bannername,jdbcType=VARCHAR},
       bannerweburl = #{bannerweburl,jdbcType=VARCHAR},
       bannerphoneurl = #{bannerphoneurl,jdbcType=VARCHAR},
@@ -365,7 +365,7 @@
   </update>
   <update id="batchDelete">
       <foreach collection="array" item="item" index="index" separator=";">
-	     update  jp_bannner_homepage 
+	     update  jp_sys_bannner 
 	     set deleteflag = 1
 	     where bannerid = 
 		#{item,jdbcType=VARCHAR}

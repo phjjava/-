@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.jp.entity.BannerHomePage;
 import com.jp.entity.BannerQuery;
 
-public interface BannerPageHomeDao {
+public interface SysBannerDao {
 
 	List<BannerHomePage> selectByExample(BannerQuery bq);
 
