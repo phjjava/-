@@ -184,7 +184,6 @@ public class CurrentUserContext implements Serializable {
 
 			userContext = (LoginUserInfo) session.getAttribute("userContext");
 			List<Branch> branchList = userContext.getBranchList();
-			System.out.println("我的list数据branchList="+branchList);
 			branchids = new ArrayList<String>();
 
 			for (Branch branch : branchList) {
