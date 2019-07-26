@@ -34,17 +34,17 @@ import com.jp.entity.BannerHomePage;
 import com.jp.entity.GoTypeResult;
 import com.jp.entity.SysUser;
 import com.jp.interceptor.LoginInterceptor;
-import com.jp.service.BannerPageHomeService;
+import com.jp.service.SysBannerService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 import com.jp.util.UploadUtil;
 
 @Controller
 @RequestMapping("bannerhomepage")
-public class BannerHomePageController {
+public class SysBannerController {
 	private final Logger log_ = LogManager.getLogger(BannerController.class);
 	@Autowired
-	private BannerPageHomeService bpservice;
+	private SysBannerService bpservice;
 	@RequestMapping(value = "/homepagelist", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse homepagelist(PageModel<BannerHomePage> pageModel, BannerHomePage banner, ModelMap model) {
@@ -63,11 +63,7 @@ public class BannerHomePageController {
 
 			//获取是否登录
 			SysUser loginStatus = CurrentSystemUserContext.getSystemUserContext();
-			System.out.println("systemUserContext="+loginStatus);
-			if(loginStatus==null) {
-				result = new Result(MsgConstants.LOGIN_STATUS);	
-				System.out.println(result);
-			}
+			result = new Result(MsgConstants.RESUL_SUCCESS);	
 			res = new JsonResponse(result);
 			res.setData(pageModel.getList());
 			res.setCount(pageModel.getPageInfo().getTotal());

@@ -8,7 +8,7 @@ import com.jp.common.PageModel;
 import com.jp.entity.BannerHomePage;
 import com.jp.entity.GoTypeResult;
 
-public interface BannerPageHomeService {
+public interface SysBannerService {
 
 	PageModel<BannerHomePage> pageQuery(PageModel<BannerHomePage> pageModel, BannerHomePage banner)throws Exception;;
 
