@@ -64,6 +64,7 @@ import com.jp.util.MD5Util;
 import com.jp.util.RSAUtils;
 //import com.jp.util.Result;
 import com.jp.util.StringTools;
+import com.jp.util.UUIDUtils;
 
 @Controller
 @RequestMapping("user")
@@ -1452,7 +1453,7 @@ public class UserController {
 	public JsonResponse login(HttpServletRequest req, User entity, Usercode usercode, String loginType,
 			String internetType, String version) {
 		// 先取请求session的id
-		String sessionid = req.getSession().getId();
+		String sessionid = UUIDUtils.getUUID();
 		entity.setSessionid(sessionid);
 		// 进行查询
 		if (usercode != null && usercode.getSmscode() != null && !"".equals(usercode.getSmscode())) {
