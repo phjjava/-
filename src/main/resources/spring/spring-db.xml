@@ -57,6 +57,15 @@
 	    <property name="filters" value="mergeStat" /> 
 	</bean>
 	
+	<!-- Spring Session共享 -->
+    <bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration"/>
+    <bean class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <property name="hostName" value="${redis.ip}"/>
+        <property name="password" value="${redis.password}"/>
+        <property name="port" value="${redis.port}"/>
+        
+    </bean>
+	
 	<!-- 数据源配置, 使用alibaba.druid数据库连接池 -->
 	
 <!-- 	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close"> 
@@ -149,4 +158,5 @@
             <tx:method name="*" propagation="REQUIRED" rollback-for="Exception" />
         </tx:attributes>
     </tx:advice>
+    
 </beans>
