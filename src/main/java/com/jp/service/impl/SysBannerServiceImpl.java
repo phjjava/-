@@ -21,7 +21,7 @@ import com.jp.dao.BranchphotoMapper;
 import com.jp.dao.DynamicMapper;
 import com.jp.dao.EventDao;
 import com.jp.dao.IntroduceDao;
-import com.jp.dao.MationMapper;
+import com.jp.dao.SysMationdao;
 import com.jp.dao.NoticeMapper;
 import com.jp.dao.UserDao;
 import com.jp.entity.BannerHomePage;
@@ -39,6 +39,7 @@ import com.jp.entity.MationExample;
 import com.jp.entity.Notice;
 import com.jp.entity.NoticeExample;
 import com.jp.entity.NoticeVO;
+import com.jp.entity.SysGoTypeResult;
 import com.jp.entity.SysMation;
 import com.jp.entity.SysUser;
 import com.jp.entity.Usercontent;
@@ -53,7 +54,7 @@ public class SysBannerServiceImpl implements SysBannerService{
 	private SysBannerDao pagehomeDao;
 	
 	@Autowired
-    private MationMapper badao;
+    private SysMationdao badao;
     
 	
     @Autowired
@@ -119,35 +120,21 @@ public class SysBannerServiceImpl implements SysBannerService{
 	}
 	
 	@Override
-	public List<GoTypeResult> selectByGoType(String goType) { 
+	public List<SysMation>  selectByGoType(String goType) { 
 		SysMation goTypeResult = null;
-		List<GoTypeResult> goTypeResultList = new ArrayList<GoTypeResult>();
-		//Integer type = 1;//CurrentUserContext.getUserContext().getUsermanagers().get(0).getEbtype();
-		//String familyid = CurrentUserContext.getCurrentFamilyId();
+		//List<SysGoTypeResult> goTypeResultList = new ArrayList<SysGoTypeResult>();
 		//动态
 		 if(goType.equals("1")){
 			 MationExample example = new MationExample();
-			List<SysMation> list = badao.selectByExample(example);
-			HashMap map=new HashMap();
-			System.out.println("跳转资讯list="+list);
-			if(list != null){
-				for (int i = 0; i < list.size(); i++) {
-					 goTypeResult = new SysMation();
-					 goTypeResult.setMationid(list.get(i).getMationid());
-					 goTypeResult.setMationname(list.get(i).getMationname());
-					 goTypeResult.setImgid(list.get(i).getImgid());
-					 goTypeResult.setImgurl(list.get(i).getImgurl());
-					 goTypeResult.setDeleteflag(list.get(i).getDeleteflag());
-					 goTypeResult.setCreateid(list.get(i).getCreateid());
-					 goTypeResult.setCreatetime(list.get(i).getCreatetime());
-					 goTypeResult.setUpdateid(list.get(i).getUpdateid());
-					 goTypeResult.setUpdateid(list.get(i).getUpdateid());
-					 goTypeResult.setUpdatetime(list.get(i).getUpdatetime());
-					
-				}
-			}
-		}
-		return goTypeResultList;
+		 }
+		return badao.selectByExample();
+	}
+
+	@Override
+	public void realDelete(String bannerid) {
+		// TODO Auto-generated method stub
+		System.out.println("我来删除="+bannerid);
+		pagehomeDao.deleteByPrimaryKey(bannerid);
 	}
 
 

@@ -25,15 +25,15 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentSystemUserContext;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.entity.BannerHomePage;
 import com.jp.entity.GoTypeResult;
+import com.jp.entity.SysGoTypeResult;
+import com.jp.entity.SysMation;
 import com.jp.entity.SysUser;
-import com.jp.interceptor.LoginInterceptor;
 import com.jp.service.SysBannerService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
@@ -126,15 +126,16 @@ public class SysBannerController {
 			if (StringTools.notEmpty(banner.getBannerid())) {
 				// 修改
 				banner.setUpdatetime(new Date());
-				banner.setUpdateid(CurrentUserContext.getCurrentUserId());
+				banner.setUpdateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
 				if(bannerurlId != null){
 					banner.setBannerurl(bannerurlId);
 				}
 				count = bpservice.update(banner);
 			} else {
+				//新增
 				banner.setDeleteflag(ConstantUtils.DELETE_FALSE);
-				banner.setCreateid(CurrentUserContext.getCurrentUserId());
-				banner.setUpdateid(CurrentUserContext.getCurrentUserId());
+				banner.setCreateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
+				banner.setUpdateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
 				banner.setBannerid(UUIDUtils.getUUID());
 				banner.setUpdatetime(new Date());
 				banner.setCreatetime(new Date());
@@ -267,7 +268,7 @@ public class SysBannerController {
     public JsonResponse bannerJson(String goType)  {
 		Result result = null;
 		JsonResponse res = null;
-    	List<GoTypeResult> gotypeList = null;
+    	List<SysMation> gotypeList = null;
     	try {
     		gotypeList = bpservice.selectByGoType(goType);
     		result = new Result(MsgConstants.RESUL_SUCCESS);
@@ -281,5 +282,29 @@ public class SysBannerController {
 		}
     	return res;
     }
+	
+	/**
+	 * @描述 物理删除
+	 * @作者 sj
+	 * @时间 2019年7月26日下午3:33:00
+	 * @参数 @param request
+	 * @参数 @return
+	 * @return String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/realDelete", method = RequestMethod.POST)
+	public JsonResponse realDelete(String bannerid) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		try {
+			bpservice.realDelete(bannerid);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		res = new JsonResponse(result);
+		return res;
+	}
 
 }
