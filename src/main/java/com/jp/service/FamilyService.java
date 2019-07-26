@@ -66,5 +66,7 @@ public interface FamilyService {
 
 	JsonResponse mergeForApi(User user, Userinfo userinfo, SysFamily family);
 
+	JsonResponse createFamily(User user, Userinfo userinfo, SysFamily family);
+
 	JsonResponse searchFamily(SysFamily family);
 }
