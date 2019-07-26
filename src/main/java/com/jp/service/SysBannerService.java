@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Param;
 import com.jp.common.PageModel;
 import com.jp.entity.BannerHomePage;
 import com.jp.entity.GoTypeResult;
+import com.jp.entity.SysGoTypeResult;
+import com.jp.entity.SysMation;
 
 public interface SysBannerService {
 
@@ -54,7 +56,13 @@ public interface SysBannerService {
 	 * @参数 @return
 	 * @return List<GoTypeResult>
 	 */
-	List<GoTypeResult> selectByGoType(String goType);
+	List<SysMation> selectByGoType(String goType);
+
+	/**
+	 * 物理删除banner图
+	 * @param bannerid
+	 */
+	void realDelete(String bannerid);
 	
 	
 	

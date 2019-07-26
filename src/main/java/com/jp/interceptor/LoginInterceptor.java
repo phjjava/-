@@ -38,7 +38,6 @@ public class LoginInterceptor implements HandlerInterceptor {
 		
 		
         String jsessionid = request.getSession().getId();
-        System.out.println("jsessionid ========== " + jsessionid);
         Cookie cookie = new Cookie("JSESSIONID", jsessionid); 
         cookie.setPath(request.getContextPath());
         response.addCookie(cookie);  

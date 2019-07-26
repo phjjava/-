@@ -17,4 +17,6 @@ public interface SysBannerDao {
 
 	int batchDelete(@Param("array") String[] bannerids);
 
+	void deleteByPrimaryKey(String bannerid);
+
 }

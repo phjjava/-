@@ -83,6 +83,7 @@
             <!-- 不拦截登录请求 -->
             <!-- web登录 -->
        	 	<mvc:exclude-mapping path="/code/**"/>
+       	 	<mvc:exclude-mapping path="/bannerhomepage/**"/>
        	 	<mvc:exclude-mapping path="/login/choose"/>
        	 	<mvc:exclude-mapping path="/login/tochoose"/>
        	 	<mvc:exclude-mapping path="/login/login"/>
