@@ -594,4 +594,145 @@ public class FamilyServiceImpl implements FamilyService {
 		}
 	}
 
+	@Override
+	public JsonResponse createFamily(User user, Userinfo userInfo, SysFamily family) {
+		Result result = null;
+		JsonResponse res = null;
+		if (user.getUsername() == null || "".equals(user.getUsername())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数username不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (user.getPhone() == null || "".equals(user.getPhone())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数phone不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (user.getFamilyname() == null || "".equals(user.getFamilyname())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数familyname不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (family.getSurname() == null || "".equals(family.getSurname())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数surname不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
+		try {
+			UserQuery userQuery = new UserQuery();
+			userQuery.or().andPhoneEqualTo(user.getPhone()).andStatusEqualTo(0).andDeleteflagEqualTo(0);
+			List<User> users = userDao.selectByExample(userQuery);
+			if (users.size() > 0) {
+
+				for (User user1 : users) {
+					if (user1.getFamilyname().equals(family.getFamilyname())) {
+						result = new Result(MsgConstants.RESUL_FAIL);
+						result.setMsg("当前用户管理的家族名称已存在，请重试");
+						res = new JsonResponse(result);
+						return res;
+					}
+				}
+
+			}
+			String userId = UUIDUtils.getUUID();
+			String familyId = UUIDUtils.getUUID();
+
+			// user
+			user.setUserid(userId);
+			user.setFamilyid(familyId);
+			user.setSex(1);
+			user.setStatus(0);
+			user.setIsdirect(1);
+			user.setDeleteflag(0);
+			user.setLivestatus(0);
+			user.setCreatetime(new Date());
+			user.setUpdatetime(new Date());
+			user.setCreateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
+			user.setUpdateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
+			user.setPinyinfirst(PinyinUtil.getPinYinFirstChar(user.getUsername()));
+			user.setPinyinfull(PinyinUtil.getPinyinFull(user.getUsername()));
+			if (StringTools.trimNotEmpty(user.getPhone())) {
+				user.setPassword(MD5Util.string2MD5(user.getPhone().substring(user.getPhone().length() - 6)));
+			}
+			// userinfo
+			userInfo.setUserid(userId);
+			// 保存 user userinfo
+
+			// 保存家族
+			family.setCreatetime(new Date());
+			family.setFamilyid(familyId);
+			family.setStatus(0);
+			family.setCreateid("sys_admin");
+			family.setFamilycode(sysFamilyDao.nextVal() + "");
+
+			Branch branch = new Branch();
+			String branchid = UUIDUtils.getUUID();
+			branch.setBranchid(branchid);
+			branch.setBranchname("默认分支");
+			branch.setStatus(0);
+			branch.setFamilyid(familyId);
+			branch.setBeginuserid(user.getUserid());
+			branch.setBeginname(user.getUsername());
+			user.setBranchid(branch.getBranchid());
+			user.setBranchname(branch.getBranchname());
+
+			// 保存总编委会主任信息 post userManager
+			Post post = new Post();
+			post.setId(UUIDUtils.getUUID());
+			post.setFamilyid(familyId);
+			post.setCreatetime(new Date());
+			post.setIsmanager(1);
+			post.setName("总编委会主任");
+			post.setSort(0);
+			post.setType(1);
+			postMapper.insertSelective(post);
+			EditorialBoard eb = new EditorialBoard();
+			String ebid = UUIDUtils.getUUID();
+			eb.setId(ebid);
+			eb.setFamilyid(familyId);
+			eb.setName("总编委会");
+			eb.setCodetype("0");
+			eb.setCode("0");
+			eb.setType(1);
+
+			UserManager manager = new UserManager();
+			manager.setId(UUIDUtils.getUUID());
+			manager.setUserid(userId);
+			manager.setUsername(user.getUsername());
+			manager.setEbid(ebid);
+			manager.setEbname("总编委会");
+			manager.setPostid(post.getId());
+			manager.setPostname(post.getName());
+			manager.setEbtype(1);
+			manager.setIsmanager(1);
+			manager.setFamilyid(familyId);
+
+			userDao.insertSelective(user);
+			userInfoDao.insertSelective(userInfo);
+			editorialBoardMapper.insertSelective(eb);
+			branchMapper.insertSelective(branch);
+			userManagerMapper.insertSelective(manager);
+			sysFamilyDao.insertSelective(family);
+			sysFamilyDao.insertFunction(familyId, family.getVersion());
+
+			//创建章节模版
+			createIntroudce(familyId);
+
+		} catch (Exception e) {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			e.printStackTrace();
+			log_.error("[merge方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		return res;
+	}
 }

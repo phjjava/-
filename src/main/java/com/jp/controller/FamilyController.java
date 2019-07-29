@@ -96,6 +96,11 @@ public class FamilyController {
 		return familyService.changeStatus(family, httpSession);
 	}
 
+	/**
+	 * 验证手机号
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/validatePhone", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse validateName(HttpServletRequest request) {
