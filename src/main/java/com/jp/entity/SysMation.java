@@ -5,32 +5,32 @@ import java.util.Date;
 
 public class SysMation implements Serializable {
 	/**
-	 * Banner唯一编号
+	 * mation唯一编号
 	 */
 	private String mationid;
 
 	/**
-	 * Banner名称
+	 * mation名称
 	 */
 	private String mationname;
 
 	/**
-	 * Banner网页图片地址
+	 * mation网页图片编号
 	 */
 	private String imgid;
 
 	/**
-	 * Banner手机图片地址
+	 * mation手机图片地址
 	 */
 	private String imgurl;
 
 	/**
-	 * Banner跳转地址
+	 * mation标题
 	 */
 	private String mationtitle;
 
 	/**
-	 * Banner描述
+	 * mation内容
 	 */
 	private String mationcontent;
 	

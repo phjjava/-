@@ -14,12 +14,11 @@ public interface SysMationdao {
 	int countByExample(MationExample example);
 
 	int deleteByExample(MationExample example);
-
-	int deleteByPrimaryKey(Integer id);
+	
+	//资讯批删
+	int mationDeleteAll(@Param("array")String[] mationids);
 
 	int insert(MationExample example);
-
-	int insertSelective(MationExample example);
 
 	SysMation selectByPrimaryKey(String id);
 
@@ -27,9 +26,13 @@ public interface SysMationdao {
 
 	int updateByExample(@Param("record") Nation record, @Param("example") MationExample example);
 
-	int updateByPrimaryKeySelective(MationExample mationid);
-
 	int updateByPrimaryKey(MationExample mationid);
 	
 	List<SysMation> selectByExample();
+	
+	int insertSelective(SysMation mation);
+	
+	int updateByPrimaryKeySelective(SysMation mation);
+
+
 }
