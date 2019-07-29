@@ -17,11 +17,11 @@ public interface SysMationdao {
 
 	int deleteByPrimaryKey(Integer id);
 
-	int insert(Nation record);
+	int insert(MationExample example);
 
-	int insertSelective(Nation record);
+	int insertSelective(MationExample example);
 
-	Nation selectByPrimaryKey(Integer id);
+	SysMation selectByPrimaryKey(String id);
 
 	int updateByExampleSelective(@Param("record") Nation record, @Param("example") MationExample example);
 

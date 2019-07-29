@@ -64,6 +64,22 @@ public interface SysBannerService {
 	 */
 	void realDelete(String bannerid);
 	
+	/**
+	 * banner的批量删除
+	 * @param banner
+	 * @return
+	 */
+	int batchDeleteAll(@Param("array") String bannerids[]) throws Exception;
+	
+	/**
+	 * 资讯详情
+	 * @param mationid
+	 */
+
+	SysMation SelectMationOne(String mationid);
+	
+	
+	
 	
 	
 
