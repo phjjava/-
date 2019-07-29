@@ -371,4 +371,11 @@
 		#{item,jdbcType=VARCHAR}
 		</foreach>
   </update>
+  
+  <delete id="batchDeleteAll">
+  		 <foreach collection="array" item="item" index="index" separator=";">
+		     delete from  jp_sys_bannner where bannerid = 
+			#{item,jdbcType=VARCHAR}
+		</foreach>
+  </delete>
 </mapper>

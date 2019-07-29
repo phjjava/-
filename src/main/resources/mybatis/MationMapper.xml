@@ -26,8 +26,6 @@
 	</resultMap>
 	<resultMap id="ResultMapWithBLOBs"
 		type="com.jp.entity.SysMation" extends="BaseResultMap">
-		<result column="noticecontent" property="noticecontent"
-			jdbcType="LONGVARCHAR" />
 	</resultMap>
 	<sql id="Example_Where_Clause">
 		<where>
@@ -184,26 +182,26 @@
 		parameterType="com.jp.entity.SysMation">
 		insert into jp_sys_mation
 		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="noticeid != null">
+			<if test="mationid != null">
 				mationid,
 			</if>
-			<if test="branchid != null">
+			<if test="mationname != null">
 				mationname,
 			</if>
 			
-			<if test="noticetype != null">
+			<if test="imgid != null">
 				imgid,
 			</if>
-			<if test="noticetitle != null">
+			<if test="imgurl != null">
 				imgurl,
 			</if>
-			<if test="deleteflag != null">
+			<if test="mationtitle != null">
 				mationtitle,
 			</if>
-			<if test="familyid != null">
+			<if test="mationcontent != null">
 				mationcontent,
 			</if>
-			<if test="familyid != null">
+			<if test="deleteflag != null">
 				deleteflag,
 			</if>
 			<if test="createid != null">
