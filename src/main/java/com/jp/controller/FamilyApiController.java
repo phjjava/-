@@ -65,6 +65,16 @@ public class FamilyApiController {
 	}
 
 	/**
+	 * 
+	 * @描述 创建家族
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/createFamily", method = RequestMethod.POST)
+	public JsonResponse createFamily(User user, Userinfo userInfo, SysFamily family) {
+		return familyService.createFamily(user, userInfo, family);
+	}
+
+	/**
 	 * 搜索家族
 	 * @param family
 	 * @return

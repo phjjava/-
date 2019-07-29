@@ -34,6 +34,7 @@ import com.jp.service.UserManagerService;
 import com.jp.service.UserService;
 import com.jp.util.MD5Util;
 import com.jp.util.StringTools;
+import com.jp.util.UUIDUtils;
 
 @Controller
 @RequestMapping("login")
@@ -146,7 +147,7 @@ public class LoginController {
 							}
 							if (user.getSessionid() == null) {
 								// 重置sessionid到数据库
-								user.setSessionid(session.getId());
+								user.setSessionid(UUIDUtils.getUUID());
 							}
 							// 记录登陆时间
 							user.setLogintime(new Date());
@@ -299,7 +300,7 @@ public class LoginController {
 			HttpSession session = request.getSession();
 			if (user.getSessionid() == null) {
 				// 重置sessionid到数据库
-				user.setSessionid(session.getId());
+				user.setSessionid(UUIDUtils.getUUID());
 			}
 			// 记录登陆时间
 			user.setLogintime(new Date());
