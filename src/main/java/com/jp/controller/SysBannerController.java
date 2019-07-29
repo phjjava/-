@@ -225,7 +225,6 @@ public class SysBannerController {
 			res = new JsonResponse(result);
 			res.setData(jsonInfo.toString());
 			// result = jsonInfo.toString();
-			System.out.println(json.get("result"));
 			if ("0".equals(json.get("result").toString())) {
 				 // 删除缓存文件
 				boolean flag = file.delete();
@@ -332,7 +331,6 @@ public class SysBannerController {
 			// a,b,c
 			String bannerid = bannerids.substring(0, bannerids.length());
 			String banneridArray[] = bannerid.split(",");
-			System.out.println("banneridArray[]="+banneridArray);
 			bpservice.batchDeleteAll(banneridArray);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 		} catch (Exception e) {
@@ -358,15 +356,13 @@ public class SysBannerController {
 		JsonResponse res = null;
 		try {
 			mationOneList = bpservice.SelectMationOne(mationid);
-			System.out.println("mationOneList="+mationOneList);
-			res.setData(mationOneList);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
 		res = new JsonResponse(result);
-		
+		res.setData(mationOneList);
 		return res;
 	}
 
