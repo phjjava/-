@@ -6,6 +6,7 @@ import javax.servlet.http.HttpSession;
 
 import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
+import com.jp.entity.Branch;
 import com.jp.entity.Indexcount;
 import com.jp.entity.SysFamily;
 import com.jp.entity.User;
@@ -66,7 +67,7 @@ public interface FamilyService {
 
 	JsonResponse mergeForApi(User user, Userinfo userinfo, SysFamily family);
 
-	JsonResponse createFamily(User user, Userinfo userinfo, SysFamily family);
+	JsonResponse createFamily(User user, Branch branch, Userinfo userinfo, SysFamily family);
 
 	JsonResponse searchFamily(SysFamily family);
 }

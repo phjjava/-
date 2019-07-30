@@ -2,7 +2,9 @@ package com.jp.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -595,9 +597,10 @@ public class FamilyServiceImpl implements FamilyService {
 	}
 
 	@Override
-	public JsonResponse createFamily(User user, Userinfo userInfo, SysFamily family) {
+	public JsonResponse createFamily(User user, Branch branch, Userinfo userInfo, SysFamily family) {
 		Result result = null;
 		JsonResponse res = null;
+
 		if (user.getUsername() == null || "".equals(user.getUsername())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数username不能为空！");
@@ -622,12 +625,42 @@ public class FamilyServiceImpl implements FamilyService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
+		//分支地区信息不为空
+		if (branch.getArea() == null || "".equals(branch.getArea()) || branch.getAreacode() == null
+				|| "".equals(branch.getAreacode())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("请选择省份信息！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (branch.getCityname() == null || "".equals(branch.getCityname()) || branch.getCitycode() == null
+				|| "".equals(branch.getCitycode())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("请选择城市信息！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (branch.getXname() == null || "".equals(branch.getXname()) || branch.getXcode() == null
+				|| "".equals(branch.getXcode())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("请选择县城信息！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//	String userid = WebUtil.getRequest().getHeader("userid");
+		//	String familyid = WebUtil.getRequest().getHeader("familyid");
+		List<User> userList = userDao.selectByPhoneInStatus(user.getPhone());
+		if (userList != null && userList.size() >= 2) {
+			result = new Result(MsgConstants.FAMILYID_RESTRICT);
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
+
 			UserQuery userQuery = new UserQuery();
 			userQuery.or().andPhoneEqualTo(user.getPhone()).andStatusEqualTo(0).andDeleteflagEqualTo(0);
 			List<User> users = userDao.selectByExample(userQuery);
-			if (users.size() > 0) {
+			if (users != null && users.size() > 0) {
 
 				for (User user1 : users) {
 					if (user1.getFamilyname().equals(family.getFamilyname())) {
@@ -645,6 +678,7 @@ public class FamilyServiceImpl implements FamilyService {
 			// user
 			user.setUserid(userId);
 			user.setFamilyid(familyId);
+			user.setSessionid(UUIDUtils.getUUID());
 			user.setSex(1);
 			user.setStatus(0);
 			user.setIsdirect(1);
@@ -652,8 +686,8 @@ public class FamilyServiceImpl implements FamilyService {
 			user.setLivestatus(0);
 			user.setCreatetime(new Date());
 			user.setUpdatetime(new Date());
-			user.setCreateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
-			user.setUpdateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
+			user.setCreateid(userId);
+			user.setUpdateid(userId);
 			user.setPinyinfirst(PinyinUtil.getPinYinFirstChar(user.getUsername()));
 			user.setPinyinfull(PinyinUtil.getPinyinFull(user.getUsername()));
 			if (StringTools.trimNotEmpty(user.getPhone())) {
@@ -664,21 +698,23 @@ public class FamilyServiceImpl implements FamilyService {
 			// 保存 user userinfo
 
 			// 保存家族
+			//普通版
+			family.setVersion("1c810b79c3a64f4c8ec166efd727eaa9");
+			family.setVersionname("普通版");
 			family.setCreatetime(new Date());
 			family.setFamilyid(familyId);
 			family.setStatus(0);
-			family.setCreateid("sys_admin");
+			family.setCreateid(userId);
 			family.setFamilycode(sysFamilyDao.nextVal() + "");
-
-			Branch branch = new Branch();
+			//创建默认分支
 			String branchid = UUIDUtils.getUUID();
 			branch.setBranchid(branchid);
 			branch.setBranchname("默认分支");
 			branch.setStatus(0);
 			branch.setFamilyid(familyId);
-			branch.setBeginuserid(user.getUserid());
+			branch.setBeginuserid(userId);
 			branch.setBeginname(user.getUsername());
-			user.setBranchid(branch.getBranchid());
+			user.setBranchid(branchid);
 			user.setBranchname(branch.getBranchname());
 
 			// 保存总编委会主任信息 post userManager
@@ -690,7 +726,7 @@ public class FamilyServiceImpl implements FamilyService {
 			post.setName("总编委会主任");
 			post.setSort(0);
 			post.setType(1);
-			postMapper.insertSelective(post);
+
 			EditorialBoard eb = new EditorialBoard();
 			String ebid = UUIDUtils.getUUID();
 			eb.setId(ebid);
@@ -714,6 +750,7 @@ public class FamilyServiceImpl implements FamilyService {
 
 			userDao.insertSelective(user);
 			userInfoDao.insertSelective(userInfo);
+			postMapper.insertSelective(post);
 			editorialBoardMapper.insertSelective(eb);
 			branchMapper.insertSelective(branch);
 			userManagerMapper.insertSelective(manager);
@@ -722,7 +759,15 @@ public class FamilyServiceImpl implements FamilyService {
 
 			//创建章节模版
 			createIntroudce(familyId);
-
+			//构造返回数据
+			Map<String, String> map = new HashMap<>();
+			map.put("familyid", familyId);
+			map.put("familycode", family.getFamilycode());
+			map.put("password", user.getPassword());
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			result.setMsg("创建成功！");
+			res = new JsonResponse(result);
+			res.setData(map);
 		} catch (Exception e) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			e.printStackTrace();
@@ -731,8 +776,6 @@ public class FamilyServiceImpl implements FamilyService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
 		return res;
 	}
 }

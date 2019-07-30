@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.Result;
+import com.jp.entity.Branch;
 import com.jp.entity.SysFamily;
 import com.jp.entity.User;
 import com.jp.entity.Userinfo;
@@ -70,8 +71,8 @@ public class FamilyApiController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/createFamily", method = RequestMethod.POST)
-	public JsonResponse createFamily(User user, Userinfo userInfo, SysFamily family) {
-		return familyService.createFamily(user, userInfo, family);
+	public JsonResponse createFamily(User user, Branch branch, Userinfo userInfo, SysFamily family) {
+		return familyService.createFamily(user, branch, userInfo, family);
 	}
 
 	/**

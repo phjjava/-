@@ -963,12 +963,10 @@
 		updatetime, createid, updateid,
 		remarkelse, branchid, pid, brotherpos,
 		password, logintime, sessionid, familyid,
-		status,
-		deleteflag, imgurl,
+		status,	deleteflag, imgurl,
 		username,idcard, isborn, dietime, fixplace, isdirect,
-		genlevel,
-		familyname, pinyinFirst, pinyinFull, pname, mateid, matename,
-		branchname
+		genlevel,familyname, pinyinFirst, pinyinFull, pname, 
+		mateid, matename,branchname
 		from jp_user
 		where 1=1 and 'status'=0 and deleteflag=0
 		<if test="familyid != null">
