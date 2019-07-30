@@ -81,6 +81,7 @@ import com.jp.entity.NoticetopQuery;
 import com.jp.entity.OnLineUser;
 import com.jp.entity.SearchComplex;
 import com.jp.entity.SysFamily;
+import com.jp.entity.SysTempMap;
 import com.jp.entity.SysVersionPrivilege;
 import com.jp.entity.User;
 import com.jp.entity.UserAppLimit;
@@ -2731,8 +2732,14 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		String token = UUIDUtils.getUUID();
+		Map<String, String> instanceMap = SysTempMap.getInstanceMap();
+		instanceMap.put(entity.getPhone(), token);
+		Map<String, String> tokenMap = new HashMap<>();
+		tokenMap.put("token", token);
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
+		res.setData(tokenMap);
 		return res;
 	}
 
@@ -3559,8 +3566,13 @@ public class UserServiceImpl implements UserService {
 				userLimitVO.setLivestatus(Integer.valueOf(user.getLivestatus()));
 			if (user.getGenlevel() != null)
 				userLimitVO.setGenlevel(user.getGenlevel().toString());
-			if (userInfo != null)
-				userLimitVO.setHomeplace(userInfo.getHomeplace().replace("@", ""));
+			if (userInfo != null) {
+				String home = userInfo.getHomeplace();
+				if (StringTools.trimNotEmpty(home)) {
+
+					userLimitVO.setHomeplace(home.replace("@", "").replace("null", ""));
+				}
+			}
 			userLimitVO.setImgurl(user.getImgurl());
 			// 设置直系用户暨配偶的名字
 			userLimitVO.setMatename(usermate.getUsername());
@@ -4983,11 +4995,9 @@ public class UserServiceImpl implements UserService {
 			User user = dbuserList.get(0);
 			HttpServletRequest request = WebUtil.getRequest();
 			OnLineUser onLineUser = setLineMsg(request, user, loginType, internetType, version);
-			if (!"18647740001".equals(user.getPhone()))
-				onlineUsers.remove(new OnLineUser(user.getUserid()));
+			onlineUsers.remove(new OnLineUser(user.getUserid()));
 			onlineUsers.add(onLineUser);
 		}
-
 		return singleCorpLoginOrMultiCorpGetList(dbuserList, entity.getSessionid());
 	}
 }
