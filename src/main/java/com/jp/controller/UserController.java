@@ -1889,4 +1889,18 @@ public class UserController {
 		return userService.joinedFamily(user);
 	}
 
+	/**
+	 * 切换家族登录（已登录得情况下）
+	 * @param user
+	 * @param loginType
+	 * @param internetType
+	 * @param version
+	 * @return
+	 */
+	@RequestMapping(value = "/changeLoginUser", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse changeLoginUser(User user, String loginType, String internetType, String version) {
+		return userService.changeLoginUser(user, loginType, internetType, version);
+	}
+
 }
