@@ -2,6 +2,8 @@ package com.jp.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SysMation implements Serializable {
 	/**
@@ -58,15 +60,26 @@ public class SysMation implements Serializable {
 	 * 更新时间
 	 */
 	private Date updatetime;
+	/**
+	 * 关联类型id
+	 */
+	private String relevanceid;
+	
+	/**
+	 * 关联类型
+	 */
+	private Set<MationType> mationtype = new HashSet<MationType>();
 
 	
 
 	private static final long serialVersionUID = 1L;
 
-	
+
+
 	public String getMationid() {
 		return mationid;
 	}
+
 
 
 	public void setMationid(String mationid) {
@@ -74,9 +87,11 @@ public class SysMation implements Serializable {
 	}
 
 
+
 	public String getMationname() {
 		return mationname;
 	}
+
 
 
 	public void setMationname(String mationname) {
@@ -84,9 +99,11 @@ public class SysMation implements Serializable {
 	}
 
 
+
 	public String getImgid() {
 		return imgid;
 	}
+
 
 
 	public void setImgid(String imgid) {
@@ -94,9 +111,11 @@ public class SysMation implements Serializable {
 	}
 
 
+
 	public String getImgurl() {
 		return imgurl;
 	}
+
 
 
 	public void setImgurl(String imgurl) {
@@ -104,9 +123,11 @@ public class SysMation implements Serializable {
 	}
 
 
+
 	public String getMationtitle() {
 		return mationtitle;
 	}
+
 
 
 	public void setMationtitle(String mationtitle) {
@@ -114,9 +135,11 @@ public class SysMation implements Serializable {
 	}
 
 
+
 	public String getMationcontent() {
 		return mationcontent;
 	}
+
 
 
 	public void setMationcontent(String mationcontent) {
@@ -124,9 +147,11 @@ public class SysMation implements Serializable {
 	}
 
 
+
 	public Integer getDeleteflag() {
 		return deleteflag;
 	}
+
 
 
 	public void setDeleteflag(Integer deleteflag) {
@@ -134,9 +159,11 @@ public class SysMation implements Serializable {
 	}
 
 
+
 	public String getCreateid() {
 		return createid;
 	}
+
 
 
 	public void setCreateid(String createid) {
@@ -144,9 +171,11 @@ public class SysMation implements Serializable {
 	}
 
 
+
 	public Date getCreatetime() {
 		return createtime;
 	}
+
 
 
 	public void setCreatetime(Date createtime) {
@@ -154,9 +183,11 @@ public class SysMation implements Serializable {
 	}
 
 
+
 	public String getUpdateid() {
 		return updateid;
 	}
+
 
 
 	public void setUpdateid(String updateid) {
@@ -164,9 +195,11 @@ public class SysMation implements Serializable {
 	}
 
 
+
 	public Date getUpdatetime() {
 		return updatetime;
 	}
+
 
 
 	public void setUpdatetime(Date updatetime) {
@@ -174,9 +207,35 @@ public class SysMation implements Serializable {
 	}
 
 
+
+	public String getRelevanceid() {
+		return relevanceid;
+	}
+
+
+
+	public void setRelevanceid(String relevanceid) {
+		this.relevanceid = relevanceid;
+	}
+
+
+
+	public Set<MationType> getMationtype() {
+		return mationtype;
+	}
+
+
+
+	public void setMationtype(Set<MationType> mationtype) {
+		this.mationtype = mationtype;
+	}
+
+
+
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+
 
 
 	public SysMation() {
@@ -185,9 +244,10 @@ public class SysMation implements Serializable {
 	}
 
 
+
 	public SysMation(String mationid, String mationname, String imgid, String imgurl, String mationtitle,
 			String mationcontent, Integer deleteflag, String createid, Date createtime, String updateid,
-			Date updatetime) {
+			Date updatetime, String relevanceid, Set<MationType> mationtype) {
 		super();
 		this.mationid = mationid;
 		this.mationname = mationname;
@@ -200,28 +260,21 @@ public class SysMation implements Serializable {
 		this.createtime = createtime;
 		this.updateid = updateid;
 		this.updatetime = updatetime;
+		this.relevanceid = relevanceid;
+		this.mationtype = mationtype;
 	}
+
 
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(getClass().getSimpleName());
-		sb.append(" [");
-		sb.append("Hash = ").append(hashCode());
-		sb.append(", mationid=").append(mationid);
-		sb.append(", mationname=").append(mationname);
-		sb.append(", imgid=").append(imgid);
-		sb.append(", imgurl=").append(imgurl);
-		sb.append(", mationtitle=").append(mationtitle);
-		sb.append(", mationcontent=").append(mationcontent);
-		sb.append(", deleteflag=").append(deleteflag);
-		sb.append(", createid=").append(createid);
-		sb.append(", createtime=").append(createtime);
-		sb.append(", updateid=").append(updateid);
-		sb.append(", updatetime=").append(updatetime);
-		sb.append(", serialVersionUID=").append(serialVersionUID);
-		sb.append("]");
-		return sb.toString();
+		return "SysMation [mationid=" + mationid + ", mationname=" + mationname + ", imgid=" + imgid + ", imgurl="
+				+ imgurl + ", mationtitle=" + mationtitle + ", mationcontent=" + mationcontent + ", deleteflag="
+				+ deleteflag + ", createid=" + createid + ", createtime=" + createtime + ", updateid=" + updateid
+				+ ", updatetime=" + updatetime + ", relevanceid=" + relevanceid + ", mationtype=" + mationtype + "]";
 	}
+
+
+
+	
 }
