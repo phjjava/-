@@ -24,11 +24,11 @@
 		<result column="updatetime" property="updatetime"
 			jdbcType="TIMESTAMP" />
 	</resultMap>
-	<resultMap id="ResultMapWithBLOBs"
-		type="com.jp.entity.SysMation" extends="BaseResultMap">
+	 <!-- <resultMap id="ResultMapWithBLOBs"
+		type="com.jp.entity.Notice" extends="BaseResultMap">
 		<result column="noticecontent" property="noticecontent"
 			jdbcType="LONGVARCHAR" />
-	</resultMap>
+	</resultMap> -->
 	<sql id="Example_Where_Clause">
 		<where>
 			<foreach collection="oredCriteria" item="criteria"
@@ -100,10 +100,10 @@
 			mationcontent,deleteflag, createid, createtime,
 			updateid, updatetime
 	</sql>
-	<sql id="Blob_Column_List">
+	<!-- <sql id="Blob_Column_List">
 		noticecontent
-	</sql>
-	<select id="selectByExampleWithBLOBs"
+	</sql> -->
+	<!-- <select id="selectByExampleWithBLOBs"
 		resultMap="ResultMapWithBLOBs"
 		parameterType="com.jp.entity.SysMationExample">
 		select
@@ -120,7 +120,7 @@
 		<if test="orderByClause != null">
 			order by ${orderByClause}
 		</if>
-	</select>
+	</select> -->
 	<select id="selectByExample" resultMap="BaseResultMap"
 		parameterType="com.jp.entity.SysMationExample">
 		select
@@ -139,12 +139,12 @@
 			limit #{startRow} , #{pageSize}
 		</if> -->
 	</select>
-	<select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs"
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
 		select
 		mationid,mationname,imgid,imgurl,mationtitle,mationcontent,deleteflag,createid,createtime,updateid,updatetime
 		,
-		<include refid="Blob_Column_List" />
+		<include refid="Base_Column_List" />
 		from jp_sys_mation
 		where mationid = #{mationid,jdbcType=VARCHAR}
 	</select>
@@ -184,26 +184,26 @@
 		parameterType="com.jp.entity.SysMation">
 		insert into jp_sys_mation
 		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="noticeid != null">
+			<if test="mationid != null">
 				mationid,
 			</if>
-			<if test="branchid != null">
+			<if test="mationname != null">
 				mationname,
 			</if>
 			
-			<if test="noticetype != null">
+			<if test="imgid != null">
 				imgid,
 			</if>
-			<if test="noticetitle != null">
+			<if test="imgurl != null">
 				imgurl,
 			</if>
-			<if test="deleteflag != null">
+			<if test="mationtitle != null">
 				mationtitle,
 			</if>
-			<if test="familyid != null">
+			<if test="mationcontent != null">
 				mationcontent,
 			</if>
-			<if test="familyid != null">
+			<if test="deleteflag != null">
 				deleteflag,
 			</if>
 			<if test="createid != null">
@@ -398,5 +398,13 @@
 		
 		where mationid = #{mationid,jdbcType=VARCHAR}
 	</update>
+	
+	<delete id="mationDeleteAll">
+  		 <foreach collection="array" item="item" index="index" separator=";">
+	     delete from  jp_sys_mation
+	     where mationid = 
+		#{item,jdbcType=VARCHAR}
+		</foreach>
+  </delete>
 
 </mapper>

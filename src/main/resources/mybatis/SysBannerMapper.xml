@@ -17,6 +17,7 @@
     <result column="deleteflag" property="deleteflag" jdbcType="INTEGER" />
     <result column="goname" property="goname" jdbcType="VARCHAR" />
   </resultMap>
+ 
   <sql id="Example_Where_Clause" >
     <where >
       <foreach collection="oredCriteria" item="criteria" separator="or" >
@@ -371,4 +372,12 @@
 		#{item,jdbcType=VARCHAR}
 		</foreach>
   </update>
+  
+  <delete id="batchDeleteAll">
+  		 <foreach collection="array" item="item" index="index" separator=";">
+	     delete from  jp_sys_bannner 
+	     where bannerid = 
+		#{item,jdbcType=VARCHAR}
+		</foreach>
+  </delete>
 </mapper>

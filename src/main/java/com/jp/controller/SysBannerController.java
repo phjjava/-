@@ -225,7 +225,6 @@ public class SysBannerController {
 			res = new JsonResponse(result);
 			res.setData(jsonInfo.toString());
 			// result = jsonInfo.toString();
-			System.out.println(json.get("result"));
 			if ("0".equals(json.get("result").toString())) {
 				 // 删除缓存文件
 				boolean flag = file.delete();
@@ -271,9 +270,16 @@ public class SysBannerController {
     	List<SysMation> gotypeList = null;
     	try {
     		gotypeList = bpservice.selectByGoType(goType);
-    		result = new Result(MsgConstants.RESUL_SUCCESS);
-    		res = new JsonResponse(result);
-    		res.setData(gotypeList);
+    		if(gotypeList==null) {
+    			result = new Result(MsgConstants.JUMP_MESSAGE);
+        		res = new JsonResponse(result);
+        		
+    		}else {
+    			result = new Result(MsgConstants.RESUL_SUCCESS);
+        		res = new JsonResponse(result);
+        		res.setData(gotypeList);
+    		}
+    		
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
@@ -285,7 +291,7 @@ public class SysBannerController {
 	
 	/**
 	 * @描述 物理删除
-	 * @作者 sj
+	 * @作者 lyc
 	 * @时间 2019年7月26日下午3:33:00
 	 * @参数 @param request
 	 * @参数 @return
@@ -304,6 +310,59 @@ public class SysBannerController {
 			log_.error("[JPSYSTEM]", e);
 		}
 		res = new JsonResponse(result);
+		return res;
+	}
+	/**
+	 * 
+	 * @描述 批量删除
+	 * @作者 hongjun
+	 * @时间 2017年5月10日下午5:32:11
+	 * @参数 @param banner
+	 * @参数 @param model
+	 * @参数 @return
+	 * @return String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/realDeleteAll", method = RequestMethod.POST)
+	public JsonResponse batchDeleteAll(String bannerids) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		try {
+			// a,b,c
+			String bannerid = bannerids.substring(0, bannerids.length());
+			String banneridArray[] = bannerid.split(",");
+			bpservice.batchDeleteAll(banneridArray);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		res = new JsonResponse(result);
+		return res;
+	}
+	/**
+	 * @描述 资讯详情页
+	 * @作者 lyc
+	 * @时间 2019年7月26日下午3:33:00
+	 * @参数 @param request
+	 * @参数 @return
+	 * @return String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/SelectMationOne", method = RequestMethod.POST)
+	public JsonResponse SelectMationOne(String mationid) {
+		SysMation mationOneList = null;
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		try {
+			mationOneList = bpservice.SelectMationOne(mationid);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		res = new JsonResponse(result);
+		res.setData(mationOneList);
 		return res;
 	}
 

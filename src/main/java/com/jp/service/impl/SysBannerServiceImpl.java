@@ -1,52 +1,23 @@
 package com.jp.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jp.common.ConstantUtils;
-import com.jp.common.CurrentSystemUserContext;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.PageModel;
 import com.jp.dao.SysBannerDao;
-import com.jp.dao.BranchDao;
-import com.jp.dao.BranchalbumMapper;
 import com.jp.dao.BranchphotoMapper;
-import com.jp.dao.DynamicMapper;
-import com.jp.dao.EventDao;
-import com.jp.dao.IntroduceDao;
 import com.jp.dao.SysMationdao;
-import com.jp.dao.NoticeMapper;
-import com.jp.dao.UserDao;
 import com.jp.entity.BannerHomePage;
 import com.jp.entity.BannerQuery;
-import com.jp.entity.Branchalbum;
-import com.jp.entity.BranchalbumExample;
-import com.jp.entity.Branchphoto;
-import com.jp.entity.Dynamic;
-import com.jp.entity.DynamicExample;
-import com.jp.entity.Event;
-import com.jp.entity.GoTypeResult;
-import com.jp.entity.Introduce;
-import com.jp.entity.IntroduceQuery;
 import com.jp.entity.MationExample;
-import com.jp.entity.Notice;
-import com.jp.entity.NoticeExample;
-import com.jp.entity.NoticeVO;
-import com.jp.entity.SysGoTypeResult;
 import com.jp.entity.SysMation;
-import com.jp.entity.SysUser;
-import com.jp.entity.Usercontent;
 import com.jp.entity.BannerQuery.Criteria;
 import com.jp.service.SysBannerService;
-import com.jp.util.DateUtils;
-import com.jp.util.StringTools;
+
 
 @Service
 public class SysBannerServiceImpl implements SysBannerService{
@@ -121,21 +92,41 @@ public class SysBannerServiceImpl implements SysBannerService{
 	
 	@Override
 	public List<SysMation>  selectByGoType(String goType) { 
-		SysMation goTypeResult = null;
+		//SysMation goTypeResult = null;
 		//List<SysGoTypeResult> goTypeResultList = new ArrayList<SysGoTypeResult>();
 		//动态
 		 if(goType.equals("1")){
-			 MationExample example = new MationExample();
+			 //MationExample example = new MationExample();
+			 return badao.selectByExample();
+		 }else {
+			 return null;
 		 }
-		return badao.selectByExample();
+		
 	}
 
 	@Override
 	public void realDelete(String bannerid) {
 		// TODO Auto-generated method stub
-		System.out.println("我来删除="+bannerid);
+		System.out.println("bannerid="+bannerid);
 		pagehomeDao.deleteByPrimaryKey(bannerid);
 	}
+
+
+	@Override
+	public SysMation SelectMationOne(String mationid) {
+		// TODO Auto-generated method stub
+		System.out.println("mationid="+mationid);
+		return badao.selectByPrimaryKey(mationid);
+	}
+
+	@Override
+	public int batchDeleteAll(String[] bannerids) {
+		// TODO Auto-generated method stub
+		return pagehomeDao.batchDeleteAll(bannerids);
+		
+	}
+
+	
 
 
 }

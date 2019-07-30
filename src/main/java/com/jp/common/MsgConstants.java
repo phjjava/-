@@ -29,6 +29,7 @@ public class MsgConstants {
 	public static final Result USER_NO_IMPORT = new Result(2006, "当前没有导入任何数据");
 	public static final Result USER_PHONE_REPEAT = new Result(2007, "手机号重复");
 	public static final Result IMPORT_USER_NAMEREPEAT = new Result(2008, "存在重名同世系用户请特殊处理！");
+	public static final Result JUMP_MESSAGE = new Result(2009, "此跳转编号暂不支持!");
 
 	// 分支管理异常码
 	public static final Result BRANCH_VALIDATA_NAME = new Result(3001, "当前分支名称已存在");
