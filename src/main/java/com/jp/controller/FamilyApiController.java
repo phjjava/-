@@ -71,8 +71,8 @@ public class FamilyApiController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/createFamily", method = RequestMethod.POST)
-	public JsonResponse createFamily(User user, Branch branch, Userinfo userInfo, SysFamily family) {
-		return familyService.createFamily(user, branch, userInfo, family);
+	public JsonResponse createFamily(User user, Branch branch, Userinfo userInfo, SysFamily family, String token) {
+		return familyService.createFamily(user, branch, userInfo, family, token);
 	}
 
 	/**

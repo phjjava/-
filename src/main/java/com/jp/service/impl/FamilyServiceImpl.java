@@ -44,6 +44,7 @@ import com.jp.entity.IntroudceTemplateExample;
 import com.jp.entity.Post;
 import com.jp.entity.SysFamily;
 import com.jp.entity.SysFamilyQuery;
+import com.jp.entity.SysTempMap;
 import com.jp.entity.SysUser;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
@@ -56,6 +57,7 @@ import com.jp.util.MD5Util;
 import com.jp.util.PinyinUtil;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
+import com.jp.util.WebUtil;
 
 @Service
 public class FamilyServiceImpl implements FamilyService {
@@ -597,7 +599,7 @@ public class FamilyServiceImpl implements FamilyService {
 	}
 
 	@Override
-	public JsonResponse createFamily(User user, Branch branch, Userinfo userInfo, SysFamily family) {
+	public JsonResponse createFamily(User user, Branch branch, Userinfo userInfo, SysFamily family, String token) {
 		Result result = null;
 		JsonResponse res = null;
 
@@ -647,13 +649,38 @@ public class FamilyServiceImpl implements FamilyService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		//	String userid = WebUtil.getRequest().getHeader("userid");
+		String userid = WebUtil.getRequest().getHeader("userid");
 		//	String familyid = WebUtil.getRequest().getHeader("familyid");
 		List<User> userList = userDao.selectByPhoneInStatus(user.getPhone());
 		if (userList != null && userList.size() >= 2) {
 			result = new Result(MsgConstants.FAMILYID_RESTRICT);
 			res = new JsonResponse(result);
 			return res;
+		}
+
+		if (userid == null || "".equals(userid)) {
+
+			if (token == null || "".equals(token)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("未登录状态，token必传！");
+				res = new JsonResponse(result);
+				return res;
+			}
+
+			Map<String, String> instanceMap = SysTempMap.getInstanceMap();
+			if (instanceMap.get(user.getPhone()) == null || "".equals(instanceMap.get(user.getPhone()))) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("请先去注册！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			if (!instanceMap.get(user.getPhone()).equals(token)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("请您注册后，再重试！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			instanceMap.remove(user.getPhone());
 		}
 		try {
 
