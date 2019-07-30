@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.jp.entity.MationExample;
+import com.jp.entity.MationType;
 import com.jp.entity.Nation;
 import com.jp.entity.NationExample;
 import com.jp.entity.SysMation;
@@ -33,6 +34,8 @@ public interface SysMationdao {
 	int insertSelective(SysMation mation);
 	
 	int updateByPrimaryKeySelective(SysMation mation);
+
+	List<MationType> selecttypelist();
 
 
 }
