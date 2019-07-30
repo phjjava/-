@@ -3948,10 +3948,73 @@ public class UserServiceImpl implements UserService {
 			userDetail.setUsedname(user.getUsedname());
 			userDetail.setBackground(userInfo.getBackground());
 			userDetail.setBirthday(userInfo.getBirthday());
-			if (userInfo.getBirthday() != null)
+			if (userInfo.getBirthday() != null) {
 				userDetail.setBirthdayStr(userInfo.getBirthday());
-			userDetail.setBirthplace(userInfo.getBirthplace() == null ? "" : userInfo.getBirthplace().replace("@", ""));
-			userDetail.setHomeplace(userInfo.getHomeplace() == null ? "" : userInfo.getHomeplace().replace("@", ""));
+			}
+
+			String birth = userInfo.getBirthplace();
+			if (StringTools.trimNotEmpty(birth)) {
+				userDetail.setBirthplace(birth.replace("@", "").replace("null", ""));
+				String births[] = birth.split("@@");
+				if (births.length == 0) {
+					userDetail.setBirthplaceP("");
+					userDetail.setBirthplaceC("");
+					userDetail.setBirthplaceX("");
+					userDetail.setBirthDetail("");
+				} else if (births.length == 1) {
+					userDetail.setBirthplaceP("null".equals(births[0]) ? "" : births[0]);
+				} else if (births.length == 2) {
+					userDetail.setBirthplaceP("null".equals(births[0]) ? "" : births[0]);
+					userDetail.setBirthplaceC("null".equals(births[1]) ? "" : births[1]);
+				} else if (births.length == 3) {
+					userDetail.setBirthplaceP("null".equals(births[0]) ? "" : births[0]);
+					userDetail.setBirthplaceC("null".equals(births[1]) ? "" : births[1]);
+					userDetail.setBirthplaceX("null".equals(births[2]) ? "" : births[2]);
+				} else if (births.length == 4) {
+					userDetail.setBirthplaceP("null".equals(births[0]) ? "" : births[0]);
+					userDetail.setBirthplaceC("null".equals(births[1]) ? "" : births[1]);
+					userDetail.setBirthplaceX("null".equals(births[2]) ? "" : births[2]);
+					userDetail.setBirthDetail("null".equals(births[3]) ? "" : births[3]);
+				}
+			} else {
+				userDetail.setBirthplace("");
+				userDetail.setBirthplaceP("");
+				userDetail.setBirthplaceC("");
+				userDetail.setBirthplaceX("");
+				userDetail.setBirthDetail("");
+			}
+
+			String home = userInfo.getHomeplace();
+			if (StringTools.trimNotEmpty(home)) {
+				userDetail.setHomeplace(home.replace("@", "").replace("null", ""));
+				String homes[] = home.split("@@");
+				if (homes.length == 0) {
+					userDetail.setHomeplaceP("");
+					userDetail.setHomeplaceC("");
+					userDetail.setHomeplaceX("");
+					userDetail.setHomeDetail("");
+				} else if (homes.length == 1) {
+					userDetail.setHomeplaceP("null".equals(homes[0]) ? "" : homes[0]);
+				} else if (homes.length == 2) {
+					userDetail.setHomeplaceP("null".equals(homes[0]) ? "" : homes[0]);
+					userDetail.setHomeplaceC("null".equals(homes[1]) ? "" : homes[1]);
+				} else if (homes.length == 3) {
+					userDetail.setHomeplaceP("null".equals(homes[0]) ? "" : homes[0]);
+					userDetail.setHomeplaceC("null".equals(homes[1]) ? "" : homes[1]);
+					userDetail.setHomeplaceX("null".equals(homes[2]) ? "" : homes[2]);
+				} else if (homes.length == 4) {
+					userDetail.setHomeplaceP("null".equals(homes[0]) ? "" : homes[0]);
+					userDetail.setHomeplaceC("null".equals(homes[1]) ? "" : homes[1]);
+					userDetail.setHomeplaceX("null".equals(homes[2]) ? "" : homes[2]);
+					userDetail.setHomeDetail("null".equals(homes[3]) ? "" : homes[3]);
+				}
+			} else {
+				userDetail.setHomeplace("");
+				userDetail.setHomeplaceP("");
+				userDetail.setHomeplaceC("");
+				userDetail.setHomeplaceX("");
+				userDetail.setHomeDetail("");
+			}
 			userDetail.setMail(userInfo.getMail());
 			userDetail.setMailsee(userInfo.getMailsee());
 			userDetail.setNation(userInfo.getNation());
@@ -4041,7 +4104,19 @@ public class UserServiceImpl implements UserService {
 
 			entity.setPinyinfull(PinyinUtil.getPinyinFull(entity.getUsedname()));
 			status = userDao.updateByPrimaryKeySelective(entity);
-
+			Userinfo userinfo = entity.getUserInfo();
+			String birthplaceP = userinfo.getBirthplaceP() == null ? "" : userinfo.getBirthplaceP();
+			String birthplaceC = userinfo.getBirthplaceC() == null ? "" : userinfo.getBirthplaceC();
+			String birthplaceX = userinfo.getBirthplaceX() == null ? "" : userinfo.getBirthplaceX();
+			String birthDetail = userinfo.getBirthDetail() == null ? "" : userinfo.getBirthDetail();
+			// 出生地
+			userinfo.setBirthplace(birthplaceP + "@@" + birthplaceC + "@@" + birthplaceX + "@@" + birthDetail);
+			String homeplaceP = userinfo.getHomeplaceP() == null ? "" : userinfo.getHomeplaceP();
+			String homeplaceC = userinfo.getHomeplaceC() == null ? "" : userinfo.getHomeplaceC();
+			String homeplaceX = userinfo.getHomeplaceX() == null ? "" : userinfo.getHomeplaceX();
+			String homeDetail = userinfo.getHomeDetail() == null ? "" : userinfo.getHomeDetail();
+			// 常住地
+			userinfo.setHomeplace(homeplaceP + "@@" + homeplaceC + "@@" + homeplaceX + "@@" + homeDetail);
 			// 用户信息表
 			status = userInfoDao.updateByPrimaryKeySelective(entity.getUserInfo());
 
@@ -4864,10 +4939,55 @@ public class UserServiceImpl implements UserService {
 			res.setData(users);
 			return res;
 		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
+		result = new Result(MsgConstants.RESUL_FAIL);
 		result.setMsg("您当前还没有关联过家族！");
 		res = new JsonResponse(result);
 		return res;
 	}
 
+	@Override
+	public JsonResponse changeLoginUser(User entity, String loginType, String internetType, String version) {
+		Result result = null;
+		JsonResponse res = null;
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		//String familyid = WebUtil.getHeaderInfo(Constants.HEADER_FAMILYID);
+		if (StringUtils.isBlank(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		User usere = userDao.selectByPrimaryKey(userid);
+		UserQuery example = new UserQuery();
+		if (StringUtils.isBlank(entity.getFamilyid())) {
+			example.or().andPhoneEqualTo(usere.getPhone()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
+		} else {
+			example.or().andPhoneEqualTo(usere.getPhone()).andFamilyidEqualTo(entity.getFamilyid())
+					.andDeleteflagEqualTo(0).andStatusEqualTo(0);
+		}
+
+		List<User> dbuserList = userDao.selectByExample(example);
+		//		@SuppressWarnings("unchecked")
+		//		List<User> dbuserList = (List<User>) result.getData();
+		////////////////////////// 添加api登录的app用户
+		ServletContext application = WebUtil.getApplication();
+		@SuppressWarnings("unchecked")
+		List<OnLineUser> onlineUsers = (List<OnLineUser>) application.getAttribute("onlineUsers");
+		// 第一次使用前，需要初始化
+		if (onlineUsers == null) {
+			onlineUsers = new ArrayList<OnLineUser>();
+			application.setAttribute("onlineUsers", onlineUsers);
+		}
+		// 先删除之前存在的账户，再加入用户
+		if (dbuserList != null && dbuserList.size() > 0) {
+			User user = dbuserList.get(0);
+			HttpServletRequest request = WebUtil.getRequest();
+			OnLineUser onLineUser = setLineMsg(request, user, loginType, internetType, version);
+			if (!"18647740001".equals(user.getPhone()))
+				onlineUsers.remove(new OnLineUser(user.getUserid()));
+			onlineUsers.add(onLineUser);
+		}
+
+		return singleCorpLoginOrMultiCorpGetList(dbuserList, entity.getSessionid());
+	}
 }

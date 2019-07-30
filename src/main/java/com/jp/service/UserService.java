@@ -315,4 +315,6 @@ public interface UserService {
 	JsonResponse applyingFamily(User user);
 
 	JsonResponse joinedFamily(User user);
+
+	JsonResponse changeLoginUser(User user, String loginType, String internetType, String version);
 }

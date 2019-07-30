@@ -233,7 +233,7 @@ public class Userinfo implements Serializable {
 	}
 
 	public void setBirthplace(String birthplace) {
-		this.birthplace = birthplace == null ? null : birthplace.trim();
+		this.birthplace = birthplace == null ? "" : birthplace.trim();
 	}
 
 	public String getHomeplace() {
@@ -241,7 +241,7 @@ public class Userinfo implements Serializable {
 	}
 
 	public void setHomeplace(String homeplace) {
-		this.homeplace = homeplace == null ? null : homeplace.trim();
+		this.homeplace = homeplace == null ? "" : homeplace.trim();
 	}
 
 	public String getQq() {
