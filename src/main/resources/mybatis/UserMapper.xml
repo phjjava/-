@@ -942,7 +942,16 @@
 		<if test="issee != null">
 			and uc.issee like CONCAT('%', CONCAT(#{issee}), '%')
 		</if>
-		order by uc.sort asc
+		order by 	select distinct u.genlevel,u.username, uc.* from jp_user u LEFT OUTER
+		JOIN jp_usercontent uc on u.userid=uc.userid
+		where uc.userid is not null and uc.familyid= #{familyid,jdbcType=VARCHAR}
+		<if test="username != null and username != ''">
+			and u.username like CONCAT('%', CONCAT(#{username}), '%')
+		</if>
+		<if test="issee != null">
+			and uc.issee like CONCAT('%', CONCAT(#{issee}), '%')
+		</if>
+		order by -uc.sort desc
 	</select>
 	<!-- 登录 -->
 	<select id="login" resultType="com.jp.entity.User">

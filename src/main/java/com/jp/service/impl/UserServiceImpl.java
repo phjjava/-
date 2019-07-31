@@ -81,7 +81,7 @@ import com.jp.entity.NoticetopQuery;
 import com.jp.entity.OnLineUser;
 import com.jp.entity.SearchComplex;
 import com.jp.entity.SysFamily;
-import com.jp.entity.SysTempMap;
+import com.jp.entity.SysTokenMap;
 import com.jp.entity.SysVersionPrivilege;
 import com.jp.entity.User;
 import com.jp.entity.UserAppLimit;
@@ -2733,7 +2733,7 @@ public class UserServiceImpl implements UserService {
 			return res;
 		}
 		String token = UUIDUtils.getUUID();
-		Map<String, String> instanceMap = SysTempMap.getInstanceMap();
+		Map<String, String> instanceMap = SysTokenMap.getInstanceMap();
 		instanceMap.put(entity.getPhone(), token);
 		Map<String, String> tokenMap = new HashMap<>();
 		tokenMap.put("token", token);

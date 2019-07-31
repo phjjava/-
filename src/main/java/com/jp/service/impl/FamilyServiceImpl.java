@@ -18,6 +18,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentSystemUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
@@ -44,7 +45,7 @@ import com.jp.entity.IntroudceTemplateExample;
 import com.jp.entity.Post;
 import com.jp.entity.SysFamily;
 import com.jp.entity.SysFamilyQuery;
-import com.jp.entity.SysTempMap;
+import com.jp.entity.SysTokenMap;
 import com.jp.entity.SysUser;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
@@ -649,8 +650,6 @@ public class FamilyServiceImpl implements FamilyService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		String userid = WebUtil.getRequest().getHeader("userid");
-		//	String familyid = WebUtil.getRequest().getHeader("familyid");
 		List<User> userList = userDao.selectByPhoneInStatus(user.getPhone());
 		if (userList != null && userList.size() >= 2) {
 			result = new Result(MsgConstants.FAMILYID_RESTRICT);
@@ -658,8 +657,9 @@ public class FamilyServiceImpl implements FamilyService {
 			return res;
 		}
 
-		if (userid == null || "".equals(userid)) {
-
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		//String familyid = WebUtil.getHeaderInfo(Constants.HEADER_FAMILYID);
+		if (StringUtils.isBlank(userid)) {
 			if (token == null || "".equals(token)) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("未登录状态，token必传！");
@@ -667,7 +667,7 @@ public class FamilyServiceImpl implements FamilyService {
 				return res;
 			}
 
-			Map<String, String> instanceMap = SysTempMap.getInstanceMap();
+			Map<String, String> instanceMap = SysTokenMap.getInstanceMap();
 			if (instanceMap.get(user.getPhone()) == null || "".equals(instanceMap.get(user.getPhone()))) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("请先去注册！");
