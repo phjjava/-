@@ -86,7 +86,7 @@ public class SysMationController {
     }
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public JsonResponse save(SysMation mation, ModelMap model,String mationid,String relevanceid) {
+	public JsonResponse save(SysMation mation, ModelMap model,String mationid,String relevanceid,Integer stick) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		Integer count = 0;
@@ -96,6 +96,7 @@ public class SysMationController {
 				mation.setUpdatetime(new Date());
 				mation.setUpdateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
 				mation.setRelevanceid(relevanceid);
+				mation.setStick(stick);
 				if(mationid != null){
 					mation.setImgid(mationid);
 				}
@@ -109,6 +110,7 @@ public class SysMationController {
 				mation.setUpdatetime(new Date());
 				mation.setCreatetime(new Date());
 				mation.setRelevanceid(relevanceid);
+				mation.setStick(stick);
 				if(mationid != null){
 					mation.setImgid(mationid);
 				}

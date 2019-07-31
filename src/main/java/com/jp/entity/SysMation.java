@@ -64,6 +64,14 @@ public class SysMation implements Serializable {
 	 * 关联类型id
 	 */
 	private String relevanceid;
+	/**
+	 * 排序id
+	 */
+	private Integer sortid;
+	/**
+	 * 置顶(0不置顶,1置顶)
+	 */
+	private Integer stick;
 	
 	/**
 	 * 关联类型
@@ -220,6 +228,30 @@ public class SysMation implements Serializable {
 
 
 
+	public Integer getSortid() {
+		return sortid;
+	}
+
+
+
+	public void setSortid(Integer sortid) {
+		this.sortid = sortid;
+	}
+
+
+
+	public Integer getStick() {
+		return stick;
+	}
+
+
+
+	public void setStick(Integer stick) {
+		this.stick = stick;
+	}
+
+
+
 	public Set<MationType> getMationtype() {
 		return mationtype;
 	}
@@ -247,7 +279,7 @@ public class SysMation implements Serializable {
 
 	public SysMation(String mationid, String mationname, String imgid, String imgurl, String mationtitle,
 			String mationcontent, Integer deleteflag, String createid, Date createtime, String updateid,
-			Date updatetime, String relevanceid, Set<MationType> mationtype) {
+			Date updatetime, String relevanceid, Integer sortid, Integer stick, Set<MationType> mationtype) {
 		super();
 		this.mationid = mationid;
 		this.mationname = mationname;
@@ -261,6 +293,8 @@ public class SysMation implements Serializable {
 		this.updateid = updateid;
 		this.updatetime = updatetime;
 		this.relevanceid = relevanceid;
+		this.sortid = sortid;
+		this.stick = stick;
 		this.mationtype = mationtype;
 	}
 
@@ -271,7 +305,8 @@ public class SysMation implements Serializable {
 		return "SysMation [mationid=" + mationid + ", mationname=" + mationname + ", imgid=" + imgid + ", imgurl="
 				+ imgurl + ", mationtitle=" + mationtitle + ", mationcontent=" + mationcontent + ", deleteflag="
 				+ deleteflag + ", createid=" + createid + ", createtime=" + createtime + ", updateid=" + updateid
-				+ ", updatetime=" + updatetime + ", relevanceid=" + relevanceid + ", mationtype=" + mationtype + "]";
+				+ ", updatetime=" + updatetime + ", relevanceid=" + relevanceid + ", sortid=" + sortid + ", stick="
+				+ stick + ", mationtype=" + mationtype + "]";
 	}
 
 
