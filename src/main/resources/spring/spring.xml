@@ -107,7 +107,7 @@
        	 	<mvc:exclude-mapping path="/user/isBindingWithUser"/>	<!-- 第三方登录绑定判断 -->
        	 	<mvc:exclude-mapping path="/user/regist"/>	<!-- 注册 -->
        	 	<mvc:exclude-mapping path="/bannerhomepage/homepagelist"/>	<!-- 首页banner图 -->
-       	 	<mvc:exclude-mapping path="/mation/**"/>	<!-- 首页资讯 -->
+       	 	<mvc:exclude-mapping path="/mation/selectlist"/>	<!-- 首页资讯 -->
        	 	<mvc:exclude-mapping path="/user/joinFamily"/>	<!-- 加入家族-->
        	 	<mvc:exclude-mapping path="/user/applyingFamily"/>	<!-- 申请中的家族 -->
        	 	<mvc:exclude-mapping path="/family/searchFamily"/>	<!-- 搜素家族 -->

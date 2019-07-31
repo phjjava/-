@@ -26,6 +26,7 @@ import com.jp.common.CurrentSystemUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.Result;
+import com.jp.entity.MationType;
 import com.jp.entity.SysMation;
 import com.jp.service.SysMationService;
 import com.jp.util.StringTools;
@@ -57,9 +58,35 @@ public class SysMationController {
 		}
     	return res;
     }
+	/**
+	 * 调取下拉框类型值（增加修改时调取使用）
+	 * @param mation
+	 * @param model
+	 * @param mationid
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/selecttypelist", method = RequestMethod.POST)
+    public JsonResponse selecttypelist()  {
+		Result result = null;
+		JsonResponse res = null;
+    	List<MationType> gotypeList = null;
+    	try {
+    		gotypeList = mationService.selecttypelist();
+    			result = new Result(MsgConstants.RESUL_SUCCESS);
+        		res = new JsonResponse(result);
+        		res.setData(gotypeList);
+		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+    	return res;
+    }
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public JsonResponse save(SysMation mation, ModelMap model,String mationid) {
+	public JsonResponse save(SysMation mation, ModelMap model,String mationid,String relevanceid) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		Integer count = 0;
@@ -68,6 +95,7 @@ public class SysMationController {
 				// 修改
 				mation.setUpdatetime(new Date());
 				mation.setUpdateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
+				mation.setRelevanceid(relevanceid);
 				if(mationid != null){
 					mation.setImgid(mationid);
 				}
@@ -80,6 +108,7 @@ public class SysMationController {
 				mation.setMationid(UUIDUtils.getUUID()); 
 				mation.setUpdatetime(new Date());
 				mation.setCreatetime(new Date());
+				mation.setRelevanceid(relevanceid);
 				if(mationid != null){
 					mation.setImgid(mationid);
 				}
@@ -119,6 +148,7 @@ public class SysMationController {
 				fileNams.add(fileName);
 			}
 			String pathDir = "/upload";
+			//获取图片真实路径
 			String logoRealPathDir = request.getSession().getServletContext().getRealPath(pathDir);
 			for (int i = 0; i < files.length; i++) {
 				MultipartFile fileMe = files[i];
@@ -170,6 +200,101 @@ public class SysMationController {
 			String mationid = mationids.substring(0, mationids.length());
 			String banneridArray[] = mationid.split(",");
 			mationService.batchDeleteAll(banneridArray);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		res = new JsonResponse(result);
+		return res;
+	}
+	/**
+	 * 类型表列表
+	 * 
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/findtypelist", method = RequestMethod.POST)
+    public JsonResponse findtypelist()  {
+		Result result = null;
+		JsonResponse res = null;
+    	List<MationType> gotypeList = null;
+    	try {
+    		gotypeList = mationService.selecttypelist();
+    			result = new Result(MsgConstants.RESUL_SUCCESS);
+        		res = new JsonResponse(result);
+        		res.setData(gotypeList);
+		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+    	return res;
+    }
+	/**
+	 * 类型表新增/编辑
+	 * @param mation
+	 * @param model
+	 * @param mationid
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/typesave", method = RequestMethod.POST)
+	public JsonResponse typesave(MationType mationtype, ModelMap model,String typeid) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		Integer count = 0;
+		try {
+			if (StringTools.notEmpty(mationtype.getTypeid())) {
+				// 修改
+				/*mation.setUpdatetime(new Date());
+				mation.setUpdateid(CurrentSystemUserContext.getSystemUserContext().getUserid());*/
+				/*if(typeid != null){
+					mationtype.setImgid(typeid);
+				}*/
+				count = mationService.updatetype(mationtype);
+			} else {
+				//新增
+				mationtype.setDeleteflag(ConstantUtils.DELETE_FALSE);
+				mationtype.setCreateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
+				mationtype.setTypeid(UUIDUtils.getUUID()); 
+				mationtype.setCreatetime(new Date());
+				/*if(typeid != null){
+					mation.setImgid(mationid);
+				}*/
+				count = mationService.inserttype(mationtype);
+			}
+			if(count > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		res = new JsonResponse(result);
+		return res;
+	}
+	/**
+	 * 
+	 * @描述 咨询类型批量删除
+	 * @时间 2017年5月10日下午5:32:11
+	 * @参数 @param banner
+	 * @参数 @param model
+	 * @参数 @return
+	 * @return String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/mationtypeDeleteAll", method = RequestMethod.POST)
+	public JsonResponse mationtypeDeleteAll(String mationtypeids) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		try {
+			// a,b,c
+			String mationid = mationtypeids.substring(0, mationtypeids.length());
+			//按逗号截取放入数组
+			String mationtypeArray[] = mationid.split(",");
+			mationService.mationtypeDeleteAll(mationtypeArray);
+			//返回成功
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 		} catch (Exception e) {
 			e.printStackTrace();
