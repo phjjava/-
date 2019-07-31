@@ -942,7 +942,7 @@
 		<if test="issee != null">
 			and uc.issee like CONCAT('%', CONCAT(#{issee}), '%')
 		</if>
-		order by uc.sort asc
+		order by -uc.sort desc,u.genlevel  asc
 	</select>
 	<!-- 登录 -->
 	<select id="login" resultType="com.jp.entity.User">
