@@ -3471,14 +3471,19 @@ public class UserServiceImpl implements UserService {
 		}
 		User user = userDao.selectByPrimaryKey(userid);
 		List<User> users = userDao.selectByPhone(user.getPhone());
-		for (User u : users) {
-			Map<String, String> params = new HashMap<String, String>();
-			params.put("openid", entity.getOpenid());
-			params.put("userid", u.getUserid());
-			loginThirdMapper.relieveWithThirdParty(params);
+		if (users.size() > 0) {
+			for (User u : users) {
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("openid", entity.getOpenid());
+				params.put("userid", u.getUserid());
+				loginThirdMapper.relieveWithThirdParty(params);
+			}
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			result.setMsg("解绑成功!");
+			res = new JsonResponse(result);
+			return res;
 		}
 		result = new Result(MsgConstants.RESUL_FAIL);
-		result.setMsg("解绑成功!");
 		res = new JsonResponse(result);
 		return res;
 	}
@@ -4659,13 +4664,13 @@ public class UserServiceImpl implements UserService {
 		user.setSex(userChildInfo.getSex());
 		user.setBrotherpos(userChildInfo.getBrotherpos());
 		// 是否在世： 不填写，默认为在世
-		user.setLivestatus((userChildInfo.getLivestatus() == null || "".equals(userChildInfo.getLivestatus())) ? 0
+		user.setLivestatus((userChildInfo.getLivestatus() == null || "".equals(userChildInfo.getLivestatus() + "")) ? 0
 				: userChildInfo.getLivestatus());
 		// 是否直系： 不填写，默认为直系
-		user.setIsdirect((userChildInfo.getIsdirect() == null || "".equals(userChildInfo.getIsdirect())) ? 0
+		user.setIsdirect((userChildInfo.getIsdirect() == null || "".equals(userChildInfo.getIsdirect() + "")) ? 0
 				: userChildInfo.getIsdirect());
 		// 是否亲生： 不填写，默认为亲生
-		user.setIsborn((userChildInfo.getIsborn() == null || "".equals(userChildInfo.getIsborn())) ? 0
+		user.setIsborn((userChildInfo.getIsborn() == null || "".equals(userChildInfo.getIsborn() + "")) ? 0
 				: userChildInfo.getIsborn());
 		// 状态为待审核
 		user.setStatus(1);
@@ -4701,12 +4706,26 @@ public class UserServiceImpl implements UserService {
 			// 00:00:00"));
 		}
 
-		if (userChildInfo.getBirthday() != null)
+		if (userChildInfo.getBirthday() != null) {
 			userInfo.setBirthdayStr(userChildInfo.getBirthday());
+		}
 		userInfo.setNation(userChildInfo.getNation());
-		userInfo.setBirthplace(userChildInfo.getBirthplace().replace("@", ""));
+
 		userInfo.setBackground(userChildInfo.getBackground());
-		userInfo.setHomeplace(userChildInfo.getHomeplace().replace("@", ""));
+
+		String birthplaceP = userChildInfo.getBirthplaceP() == null ? "" : userChildInfo.getBirthplaceP();
+		String birthplaceC = userChildInfo.getBirthplaceC() == null ? "" : userChildInfo.getBirthplaceC();
+		String birthplaceX = userChildInfo.getBirthplaceX() == null ? "" : userChildInfo.getBirthplaceX();
+		String birthDetail = userChildInfo.getBirthDetail() == null ? "" : userChildInfo.getBirthDetail();
+		// 出生地
+		userInfo.setBirthplace(birthplaceP + "@@" + birthplaceC + "@@" + birthplaceX + "@@" + birthDetail);
+		String homeplaceP = userChildInfo.getHomeplaceP() == null ? "" : userChildInfo.getHomeplaceP();
+		String homeplaceC = userChildInfo.getHomeplaceC() == null ? "" : userChildInfo.getHomeplaceC();
+		String homeplaceX = userChildInfo.getHomeplaceX() == null ? "" : userChildInfo.getHomeplaceX();
+		String homeDetail = userChildInfo.getHomeDetail() == null ? "" : userChildInfo.getHomeDetail();
+		// 常住地
+		userInfo.setHomeplace(homeplaceP + "@@" + homeplaceC + "@@" + homeplaceX + "@@" + homeDetail);
+
 		userInfo.setMail(userChildInfo.getMail());
 		userInfo.setMailsee((userChildInfo.getMailsee() == null || "".equals(userChildInfo.getMailsee())) ? 0
 				: userChildInfo.getMailsee());
@@ -4724,14 +4743,14 @@ public class UserServiceImpl implements UserService {
 		userInfo.setRemarksee((userChildInfo.getRemarksee() == null || "".equals(userChildInfo.getRemarksee())) ? 0
 				: userChildInfo.getRemarksee());
 
-		if (icount == 0) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("添加失败");
+		if (icount > 0) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			result.setMsg("添加成功");
 			res = new JsonResponse(result);
 			return res;
 		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		result.setMsg("添加成功");
+		result = new Result(MsgConstants.RESUL_FAIL);
+		result.setMsg("添加失败");
 		res = new JsonResponse(result);
 		return res;
 	}

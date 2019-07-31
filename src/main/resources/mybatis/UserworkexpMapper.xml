@@ -4,14 +4,12 @@
   <resultMap id="BaseResultMap" type="com.jp.entity.Userworkexp" >
     <id column="userId" property="userid" jdbcType="VARCHAR" />
     <id column="workid" property="workid" jdbcType="VARCHAR" />
-    <id column="phone" property="phone" jdbcType="VARCHAR" />
     <result column="company" property="company" jdbcType="VARCHAR" />
     <result column="position" property="position" jdbcType="VARCHAR" />
     <result column="datefrom" property="datefrom" jdbcType="DATE" />
     <result column="dateto" property="dateto" jdbcType="DATE" />
-  </resultMap>
-  <resultMap id="ResultMapWithBLOBs" type="com.jp.entity.Userworkexp" extends="BaseResultMap" >
     <result column="workcontent" property="workcontent" jdbcType="LONGVARCHAR" />
+    <result column="issecret" property="issecret" jdbcType="TINYINT" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -82,7 +80,7 @@
   <sql id="Blob_Column_List" >
     workcontent
   </sql>
-  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.jp.entity.UserworkexpQuery" >
+  <select id="selectByExampleWithBLOBs" resultMap="BaseResultMap" parameterType="com.jp.entity.UserworkexpQuery" >
     select
     <if test="distinct" >
       distinct
@@ -115,21 +113,17 @@
       limit #{startRow} , #{pageSize}
     </if>
   </select>
-  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="com.jp.entity.UserworkexpKey" >
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.jp.entity.UserworkexpKey" >
     select 
-    userId,workid,phone,company,position,datefrom,dateto,workcontent
-    ,
-    <include refid="Blob_Column_List" />
+    userId,workid,company,position,datefrom,dateto,workcontent,issecret
     from jp_userworkexp
     where userId = #{userid,jdbcType=VARCHAR}
       and workid = #{workid,jdbcType=VARCHAR}
-      and phone = #{phone,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="com.jp.entity.UserworkexpKey" >
     delete from jp_userworkexp
     where userId = #{userid,jdbcType=VARCHAR}
       and workid = #{workid,jdbcType=VARCHAR}
-      and phone = #{phone,jdbcType=VARCHAR}
   </delete>
   <delete id="deleteByExample" parameterType="com.jp.entity.UserworkexpQuery" >
     delete from jp_userworkexp
@@ -138,12 +132,11 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.jp.entity.Userworkexp" >
-    insert into jp_userworkexp (userId, workid, phone, 
-      company, position, datefrom, 
-      dateto, workcontent)
-    values (#{userid,jdbcType=VARCHAR}, #{workid,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
+    insert into jp_userworkexp 
+    (userId, workid, company, position, datefrom, dateto, workcontent,issecret)
+    values (#{userid,jdbcType=VARCHAR}, #{workid,jdbcType=VARCHAR}, 
       #{company,jdbcType=VARCHAR}, #{position,jdbcType=VARCHAR}, #{datefrom,jdbcType=DATE}, 
-      #{dateto,jdbcType=DATE}, #{workcontent,jdbcType=LONGVARCHAR})
+      #{dateto,jdbcType=DATE}, #{workcontent,jdbcType=LONGVARCHAR}, #{issecret,jdbcType=TINYINT})
   </insert>
   <insert id="insertSelective" parameterType="com.jp.entity.Userworkexp" >
     insert into jp_userworkexp
@@ -153,9 +146,6 @@
       </if>
       <if test="workid != null" >
         workid,
-      </if>
-      <if test="phone != null" >
-        phone,
       </if>
       <if test="company != null" >
         company,
@@ -172,6 +162,9 @@
       <if test="workcontent != null" >
         workcontent,
       </if>
+      <if test="issecret != null" >
+        workcontent,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="userid != null" >
@@ -179,9 +172,6 @@
       </if>
       <if test="workid != null" >
         #{workid,jdbcType=VARCHAR},
-      </if>
-      <if test="phone != null" >
-        #{phone,jdbcType=VARCHAR},
       </if>
       <if test="company != null" >
         #{company,jdbcType=VARCHAR},
@@ -197,6 +187,9 @@
       </if>
       <if test="workcontent != null" >
         #{workcontent,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="issecret != null" >
+        #{issecret,jdbcType=TINYINT},
       </if>
     </trim>
   </insert>
@@ -215,9 +208,6 @@
       <if test="record.workid != null" >
         workid = #{record.workid,jdbcType=VARCHAR},
       </if>
-      <if test="record.phone != null" >
-        phone = #{record.phone,jdbcType=VARCHAR},
-      </if>
       <if test="record.company != null" >
         company = #{record.company,jdbcType=VARCHAR},
       </if>
@@ -233,6 +223,9 @@
       <if test="record.workcontent != null" >
         workcontent = #{record.workcontent,jdbcType=LONGVARCHAR},
       </if>
+      <if test="record.issecret != null" >
+        issecret = #{record.issecret,jdbcType=TINYINT},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -242,12 +235,12 @@
     update jp_userworkexp
     set userId = #{record.userid,jdbcType=VARCHAR},
       workid = #{record.workid,jdbcType=VARCHAR},
-      phone = #{record.phone,jdbcType=VARCHAR},
       company = #{record.company,jdbcType=VARCHAR},
       position = #{record.position,jdbcType=VARCHAR},
       datefrom = #{record.datefrom,jdbcType=DATE},
       dateto = #{record.dateto,jdbcType=DATE},
       workcontent = #{record.workcontent,jdbcType=LONGVARCHAR}
+      issecret = #{record.issecret,jdbcType=TINYINT}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -256,11 +249,11 @@
     update jp_userworkexp
     set userId = #{record.userid,jdbcType=VARCHAR},
       workid = #{record.workid,jdbcType=VARCHAR},
-      phone = #{record.phone,jdbcType=VARCHAR},
       company = #{record.company,jdbcType=VARCHAR},
       position = #{record.position,jdbcType=VARCHAR},
       datefrom = #{record.datefrom,jdbcType=DATE},
       dateto = #{record.dateto,jdbcType=DATE}
+      issecret = #{record.issecret,jdbcType=TINYINT}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -299,7 +292,6 @@
       workcontent = #{workcontent,jdbcType=LONGVARCHAR}
     where userId = #{userid,jdbcType=VARCHAR}
       and workid = #{workid,jdbcType=VARCHAR}
-      and phone = #{phone,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.jp.entity.Userworkexp" >
     update jp_userworkexp
@@ -309,7 +301,6 @@
       dateto = #{dateto,jdbcType=DATE}
     where userId = #{userid,jdbcType=VARCHAR}
       and workid = #{workid,jdbcType=VARCHAR}
-      and phone = #{phone,jdbcType=VARCHAR}
   </update>
   <insert id="insertEduExp">
 	    insert into jp_userworkexp (userid,company,position,workid,datefrom,dateto,issecret,workcontent)

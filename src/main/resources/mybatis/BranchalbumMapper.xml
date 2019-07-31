@@ -456,8 +456,8 @@
 
 	<select id="selectAllAlbum"
 		resultType="com.jp.entity.Branchalbum" parameterType="Map">
-		select a.*,b.photoNum from jp_branchalbum a left join
-		(select albumid,count(1) as photoNum from jp_branchphoto group by albumid) b
+		select a.*,b.photoNum,b.smallimgurl prePhotoImg from jp_branchalbum a left join
+		(select albumid,smallimgurl,count(1) as photoNum from jp_branchphoto group by albumid) b
 		on a.albumid = b.albumid
 		where
 		(a.albumname like

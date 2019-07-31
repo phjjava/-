@@ -41,6 +41,96 @@ public class UserClildInfo extends User {
 
 	private String birthdayStr; // 针对安卓做的，ios不需要
 
+	/**
+	* 新增出生地 省市县 详细地址
+	*/
+	private String birthplaceP;
+	private String birthplaceC;
+	private String birthplaceX;
+	private String birthDetail;
+	/**
+	 * 新增常住地 省市县 详细地址
+	 */
+	private String homeplaceP;
+	private String homeplaceC;
+	private String homeplaceX;
+	private String homeDetail;
+
+	@Override
+	public String toString() {
+		return "UserClildInfo [pid=" + pid + ", birthday=" + birthday + ", nation=" + nation + ", background="
+				+ background + ", birthplace=" + birthplace + ", homeplace=" + homeplace + ", QQ=" + QQ + ", weixin="
+				+ weixin + ", mail=" + mail + ", tel=" + tel + ", telsee=" + telsee + ", qqsee=" + qqsee + ", wxsee="
+				+ wxsee + ", mailsee=" + mailsee + ", remarksee=" + remarksee + ", remark=" + remark + ", birthdayStr="
+				+ birthdayStr + ", birthplaceP=" + birthplaceP + ", birthplaceC=" + birthplaceC + ", birthplaceX="
+				+ birthplaceX + ", birthDetail=" + birthDetail + ", homeplaceP=" + homeplaceP + ", homeplaceC="
+				+ homeplaceC + ", homeplaceX=" + homeplaceX + ", homeDetail=" + homeDetail + "]";
+	}
+
+	public String getBirthplaceP() {
+		return birthplaceP;
+	}
+
+	public void setBirthplaceP(String birthplaceP) {
+		this.birthplaceP = birthplaceP;
+	}
+
+	public String getBirthplaceC() {
+		return birthplaceC;
+	}
+
+	public void setBirthplaceC(String birthplaceC) {
+		this.birthplaceC = birthplaceC;
+	}
+
+	public String getBirthplaceX() {
+		return birthplaceX;
+	}
+
+	public void setBirthplaceX(String birthplaceX) {
+		this.birthplaceX = birthplaceX;
+	}
+
+	public String getBirthDetail() {
+		return birthDetail;
+	}
+
+	public void setBirthDetail(String birthDetail) {
+		this.birthDetail = birthDetail;
+	}
+
+	public String getHomeplaceP() {
+		return homeplaceP;
+	}
+
+	public void setHomeplaceP(String homeplaceP) {
+		this.homeplaceP = homeplaceP;
+	}
+
+	public String getHomeplaceC() {
+		return homeplaceC;
+	}
+
+	public void setHomeplaceC(String homeplaceC) {
+		this.homeplaceC = homeplaceC;
+	}
+
+	public String getHomeplaceX() {
+		return homeplaceX;
+	}
+
+	public void setHomeplaceX(String homeplaceX) {
+		this.homeplaceX = homeplaceX;
+	}
+
+	public String getHomeDetail() {
+		return homeDetail;
+	}
+
+	public void setHomeDetail(String homeDetail) {
+		this.homeDetail = homeDetail;
+	}
+
 	public String getBirthdayStr() {
 		return birthdayStr;
 	}
