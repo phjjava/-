@@ -366,8 +366,50 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public int changeStatus(User user) throws Exception {
-		return userDao.changeStatus(user);
+	public JsonResponse changeStatus(User user) {
+		Result result = null;
+		JsonResponse res = null;
+		if (StringUtils.isBlank(user.getUserid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数userid不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (user.getStatus() == null || "".equals(user.getStatus() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数status不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			User dbuser = userDao.selectByPrimaryKey(user.getUserid());
+			if (user.getStatus() == ConstantUtils.USER_STATUS_OK) {
+				List<User> list = userDao.selectByPhoneAndStatus(dbuser.getPhone());
+				if (list.size() >= 2) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("该用户已经关联两个家族，不能加入新的家族了");
+					res = new JsonResponse(result);
+					return res;
+				}
+			}
+			user.setUpdateid(WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID));
+			user.setUpdatetime(new Date());
+			Integer count = userDao.changeStatus(user);
+			if (count > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
+
 	}
 
 	/*
