@@ -465,8 +465,7 @@
 		WHERE
 		u.`status`=0 and u.deleteflag=0 and u.isdirect=1 and
 		uc.familyid=#{familyid,jdbcType=VARCHAR}
-		order by uc.sort asc
-		,u.genlevel asc,uc.updatetime desc
+		order by -uc.sort desc,u.genlevel  asc,uc.updatetime desc
 		<if test="count != null">
 			limit ${count}
 		</if>
