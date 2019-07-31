@@ -935,14 +935,14 @@
 		parameterType="java.lang.String">
 		select distinct u.genlevel,u.username, uc.* from jp_user u LEFT OUTER
 		JOIN jp_usercontent uc on u.userid=uc.userid
-		where uc.userid is not
-		null and uc.familyid= #{familyid,jdbcType=VARCHAR}
+		where uc.userid is not null and uc.familyid= #{familyid,jdbcType=VARCHAR}
 		<if test="username != null and username != ''">
 			and u.username like CONCAT('%', CONCAT(#{username}), '%')
 		</if>
 		<if test="issee != null">
 			and uc.issee like CONCAT('%', CONCAT(#{issee}), '%')
 		</if>
+		order by -uc.sort desc,u.genlevel  asc
 	</select>
 	<!-- 登录 -->
 	<select id="login" resultType="com.jp.entity.User">
@@ -1388,7 +1388,7 @@
 		u.branchid=#{branchid,jdbcType=VARCHAR} order by u.pinyinfirst
 	</select>
 	<select id="selectFamilycode" resultMap="BaseResultMap">
-		select t1.*,t2.familycode 
+		select t1.familyname,t1.familyid,t1.status,t2.familycode 
 		from jp_user t1
 		LEFT JOIN jp_sys_family t2 
 		ON	t1.familyid = t2.familyid

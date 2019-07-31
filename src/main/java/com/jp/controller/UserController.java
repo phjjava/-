@@ -1409,8 +1409,6 @@ public class UserController {
 	@RequestMapping(value = "/regist", method = RequestMethod.GET)
 	@ResponseBody
 	public JsonResponse regist(HttpServletRequest req, User entity, String smscode) {
-		String sessionid = req.getSession().getId();
-		entity.setSessionid(sessionid);
 		return userService.regist(entity, smscode);
 	}
 
@@ -1900,6 +1898,9 @@ public class UserController {
 	@RequestMapping(value = "/changeLoginUser", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse changeLoginUser(User user, String loginType, String internetType, String version) {
+		// 先取请求session的id
+		String sessionid = UUIDUtils.getUUID();
+		user.setSessionid(sessionid);
 		return userService.changeLoginUser(user, loginType, internetType, version);
 	}
 
