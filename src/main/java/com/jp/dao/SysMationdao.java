@@ -37,5 +37,7 @@ public interface SysMationdao {
 
 	List<MationType> selecttypelist();
 
+	void updateCount(String mationid);
+
 
 }

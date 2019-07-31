@@ -41,10 +41,12 @@ public class SysMationController {
 	private SysMationService mationService;
 	@ResponseBody
 	@RequestMapping(value = "/selectlist", method = RequestMethod.POST)
+	
     public JsonResponse bannerJson(String goType)  {
 		Result result = null;
 		JsonResponse res = null;
     	List<SysMation> gotypeList = null;
+    	
     	try {
     		gotypeList = mationService.selectByGoType(goType);
     			result = new Result(MsgConstants.RESUL_SUCCESS);
@@ -111,6 +113,7 @@ public class SysMationController {
 				mation.setCreatetime(new Date());
 				mation.setRelevanceid(relevanceid);
 				mation.setStick(stick);
+				mation.setCount(0);
 				if(mationid != null){
 					mation.setImgid(mationid);
 				}

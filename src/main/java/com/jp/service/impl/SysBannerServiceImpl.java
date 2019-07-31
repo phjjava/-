@@ -115,7 +115,7 @@ public class SysBannerServiceImpl implements SysBannerService{
 	@Override
 	public SysMation SelectMationOne(String mationid) {
 		// TODO Auto-generated method stub
-		System.out.println("mationid="+mationid);
+				
 		return badao.selectByPrimaryKey(mationid);
 	}
 
@@ -124,6 +124,12 @@ public class SysBannerServiceImpl implements SysBannerService{
 		// TODO Auto-generated method stub
 		return pagehomeDao.batchDeleteAll(bannerids);
 		
+	}
+
+	@Override
+	public void updateCount(String mationid) {
+		// TODO Auto-generated method stub
+		badao.updateCount(mationid);
 	}
 
 	
