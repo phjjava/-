@@ -864,9 +864,18 @@
 	</select>
 
 	<update id="changeStatus" parameterType="com.jp.entity.User">
-		update jp_user set
-		status =
-		#{status,jdbcType=INTEGER},updatetime=#{updatetime,jdbcType=INTEGER},updateid=#{updateid,jdbcType=INTEGER}
+		update jp_user 
+		<set>
+			<if test="status != null">
+				status = #{status,jdbcType=TINYINT},
+			</if>
+			<if test="updatetime != null">
+				updatetime = #{updatetime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateid != null">
+				updateid = #{updateid,jdbcType=VARCHAR},
+			</if>
+		</set>
 		where userid = #{userid,jdbcType=VARCHAR}
 	</update>
 	<insert id="importUser">
@@ -1033,16 +1042,13 @@
 
 	<select id="getAddressByUserid" resultType="java.lang.String"
 		parameterType="java.lang.String">
-		select
-		concat_ws('',z.area,z.cityname,z.xname,ifNULL(z.address,' ')) as
-		address
+		select	concat_ws('',z.area,z.cityname,z.xname,ifNULL(z.address,' ')) as address
 		from jp_user user
-		left join jp_userinfo userInfo on user.userid
-		=
-		userInfo.userid left join jp_branch z on user.branchid=z.branchid
+		left join jp_userinfo userInfo 
+		on user.userid = userInfo.userid 
+		left join jp_branch z on user.branchid=z.branchid
 		where user.status = 0 and user.deleteflag = 0
-		and user.userid =
-		#{userid,jdbcType=VARCHAR}
+		and user.userid = #{userid,jdbcType=VARCHAR}
 	</select>
 
 	<!-- 获取某分支下所有人员 -->

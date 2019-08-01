@@ -116,55 +116,64 @@ public class MomentCommentServiceImpl implements MomentCommentService {
 
 	@Override
 	public JsonResponse delMomentComment(MomentComment entity) {
-		JsonResponse jsonResponse =new JsonResponse(0, null);
-		if(StringUtils.isBlank(entity.getId())) {
-			jsonResponse.setCode(ConstantUtils.RESULT_FAIL);
-			jsonResponse.setMsg("参数id为空！");
-			return jsonResponse;
+		Result result = null;
+		JsonResponse res = null;
+		if (StringUtils.isBlank(entity.getId())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数id不能为空！");
+			res = new JsonResponse(result);
+			return res;
 		}
 		entity.setDeleteflag(ConstantUtils.DELETE_TRUE);
-//		int status = momentCommentMapper.deleteByPrimaryKey(entity.getId());
-			int status = momentCommentMapper.updateByPrimaryKeySelective(entity);
-			if(status > 0) {
-				MomentCommentTimelineExample example = new MomentCommentTimelineExample();
-				example.or().andMomentCommentIdEqualTo(entity.getId());
-				//通过族圈评论id(momentCommentId)获取评论时间轴数据
-				List<MomentCommentTimeline> momentCommentTimelineList = momentCommentTimelineMapper.selectByExample(example);
-				MomentCommentTimeline commentTimeline = momentCommentTimelineList.get(0);
-				commentTimeline.setDeleteflag(ConstantUtils.DELETE_TRUE);
-				status = momentCommentTimelineMapper.updateByPrimaryKeySelective(commentTimeline);
-				if(status > 0){
-					jsonResponse.setCode(ConstantUtils.RESULT_SUCCESS);
-					jsonResponse.setMsg("删除成功");
-				}else{
-					jsonResponse.setCode(ConstantUtils.RESULT_FAIL);
-					jsonResponse.setMsg("网络连接失败");
-				}
-				return jsonResponse;
+		//		int status = momentCommentMapper.deleteByPrimaryKey(entity.getId());
+		int status = momentCommentMapper.updateByPrimaryKeySelective(entity);
+		if (status > 0) {
+			MomentCommentTimelineExample example = new MomentCommentTimelineExample();
+			example.or().andMomentCommentIdEqualTo(entity.getId());
+			//通过族圈评论id(momentCommentId)获取评论时间轴数据
+			List<MomentCommentTimeline> momentCommentTimelineList = momentCommentTimelineMapper
+					.selectByExample(example);
+			MomentCommentTimeline commentTimeline = momentCommentTimelineList.get(0);
+			commentTimeline.setDeleteflag(ConstantUtils.DELETE_TRUE);
+			status = momentCommentTimelineMapper.updateByPrimaryKeySelective(commentTimeline);
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				result.setMsg("删除成功！");
+				res = new JsonResponse(result);
+				return res;
+			} else {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("删除失败！");
+				res = new JsonResponse(result);
+				return res;
 			}
-			jsonResponse.setCode(ConstantUtils.RESULT_FAIL);
-			jsonResponse.setMsg("删除族圈信息异常");
-			return jsonResponse;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
 	public JsonResponse getAllMomentComment(MomentComment entity) {
-		JsonResponse jsonResponse =new JsonResponse(0, null);
+		Result result = null;
+		JsonResponse res = null;
 		//获取回复列表
-		        MomentCommentExample momentCommentExample = new MomentCommentExample();
-				momentCommentExample.or().andMomentIdEqualTo(entity.getMomentId()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
-				momentCommentExample.setOrderByClause("createtime desc");
-				List<MomentComment> momentComments = momentCommentMapper.selectByExample(momentCommentExample);
-				if(momentComments.size()>0) {
-					jsonResponse.setCode(ConstantUtils.RESULT_SUCCESS);
-					jsonResponse.setData(momentComments);
-					jsonResponse.setMsg("请求成功");
-				}else{
-					jsonResponse.setCode(ConstantUtils.RESULT_FAIL);
-					jsonResponse.setMsg("网络连接失败");
-				}
-				return jsonResponse;
-		
+		MomentCommentExample momentCommentExample = new MomentCommentExample();
+		momentCommentExample.or().andMomentIdEqualTo(entity.getMomentId())
+				.andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
+		momentCommentExample.setOrderByClause("createtime desc");
+		List<MomentComment> momentComments = momentCommentMapper.selectByExample(momentCommentExample);
+		if (momentComments.size() > 0) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(momentComments);
+			return res;
+		} else {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			return res;
+		}
+
 	}
 
 }

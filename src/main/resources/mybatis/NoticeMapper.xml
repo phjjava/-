@@ -583,7 +583,10 @@
 	</select>
 	<select id="selectByCityCode" resultType="com.jp.entity.Notice"
 		parameterType="Map">
-		select t.* from (
+		select t.noticeid, t.noticetype, t.noticetitle,
+			 t.createid, t.createtime,
+			t.updateid, t.updatetime,
+			t.createname, t.branchname, t.type,t1.countReads from (
 		select m.* from jp_notice m left join jp_branch n on
 		m.branchid = n.branchid
 		where n.areacode = #{cityCode} and n.familyid =
@@ -599,9 +602,35 @@
 		where n.xcode = #{cityCode} and n.familyid =
 		#{familyid}
 		) t
+		LEFT JOIN 
+		(SELECT noticeid,count(*) countReads FROM jp_noticeread GROUP BY noticeid) t1 
+		ON t.noticeid = t1.noticeid
 		order by t.createtime desc
-		<if test="startRow != null">
-			limit #{startRow} , #{pageSize}
+		<if test="count != null and start != null" >
+			limit ${start},${count}
 		</if>
 	</select>
+	
+	<select id="selectNotices" parameterType="java.util.Map" resultType="com.jp.entity.Notice">
+  		select t.noticeid, t.noticetype, t.noticetitle,	t.createid, t.createtime,
+		t.updateid, t.updatetime,t.createname, t.branchname, t.type,t1.countReads 
+		FROM `jp_notice` t
+		LEFT JOIN 
+		(SELECT noticeid,count(*) countReads FROM jp_noticeread GROUP BY noticeid) t1 
+		ON t.noticeid = t1.noticeid
+  		WHERE deleteflag = 0
+	  	<if test="familyid != null">
+	  		and t.familyid=#{familyid,jdbcType=VARCHAR}
+	  	</if>
+	  	<if test="noticetype != null">
+	  		and t.noticetype=#{noticetype,jdbcType=VARCHAR}
+	  	</if>
+	  	<if test="branchid != null">
+	  		and t.branchid=#{branchid,jdbcType=VARCHAR}
+	  	</if>
+	  	order by t.createtime desc
+	  	<if test="count != null and start != null" >
+			limit ${start},${count}
+		</if>
+  </select>
 </mapper>

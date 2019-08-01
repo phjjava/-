@@ -77,7 +77,7 @@ public interface UserService {
 	 * @参数 @throws Exception
 	 * @return int
 	 */
-	int changeStatus(User user) throws Exception;
+	JsonResponse changeStatus(User user);
 
 	/**
 	 * 

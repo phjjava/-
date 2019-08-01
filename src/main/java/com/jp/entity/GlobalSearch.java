@@ -5,23 +5,22 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class GlobalSearch {
-	
+
 	//通讯录
 	List<User> users;
-	
+
 	//家族动态
 	List<Dynamic> dynamics;
-	
+
 	//家族大事记
 	List<Event> events;
-	
+
 	//人物志
 	List<UserContentVO> userContentVOs;
-	
+
 	//家族相册
 	List<Branchalbum> branchAlbums;
-	
-	
+
 	//查询内容
 	@JsonIgnore
 	String content;
@@ -29,12 +28,6 @@ public class GlobalSearch {
 	Long start;
 	@JsonIgnore
 	Long count;
-	
-	
-	
-	
-
-
 
 	public Long getStart() {
 		return start;
@@ -99,12 +92,5 @@ public class GlobalSearch {
 	public void setBranchAlbums(List<Branchalbum> branchAlbums) {
 		this.branchAlbums = branchAlbums;
 	}
-
-
-	
-	
-	
-	
-	
 
 }
