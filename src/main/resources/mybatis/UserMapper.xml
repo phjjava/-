@@ -1483,6 +1483,7 @@
 		deleteflag = 0
 		and
 		status = 0
+		and familyid = #{familyid}
 		and userid in
 		<foreach collection="array" item="item" index="index" open="("
 			separator="," close=")">
@@ -1495,6 +1496,7 @@
 		where
 		deleteflag = 0
 		and status = 0
+		and familyid = #{familyid}
 		and branchid not
 		in
 		<foreach collection="array" item="item" index="index" open="("
@@ -1509,6 +1511,7 @@
 		and tu.deleteflag = 0
 		and u.deleteflag = 0
 		and u.status = 0
+		and u.familyid = #{familyid}
 		and t.id not in
 		<foreach collection="array" item="item" index="index" open="("
 			separator="," close=")">
@@ -1521,6 +1524,7 @@
 		deleteflag = 0
 		and
 		status = 0
+		and familyid = #{familyid}
 		and userid not in
 		<foreach collection="array" item="item" index="index" open="("
 			separator="," close=")">
