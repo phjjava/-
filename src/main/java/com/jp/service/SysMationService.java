@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.jp.common.PageModel;
 import com.jp.entity.MationType;
 import com.jp.entity.SysMation;
 
@@ -56,6 +57,8 @@ public interface SysMationService {
 	 * @param mationtypeArray
 	 */
 	int mationtypeDeleteAll(@Param("array")String[] mationtypeArray)throws Exception;
+	
+	PageModel<SysMation> pageQuery(PageModel<SysMation> pageModel, SysMation mation, String mationtitle);
 
 	
 

@@ -3,8 +3,8 @@
 <mapper namespace="com.jp.dao.SysMationdao">
 	<resultMap id="BaseResultMap" type="com.jp.entity.SysMation">
 		<id column="mationid" property="mationid" jdbcType="VARCHAR" />
-		<result column="mationname" property="mationname"
-			jdbcType="VARCHAR" />
+		<!-- <result column="mationname" property="mationname"
+			jdbcType="VARCHAR" /> -->
 		<result column="imgid" property="imgid"
 			jdbcType="VARCHAR" />
 		<result column="imgurl" property="imgurl"
@@ -118,7 +118,7 @@
 		</where>
 	</sql>
 	<sql id="Base_Column_List">
-			mationid, mationname, imgid, imgurl, mationtitle,
+			mationid, imgid, imgurl, mationtitle,
 			mationcontent,deleteflag, createid, createtime,
 			updateid, updatetime,mationtype
 	</sql>
@@ -145,7 +145,11 @@
 	</select> -->
 	<select id="selectByExample" resultMap="BaseResultMap"
 		parameterType="com.jp.entity.SysMation">
-		select * from jp_sys_mation s left join jp_sys_mationtype t on s.relevanceid=t.typeid order by s.stick desc,s.createtime desc
+		select * from jp_sys_mation s left join jp_sys_mationtype t on s.relevanceid=t.typeid
+		<if test="mationtitle!=null">
+		where s.mationtitle like concat("%",#{mationtitle},"%")
+		</if>
+		order by s.stick desc,s.createtime desc
 		<!-- <if test="distinct">
 			distinct
 		</if>
@@ -157,10 +161,8 @@
 		<if test="orderByClause != null">
 			order by ${orderByClause}
 		</if> -->
-		
-		<!-- <if test="startRow != null">
-			limit #{startRow} , #{pageSize}
-		</if> -->
+
+			
 	</select>
 	<!-- 类型列表 -->
 	<select id="selecttypelist" resultMap="BaseResultMap" parameterType="com.jp.entity.MationType">
@@ -169,7 +171,7 @@
 	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
 		select
-		s.mationid,s.relevanceid,s.mationname,s.imgurl,s.mationtitle,s.mationcontent,s.stick,t.typeid,t.typename
+		s.mationid,s.relevanceid,s.imgurl,s.mationtitle,s.mationcontent,s.stick,t.typeid,t.typename
 		<!-- <include refid="Base_Column_List" /> -->
 		from jp_sys_mation s left join jp_sys_mationtype t on  s.relevanceid=t.typeid
 		where mationid = #{mationid,jdbcType=VARCHAR}
@@ -188,7 +190,7 @@
 	</delete>
 	<insert id="insert" parameterType="com.jp.entity.SysMation">
 		insert into jp_sys_mation
-		(mationid, mationname, imgid,
+		(mationid, imgid,
 		imgurl, mationtitle, mationcontent,
 		deleteflag,createid, createtime, updateid,
 		updatetime
@@ -213,9 +215,9 @@
 			<if test="mationid != null">
 				mationid,
 			</if>
-			<if test="mationname != null">
+			<!-- <if test="mationname != null">
 				mationname,
-			</if>
+			</if> -->
 			
 			<if test="imgid != null">
 				imgid,
@@ -258,9 +260,9 @@
 			<if test="mationid != null">
 				#{mationid,jdbcType=VARCHAR},
 			</if>
-			<if test="mationname != null">
+			<!-- <if test="mationname != null">
 				#{mationname,jdbcType=VARCHAR},
-			</if>
+			</if> -->
 			<if test="imgid != null">
 				#{imgid,jdbcType=VARCHAR},
 			</if>
@@ -313,9 +315,9 @@
 			<if test="record.mationid != null">
 				mationid = #{record.mationid,jdbcType=VARCHAR},
 			</if>
-			<if test="record.mationname != null">
+			<!-- <if test="record.mationname != null">
 				mationname = #{record.mationname,jdbcType=VARCHAR},
-			</if>
+			</if> -->
 			<if test="record.imgid != null">
 				imgid = #{record.imgid,jdbcType=VARCHAR},
 			</if>
@@ -352,7 +354,7 @@
 	<update id="updateByExample" parameterType="map">
 		update jp_sys_mation
 		set mationid = #{record.mationid,jdbcType=VARCHAR},
-		mationname = #{record.mationname,jdbcType=VARCHAR},
+		<!-- mationname = #{record.mationname,jdbcType=VARCHAR}, -->
 		imgid =
 		#{record.imgid,jdbcType=VARCHAR},
 		imgurl =
@@ -382,9 +384,9 @@
 			<if test="mationid != null">
 				mationid = #{mationid,jdbcType=VARCHAR},
 			</if>
-			<if test="mationname != null">
+			<!-- <if test="mationname != null">
 				mationname = #{mationname,jdbcType=VARCHAR},
-			</if>
+			</if> -->
 			<if test="imgid != null">
 				imgid = #{imgid,jdbcType=VARCHAR},
 			</if>
@@ -431,7 +433,7 @@
 		update jp_sys_mation
 		set mationid =
 		#{mationid,jdbcType=VARCHAR},
-		mationname = #{mationname,jdbcType=VARCHAR},
+		<!-- mationname = #{mationname,jdbcType=VARCHAR}, -->
 		imgid = #{imgid,jdbcType=VARCHAR},
 		imgurl = #{imgurl,jdbcType=VARCHAR},
 		mationtitle =

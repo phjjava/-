@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.jp.entity.BannerQuery;
 import com.jp.entity.MationExample;
 import com.jp.entity.MationType;
 import com.jp.entity.Nation;
@@ -29,7 +30,7 @@ public interface SysMationdao {
 
 	int updateByPrimaryKey(MationExample mationid);
 	
-	List<SysMation> selectByExample();
+	List<SysMation> selectByExample(BannerQuery bq);
 	
 	int insertSelective(SysMation mation);
 	
@@ -39,5 +40,7 @@ public interface SysMationdao {
 
 	void updateCount(String mationid);
 
+	List<SysMation> selectByExample(@Param("mationtitle") String mationtitle);
+	List<SysMation> selectByExample();
 
 }
