@@ -145,6 +145,9 @@ public interface UserDao {
 	@Select("select*from jp_user where status in (0,1)  and deleteflag = 0 and familyid is not null and phone = #{phone}")
 	List<User> selectByPhoneInStatus(@Param("phone") String phone);
 
+	@Select("select*from jp_user where status = 0  and deleteflag = 0 and familyid is not null and phone = #{phone}")
+	List<User> selectByPhoneAndStatus(@Param("phone") String phone);
+
 	@Select("select*from jp_user where status =2 and deleteflag = 0 and familyid is not null and phone = #{phone} and familyid = #{familyid}")
 	List<User> selectByPhoneToStatus(@Param("phone") String phone, @Param("familyid") String familyid);
 
@@ -175,6 +178,7 @@ public interface UserDao {
 	*/
 	List<GenUserOtherVO> getUserByAncestor(@Param("familyid") String familyid, @Param("familyname") String familyname,
 			@Param("genlevel") Integer genlevel);
+
 	int getUserByAncestorCount(@Param("familyid") String familyid, @Param("familyname") String familyname,
 			@Param("genlevel") Integer genlevel);
 }

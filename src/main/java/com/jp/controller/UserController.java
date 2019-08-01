@@ -515,20 +515,7 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
 	public JsonResponse changeStatus(User user) {
-		Result result = null;
-		JsonResponse res = null;
-		try {
-			user.setUpdateid(CurrentUserContext.getCurrentUserId());
-			user.setUpdatetime(new Date());
-			userService.changeStatus(user);
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-		} catch (Exception e) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		res = new JsonResponse(result);
-		return res;
+		return userService.changeStatus(user);
 	}
 
 	/**
@@ -673,24 +660,7 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/changeStatusOfReview", method = RequestMethod.POST)
 	public JsonResponse changeStatusOfReview(User user) {
-		Result result = null;
-		JsonResponse res = null;
-		try {
-			Integer count = userService.changeStatus(user);
-			if (count > 0) {
-				result = new Result(MsgConstants.RESUL_SUCCESS);
-				res = new JsonResponse(result);
-				return res;
-			}
-		} catch (Exception e) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			res = new JsonResponse(result);
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		result = new Result(MsgConstants.RESUL_FAIL);
-		res = new JsonResponse(result);
-		return res;
+		return userService.changeStatus(user);
 	}
 
 	/**

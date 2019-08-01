@@ -33,7 +33,6 @@ import com.jp.entity.UserManagerExample;
 import com.jp.entity.Userbranch;
 import com.jp.entity.UserbranchQuery;
 import com.jp.service.BranchService;
-import com.jp.service.RoleService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 
@@ -45,8 +44,6 @@ public class BranchController {
 
 	@Autowired
 	private BranchService branchService;
-	@Autowired
-	private RoleService roleService;
 	@Autowired
 	private BranchDao branchDao;
 	@Autowired
