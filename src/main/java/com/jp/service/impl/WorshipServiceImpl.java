@@ -12,7 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import com.github.pagehelper.PageHelper;
 import com.jp.common.ConstantUtils;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
@@ -118,15 +117,15 @@ public class WorshipServiceImpl implements WorshipService {
 				res = new JsonResponse(result);
 				return res;
 			}
-			Map<String,Object> params = new HashMap<String,Object>();
+			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("worshipid", entity.getWorshipid());
 			//params.put("createid",WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID));
 			params.put("deleteflag", ConstantUtils.DELETE_FALSE);
 			params.put("start", start);
 			params.put("count", count);
-			
+
 			worships = worshipMapper.getWorships(params);
-		
+
 		} catch (Exception e) {
 			log_.error("[getWorships方法---异常:]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
@@ -170,7 +169,7 @@ public class WorshipServiceImpl implements WorshipService {
 			List<Worship> rtnlist = new ArrayList<>();
 			for (WorshipOblationType type : types) {
 
-				List<Worship> worships = worshipMapper.selectNoTimeOutByType(entity.getWorshipid(),type.getId());
+				List<Worship> worships = worshipMapper.selectNoTimeOutByType(entity.getWorshipid(), type.getId());
 				rtnlist.addAll(worships);
 			}
 
@@ -328,13 +327,13 @@ public class WorshipServiceImpl implements WorshipService {
 				res = new JsonResponse(result);
 				return res;
 			}
-			Map<String,Object> params = new HashMap<String,Object>();
+			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("worshipid", entity.getWorshipid());
-			params.put("createid",WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID));
+			params.put("createid", WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID));
 			params.put("deleteflag", ConstantUtils.DELETE_FALSE);
 			params.put("start", start);
 			params.put("count", count);
-			
+
 			list = worshipMapper.getWorships(params);
 		} catch (Exception e) {
 			log_.error("[getMyWorships方法---异常:]", e);

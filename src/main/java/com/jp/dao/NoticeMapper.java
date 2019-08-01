@@ -24,6 +24,8 @@ public interface NoticeMapper {
 
 	List<Notice> selectByExample(NoticeExample example);
 
+	List<Notice> selectNotices(Map<String, Object> params);
+
 	Notice selectByPrimaryKey(String noticeid);
 
 	int updateByExampleSelective(@Param("record") Notice record, @Param("example") NoticeExample example);
