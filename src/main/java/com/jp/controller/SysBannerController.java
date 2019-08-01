@@ -356,6 +356,7 @@ public class SysBannerController {
 		JsonResponse res = null;
 		try {
 			mationOneList = bpservice.SelectMationOne(mationid);
+			bpservice.updateCount(mationid);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 		} catch (Exception e) {
 			e.printStackTrace();

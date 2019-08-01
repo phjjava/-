@@ -77,6 +77,11 @@ public interface SysBannerService {
 	 */
 
 	SysMation SelectMationOne(String mationid);
+	/**
+	 * 计数
+	 * @param mationid
+	 */
+	void updateCount(String mationid);
 	
 	
 	
