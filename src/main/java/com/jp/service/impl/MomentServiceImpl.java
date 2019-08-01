@@ -2,6 +2,8 @@ package com.jp.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -325,12 +327,17 @@ public class MomentServiceImpl implements MomentService {
 						//不可见
 						//选择分支branch    选择标签tag   个人person
 						String[] strs = StringUtils.split(tagid, ",");
+						
 						if ("branch".equals(tagtype)) {
 							userList = userMapper.selectUserByNoBranchids(strs);
 						} else if ("tag".equals(tagtype)) {
 							userList = userMapper.selectUserByNoTag(strs);
 						} else if ("person".equals(tagtype)) {
-							userList = userMapper.selectByNoUserids(strs);
+							
+							List<String> resultList = new ArrayList<>(strs.length);
+							Collections.addAll(resultList,strs);
+							resultList.add(userid);
+							userList = userMapper.selectByNoUserids(resultList);
 							List<User> ulist = userMapper.selectByUserids(strs);
 							inserFilter(ulist, id, "preson");
 						}
@@ -432,6 +439,4 @@ public class MomentServiceImpl implements MomentService {
 		res = new JsonResponse(result);
 		return res;
 	}
-
-
 }
