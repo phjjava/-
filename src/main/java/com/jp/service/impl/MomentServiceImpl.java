@@ -330,7 +330,7 @@ public class MomentServiceImpl implements MomentService {
 						} else if ("tag".equals(tagtype)) {
 							userList = userMapper.selectUserByNoTag(strs);
 						} else if ("person".equals(tagtype)) {
-							userList = userMapper.selectByNoUserids(strs);
+							userList = userMapper.selectByUserids(strs);
 							inserFilter(userList, id, "preson");
 						}
 					}
