@@ -72,6 +72,10 @@ public class SysMation implements Serializable {
 	 * 置顶(0不置顶,1置顶)
 	 */
 	private Integer stick;
+	/**
+	 * 计数
+	 */
+	private Integer count;
 	
 	/**
 	 * 关联类型
@@ -252,6 +256,18 @@ public class SysMation implements Serializable {
 
 
 
+	public Integer getCount() {
+		return count;
+	}
+
+
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+
+
 	public Set<MationType> getMationtype() {
 		return mationtype;
 	}
@@ -279,7 +295,8 @@ public class SysMation implements Serializable {
 
 	public SysMation(String mationid, String mationname, String imgid, String imgurl, String mationtitle,
 			String mationcontent, Integer deleteflag, String createid, Date createtime, String updateid,
-			Date updatetime, String relevanceid, Integer sortid, Integer stick, Set<MationType> mationtype) {
+			Date updatetime, String relevanceid, Integer sortid, Integer stick, Integer count,
+			Set<MationType> mationtype) {
 		super();
 		this.mationid = mationid;
 		this.mationname = mationname;
@@ -295,6 +312,7 @@ public class SysMation implements Serializable {
 		this.relevanceid = relevanceid;
 		this.sortid = sortid;
 		this.stick = stick;
+		this.count = count;
 		this.mationtype = mationtype;
 	}
 
@@ -306,7 +324,7 @@ public class SysMation implements Serializable {
 				+ imgurl + ", mationtitle=" + mationtitle + ", mationcontent=" + mationcontent + ", deleteflag="
 				+ deleteflag + ", createid=" + createid + ", createtime=" + createtime + ", updateid=" + updateid
 				+ ", updatetime=" + updatetime + ", relevanceid=" + relevanceid + ", sortid=" + sortid + ", stick="
-				+ stick + ", mationtype=" + mationtype + "]";
+				+ stick + ", count=" + count + ", mationtype=" + mationtype + "]";
 	}
 
 
