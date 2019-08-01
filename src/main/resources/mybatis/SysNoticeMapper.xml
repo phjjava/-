@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.SysNoticeDao" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.SysNotice" >
+    <id column="noticeid" property="noticeid" jdbcType="VARCHAR" />
+    <result column="relevanceid" property="relevanceid" jdbcType="VARCHAR" />
+    <result column="noticetitle" property="noticetitle" jdbcType="VARCHAR" />
+    <result column="noticecontent" property="noticecontent" jdbcType="VARCHAR" />
+    <result column="deleteflag" property="deleteflag" jdbcType="INTEGER" />
+    <result column="createid" property="createid" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="updateid" property="updateid" jdbcType="VARCHAR" />
+    <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="imgurl" property="imgurl" jdbcType="VARCHAR" />
+    <result column="stick" property="stick" jdbcType="INTEGER" />
+    <result column="sortid" property="sortid" jdbcType="INTEGER" />
+    <result column="count" property="count" jdbcType="INTEGER" />
+    <collection property="noticetype" resultMap="roleMap"/>
+  </resultMap>
+  <resultMap id="roleMap" type="com.jp.entity.SysNoticeType">
+		<id column="typeid" property="typeid" jdbcType="VARCHAR" />
+		<result column="typename" property="typename"
+			jdbcType="VARCHAR" />
+		<result column="sort" property="sort"
+			jdbcType="INTEGER" />
+		<result column="createid" property="createid"
+			jdbcType="VARCHAR" />
+		<result column="createtime" property="createtime"
+			jdbcType="TIMESTAMP" />
+		<result column="deleteflag" property="deleteflag"
+			jdbcType="INTEGER" />
+	</resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    noticeid, relevanceid, noticetitle, noticecontent, deleteflag, createid, createtime, 
+    updateid, updatetime, imgurl, stick, sortid,count
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.SysNoticeExample" >
+  	select * from jp_sys_notice s left join jp_sys_noticetype t on s.relevanceid=t.typeid order by s.stick desc,s.createtime desc
+   <!--  select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_sys_notice
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if> -->
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from jp_sys_notice
+    where noticeid = #{noticeid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from jp_sys_notice
+    where noticeid = #{noticeid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.SysNoticeExample" >
+    delete from jp_sys_notice
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.SysNotice" >
+    insert into jp_sys_notice (noticeid, relevanceid, noticetitle, 
+      noticecontent, deleteflag, createid, 
+      createtime, updateid, updatetime, 
+      imgurl, stick, sortid
+      )
+    values (#{noticeid,jdbcType=VARCHAR}, #{relevanceid,jdbcType=VARCHAR}, #{noticetitle,jdbcType=VARCHAR}, 
+      #{noticecontent,jdbcType=VARCHAR}, #{deleteflag,jdbcType=INTEGER}, #{createid,jdbcType=VARCHAR}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{updateid,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP}, 
+      #{imgurl,jdbcType=VARCHAR}, #{stick,jdbcType=INTEGER}, #{sortid,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.SysNotice" >
+    insert into jp_sys_notice
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="noticeid != null" >
+        noticeid,
+      </if>
+      <if test="relevanceid != null" >
+        relevanceid,
+      </if>
+      <if test="noticetitle != null" >
+        noticetitle,
+      </if>
+      <if test="noticecontent != null" >
+        noticecontent,
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag,
+      </if>
+      <if test="createid != null" >
+        createid,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="updateid != null" >
+        updateid,
+      </if>
+      <if test="updatetime != null" >
+        updatetime,
+      </if>
+      <if test="imgurl != null" >
+        imgurl,
+      </if>
+      <if test="stick != null" >
+        stick,
+      </if>
+      <if test="sortid != null" >
+        sortid,
+      </if>
+      <if test="count != null" >
+        count,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="noticeid != null" >
+        #{noticeid,jdbcType=VARCHAR},
+      </if>
+      <if test="relevanceid != null" >
+        #{relevanceid,jdbcType=VARCHAR},
+      </if>
+      <if test="noticetitle != null" >
+        #{noticetitle,jdbcType=VARCHAR},
+      </if>
+      <if test="noticecontent != null" >
+        #{noticecontent,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteflag != null" >
+        #{deleteflag,jdbcType=INTEGER},
+      </if>
+      <if test="createid != null" >
+        #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateid != null" >
+        #{updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="imgurl != null" >
+        #{imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="stick != null" >
+        #{stick,jdbcType=INTEGER},
+      </if>
+      <if test="sortid != null" >
+        #{sortid,jdbcType=INTEGER},
+      </if>
+      <if test="count != null" >
+        #{count,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.SysNoticeExample" resultType="java.lang.Integer" >
+    select count(*) from jp_sys_notice
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_sys_notice
+    <set >
+      <if test="record.noticeid != null" >
+        noticeid = #{record.noticeid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.relevanceid != null" >
+        relevanceid = #{record.relevanceid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.noticetitle != null" >
+        noticetitle = #{record.noticetitle,jdbcType=VARCHAR},
+      </if>
+      <if test="record.noticecontent != null" >
+        noticecontent = #{record.noticecontent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.deleteflag != null" >
+        deleteflag = #{record.deleteflag,jdbcType=INTEGER},
+      </if>
+      <if test="record.createid != null" >
+        createid = #{record.createid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createtime != null" >
+        createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateid != null" >
+        updateid = #{record.updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updatetime != null" >
+        updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.imgurl != null" >
+        imgurl = #{record.imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stick != null" >
+        stick = #{record.stick,jdbcType=INTEGER},
+      </if>
+      <if test="record.sortid != null" >
+        sortid = #{record.sortid,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_sys_notice
+    set noticeid = #{record.noticeid,jdbcType=VARCHAR},
+      relevanceid = #{record.relevanceid,jdbcType=VARCHAR},
+      noticetitle = #{record.noticetitle,jdbcType=VARCHAR},
+      noticecontent = #{record.noticecontent,jdbcType=VARCHAR},
+      deleteflag = #{record.deleteflag,jdbcType=INTEGER},
+      createid = #{record.createid,jdbcType=VARCHAR},
+      createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      updateid = #{record.updateid,jdbcType=VARCHAR},
+      updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+      imgurl = #{record.imgurl,jdbcType=VARCHAR},
+      stick = #{record.stick,jdbcType=INTEGER},
+      sortid = #{record.sortid,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.SysNotice" >
+    update jp_sys_notice
+    <set >
+      <if test="relevanceid != null" >
+        relevanceid = #{relevanceid,jdbcType=VARCHAR},
+      </if>
+      <if test="noticetitle != null" >
+        noticetitle = #{noticetitle,jdbcType=VARCHAR},
+      </if>
+      <if test="noticecontent != null" >
+        noticecontent = #{noticecontent,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag = #{deleteflag,jdbcType=INTEGER},
+      </if>
+      <if test="createid != null" >
+        createid = #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateid != null" >
+        updateid = #{updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="imgurl != null" >
+        imgurl = #{imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="stick != null" >
+        stick = #{stick,jdbcType=INTEGER},
+      </if>
+      <if test="sortid != null" >
+        sortid = #{sortid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where noticeid = #{noticeid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.SysNotice" >
+    update jp_sys_notice
+    set relevanceid = #{relevanceid,jdbcType=VARCHAR},
+      noticetitle = #{noticetitle,jdbcType=VARCHAR},
+      noticecontent = #{noticecontent,jdbcType=VARCHAR},
+      deleteflag = #{deleteflag,jdbcType=INTEGER},
+      createid = #{createid,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=TIMESTAMP},
+      updateid = #{updateid,jdbcType=VARCHAR},
+      updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      imgurl = #{imgurl,jdbcType=VARCHAR},
+      stick = #{stick,jdbcType=INTEGER},
+      sortid = #{sortid,jdbcType=INTEGER}
+    where noticeid = #{noticeid,jdbcType=VARCHAR}
+  </update>
+</mapper>

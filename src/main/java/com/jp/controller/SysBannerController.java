@@ -40,9 +40,9 @@ import com.jp.util.UUIDUtils;
 import com.jp.util.UploadUtil;
 
 @Controller
-@RequestMapping("bannerhomepage")
+@RequestMapping("system/bannerhomepage")
 public class SysBannerController {
-	private final Logger log_ = LogManager.getLogger(BannerController.class);
+	private final Logger log_ = LogManager.getLogger(SysBannerController.class);
 	@Autowired
 	private SysBannerService bpservice;
 	@RequestMapping(value = "/homepagelist", method = RequestMethod.POST)
