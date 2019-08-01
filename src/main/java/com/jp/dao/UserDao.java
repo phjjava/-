@@ -163,7 +163,7 @@ public interface UserDao {
 
 	List<User> selectUserByNoTag(@Param("array") String[] strs);
 
-	List<User> selectByNoUserids(@Param("array") String[] strs);
+	List<User> selectByNoUserids(@Param("array") List<String> strs);
 
 	//根据用户家族id查询该家族的分支数
 	@Select("select max(genlevel) as genlevel from jp_user where familyid =#{familyid}")
