@@ -510,65 +510,73 @@ public class NoticeServiceImpl implements NoticeService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		if (entity.getStart() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数start为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (entity.getCount() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数count为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 
 		List<Notice> notices = new ArrayList<Notice>();
-		NoticeExample example = new NoticeExample();
-		example.setOrderByClause("createtime desc");
-		if (entity.getStart() != null && entity.getCount() != null) {
-			example.setPageNo(entity.getStart().intValue() + 1);
-			example.setPageSize(entity.getCount().intValue());
-		}
 
-		if (0 == entity.getMeautype()) {
-			// 获取家族得相册列表
-			example.or().andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE)
-					.andFamilyidEqualTo(WebUtil.getHeaderInfo("familyid")).andNoticetypeEqualTo(0);
-			notices = noticeMapper.selectByExample(example);
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("start", entity.getStart());
+		params.put("count", entity.getCount());
+		try {
+			if (0 == entity.getMeautype()) {
+				// 获取家族得相册列表
+				params.put("familyid", WebUtil.getHeaderInfo("familyid"));
+				params.put("noticetype", 0);
+				notices = noticeMapper.selectNotices(params);
 
-		} else if (1 == entity.getMeautype()) {
-			// 获取全部动态
-			example.or().andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE)
-					.andFamilyidEqualTo(WebUtil.getHeaderInfo("familyid"));
-			notices = noticeMapper.selectByExample(example);
-		} else if (2 == entity.getMeautype()) {
-			if (entity.getBranchid() == null || "".equals(entity.getBranchid())) {
-				result = new Result(MsgConstants.RESUL_FAIL);
-				result.setMsg("参数branchid为空！");
+			} else if (1 == entity.getMeautype()) {
+				// 获取全部动态
+				params.put("familyid", WebUtil.getHeaderInfo("familyid"));
+				notices = noticeMapper.selectNotices(params);
+			} else if (2 == entity.getMeautype()) {
+				if (entity.getBranchid() == null || "".equals(entity.getBranchid())) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("参数branchid为空！");
+					res = new JsonResponse(result);
+					return res;
+				}
+				// 按照城市编码获取公告列表
+				params.put("cityCode", entity.getBranchid());
+				params.put("familyid", WebUtil.getHeaderInfo("familyid"));
+				notices = noticeMapper.selectByCityCode(params);
+			} else if (3 == entity.getMeautype()) {
+				if (entity.getBranchid() == null || "".equals(entity.getBranchid())) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("参数branchid为空！");
+					res = new JsonResponse(result);
+					return res;
+				}
+				// 按照分支id获取动态列表
+				params.put("branchid", entity.getBranchid());
+				notices = noticeMapper.selectNotices(params);
+			}
+			if (notices.size() > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				result.setMsg("获取成功");
 				res = new JsonResponse(result);
+				res.setData(notices);
 				return res;
 			}
-
-			// 按照城市编码获取公告列表
-			Map<String, Object> params = new HashMap<String, Object>();
-			params.put("startRow", entity.getStart());
-			params.put("pageSize", entity.getCount());
-			params.put("cityCode", entity.getBranchid());
-			params.put("familyid", WebUtil.getHeaderInfo("familyid"));
-
-			notices = noticeMapper.selectByCityCode(params);
-		} else if (3 == entity.getMeautype()) {
-			if (entity.getBranchid() == null || "".equals(entity.getBranchid())) {
-				result = new Result(MsgConstants.RESUL_FAIL);
-				result.setMsg("参数branchid为空！");
-				res = new JsonResponse(result);
-				return res;
-			}
-			// 按照分支id获取动态列表
-			example.or().andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE).andBranchidEqualTo(entity.getBranchid());
-			notices = noticeMapper.selectByExample(example);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-
-		List<NoticeDetailVO> noticeDetailVOs = new ArrayList<NoticeDetailVO>();
-		for (Notice notice : notices) {
-			JsonResponse result2 = getNoticeDetail(notice);
-			if (result2.getCode() == 0) {
-				noticeDetailVOs.add((NoticeDetailVO) result2.getData());
-			}
-		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		result.setMsg("获取成功");
+		result = new Result(MsgConstants.RESUL_FAIL);
+		result.setMsg("没有数据");
 		res = new JsonResponse(result);
-		res.setData(noticeDetailVOs);
 		return res;
 	}
 }
