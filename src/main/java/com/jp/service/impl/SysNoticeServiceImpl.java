@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -17,11 +18,13 @@ import com.jp.common.Result;
 import com.jp.dao.SysMtionTypeDao;
 import com.jp.dao.SysNoticeDao;
 import com.jp.dao.SysNoticeTypeDao;
+import com.jp.entity.BannerQuery;
 import com.jp.entity.SysMation;
 import com.jp.entity.SysNotice;
 import com.jp.entity.SysNoticeType;
 import com.jp.entity.WorshipOblationType;
 import com.jp.entity.WorshipOblationTypeExample;
+import com.jp.entity.BannerQuery.Criteria;
 import com.jp.service.SysNoticeService;
 
 @Service
@@ -92,6 +95,40 @@ public class SysNoticeServiceImpl implements SysNoticeService{
 	public int noticeDeleteAll(String[] mationtypeids) throws Exception {
 		// TODO Auto-generated method stub
 		return noticedao.noticeDeleteAll(mationtypeids);
+	}
+	@Override
+	public PageModel<SysNotice> pageQuery(PageModel<SysNotice> pageModel, SysNotice notice, String noticetitle) {
+		// TODO Auto-generated method stub
+				BannerQuery bq = new BannerQuery();
+				Criteria createCriteria = bq.createCriteria();
+				if(notice.getDeleteflag() != null){
+					createCriteria.andDeleteflagEqualTo(notice.getDeleteflag());
+				}
+				
+				bq.setOrderByClause("createtime DESC");
+				PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+				List<SysNotice> list;
+				if(bq.equals(null)) {
+					list = noticedao.selectByExample();
+				}else {
+					list = noticedao.selectByExample(noticetitle);
+				}
+				
+				
+				pageModel.setList(list);
+				pageModel.setPageInfo(new PageInfo<SysNotice>(list));
+				return pageModel;
+	}
+	@Override
+	public Integer changeStatus(SysNotice notice) {
+		// TODO Auto-generated method stub
+		int count=noticedao.updateByPrimaryKeySelective(notice);
+		if(count==1){
+		  return count;
+		}else{
+		  TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); 
+		  return 0;
+		}
 	}
 	
 }

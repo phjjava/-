@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.jp.common.PageModel;
 import com.jp.entity.SysNotice;
 import com.jp.entity.SysNoticeType;
 
@@ -71,6 +72,20 @@ public interface SysNoticeService {
 	 * @param mationtypeArray
 	 */
 	int noticeDeleteAll(@Param("array")String[] mationtypeArray)throws Exception;
+	/**
+	 * 搜索,分页
+	 * @param pageModel
+	 * @param notice
+	 * @param noticetitle
+	 * @return 
+	 */
+	PageModel<SysNotice> pageQuery(PageModel<SysNotice> pageModel, SysNotice notice, String noticetitle);
+	/**
+	 * 状态更改
+	 * @param notice
+	 * @return
+	 */
+	Integer changeStatus(SysNotice notice);
 
 
 }

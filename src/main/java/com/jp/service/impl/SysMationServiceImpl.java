@@ -28,7 +28,6 @@ public class SysMationServiceImpl implements SysMationService{
 	public PageModel<SysMation> pageQuery(PageModel<SysMation> pageModel, SysMation mation,String mationtitle) {
 		// TODO Auto-generated method stub
 		BannerQuery bq = new BannerQuery();
-		System.out.println("bq="+bq);
 		Criteria createCriteria = bq.createCriteria();
 		if(mation.getDeleteflag() != null){
 			createCriteria.andDeleteflagEqualTo(mation.getDeleteflag());
