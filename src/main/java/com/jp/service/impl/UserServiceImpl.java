@@ -4710,6 +4710,12 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		if (userChildInfo.getNation() == null || "".equals(userChildInfo.getNation())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("需要填写用户民族！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		// 判断提交手机号码是否有效
 		/*
 		 * UserExample userExample = new UserExample();
