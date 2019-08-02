@@ -6,8 +6,8 @@
     <id column="workid" property="workid" jdbcType="VARCHAR" />
     <result column="company" property="company" jdbcType="VARCHAR" />
     <result column="position" property="position" jdbcType="VARCHAR" />
-    <result column="datefrom" property="datefrom" jdbcType="DATE" />
-    <result column="dateto" property="dateto" jdbcType="DATE" />
+    <result column="datefrom" property="datefrom" jdbcType="VARCHAR" />
+    <result column="dateto" property="dateto" jdbcType="VARCHAR" />
     <result column="workcontent" property="workcontent" jdbcType="LONGVARCHAR" />
     <result column="issecret" property="issecret" jdbcType="TINYINT" />
   </resultMap>
@@ -135,8 +135,8 @@
     insert into jp_userworkexp 
     (userId, workid, company, position, datefrom, dateto, workcontent,issecret)
     values (#{userid,jdbcType=VARCHAR}, #{workid,jdbcType=VARCHAR}, 
-      #{company,jdbcType=VARCHAR}, #{position,jdbcType=VARCHAR}, #{datefrom,jdbcType=DATE}, 
-      #{dateto,jdbcType=DATE}, #{workcontent,jdbcType=LONGVARCHAR}, #{issecret,jdbcType=TINYINT})
+      #{company,jdbcType=VARCHAR}, #{position,jdbcType=VARCHAR}, #{datefrom,jdbcType=VARCHAR}, 
+      #{dateto,jdbcType=VARCHAR}, #{workcontent,jdbcType=LONGVARCHAR}, #{issecret,jdbcType=TINYINT})
   </insert>
   <insert id="insertSelective" parameterType="com.jp.entity.Userworkexp" >
     insert into jp_userworkexp
@@ -180,10 +180,10 @@
         #{position,jdbcType=VARCHAR},
       </if>
       <if test="datefrom != null" >
-        #{datefrom,jdbcType=DATE},
+        #{datefrom,jdbcType=VARCHAR},
       </if>
       <if test="dateto != null" >
-        #{dateto,jdbcType=DATE},
+        #{dateto,jdbcType=VARCHAR},
       </if>
       <if test="workcontent != null" >
         #{workcontent,jdbcType=LONGVARCHAR},
@@ -215,10 +215,10 @@
         position = #{record.position,jdbcType=VARCHAR},
       </if>
       <if test="record.datefrom != null" >
-        datefrom = #{record.datefrom,jdbcType=DATE},
+        datefrom = #{record.datefrom,jdbcType=VARCHAR},
       </if>
       <if test="record.dateto != null" >
-        dateto = #{record.dateto,jdbcType=DATE},
+        dateto = #{record.dateto,jdbcType=VARCHAR},
       </if>
       <if test="record.workcontent != null" >
         workcontent = #{record.workcontent,jdbcType=LONGVARCHAR},
@@ -237,8 +237,8 @@
       workid = #{record.workid,jdbcType=VARCHAR},
       company = #{record.company,jdbcType=VARCHAR},
       position = #{record.position,jdbcType=VARCHAR},
-      datefrom = #{record.datefrom,jdbcType=DATE},
-      dateto = #{record.dateto,jdbcType=DATE},
+      datefrom = #{record.datefrom,jdbcType=VARCHAR},
+      dateto = #{record.dateto,jdbcType=VARCHAR},
       workcontent = #{record.workcontent,jdbcType=LONGVARCHAR}
       issecret = #{record.issecret,jdbcType=TINYINT}
     <if test="_parameter != null" >
@@ -251,8 +251,8 @@
       workid = #{record.workid,jdbcType=VARCHAR},
       company = #{record.company,jdbcType=VARCHAR},
       position = #{record.position,jdbcType=VARCHAR},
-      datefrom = #{record.datefrom,jdbcType=DATE},
-      dateto = #{record.dateto,jdbcType=DATE}
+      datefrom = #{record.datefrom,jdbcType=VARCHAR},
+      dateto = #{record.dateto,jdbcType=VARCHAR}
       issecret = #{record.issecret,jdbcType=TINYINT}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -268,10 +268,10 @@
         position = #{position,jdbcType=VARCHAR},
       </if>
       <if test="datefrom != null" >
-        datefrom = #{datefrom,jdbcType=DATE},
+        datefrom = #{datefrom,jdbcType=VARCHAR},
       </if>
       <if test="dateto != null" >
-        dateto = #{dateto,jdbcType=DATE},
+        dateto = #{dateto,jdbcType=VARCHAR},
       </if>
        <if test="issecret != null" >
         issecret = #{issecret,jdbcType=INTEGER},
@@ -287,8 +287,8 @@
     update jp_userworkexp
     set company = #{company,jdbcType=VARCHAR},
       position = #{position,jdbcType=VARCHAR},
-      datefrom = #{datefrom,jdbcType=DATE},
-      dateto = #{dateto,jdbcType=DATE},
+      datefrom = #{datefrom,jdbcType=VARCHAR},
+      dateto = #{dateto,jdbcType=VARCHAR},
       workcontent = #{workcontent,jdbcType=LONGVARCHAR}
     where userId = #{userid,jdbcType=VARCHAR}
       and workid = #{workid,jdbcType=VARCHAR}
@@ -297,8 +297,8 @@
     update jp_userworkexp
     set company = #{company,jdbcType=VARCHAR},
       position = #{position,jdbcType=VARCHAR},
-      datefrom = #{datefrom,jdbcType=DATE},
-      dateto = #{dateto,jdbcType=DATE}
+      datefrom = #{datefrom,jdbcType=VARCHAR},
+      dateto = #{dateto,jdbcType=VARCHAR}
     where userId = #{userid,jdbcType=VARCHAR}
       and workid = #{workid,jdbcType=VARCHAR}
   </update>
