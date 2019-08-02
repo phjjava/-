@@ -190,12 +190,64 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	/**
+	 * 递归查询父子关系
+	 * @param pUsers
+	 * @param pid
+	 * @return
+	 */
+	public List<User> getPUserList(List<User> pUsers, String pid) {
+		User pUser = userDao.selectByPrimaryKey(pid);
+		pUsers.add(pUser);
+		if (pUser == null) {
+			return pUsers;
+		}
+		getPUserList(pUsers, pUser.getPid());
+		return pUsers;
+	}
+
+	public Result checkPid(User user) {
+		Result result = null;
+		String pid = user.getPid();
+		if (StringUtils.isNotBlank(pid)) {
+			if (user.getUserid().equals(pid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("父子不能是自己！");
+				return result;
+			}
+			//获取父亲节点
+			//		User pUser = userDao.selectByPrimaryKey(pid);
+			List<User> pUsers = new ArrayList<>();
+			List<User> pUserList = getPUserList(pUsers, pid);
+			for (User user2 : pUserList) {
+				if (user.getUserid().equals(user2.getUserid())) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("父亲选择错误，请检查您的信息！");
+					return result;
+				}
+			}
+			/*	if (pUser.getGenlevel() - user.getGenlevel() != 1) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("父亲选择错误，请检查您的世系或父亲的世系是否错误！");
+					return result;
+				}*/
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		return result;
+	}
+
 	@Override
 	public Result merge(User user) throws Exception {
 		Result result = null;
+
 		try {
 			// 点击编辑后保存
 			if (StringTools.trimNotEmpty(user.getUserid())) {
+				//验证pid
+				Result checkPid = checkPid(user);
+				if (checkPid.getCode() == 1) {
+					return checkPid;
+				}
 				Userinfo userinfo = user.getUserInfo();
 				userinfo.setUserid(user.getUserid());
 				// 编辑用户信息
@@ -296,6 +348,11 @@ public class UserServiceImpl implements UserService {
 					useredu.setUserid(userId);
 					user.setCreateid(CurrentUserContext.getCurrentUserId());
 					user.setCreatetime(new Date());
+					//验证pid
+					Result checkPid = checkPid(user);
+					if (checkPid.getCode() == 1) {
+						return checkPid;
+					}
 					// 校验方法 返回 true为有重复，false 没重复
 					boolean sameFlag = checkSameUser(user);
 					if (sameFlag) {
@@ -4641,6 +4698,24 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		if (userChildInfo.getSex() == null || "".equals(userChildInfo.getSex())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("需要填写用户性别！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (userChildInfo.getBrotherpos() == null || "".equals(userChildInfo.getBrotherpos())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("需要填写用户排行！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (userChildInfo.getNation() == null || "".equals(userChildInfo.getNation())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("需要填写用户民族！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		// 判断提交手机号码是否有效
 		/*
 		 * UserExample userExample = new UserExample();
@@ -4667,8 +4742,12 @@ public class UserServiceImpl implements UserService {
 		user.setLivestatus((userChildInfo.getLivestatus() == null || "".equals(userChildInfo.getLivestatus() + "")) ? 0
 				: userChildInfo.getLivestatus());
 		// 是否直系： 不填写，默认为直系
-		user.setIsdirect((userChildInfo.getIsdirect() == null || "".equals(userChildInfo.getIsdirect() + "")) ? 0
-				: userChildInfo.getIsdirect());
+		if (userChildInfo.getIsdirect() == null || "".equals(userChildInfo.getIsdirect() + "")) {
+			user.setIsdirect(
+					(pUser.getIsdirect() == null || "".equals(pUser.getIsdirect() + "")) ? 0 : pUser.getIsdirect());
+		} else {
+			user.setIsdirect(userChildInfo.getIsdirect());
+		}
 		// 是否亲生： 不填写，默认为亲生
 		user.setIsborn((userChildInfo.getIsborn() == null || "".equals(userChildInfo.getIsborn() + "")) ? 0
 				: userChildInfo.getIsborn());
