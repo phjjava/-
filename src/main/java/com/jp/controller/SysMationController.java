@@ -25,22 +25,55 @@ import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentSystemUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
+import com.jp.common.PageModel;
 import com.jp.common.Result;
+import com.jp.entity.BannerHomePage;
 import com.jp.entity.MationType;
 import com.jp.entity.SysMation;
+import com.jp.entity.SysUser;
 import com.jp.service.SysMationService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 import com.jp.util.UploadUtil;
 
 @Controller
-@RequestMapping("mation")
+@RequestMapping("system/mation")
 public class SysMationController {
-	private final Logger log_ = LogManager.getLogger(BannerController.class);
+	private final Logger log_ = LogManager.getLogger(SysMationController.class);
 	@Autowired
 	private SysMationService mationService;
-	@ResponseBody
 	@RequestMapping(value = "/selectlist", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse homepagelist(PageModel<SysMation> pageModel, SysMation mation, ModelMap model,String mationtitle) {
+		Result result = null;
+		JsonResponse res = null;
+		System.out.println("mationtitle="+mationtitle);
+		try {
+			mationService.pageQuery(pageModel, mation,mationtitle);
+			if (pageModel.getList() != null) {
+				if (pageModel.getPageSize() == 0) {
+					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
+						pageModel.setPageNo(pageModel.getPageNo() - 1);
+						mationService.pageQuery(pageModel, mation,mationtitle);
+					}
+				}
+			}
+
+			result = new Result(MsgConstants.RESUL_SUCCESS);	
+			res = new JsonResponse(result);
+			res.setData(pageModel.getList());
+			res.setCount(pageModel.getPageInfo().getTotal());
+			
+		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		return res;
+	}
+	@ResponseBody
+	@RequestMapping(value = "/homepagelist", method = RequestMethod.POST)
 	
     public JsonResponse bannerJson(String goType)  {
 		Result result = null;
@@ -88,7 +121,7 @@ public class SysMationController {
     }
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public JsonResponse save(SysMation mation, ModelMap model,String mationid,String relevanceid,Integer stick) {
+	public JsonResponse save(SysMation mation, ModelMap model,String mationid) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		Integer count = 0;
@@ -97,8 +130,8 @@ public class SysMationController {
 				// 修改
 				mation.setUpdatetime(new Date());
 				mation.setUpdateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
-				mation.setRelevanceid(relevanceid);
-				mation.setStick(stick);
+				/*mation.setRelevanceid(relevanceid);
+				mation.setStick(stick);*/
 				if(mationid != null){
 					mation.setImgid(mationid);
 				}
@@ -111,11 +144,11 @@ public class SysMationController {
 				mation.setMationid(UUIDUtils.getUUID()); 
 				mation.setUpdatetime(new Date());
 				mation.setCreatetime(new Date());
-				mation.setRelevanceid(relevanceid);
-				mation.setStick(stick);
+				/*mation.setRelevanceid(relevanceid);
+				mation.setStick(stick);*/
 				mation.setCount(0);
-				if(mationid != null){
-					mation.setImgid(mationid);
+				if(mation.getMationid() != null){
+					mation.setImgid(mation.getMationid());
 				}
 				count = mationService.insert(mation);
 			}

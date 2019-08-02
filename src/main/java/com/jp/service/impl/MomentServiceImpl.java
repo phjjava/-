@@ -320,7 +320,7 @@ public class MomentServiceImpl implements MomentService {
 						} else if ("tag".equals(tagtype)) {
 							userList = userMapper.selectUserByTag(strs);
 						} else if ("person".equals(tagtype)) {
-							userList = userMapper.selectByUserids(strs);
+							userList = userMapper.selectByUserids(strs,familyid);
 							inserFilter(userList, id, "preson");
 						}
 					} else if (ConstantUtils.MOMENT_INVISIBLE.equals(showType)) {
@@ -329,16 +329,16 @@ public class MomentServiceImpl implements MomentService {
 						String[] strs = StringUtils.split(tagid, ",");
 						
 						if ("branch".equals(tagtype)) {
-							userList = userMapper.selectUserByNoBranchids(strs);
+							userList = userMapper.selectUserByNoBranchids(strs,familyid);
 						} else if ("tag".equals(tagtype)) {
-							userList = userMapper.selectUserByNoTag(strs);
+							userList = userMapper.selectUserByNoTag(strs,familyid);
 						} else if ("person".equals(tagtype)) {
 							
 							List<String> resultList = new ArrayList<>(strs.length);
 							Collections.addAll(resultList,strs);
 							resultList.add(userid);
-							userList = userMapper.selectByNoUserids(resultList);
-							List<User> ulist = userMapper.selectByUserids(strs);
+							userList = userMapper.selectByNoUserids(resultList,familyid);
+							List<User> ulist = userMapper.selectByUserids(strs,familyid);
 							inserFilter(ulist, id, "preson");
 						}
 					}

@@ -1,40 +1,25 @@
 package com.jp.entity;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SysMation implements Serializable {
+public class SysNotice {
 	/**
-	 * mation唯一编号
+	 * noticeid公告编号
 	 */
-	private String mationid;
+	private String noticeid;
+
 
 	/**
-	 * mation名称
+	 * noticetitle标题
 	 */
-	/*private String mationname;
-*/
-	/**
-	 * mation网页图片编号
-	 */
-	private String imgid;
+	private String noticetitle;
 
 	/**
-	 * mation手机图片地址
+	 * noticecontent内容
 	 */
-	private String imgurl;
-
-	/**
-	 * mation标题
-	 */
-	private String mationtitle;
-
-	/**
-	 * mation内容
-	 */
-	private String mationcontent;
+	private String noticecontent;
 	
 	/**
 	 * 删除标记
@@ -65,6 +50,10 @@ public class SysMation implements Serializable {
 	 */
 	private String relevanceid;
 	/**
+	 * 图片路径
+	 */
+	private String imgurl;
+	/**
 	 * 排序id
 	 */
 	private Integer sortid;
@@ -73,248 +62,164 @@ public class SysMation implements Serializable {
 	 */
 	private Integer stick;
 	/**
-	 * 计数
+	 * 计数浏览量
 	 */
 	private Integer count;
-	
 	/**
 	 * 关联类型
 	 */
-	private Set<MationType> mationtype = new HashSet<MationType>();
-
-	
+	private Set<SysNoticeType> noticetype = new HashSet<SysNoticeType>();
 
 	private static final long serialVersionUID = 1L;
 
-
-
-	public String getMationid() {
-		return mationid;
+	public String getNoticeid() {
+		return noticeid;
 	}
 
-
-
-	public void setMationid(String mationid) {
-		this.mationid = mationid;
+	public void setNoticeid(String noticeid) {
+		this.noticeid = noticeid;
 	}
 
-
-
-	public String getImgid() {
-		return imgid;
+	public String getNoticetitle() {
+		return noticetitle;
 	}
 
-
-
-	public void setImgid(String imgid) {
-		this.imgid = imgid;
+	public void setNoticetitle(String noticetitle) {
+		this.noticetitle = noticetitle;
 	}
 
-
-
-	public String getImgurl() {
-		return imgurl;
+	public String getNoticecontent() {
+		return noticecontent;
 	}
 
-
-
-	public void setImgurl(String imgurl) {
-		this.imgurl = imgurl;
+	public void setNoticecontent(String noticecontent) {
+		this.noticecontent = noticecontent;
 	}
-
-
-
-	public String getMationtitle() {
-		return mationtitle;
-	}
-
-
-
-	public void setMationtitle(String mationtitle) {
-		this.mationtitle = mationtitle;
-	}
-
-
-
-	public String getMationcontent() {
-		return mationcontent;
-	}
-
-
-
-	public void setMationcontent(String mationcontent) {
-		this.mationcontent = mationcontent;
-	}
-
-
 
 	public Integer getDeleteflag() {
 		return deleteflag;
 	}
 
-
-
 	public void setDeleteflag(Integer deleteflag) {
 		this.deleteflag = deleteflag;
 	}
-
-
 
 	public String getCreateid() {
 		return createid;
 	}
 
-
-
 	public void setCreateid(String createid) {
 		this.createid = createid;
 	}
-
-
 
 	public Date getCreatetime() {
 		return createtime;
 	}
 
-
-
 	public void setCreatetime(Date createtime) {
 		this.createtime = createtime;
 	}
-
-
 
 	public String getUpdateid() {
 		return updateid;
 	}
 
-
-
 	public void setUpdateid(String updateid) {
 		this.updateid = updateid;
 	}
-
-
 
 	public Date getUpdatetime() {
 		return updatetime;
 	}
 
-
-
 	public void setUpdatetime(Date updatetime) {
 		this.updatetime = updatetime;
 	}
-
-
 
 	public String getRelevanceid() {
 		return relevanceid;
 	}
 
-
-
 	public void setRelevanceid(String relevanceid) {
 		this.relevanceid = relevanceid;
 	}
 
+	public String getImgurl() {
+		return imgurl;
+	}
 
+	public void setImgurl(String imgurl) {
+		this.imgurl = imgurl;
+	}
 
 	public Integer getSortid() {
 		return sortid;
 	}
 
-
-
 	public void setSortid(Integer sortid) {
 		this.sortid = sortid;
 	}
-
-
 
 	public Integer getStick() {
 		return stick;
 	}
 
-
-
 	public void setStick(Integer stick) {
 		this.stick = stick;
 	}
-
-
 
 	public Integer getCount() {
 		return count;
 	}
 
-
-
 	public void setCount(Integer count) {
 		this.count = count;
 	}
 
-
-
-	public Set<MationType> getMationtype() {
-		return mationtype;
+	public Set<SysNoticeType> getNoticetype() {
+		return noticetype;
 	}
 
-
-
-	public void setMationtype(Set<MationType> mationtype) {
-		this.mationtype = mationtype;
+	public void setNoticetype(Set<SysNoticeType> noticetype) {
+		this.noticetype = noticetype;
 	}
-
-
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
 
-
-
-	public SysMation() {
+	public SysNotice() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-
-
-	public SysMation(String mationid, String imgid, String imgurl, String mationtitle, String mationcontent,
-			Integer deleteflag, String createid, Date createtime, String updateid, Date updatetime, String relevanceid,
-			Integer sortid, Integer stick, Integer count, Set<MationType> mationtype) {
+	public SysNotice(String noticeid, String noticetitle, String noticecontent, Integer deleteflag, String createid,
+			Date createtime, String updateid, Date updatetime, String relevanceid, String imgurl, Integer sortid,
+			Integer stick, Integer count, Set<SysNoticeType> noticetype) {
 		super();
-		this.mationid = mationid;
-		this.imgid = imgid;
-		this.imgurl = imgurl;
-		this.mationtitle = mationtitle;
-		this.mationcontent = mationcontent;
+		this.noticeid = noticeid;
+		this.noticetitle = noticetitle;
+		this.noticecontent = noticecontent;
 		this.deleteflag = deleteflag;
 		this.createid = createid;
 		this.createtime = createtime;
 		this.updateid = updateid;
 		this.updatetime = updatetime;
 		this.relevanceid = relevanceid;
+		this.imgurl = imgurl;
 		this.sortid = sortid;
 		this.stick = stick;
 		this.count = count;
-		this.mationtype = mationtype;
+		this.noticetype = noticetype;
 	}
-
-
 
 	@Override
 	public String toString() {
-		return "SysMation [mationid=" + mationid + ", imgid=" + imgid + ", imgurl=" + imgurl + ", mationtitle="
-				+ mationtitle + ", mationcontent=" + mationcontent + ", deleteflag=" + deleteflag + ", createid="
-				+ createid + ", createtime=" + createtime + ", updateid=" + updateid + ", updatetime=" + updatetime
-				+ ", relevanceid=" + relevanceid + ", sortid=" + sortid + ", stick=" + stick + ", count=" + count
-				+ ", mationtype=" + mationtype + "]";
+		return "SysNotice [noticeid=" + noticeid + ", noticetitle=" + noticetitle + ", noticecontent=" + noticecontent
+				+ ", deleteflag=" + deleteflag + ", createid=" + createid + ", createtime=" + createtime + ", updateid="
+				+ updateid + ", updatetime=" + updatetime + ", relevanceid=" + relevanceid + ", imgurl=" + imgurl
+				+ ", sortid=" + sortid + ", stick=" + stick + ", count=" + count + ", noticetype=" + noticetype + "]";
 	}
 
-
-
-	
 	
 }
