@@ -4698,6 +4698,18 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		if (userChildInfo.getSex() == null || "".equals(userChildInfo.getSex())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("需要填写用户性别！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (userChildInfo.getBrotherpos() == null || "".equals(userChildInfo.getBrotherpos())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("需要填写用户排行！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		// 判断提交手机号码是否有效
 		/*
 		 * UserExample userExample = new UserExample();
@@ -4724,8 +4736,12 @@ public class UserServiceImpl implements UserService {
 		user.setLivestatus((userChildInfo.getLivestatus() == null || "".equals(userChildInfo.getLivestatus() + "")) ? 0
 				: userChildInfo.getLivestatus());
 		// 是否直系： 不填写，默认为直系
-		user.setIsdirect((userChildInfo.getIsdirect() == null || "".equals(userChildInfo.getIsdirect() + "")) ? 0
-				: userChildInfo.getIsdirect());
+		if (userChildInfo.getIsdirect() == null || "".equals(userChildInfo.getIsdirect() + "")) {
+			user.setIsdirect(
+					(pUser.getIsdirect() == null || "".equals(pUser.getIsdirect() + "")) ? 0 : pUser.getIsdirect());
+		} else {
+			user.setIsdirect(userChildInfo.getIsdirect());
+		}
 		// 是否亲生： 不填写，默认为亲生
 		user.setIsborn((userChildInfo.getIsborn() == null || "".equals(userChildInfo.getIsborn() + "")) ? 0
 				: userChildInfo.getIsborn());
