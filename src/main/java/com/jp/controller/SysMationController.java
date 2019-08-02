@@ -47,7 +47,6 @@ public class SysMationController {
 	public JsonResponse homepagelist(PageModel<SysMation> pageModel, SysMation mation, ModelMap model,String mationtitle) {
 		Result result = null;
 		JsonResponse res = null;
-		System.out.println("mationtitle="+mationtitle);
 		try {
 			mationService.pageQuery(pageModel, mation,mationtitle);
 			if (pageModel.getList() != null) {
