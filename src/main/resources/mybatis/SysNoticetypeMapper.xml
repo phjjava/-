@@ -225,4 +225,20 @@
       deleteflag = #{deleteflag,jdbcType=VARCHAR}
     where typeid = #{typeid,jdbcType=VARCHAR}
   </update>
+  <!-- 自己写sql -->
+  <select id="selecttypelist" parameterType="com.jp.entity.SysNoticeType" resultMap="BaseResultMap">
+  		select * from jp_sys_noticetype
+  </select>
+  
+  <select id="selecttypeone" parameterType="java.lang.String" resultMap="BaseResultMap">
+  		select * from jp_sys_noticetype where typeid=#{typeid,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="noticetypeDeleteAll">
+  		 <foreach collection="array" item="item" index="index" separator=";">
+	     delete from  jp_sys_noticetype
+	     where typeid = 
+		#{item,jdbcType=VARCHAR}
+		</foreach>
+  </delete>
 </mapper>

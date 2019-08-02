@@ -88,6 +88,11 @@ public class SysMationServiceImpl implements SysMationService{
 		// TODO Auto-generated method stub
 		return typedao.mationtypeDeleteAll(mationtypeids);
 	}
+	@Override
+	public List<MationType> selecttypeone(String typeid) {
+		// TODO Auto-generated method stub
+		return typedao.selecttypeone(typeid);
+	}
 	
 
 }

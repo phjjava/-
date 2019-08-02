@@ -107,6 +107,9 @@
       order by ${orderByClause}
     </if> -->
   </select>
+  <select id="selectOne" resultMap="BaseResultMap" parameterType="com.jp.entity.SysNoticeExample">
+  		select s.noticeid,s.relevanceid,s.imgurl,s.noticetitle,s.noticecontent,s.stick,t.typeid,t.typename from jp_sys_notice s left join jp_sys_noticetype t on s.relevanceid=t.typeid where s.noticeid = #{noticeid,jdbcType=VARCHAR}
+  </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
     <include refid="Base_Column_List" />
@@ -341,5 +344,9 @@
       stick = #{stick,jdbcType=INTEGER},
       sortid = #{sortid,jdbcType=INTEGER}
     where noticeid = #{noticeid,jdbcType=VARCHAR}
+  </update>
+  <!-- 自己写sql -->
+  <update id="updatecount" parameterType="java.lang.String">
+  		update jp_sys_notice set count = count+1 where noticeid = #{noticeid,jdbcType=VARCHAR}
   </update>
 </mapper>

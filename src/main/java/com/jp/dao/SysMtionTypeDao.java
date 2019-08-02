@@ -14,4 +14,6 @@ public interface SysMtionTypeDao {
 
 	int mationtypeDeleteAll(String[] mationtypeids);
 
+	List<MationType> selecttypeone(String typeid);
+
 }

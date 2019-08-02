@@ -465,5 +465,6 @@
   <update id="updateCount" parameterType="java.lang.String">
   	update jp_sys_mation set count=count+1 where mationid=#{item,jdbcType=VARCHAR}
   </update>
+  
 
 </mapper>
