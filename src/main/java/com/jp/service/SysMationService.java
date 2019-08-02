@@ -59,6 +59,13 @@ public interface SysMationService {
 	int mationtypeDeleteAll(@Param("array")String[] mationtypeArray)throws Exception;
 	
 	PageModel<SysMation> pageQuery(PageModel<SysMation> pageModel, SysMation mation, String mationtitle);
+	
+	/**
+	 * 类型详情
+	 * @param typeid
+	 * @return
+	 */
+	List<MationType> selecttypeone(String typeid);
 
 	
 

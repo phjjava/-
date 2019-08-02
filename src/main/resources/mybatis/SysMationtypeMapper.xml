@@ -231,6 +231,10 @@
   		select * from jp_sys_mationtype
   </select>
   
+   <select id="selecttypeone" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select typeid,typename,sort from jp_sys_mationtype where typeid=#{item,jdbcType=VARCHAR}
+  </select>
+  
   <delete id="mationtypeDeleteAll">
   		 <foreach collection="array" item="item" index="index" separator=";">
 	     delete from  jp_sys_mationtype

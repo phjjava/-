@@ -270,6 +270,29 @@ public class SysMationController {
     	return res;
     }
 	/**
+	 * 类型表详情
+	 * 
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/selecttypeone", method = RequestMethod.POST)
+	public JsonResponse selecttypeone(String typeid)  {
+		Result result = null;
+		JsonResponse res = null;
+		List<MationType> gotypeList = null;
+		try {
+			gotypeList = mationService.selecttypeone(typeid);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(gotypeList);
+		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		return res;
+	}
+	/**
 	 * 类型表新增/编辑
 	 * @param mation
 	 * @param model
