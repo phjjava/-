@@ -97,7 +97,6 @@ import com.jp.entity.Usercode;
 import com.jp.entity.UsercodeQuery;
 import com.jp.entity.Useredu;
 import com.jp.entity.UsereduQuery;
-import com.jp.entity.UsereduQuery.Criteria;
 import com.jp.entity.Userinfo;
 import com.jp.entity.Usermates;
 import com.jp.entity.Userphoto;
@@ -285,35 +284,73 @@ public class UserServiceImpl implements UserService {
 						+ userinfo.getHomeplaceX() + "@@" + userinfo.getHomeDetail());
 				// 保存用户详细信息
 				userInfoDao.updateByPrimaryKeySelective(userinfo);
-				// 删除教育经历
-				UsereduQuery fq = new UsereduQuery();
-				Criteria createCriteria = fq.createCriteria();
-				createCriteria.andUseridEqualTo(user.getUserid());
-				userEduDao.deleteByExample(fq);
-				// 循环保存教育经历
-				List<Useredu> eduList = user.getUserEdu();
-				for (Useredu useredu2 : eduList) {
-					useredu2.setUserid(user.getUserid());
-					useredu2.setEduid(UUIDUtils.getUUID());
-				}
-				if (eduList.size() > 0) {
-					userEduDao.insertEduExp(eduList);
-				}
-				// 删除工作经历
-				UserworkexpQuery fqw = new UserworkexpQuery();
-				com.jp.entity.UserworkexpQuery.Criteria createCriteriaw = fqw.createCriteria();
-				createCriteriaw.andUseridEqualTo(user.getUserid());
-				userworkDao.deleteByExample(fqw);
-				// 循环保存工作经历
-				List<Userworkexp> workList = user.getUserWorkexp();
-				for (Userworkexp userwork : workList) {
-					userwork.setUserid(user.getUserid());
-					userwork.setWorkid(UUIDUtils.getUUID());
-				}
-				if (workList.size() > 0) {
-					userworkDao.insertEduExp(workList);
+				/*
+				  		// 删除教育经历
+						UsereduQuery fq = new UsereduQuery();
+						Criteria createCriteria = fq.createCriteria();
+						createCriteria.andUseridEqualTo(user.getUserid());
+						userEduDao.deleteByExample(fq);
+						// 循环保存教育经历
+						List<Useredu> eduList = user.getUserEdu();
+						for (Useredu useredu2 : eduList) {
+							useredu2.setUserid(user.getUserid());
+							useredu2.setEduid(UUIDUtils.getUUID());
+						}
+						if (eduList.size() > 0) {
+							userEduDao.insertEduExp(eduList);
+						}
+						// 删除工作经历
+						UserworkexpQuery fqw = new UserworkexpQuery();
+						com.jp.entity.UserworkexpQuery.Criteria createCriteriaw = fqw.createCriteria();
+						createCriteriaw.andUseridEqualTo(user.getUserid());
+						userworkDao.deleteByExample(fqw);
+						// 循环保存工作经历
+						List<Userworkexp> workList = user.getUserWorkexp();
+						for (Userworkexp userwork : workList) {
+							userwork.setUserid(user.getUserid());
+							userwork.setWorkid(UUIDUtils.getUUID());
+						}
+						if (workList.size() > 0) {
+							userworkDao.insertEduExp(workList);
+						}
+					*/
+
+				// 教育经历
+				for (Useredu userEdu : user.getUserEdu()) {
+					// 新增工作经历
+					if (userEdu.getEduid() == null || userEdu.getEduid().equals("")) {
+						Useredu userEdu2 = new Useredu();
+						userEdu2.setUserid(user.getUserid());
+						userEdu2.setUniversity(userEdu.getUniversity());
+						userEdu2.setMajor(userEdu.getMajor());
+						userEdu2.setDegree(userEdu.getDegree());
+						userEdu2.setEduid(UUIDUtils.getUUID());
+						userEdu2.setDatefrom(userEdu.getDatefrom());
+						userEdu2.setEducontent(userEdu.getEducontent());
+						userEdu2.setDateto(userEdu.getDateto());
+						userEdu2.setIssecret(userEdu.getIssecret());
+						userEduDao.insertSelective(userEdu2);
+					} else {// 修改工作经历
+						userEduDao.updateByPrimaryKeySelective(userEdu);
+					}
 				}
 
+				for (Userworkexp userWorkexp : user.getUserWorkexp()) {
+					if (userWorkexp.getWorkid() == null || userWorkexp.getWorkid().equals("")) {
+						Userworkexp userWorkexp2 = new Userworkexp();
+						userWorkexp2.setWorkid(UUIDUtils.getUUID());
+						userWorkexp2.setUserid(user.getUserid());
+						userWorkexp2.setCompany(userWorkexp.getCompany());
+						userWorkexp2.setDatefrom(userWorkexp.getDatefrom());
+						userWorkexp2.setDateto(userWorkexp2.getDateto());
+						userWorkexp2.setIssecret(userWorkexp.getIssecret());
+						userWorkexp2.setPosition(userWorkexp.getPosition());
+						userWorkexp2.setWorkcontent(userWorkexp.getWorkcontent());
+						userworkDao.insertSelective(userWorkexp2);
+					} else {
+						userworkDao.updateByPrimaryKeySelective(userWorkexp);
+					}
+				}
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 			} else {
 				// 新增用户信息
@@ -4032,7 +4069,7 @@ public class UserServiceImpl implements UserService {
 		JsonResponse res = null;
 		if ("".equals(userid) || userid == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("用户ID不存在！");
+			result.setMsg("参数userid为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
@@ -4242,14 +4279,14 @@ public class UserServiceImpl implements UserService {
 				if (userEdu.getEduid() == null || userEdu.getEduid().equals("")) {
 					Useredu userEdu2 = new Useredu();
 					userEdu2.setUserid(entity.getUserid());
+					userEdu2.setUniversity(userEdu.getUniversity());
+					userEdu2.setMajor(userEdu.getMajor());
+					userEdu2.setDegree(userEdu.getDegree());
 					userEdu2.setEduid(UUIDUtils.getUUID());
 					userEdu2.setDatefrom(userEdu.getDatefrom());
 					userEdu2.setDateto(userEdu.getDateto());
-					userEdu2.setDegree(userEdu.getDegree());
 					userEdu2.setIssecret(userEdu.getIssecret());
-					userEdu2.setMajor(userEdu.getMajor());
-					userEdu2.setUniversity(userEdu.getUniversity());
-					status = userEduDao.insert(userEdu2);
+					status = userEduDao.insertSelective(userEdu2);
 				} else {// 修改工作经历
 					status = userEduDao.updateByPrimaryKeySelective(userEdu);
 				}
@@ -4266,7 +4303,7 @@ public class UserServiceImpl implements UserService {
 					userWorkexp2.setIssecret(userWorkexp.getIssecret());
 					userWorkexp2.setPosition(userWorkexp.getPosition());
 					userWorkexp2.setWorkcontent(userWorkexp.getWorkcontent());
-					status = userworkDao.insert(userWorkexp2);
+					status = userworkDao.insertSelective(userWorkexp2);
 				} else {
 					status = userworkDao.updateByPrimaryKeySelective(userWorkexp);
 				}

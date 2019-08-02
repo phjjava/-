@@ -8,6 +8,7 @@ public class Person {
 	private Integer direct;// 直系人数
 
 	private Integer nonDirect;// 非直系人数
+	private Integer unDirect;// 未知系人数
 
 	private Integer man;// 男性成员
 
@@ -59,6 +60,14 @@ public class Person {
 
 	public void setWoman(Integer woman) {
 		this.woman = woman;
+	}
+
+	public Integer getUnDirect() {
+		return unDirect;
+	}
+
+	public void setUnDirect(Integer unDirect) {
+		this.unDirect = unDirect;
 	}
 
 }
