@@ -88,5 +88,10 @@ public class SysNoticeServiceImpl implements SysNoticeService{
 		// TODO Auto-generated method stub
 		return noticetypedao.noticetypeDeleteAll(noticetypeids);
 	}
+	@Override
+	public int noticeDeleteAll(String[] mationtypeids) throws Exception {
+		// TODO Auto-generated method stub
+		return noticedao.noticeDeleteAll(mationtypeids);
+	}
 	
 }

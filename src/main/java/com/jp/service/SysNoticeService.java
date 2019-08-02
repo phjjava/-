@@ -66,6 +66,11 @@ public interface SysNoticeService {
 	 * @throws Exception
 	 */
 	int noticetypeDeleteAll(@Param("array")String[] mationtypeArray)throws Exception;
+	/**
+	 * 公告批删
+	 * @param mationtypeArray
+	 */
+	int noticeDeleteAll(@Param("array")String[] mationtypeArray)throws Exception;
 
 
 }

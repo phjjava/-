@@ -15,4 +15,6 @@ public interface SysNoticeDao {
 
 	void updatecount(String noticeid);
 
+	int noticeDeleteAll(String[] mationtypeids);
+
 }

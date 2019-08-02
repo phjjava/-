@@ -149,6 +149,36 @@ public class SysNoticeController {
 	}
 	
 	/**
+	 * 
+	 * @描述 公告批量删除
+	 * @时间 2017年5月10日下午5:32:11
+	 * @参数 @param banner
+	 * @参数 @param model
+	 * @参数 @return
+	 * @return String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/noticeDeleteAll", method = RequestMethod.POST)
+	public JsonResponse noticeDeleteAll(String noticeids) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		try {
+			// a,b,c
+			String mationid = noticeids.substring(0, noticeids.length());
+			//按逗号截取放入数组
+			String mationtypeArray[] = mationid.split(",");
+			noticeService.noticeDeleteAll(mationtypeArray);
+			//返回成功
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		res = new JsonResponse(result);
+		return res;
+	}
+	
+	/**
 	 * 类型表列表
 	 * 
 	 */
@@ -239,7 +269,7 @@ public class SysNoticeController {
 	}
 	/**
 	 * 
-	 * @描述 咨询类型批量删除
+	 * @描述 公告类型批量删除
 	 * @时间 2017年5月10日下午5:32:11
 	 * @参数 @param banner
 	 * @参数 @param model

@@ -349,4 +349,12 @@
   <update id="updatecount" parameterType="java.lang.String">
   		update jp_sys_notice set count = count+1 where noticeid = #{noticeid,jdbcType=VARCHAR}
   </update>
+  
+  <delete id="noticeDeleteAll">
+  		 <foreach collection="array" item="item" index="index" separator=";">
+	     delete from  jp_sys_notice
+	     where noticeid = 
+		#{item,jdbcType=VARCHAR}
+		</foreach>
+  </delete>
 </mapper>
