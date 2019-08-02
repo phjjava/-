@@ -18,7 +18,6 @@ import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.Result;
 import com.jp.entity.MationType;
-import com.jp.entity.SysMation;
 import com.jp.entity.SysNotice;
 import com.jp.entity.SysNoticeType;
 import com.jp.service.SysNoticeService;
@@ -31,6 +30,10 @@ public class SysNoticeController {
 	private final Logger log_ = LogManager.getLogger(BannerController.class);
 	@Autowired
 	private SysNoticeService noticeService;
+	/**
+	 * 
+	 * @return
+	 */
 	@ResponseBody
 	@RequestMapping(value = "/selectlist", method = RequestMethod.POST)
     public JsonResponse bannerJson()  {
@@ -39,6 +42,29 @@ public class SysNoticeController {
     	List<SysNotice> gotypeList = null;
     	try {
     		gotypeList = noticeService.selectNotice();
+    			result = new Result(MsgConstants.RESUL_SUCCESS);
+        		res = new JsonResponse(result);
+        		res.setData(gotypeList);
+		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+    	return res;
+    }
+	/**
+	 * 详情
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/selectOne", method = RequestMethod.POST)
+    public JsonResponse selectOne(String noticeid)  {
+		Result result = null;
+		JsonResponse res = null;
+    	List<SysNotice> gotypeList = null;
+    	try {
+    		gotypeList = noticeService.selectOne(noticeid);
     			result = new Result(MsgConstants.RESUL_SUCCESS);
         		res = new JsonResponse(result);
         		res.setData(gotypeList);
@@ -114,6 +140,155 @@ public class SysNoticeController {
 			if(count > 0) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		res = new JsonResponse(result);
+		return res;
+	}
+	
+	/**
+	 * 
+	 * @描述 公告批量删除
+	 * @时间 2017年5月10日下午5:32:11
+	 * @参数 @param banner
+	 * @参数 @param model
+	 * @参数 @return
+	 * @return String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/noticeDeleteAll", method = RequestMethod.POST)
+	public JsonResponse noticeDeleteAll(String noticeids) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		try {
+			// a,b,c
+			String mationid = noticeids.substring(0, noticeids.length());
+			//按逗号截取放入数组
+			String mationtypeArray[] = mationid.split(",");
+			noticeService.noticeDeleteAll(mationtypeArray);
+			//返回成功
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		res = new JsonResponse(result);
+		return res;
+	}
+	
+	/**
+	 * 类型表列表
+	 * 
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/findtypelist", method = RequestMethod.POST)
+    public JsonResponse findtypelist()  {
+		Result result = null;
+		JsonResponse res = null;
+    	List<SysNoticeType> gotypeList = null;
+    	try {
+    		gotypeList = noticeService.selecttype();
+    			result = new Result(MsgConstants.RESUL_SUCCESS);
+        		res = new JsonResponse(result);
+        		res.setData(gotypeList);
+		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+    	return res;
+    }
+	/**
+	 * 类型表详情
+	 * 
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/selecttypeone", method = RequestMethod.POST)
+	public JsonResponse selecttypeone(String typeid)  {
+		Result result = null;
+		JsonResponse res = null;
+		List<SysNoticeType> gotypeList = null;
+		try {
+			gotypeList = noticeService.selecttypeone(typeid);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(gotypeList);
+		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		return res;
+	}
+	/**
+	 * 类型表新增/编辑
+	 * @param mation
+	 * @param model
+	 * @param mationid
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/typesave", method = RequestMethod.POST)
+	public JsonResponse typesave(SysNoticeType noticetype, ModelMap model,String typeid) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		Integer count = 0;
+		try {
+			if (StringTools.notEmpty(noticetype.getTypeid())) {
+				// 修改
+				/*mation.setUpdatetime(new Date());
+				mation.setUpdateid(CurrentSystemUserContext.getSystemUserContext().getUserid());*/
+				/*if(typeid != null){
+					mationtype.setImgid(typeid);
+				}*/
+				count = noticeService.updatetype(noticetype);
+			} else {
+				//新增
+				noticetype.setDeleteflag(ConstantUtils.DELETE_FALSE);
+				noticetype.setCreateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
+				noticetype.setTypeid(UUIDUtils.getUUID()); 
+				noticetype.setCreatetime(new Date());
+				/*if(typeid != null){
+					mation.setImgid(mationid);
+				}*/
+				count = noticeService.inserttype(noticetype);
+			}
+			if(count > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		res = new JsonResponse(result);
+		return res;
+	}
+	/**
+	 * 
+	 * @描述 公告类型批量删除
+	 * @时间 2017年5月10日下午5:32:11
+	 * @参数 @param banner
+	 * @参数 @param model
+	 * @参数 @return
+	 * @return String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/noticetypeDeleteAll", method = RequestMethod.POST)
+	public JsonResponse noticetypeDeleteAll(String noticetypeids) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		try {
+			// a,b,c
+			String mationid = noticetypeids.substring(0, noticetypeids.length());
+			//按逗号截取放入数组
+			String mationtypeArray[] = mationid.split(",");
+			noticeService.noticetypeDeleteAll(mationtypeArray);
+			//返回成功
+			result = new Result(MsgConstants.RESUL_SUCCESS);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
