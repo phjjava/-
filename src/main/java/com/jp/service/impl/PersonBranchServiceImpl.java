@@ -77,6 +77,12 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andIsdirectEqualTo(0);
 		int nonDirect = userMapper.countByExample(userExample);
 		personBranch.setNonDirect(nonDirect);
+		//未知系人数
+		userExample.clear();
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andIsdirectIsNull();
+		int unDirect = userMapper.countByExample(userExample);
+		personBranch.setUnDirect(unDirect);
+
 		// private Integer man;//男性成员
 		//
 		userExample.clear();
@@ -118,6 +124,12 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 				.andIsdirectEqualTo(0);
 		int nonDirect1 = userMapper.countByExample(userExample);
 		alivePerson.setNonDirect(nonDirect1);
+		// 在世的未知系
+		userExample.clear();
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0)
+				.andIsdirectIsNull();
+		int unDirect1 = userMapper.countByExample(userExample);
+		alivePerson.setUnDirect(unDirect1);
 		;
 		// 在世的男性
 		userExample.clear();
@@ -148,6 +160,12 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 				.andIsdirectEqualTo(0);
 		int nonDirect2 = userMapper.countByExample(userExample);
 		departPerson.setNonDirect(nonDirect2);
+		// 离世的未知系
+		userExample.clear();
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1)
+				.andIsdirectIsNull();
+		int unDirect2 = userMapper.countByExample(userExample);
+		departPerson.setUnDirect(unDirect2);
 		// 离世的男性
 		userExample.clear();
 		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1).andSexEqualTo(1);
@@ -181,6 +199,7 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			totalPerson = 0;
 			direct = 0;
 			nonDirect = 0;
+			unDirect = 0;
 			man = 0;
 			woman = 0;
 			alives = new ArrayList<User>();
@@ -194,10 +213,14 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			params.put("familyid", familyid);
 			List<User> users = userMapper.selectUserByAreaCode(params);
 			for (User user : users) {
-				if (user.getIsdirect() == 1) {
-					direct++;
+				if (user.getIsdirect() != null) {
+					if (user.getIsdirect() == 1) {
+						direct++;
+					} else {
+						nonDirect++;
+					}
 				} else {
-					nonDirect++;
+					unDirect++;
 				}
 				if (user.getSex() == 1) {
 					man++;
@@ -216,21 +239,27 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			province.setTotalPerson(users.size());
 			province.setDirect(direct);
 			province.setNonDirect(nonDirect);
+			province.setUnDirect(unDirect);
 			province.setMan(man);
 			province.setWoman(woman);
 			province.setTotalBranch(branchs.size());
 			// 重置
 			direct = 0;
 			nonDirect = 0;
+			unDirect = 0;
 			man = 0;
 			woman = 0;
 			branchs = new ArrayList<String>();
 			if (alives.size() > 0) {
 				for (User u : alives) {
-					if (u.getIsdirect() == 1) {
-						direct++;
+					if (u.getIsdirect() != null) {
+						if (u.getIsdirect() == 1) {
+							direct++;
+						} else {
+							nonDirect++;
+						}
 					} else {
-						nonDirect++;
+						unDirect++;
 					}
 					if (u.getSex() == 1) {
 						man++;
@@ -247,6 +276,7 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			alivePerson1.setTotalBranch(branchs.size());
 			alivePerson1.setDirect(direct);
 			alivePerson1.setNonDirect(nonDirect);
+			alivePerson1.setUnDirect(unDirect);
 			alivePerson1.setMan(man);
 			alivePerson1.setWoman(woman);
 			province.setAlive(alivePerson1);
@@ -254,15 +284,20 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			// 重置
 			direct = 0;
 			nonDirect = 0;
+			unDirect = 0;
 			man = 0;
 			woman = 0;
 			branchs = new ArrayList<String>();
 			if (departs.size() > 0) {
 				for (User u : departs) {
-					if (u.getIsdirect() == 1) {
-						direct++;
+					if (u.getIsdirect() != null) {
+						if (u.getIsdirect() == 1) {
+							direct++;
+						} else {
+							nonDirect++;
+						}
 					} else {
-						nonDirect++;
+						unDirect++;
 					}
 					if (u.getSex() == 1) {
 						man++;
@@ -279,6 +314,7 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			departPerson1.setTotalBranch(branchs.size());
 			departPerson1.setDirect(direct);
 			departPerson1.setNonDirect(nonDirect);
+			departPerson1.setUnDirect(unDirect);
 			departPerson1.setMan(man);
 			departPerson1.setWoman(woman);
 			province.setDepart(departPerson1);
@@ -291,6 +327,7 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			totalPerson = 0;
 			direct = 0;
 			nonDirect = 0;
+			unDirect = 0;
 			man = 0;
 			woman = 0;
 			alives = new ArrayList<User>();
@@ -304,10 +341,16 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			params.put("familyid", familyid);
 			List<User> users = userMapper.selectUserByAreaCode(params);
 			for (User user : users) {
-				if (user.getIsdirect() == 1) {
-					direct++;
+				if (user.getIsdirect() != null) {
+					if (user.getIsdirect() != null) {
+						if (user.getIsdirect() == 1) {
+							direct++;
+						} else {
+							nonDirect++;
+						}
+					}
 				} else {
-					nonDirect++;
+					unDirect++;
 				}
 				if (user.getSex() == 1) {
 					man++;
@@ -326,21 +369,27 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			city.setTotalPerson(users.size());
 			city.setDirect(direct);
 			city.setNonDirect(nonDirect);
+			city.setUnDirect(unDirect);
 			city.setMan(man);
 			city.setWoman(woman);
 			city.setTotalBranch(branchs.size());
 			// 重置
 			direct = 0;
 			nonDirect = 0;
+			unDirect = 0;
 			man = 0;
 			woman = 0;
 			branchs = new ArrayList<String>();
 			if (alives.size() > 0) {
 				for (User u : alives) {
-					if (u.getIsdirect() == 1) {
-						direct++;
+					if (u.getIsdirect() != null) {
+						if (u.getIsdirect() == 1) {
+							direct++;
+						} else {
+							nonDirect++;
+						}
 					} else {
-						nonDirect++;
+						unDirect++;
 					}
 					if (u.getSex() == 1) {
 						man++;
@@ -357,6 +406,7 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			alivePerson1.setTotalBranch(branchs.size());
 			alivePerson1.setDirect(direct);
 			alivePerson1.setNonDirect(nonDirect);
+			alivePerson1.setUnDirect(unDirect);
 			alivePerson1.setMan(man);
 			alivePerson1.setWoman(woman);
 			city.setAlive(alivePerson1);
@@ -364,15 +414,20 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			// 重置
 			direct = 0;
 			nonDirect = 0;
+			unDirect = 0;
 			man = 0;
 			woman = 0;
 			branchs = new ArrayList<String>();
 			if (departs.size() > 0) {
 				for (User u : departs) {
-					if (u.getIsdirect() == 1) {
-						direct++;
+					if (u.getIsdirect() != null) {
+						if (u.getIsdirect() == 1) {
+							direct++;
+						} else {
+							nonDirect++;
+						}
 					} else {
-						nonDirect++;
+						unDirect++;
 					}
 					if (u.getSex() == 1) {
 						man++;
@@ -389,6 +444,7 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			departPerson1.setTotalBranch(branchs.size());
 			departPerson1.setDirect(direct);
 			departPerson1.setNonDirect(nonDirect);
+			departPerson1.setUnDirect(unDirect);
 			departPerson1.setMan(man);
 			departPerson1.setWoman(woman);
 			city.setDepart(departPerson1);
@@ -424,6 +480,7 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 		UserQuery userexample = new UserQuery();
 		int direct;
 		int nonDirect;
+		int unDirect;
 		int man;
 		int woman;
 		int alives;
@@ -433,6 +490,7 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 		for (Branch branch : branchs) {
 			direct = 0;
 			nonDirect = 0;
+			unDirect = 0;
 			man = 0;
 			woman = 0;
 			alives = 0;
@@ -445,10 +503,14 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			List<User> users = userMapper.selectByExample(userexample);
 			// 统计
 			for (User user : users) {
-				if (user.getIsdirect() == 1) {
-					direct++;
+				if (user.getIsdirect() != null) {
+					if (user.getIsdirect() == 1) {
+						direct++;
+					} else {
+						nonDirect++;
+					}
 				} else {
-					nonDirect++;
+					unDirect++;
 				}
 				if (user.getSex() == 1) {
 					man++;
@@ -466,6 +528,7 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 
 			pb.setDirect(direct);
 			pb.setNonDirect(nonDirect);
+			pb.setUnDirect(unDirect);
 			pb.setMan(man);
 			pb.setWoman(woman);
 			Person person = new Person();

@@ -12,6 +12,8 @@ public class PersonBranch {
 
 	private Integer nonDirect;// 非直系人数
 
+	private Integer unDirect;// 未知系人数
+
 	private Integer man;// 男性成员
 
 	private Integer woman;// 女性成员
@@ -38,6 +40,14 @@ public class PersonBranch {
 
 	public void setCount(Integer count) {
 		this.count = count;
+	}
+
+	public Integer getUnDirect() {
+		return unDirect;
+	}
+
+	public void setUnDirect(Integer unDirect) {
+		this.unDirect = unDirect;
 	}
 
 	public Integer getTotalPerson() {
