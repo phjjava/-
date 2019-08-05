@@ -48,32 +48,7 @@ public class NoticeController {
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse list(PageModel<NoticeVO> pageModel, Notice notice) {
-		Result result = null;
-		JsonResponse res = null;
-		try {
-			noticeservice.pageQuery(pageModel, notice);
-			if (pageModel.getList() != null) {
-				if (pageModel.getPageSize() == 0) {
-					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo().toString())) {
-						pageModel.setPageNo(pageModel.getPageNo() - 1);
-						noticeservice.pageQuery(pageModel, notice);
-					}
-				}
-			}
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
-			res.setData(pageModel.getList());
-			res.setCount(pageModel.getPageInfo().getTotal());
-			return res;
-		} catch (Exception e) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			res = new JsonResponse(result);
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		result = new Result(MsgConstants.RESUL_FAIL);
-		res = new JsonResponse(result);
-		return res;
+		return noticeservice.pageQuery(pageModel, notice);
 	}
 
 	@RequestMapping(value = "/get", method = RequestMethod.GET)

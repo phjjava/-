@@ -65,37 +65,69 @@ public class NoticeServiceImpl implements NoticeService {
 	private BranchDao branchMapper;
 
 	@Override
-	public PageModel<NoticeVO> pageQuery(PageModel<NoticeVO> pageModel, Notice notice) throws Exception {
-		NoticeExample nq = new NoticeExample();
-		Criteria criteria = nq.or();
-		criteria.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
-		if (StringTools.trimNotEmpty(notice.getType())) {
-			criteria.andTypeEqualTo(notice.getType());
+	public JsonResponse pageQuery(PageModel<NoticeVO> pageModel, Notice notice) {
+		Result result = null;
+		JsonResponse res = null;
+		if (pageModel.getPageNo() == null || "".equals(pageModel.getPageNo() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageNo不能为空！");
+			res = new JsonResponse(result);
+			return res;
 		}
-		if (StringTools.trimNotEmpty(notice.getBranchid())) {
-			criteria.andBranchidEqualTo(notice.getBranchid());
+		if (pageModel.getPageSize() == null || "".equals(pageModel.getPageSize() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageSize不能为空！");
+			res = new JsonResponse(result);
+			return res;
 		}
-		if (StringTools.trimNotEmpty(notice.getDeleteflag())) {
-			criteria.andDeleteflagEqualTo(notice.getDeleteflag());
-		}
-		List<UserManager> managers = CurrentUserContext.getCurrentUserManager();
-		UserManager manager = managers.get(0);
 
-		List<String> currentBranchIds = CurrentUserContext.getCurrentBranchIds();
-		if (manager.getEbtype() == 1) {// 验证是否是总编委会主任
-			currentBranchIds.add("0");
+		try {
+			NoticeExample nq = new NoticeExample();
+			Criteria criteria = nq.or();
+			criteria.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+			if (StringTools.trimNotEmpty(notice.getType())) {
+				criteria.andTypeEqualTo(notice.getType());
+			}
+			if (StringTools.trimNotEmpty(notice.getBranchid())) {
+				criteria.andBranchidEqualTo(notice.getBranchid());
+			}
+			if (StringTools.trimNotEmpty(notice.getDeleteflag())) {
+				criteria.andDeleteflagEqualTo(notice.getDeleteflag());
+			}
+			List<UserManager> managers = CurrentUserContext.getCurrentUserManager();
+			UserManager manager = managers.get(0);
+
+			List<String> currentBranchIds = CurrentUserContext.getCurrentBranchIds();
+			if (manager.getEbtype() == 1) {// 验证是否是总编委会主任
+				currentBranchIds.add("0");
+			}
+			if (currentBranchIds != null && currentBranchIds.size() > 0) {
+				criteria.andBranchidIn(currentBranchIds);
+			} else {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("您的账号当前没有分支");
+				res = new JsonResponse(result);
+				return res;
+			}
+			nq.setOrderByClause("createtime DESC");
+			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			List<NoticeVO> list = noticeMapper.selectNoticeMangeList(nq);
+			if (list != null) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(list);
+				res.setCount(new PageInfo<NoticeVO>(list).getTotal());
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[pageQuery方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-		if (currentBranchIds != null && currentBranchIds.size() > 0) {
-			criteria.andBranchidIn(currentBranchIds);
-		} else {
-			return pageModel;
-		}
-		nq.setOrderByClause("createtime DESC");
-		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		List<NoticeVO> list = noticeMapper.selectNoticeMangeList(nq);
-		pageModel.setList(list);
-		pageModel.setPageInfo(new PageInfo<NoticeVO>(list));
-		return pageModel;
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override

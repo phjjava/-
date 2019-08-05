@@ -76,11 +76,11 @@ public class LoginInterceptor implements HandlerInterceptor {
 		if (userid == null || userid.equals("")) {
 			response.getWriter().print("{\"code\": -400,\"msg\": \"\"}");
 			return false;
-		}else if(loginUser.getPhone().equals("18647740001")){ 
+		} else if ("18647740001".equals(loginUser.getPhone())) {
 			return true;
-		}else {
+		} else {
 			// 获取数据库中的对应用户的sessionid
-			
+
 			dbsessionid = loginUser.getSessionid();
 			// 查询用户的登陆间隔时间	
 			Date lastLogintime = loginUser.getLogintime();

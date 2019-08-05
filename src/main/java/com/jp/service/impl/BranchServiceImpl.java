@@ -849,14 +849,14 @@ public class BranchServiceImpl implements BranchService {
 
 			User gen_user = new User();
 			gen_user = users.get(0);
-			if (gen_user.getGenlevel() == null || "".equals(gen_user.getGenlevel())) {
+			if (gen_user.getGenlevel() == null || "".equals(gen_user.getGenlevel() + "")) {
 				result = new Result(MsgConstants.GENLEVEL_IS_NULL);
 				res = new JsonResponse(result);
 				return res;
 			}
 
 			// 修改加入排行的排序
-			Map map = new HashMap<String, String>();
+			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("genlevel", gen_user.getGenlevel());
 			map.put("status", "0");
 			map.put("isdirect", "1");

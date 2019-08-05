@@ -790,32 +790,12 @@
 	</select>
 	<select id="selectBranchByUser"
 		resultType="com.jp.entity.Branch" parameterType="String">
-
-		SELECT
-		t.branchid,t.branchname
-		FROM
-		(
-		SELECT
-		*
-		FROM
-		jp_userbranch
-		WHERE
-		branchid IN (
-		SELECT DISTINCT
-		branchid
-		FROM
-		jp_branch
-		WHERE
-		familyid =
-		#{familyid,jdbcType=VARCHAR}
-		AND citycode =
-		#{areacode,jdbcType=VARCHAR}
-		AND `status` = 0
-		)
-		) t
-		WHERE
-		t.userid =
-		#{userid,jdbcType=VARCHAR}
+		SELECT	t.branchid,t.branchname	FROM
+		(SELECT	* FROM	jp_userbranch WHERE branchid 
+		IN (SELECT DISTINCT	branchid FROM jp_branch	WHERE familyid = #{familyid,jdbcType=VARCHAR}
+		AND citycode = #{areacode,jdbcType=VARCHAR}
+		AND `status` = 0 ) ) t
+		WHERE t.userid = #{userid,jdbcType=VARCHAR}
 	</select>
 	<select id="getBranchAdminCityList"
 		resultType="com.jp.entity.Branch" parameterType="map">
