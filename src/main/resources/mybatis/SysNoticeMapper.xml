@@ -93,7 +93,11 @@
     updateid, updatetime, imgurl, stick, sortid,count
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.SysNoticeExample" >
-  	select * from jp_sys_notice s left join jp_sys_noticetype t on s.relevanceid=t.typeid order by s.stick desc,s.createtime desc
+  	select * from jp_sys_notice s left join jp_sys_noticetype t on s.relevanceid=t.typeid
+  	<if test="noticetitle!=null">
+		where s.noticetitle like concat("%",#{noticetitle},"%")
+	</if>
+  	 order by s.stick desc,s.createtime desc
    <!--  select
     <if test="distinct" >
       distinct

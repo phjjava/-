@@ -16,8 +16,8 @@ import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentSystemUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
+import com.jp.common.PageModel;
 import com.jp.common.Result;
-import com.jp.entity.MationType;
 import com.jp.entity.SysNotice;
 import com.jp.entity.SysNoticeType;
 import com.jp.service.SysNoticeService;
@@ -30,29 +30,36 @@ public class SysNoticeController {
 	private final Logger log_ = LogManager.getLogger(BannerController.class);
 	@Autowired
 	private SysNoticeService noticeService;
-	/**
-	 * 
-	 * @return
-	 */
-	@ResponseBody
 	@RequestMapping(value = "/selectlist", method = RequestMethod.POST)
-    public JsonResponse bannerJson()  {
+	@ResponseBody
+	public JsonResponse homepagelist(PageModel<SysNotice> pageModel, SysNotice notice, ModelMap model,String noticetitle) {
 		Result result = null;
 		JsonResponse res = null;
-    	List<SysNotice> gotypeList = null;
-    	try {
-    		gotypeList = noticeService.selectNotice();
-    			result = new Result(MsgConstants.RESUL_SUCCESS);
-        		res = new JsonResponse(result);
-        		res.setData(gotypeList);
+		try {
+			noticeService.pageQuery(pageModel, notice,noticetitle);
+			if (pageModel.getList() != null) {
+				if (pageModel.getPageSize() == 0) {
+					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
+						pageModel.setPageNo(pageModel.getPageNo() - 1);
+						noticeService.pageQuery(pageModel, notice,noticetitle);
+					}
+				}
+			}
+
+			result = new Result(MsgConstants.RESUL_SUCCESS);	
+			res = new JsonResponse(result);
+			res.setData(pageModel.getList());
+			res.setCount(pageModel.getPageInfo().getTotal());
+			
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-    	return res;
-    }
+		return res;
+	}
+	
 	/**
 	 * 详情
 	 * @return
@@ -76,7 +83,29 @@ public class SysNoticeController {
 		}
     	return res;
     }
-	
+	/**
+	 * 状态更改
+	 * @param banner
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
+	public JsonResponse changeStatus(SysNotice notice) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		Integer count = 0;
+		try {
+			count = noticeService.changeStatus(notice);
+			if(count > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		res = new JsonResponse(result);
+		return res;
+	}
 	/**
 	 * 调取下拉框类型值（增加修改时调取使用）
 	 * @param mation

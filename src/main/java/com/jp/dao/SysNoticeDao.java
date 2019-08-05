@@ -1,6 +1,9 @@
 package com.jp.dao;
 
 import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.jp.entity.SysNotice;
 
 public interface SysNoticeDao {
@@ -16,5 +19,7 @@ public interface SysNoticeDao {
 	void updatecount(String noticeid);
 
 	int noticeDeleteAll(String[] mationtypeids);
+
+	List<SysNotice> selectByExample(@Param("noticetitle") String noticetitle);
 
 }
