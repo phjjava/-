@@ -4289,9 +4289,9 @@ public class UserServiceImpl implements UserService {
 					userEdu2.setDatefrom(userEdu.getDatefrom());
 					userEdu2.setDateto(userEdu.getDateto());
 					userEdu2.setIssecret(userEdu.getIssecret());
-					status = userEduDao.insertSelective(userEdu2);
+					status = userEduDao.insert(userEdu2);
 				} else {// 修改工作经历
-					status = userEduDao.updateByPrimaryKeySelective(userEdu);
+					status = userEduDao.updateByPrimaryKey(userEdu);
 				}
 			}
 
@@ -4306,9 +4306,9 @@ public class UserServiceImpl implements UserService {
 					userWorkexp2.setIssecret(userWorkexp.getIssecret());
 					userWorkexp2.setPosition(userWorkexp.getPosition());
 					userWorkexp2.setWorkcontent(userWorkexp.getWorkcontent());
-					status = userworkDao.insertSelective(userWorkexp2);
+					status = userworkDao.insert(userWorkexp2);
 				} else {
-					status = userworkDao.updateByPrimaryKeySelective(userWorkexp);
+					status = userworkDao.updateByPrimaryKey(userWorkexp);
 				}
 			}
 		} catch (Exception e) {
