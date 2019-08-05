@@ -12,7 +12,7 @@ import com.jp.entity.Noticefile;
 import com.jp.entity.NoticefileQuery;
 
 public interface NoticeService {
-	PageModel<NoticeVO> pageQuery(PageModel<NoticeVO> pageModel, Notice notice) throws Exception;
+	JsonResponse pageQuery(PageModel<NoticeVO> pageModel, Notice notice);
 
 	Notice get(String noticeid) throws Exception;
 
