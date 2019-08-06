@@ -1,5 +1,7 @@
 package com.jp.dao;
 
+import com.jp.entity.InstructionTemplateQuery;
+import com.jp.entity.IntroudceTemplate;
 import com.jp.entity.IntroudceTemplateDetail;
 import com.jp.entity.IntroudceTemplateDetailExample;
 import java.util.List;
@@ -18,7 +20,7 @@ public interface IntroudceTemplateDetailDao {
 
     List<IntroudceTemplateDetail> selectByExampleWithBLOBs(IntroudceTemplateDetailExample example);
 
-    List<IntroudceTemplateDetail> selectByExample(IntroudceTemplateDetailExample example);
+    List<IntroudceTemplateDetail> selectByExample(String title);
 
     IntroudceTemplateDetail selectByPrimaryKey(String id);
 
@@ -33,4 +35,8 @@ public interface IntroudceTemplateDetailDao {
     int updateByPrimaryKeyWithBLOBs(IntroudceTemplateDetail record);
 
     int updateByPrimaryKey(IntroudceTemplateDetail record);
+
+	List<IntroudceTemplateDetail> selectByExample(InstructionTemplateQuery iq);
+
+	void intemplateDeleteAll(String[] ids);
 }
