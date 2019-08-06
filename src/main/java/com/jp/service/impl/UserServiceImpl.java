@@ -97,6 +97,7 @@ import com.jp.entity.Usercode;
 import com.jp.entity.UsercodeQuery;
 import com.jp.entity.Useredu;
 import com.jp.entity.UsereduQuery;
+import com.jp.entity.UsereduQuery.Criteria;
 import com.jp.entity.Userinfo;
 import com.jp.entity.Usermates;
 import com.jp.entity.Userphoto;
@@ -197,8 +198,9 @@ public class UserServiceImpl implements UserService {
 	 */
 	public List<User> getPUserList(List<User> pUsers, String pid) {
 		User pUser = userDao.selectByPrimaryKey(pid);
-		pUsers.add(pUser);
-		if (pUser == null) {
+		if (pUser != null) {
+			pUsers.add(pUser);
+		} else {
 			return pUsers;
 		}
 		getPUserList(pUsers, pUser.getPid());
@@ -253,7 +255,8 @@ public class UserServiceImpl implements UserService {
 				if (StringTools.trimNotEmpty(user.getPhone())) {
 					// 如果是存在手机号，则用之前德密码
 					UserQuery ex = new UserQuery();
-					ex.or().andPhoneEqualTo(user.getPhone()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
+					ex.or().andPhoneEqualTo(user.getPhone()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE)
+							.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
 					List<User> list = userDao.selectByExample(ex);
 					if (list != null && list.size() > 0) {
 						user.setPassword(list.get(0).getPassword());
@@ -276,81 +279,51 @@ public class UserServiceImpl implements UserService {
 				user.setUpdateid(CurrentUserContext.getCurrentUserId());
 				user.setUpdatetime(new Date());
 				userDao.updateByPrimaryKeySelective(user);
+				String birthplaceP = userinfo.getBirthplaceP() == null ? "" : userinfo.getBirthplaceP();
+				String birthplaceC = userinfo.getBirthplaceC() == null ? "" : userinfo.getBirthplaceC();
+				String birthplaceX = userinfo.getBirthplaceX() == null ? "" : userinfo.getBirthplaceX();
+				String birthDetail = userinfo.getBirthDetail() == null ? "" : userinfo.getBirthDetail();
 				// 出生地
-				userinfo.setBirthplace(userinfo.getBirthplaceP() + "@@" + userinfo.getBirthplaceC() + "@@"
-						+ userinfo.getBirthplaceX() + "@@" + userinfo.getBirthDetail());
+				userinfo.setBirthplace(birthplaceP + "@@" + birthplaceC + "@@" + birthplaceX + "@@" + birthDetail);
+				String homeplaceP = userinfo.getHomeplaceP() == null ? "" : userinfo.getHomeplaceP();
+				String homeplaceC = userinfo.getHomeplaceC() == null ? "" : userinfo.getHomeplaceC();
+				String homeplaceX = userinfo.getHomeplaceX() == null ? "" : userinfo.getHomeplaceX();
+				String homeDetail = userinfo.getHomeDetail() == null ? "" : userinfo.getHomeDetail();
 				// 常住地
-				userinfo.setHomeplace(userinfo.getHomeplaceP() + "@@" + userinfo.getHomeplaceC() + "@@"
-						+ userinfo.getHomeplaceX() + "@@" + userinfo.getHomeDetail());
+				userinfo.setHomeplace(homeplaceP + "@@" + homeplaceC + "@@" + homeplaceX + "@@" + homeDetail);
+
 				// 保存用户详细信息
 				userInfoDao.updateByPrimaryKeySelective(userinfo);
-				/*
-				  		// 删除教育经历
-						UsereduQuery fq = new UsereduQuery();
-						Criteria createCriteria = fq.createCriteria();
-						createCriteria.andUseridEqualTo(user.getUserid());
-						userEduDao.deleteByExample(fq);
-						// 循环保存教育经历
-						List<Useredu> eduList = user.getUserEdu();
-						for (Useredu useredu2 : eduList) {
-							useredu2.setUserid(user.getUserid());
-							useredu2.setEduid(UUIDUtils.getUUID());
-						}
-						if (eduList.size() > 0) {
-							userEduDao.insertEduExp(eduList);
-						}
-						// 删除工作经历
-						UserworkexpQuery fqw = new UserworkexpQuery();
-						com.jp.entity.UserworkexpQuery.Criteria createCriteriaw = fqw.createCriteria();
-						createCriteriaw.andUseridEqualTo(user.getUserid());
-						userworkDao.deleteByExample(fqw);
-						// 循环保存工作经历
-						List<Userworkexp> workList = user.getUserWorkexp();
-						for (Userworkexp userwork : workList) {
-							userwork.setUserid(user.getUserid());
-							userwork.setWorkid(UUIDUtils.getUUID());
-						}
-						if (workList.size() > 0) {
-							userworkDao.insertEduExp(workList);
-						}
-					*/
 
-				// 教育经历
-				for (Useredu userEdu : user.getUserEdu()) {
-					// 新增工作经历
-					if (userEdu.getEduid() == null || userEdu.getEduid().equals("")) {
-						Useredu userEdu2 = new Useredu();
-						userEdu2.setUserid(user.getUserid());
-						userEdu2.setUniversity(userEdu.getUniversity());
-						userEdu2.setMajor(userEdu.getMajor());
-						userEdu2.setDegree(userEdu.getDegree());
-						userEdu2.setEduid(UUIDUtils.getUUID());
-						userEdu2.setDatefrom(userEdu.getDatefrom());
-						userEdu2.setEducontent(userEdu.getEducontent());
-						userEdu2.setDateto(userEdu.getDateto());
-						userEdu2.setIssecret(userEdu.getIssecret());
-						userEduDao.insertSelective(userEdu2);
-					} else {// 修改工作经历
-						userEduDao.updateByPrimaryKeySelective(userEdu);
-					}
+				// 删除教育经历
+				UsereduQuery fq = new UsereduQuery();
+				Criteria createCriteria = fq.createCriteria();
+				createCriteria.andUseridEqualTo(user.getUserid());
+				userEduDao.deleteByExample(fq);
+				// 循环保存教育经历
+				List<Useredu> eduList = user.getUserEdu();
+				for (Useredu useredu2 : eduList) {
+					useredu2.setUserid(user.getUserid());
+					useredu2.setEduid(UUIDUtils.getUUID());
+				}
+				if (eduList.size() > 0) {
+					userEduDao.insertEduExp(eduList);
+				}
+				// 删除工作经历
+				UserworkexpQuery fqw = new UserworkexpQuery();
+				com.jp.entity.UserworkexpQuery.Criteria createCriteriaw = fqw.createCriteria();
+				createCriteriaw.andUseridEqualTo(user.getUserid());
+				userworkDao.deleteByExample(fqw);
+				// 循环保存工作经历
+				List<Userworkexp> workList = user.getUserWorkexp();
+				for (Userworkexp userwork : workList) {
+					userwork.setUserid(user.getUserid());
+					userwork.setWorkid(UUIDUtils.getUUID());
+				}
+				if (workList.size() > 0) {
+					userworkDao.insertEduExp(workList);
 				}
 
-				for (Userworkexp userWorkexp : user.getUserWorkexp()) {
-					if (userWorkexp.getWorkid() == null || userWorkexp.getWorkid().equals("")) {
-						Userworkexp userWorkexp2 = new Userworkexp();
-						userWorkexp2.setWorkid(UUIDUtils.getUUID());
-						userWorkexp2.setUserid(user.getUserid());
-						userWorkexp2.setCompany(userWorkexp.getCompany());
-						userWorkexp2.setDatefrom(userWorkexp.getDatefrom());
-						userWorkexp2.setDateto(userWorkexp2.getDateto());
-						userWorkexp2.setIssecret(userWorkexp.getIssecret());
-						userWorkexp2.setPosition(userWorkexp.getPosition());
-						userWorkexp2.setWorkcontent(userWorkexp.getWorkcontent());
-						userworkDao.insertSelective(userWorkexp2);
-					} else {
-						userworkDao.updateByPrimaryKeySelective(userWorkexp);
-					}
-				}
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 			} else {
 				// 新增用户信息
@@ -399,12 +372,20 @@ public class UserServiceImpl implements UserService {
 					} else {
 						// 保存用户信息
 						userDao.insertSelective(user);
+						String birthplaceP = userinfo.getBirthplaceP() == null ? "" : userinfo.getBirthplaceP();
+						String birthplaceC = userinfo.getBirthplaceC() == null ? "" : userinfo.getBirthplaceC();
+						String birthplaceX = userinfo.getBirthplaceX() == null ? "" : userinfo.getBirthplaceX();
+						String birthDetail = userinfo.getBirthDetail() == null ? "" : userinfo.getBirthDetail();
 						// 出生地
-						userinfo.setBirthplace(userinfo.getBirthplaceP() + "@@" + userinfo.getBirthplaceC() + "@@"
-								+ userinfo.getBirthplaceX() + "@@" + userinfo.getBirthDetail());
+						userinfo.setBirthplace(
+								birthplaceP + "@@" + birthplaceC + "@@" + birthplaceX + "@@" + birthDetail);
+						String homeplaceP = userinfo.getHomeplaceP() == null ? "" : userinfo.getHomeplaceP();
+						String homeplaceC = userinfo.getHomeplaceC() == null ? "" : userinfo.getHomeplaceC();
+						String homeplaceX = userinfo.getHomeplaceX() == null ? "" : userinfo.getHomeplaceX();
+						String homeDetail = userinfo.getHomeDetail() == null ? "" : userinfo.getHomeDetail();
 						// 常住地
-						userinfo.setHomeplace(userinfo.getHomeplaceP() + "@@" + userinfo.getHomeplaceC() + "@@"
-								+ userinfo.getHomeplaceX() + "@@" + userinfo.getHomeDetail());
+						userinfo.setHomeplace(homeplaceP + "@@" + homeplaceC + "@@" + homeplaceX + "@@" + homeDetail);
+
 						// 保存用户详细信息
 						userInfoDao.insertSelective(userinfo);
 
@@ -3680,45 +3661,67 @@ public class UserServiceImpl implements UserService {
 			return res;
 		}
 		userLimitVO.setName(user.getUsername());
-		Integer isdirect = Integer.valueOf(user.getIsdirect());
-		Integer sex = Integer.valueOf(user.getSex());
-		// 直系用户
-		if (user.getIsdirect() == 1) {
-			User pUser = userDao.selectByPrimaryKey(user.getPid());
+		Integer isdirect = user.getIsdirect();
+		Integer sex = user.getSex();
+		//未知系
+		if (user.getIsdirect() == null) {
 			Userinfo userInfo = userInfoDao.selectByPrimaryKey(entity.getUserid());
-			if (user.getLivestatus() != null)
-				userLimitVO.setLivestatus(Integer.valueOf(user.getLivestatus()));
-			if (user.getGenlevel() != null)
-				userLimitVO.setGenlevel(user.getGenlevel().toString());
-			if (userInfo != null)
-				userLimitVO.setHomeplace(userInfo.getHomeplace().replace("@", ""));
-			userLimitVO.setImgurl(user.getImgurl());
-			if (pUser != null) {
-				userLimitVO.setParentmatename(pUser.getMatename());
-				userLimitVO.setParentname(pUser.getUsername());
+			if (user.getLivestatus() != null) {
+				userLimitVO.setLivestatus(user.getLivestatus());
 			}
-			userLimitVO.setPostision(user.getBrotherpos());
-		}
-		// 非直系用户（配偶用户）
-		if (user.getIsdirect() == 0) {
-			User usermate = userDao.selectByPrimaryKey(user.getMateid());
-			Userinfo userInfo = userInfoDao.selectByPrimaryKey(usermate.getUserid());
-			if (user.getLivestatus() != null)
-				userLimitVO.setLivestatus(Integer.valueOf(user.getLivestatus()));
-			if (user.getGenlevel() != null)
+			if (user.getGenlevel() != null) {
 				userLimitVO.setGenlevel(user.getGenlevel().toString());
+			}
 			if (userInfo != null) {
-				String home = userInfo.getHomeplace();
-				if (StringTools.trimNotEmpty(home)) {
-
-					userLimitVO.setHomeplace(home.replace("@", "").replace("null", ""));
+				userLimitVO.setHomeplace(userInfo.getHomeplace().replace("@", "").replace("null", ""));
+			}
+			userLimitVO.setImgurl(user.getImgurl());
+			userLimitVO.setPostision(user.getBrotherpos());
+		} else {
+			// 直系用户
+			if (user.getIsdirect() == 1) {
+				User pUser = userDao.selectByPrimaryKey(user.getPid());
+				Userinfo userInfo = userInfoDao.selectByPrimaryKey(entity.getUserid());
+				if (user.getLivestatus() != null) {
+					userLimitVO.setLivestatus(user.getLivestatus());
+				}
+				if (user.getGenlevel() != null) {
+					userLimitVO.setGenlevel(user.getGenlevel().toString());
+				}
+				if (userInfo != null) {
+					userLimitVO.setHomeplace(userInfo.getHomeplace().replace("@", "").replace("null", ""));
+				}
+				userLimitVO.setImgurl(user.getImgurl());
+				if (pUser != null) {
+					userLimitVO.setParentmatename(pUser.getMatename());
+					userLimitVO.setParentname(pUser.getUsername());
+				}
+				userLimitVO.setPostision(user.getBrotherpos());
+			}
+			// 非直系用户（配偶用户）
+			if (user.getIsdirect() == 0) {
+				if (user.getLivestatus() != null) {
+					userLimitVO.setLivestatus(user.getLivestatus());
+				}
+				if (user.getGenlevel() != null) {
+					userLimitVO.setGenlevel(user.getGenlevel().toString());
+				}
+				userLimitVO.setImgurl(user.getImgurl());
+				User usermate = userDao.selectByPrimaryKey(user.getMateid());
+				if (usermate != null) {
+					Userinfo userInfo = userInfoDao.selectByPrimaryKey(usermate.getUserid());
+					if (userInfo != null) {
+						String home = userInfo.getHomeplace();
+						if (StringTools.trimNotEmpty(home)) {
+							userLimitVO.setHomeplace(home.replace("@", "").replace("null", ""));
+						}
+					}
+					// 设置直系用户暨配偶的名字
+					userLimitVO.setMatename(usermate.getUsername());
+					// 排行
+					userLimitVO.setPostision(usermate.getBrotherpos());
 				}
 			}
-			userLimitVO.setImgurl(user.getImgurl());
-			// 设置直系用户暨配偶的名字
-			userLimitVO.setMatename(usermate.getUsername());
-			// 排行
-			userLimitVO.setPostision(usermate.getBrotherpos());
 		}
 		BranchKey branchKey = new BranchKey();
 		branchKey.setFamilyid(user.getFamilyid());
@@ -4286,9 +4289,9 @@ public class UserServiceImpl implements UserService {
 					userEdu2.setDatefrom(userEdu.getDatefrom());
 					userEdu2.setDateto(userEdu.getDateto());
 					userEdu2.setIssecret(userEdu.getIssecret());
-					status = userEduDao.insertSelective(userEdu2);
+					status = userEduDao.insert(userEdu2);
 				} else {// 修改工作经历
-					status = userEduDao.updateByPrimaryKeySelective(userEdu);
+					status = userEduDao.updateByPrimaryKey(userEdu);
 				}
 			}
 
@@ -4303,9 +4306,9 @@ public class UserServiceImpl implements UserService {
 					userWorkexp2.setIssecret(userWorkexp.getIssecret());
 					userWorkexp2.setPosition(userWorkexp.getPosition());
 					userWorkexp2.setWorkcontent(userWorkexp.getWorkcontent());
-					status = userworkDao.insertSelective(userWorkexp2);
+					status = userworkDao.insert(userWorkexp2);
 				} else {
-					status = userworkDao.updateByPrimaryKeySelective(userWorkexp);
+					status = userworkDao.updateByPrimaryKey(userWorkexp);
 				}
 			}
 		} catch (Exception e) {
@@ -4808,7 +4811,7 @@ public class UserServiceImpl implements UserService {
 		user.setUpdateid(pUser.getUserid());
 		user.setCreatetime(new Date());
 		user.setUpdatetime(new Date());
-		int icount = userDao.insert(user);
+		int icount = userDao.insertSelective(user);
 
 		Userinfo userInfo = new Userinfo();
 		userInfo.setUserid(userid);
@@ -4854,7 +4857,7 @@ public class UserServiceImpl implements UserService {
 		userInfo.setTel(userChildInfo.getTel());
 		userInfo.setTelsee((userChildInfo.getTelsee() == null || "".equals(userChildInfo.getTelsee())) ? 0
 				: userChildInfo.getTelsee());
-		userInfoDao.insert(userInfo);
+		userInfoDao.insertSelective(userInfo);
 		userInfo.setRemark(userChildInfo.getRemark());
 		userInfo.setRemarksee((userChildInfo.getRemarksee() == null || "".equals(userChildInfo.getRemarksee())) ? 0
 				: userChildInfo.getRemarksee());
