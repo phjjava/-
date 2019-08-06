@@ -104,14 +104,12 @@ public class SysNoticeServiceImpl implements SysNoticeService{
 				if(notice.getDeleteflag() != null){
 					createCriteria.andDeleteflagEqualTo(notice.getDeleteflag());
 				}
-				
-				bq.setOrderByClause("createtime DESC");
 				PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 				List<SysNotice> list;
 				if(bq.equals(null)) {
 					list = noticedao.selectByExample();
 				}else {
-					list = noticedao.selectByExample(noticetitle);
+					list = noticedao.selectByExample(bq,noticetitle);
 				}
 				
 				
