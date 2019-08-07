@@ -12,6 +12,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1023,6 +1024,12 @@ public class UserController {
 	public JsonResponse validatePhone(User user) {
 		Result result = new Result(MsgConstants.RESUL_SUCCESS); // 默认通过验证
 		JsonResponse res = null;
+		if (StringUtils.isBlank(user.getPhone())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数phone为必填！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 			List<User> userList = userService.validatePhone(user);

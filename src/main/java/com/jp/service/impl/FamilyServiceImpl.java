@@ -580,7 +580,7 @@ public class FamilyServiceImpl implements FamilyService {
 				return res;
 			}
 			SysFamilyQuery sysFamilyExample = new SysFamilyQuery();
-			sysFamilyExample.or().andFamilycodeEqualTo(family.getFamilycode());
+			sysFamilyExample.or().andFamilycodeEqualTo(family.getFamilycode()).andStatusEqualTo(0);
 			List<SysFamily> sysFamilys = sysFamilyDao.selectByExample(sysFamilyExample);
 			if (sysFamilys != null && sysFamilys.size() > 0) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);

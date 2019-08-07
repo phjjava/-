@@ -40,7 +40,7 @@ public class User implements Serializable {
 	/**
 	 * 更新日期
 	 */
-	@JsonFormat(pattern="yy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yy-MM-dd HH:mm:ss")
 	private Date updatetime;
 
 	/**
@@ -849,8 +849,8 @@ public class User implements Serializable {
 				+ ", resetpwd=" + resetpwd + ", thirds=" + thirds + ", isSetPwd=" + isSetPwd + ", familycode="
 				+ familycode + ", start=" + start + ", count=" + count + ", cityname=" + cityname + ", citycode="
 				+ citycode + ", familystatus=" + familystatus + ", roleid=" + roleid + ", rolename=" + rolename
-				+ ", roledesc=" + roledesc + ", funcgroupid=" + funcgroupid + ", ismanager=" + ismanager + ", type="
-				+ type + ", matetype=" + matetype + "]";
+				+ ", roledesc=" + roledesc + ", funcgroupid=" + funcgroupid + ", ismanager=" + ismanager + ", ebtype="
+				+ ebtype + ", type=" + type + ", matetype=" + matetype + "]";
 	}
 
 	public String getAddress() {
@@ -892,4 +892,5 @@ public class User implements Serializable {
 	public void setExcelid(String excelid) {
 		this.excelid = excelid;
 	}
+
 }
