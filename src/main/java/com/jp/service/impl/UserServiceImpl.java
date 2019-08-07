@@ -293,11 +293,13 @@ public class UserServiceImpl implements UserService {
 				// 常住地
 				userinfo.setHomeplace(homeplaceP + "@@" + homeplaceC + "@@" + homeplaceX + "@@" + homeDetail);
 				String birthday = userinfo.getBirthday();
-				//(农历日期范围19000101~20491229)
-				int parseInt = Integer.parseInt(birthday.replace("-", ""));
-				if (parseInt > 19000130 && parseInt < 20500101) {
-					String solarToLunar = CalendarUtil.solarToLunar(birthday);
-					userinfo.setLunarbirthday(solarToLunar);
+				if (StringUtils.isNotBlank(birthday)) {
+					//(农历日期范围19000101~20491229)
+					int parseInt = Integer.parseInt(birthday.replace("-", ""));
+					if (parseInt > 19000130 && parseInt < 20500101) {
+						String solarToLunar = CalendarUtil.solarToLunar(birthday);
+						userinfo.setLunarbirthday(solarToLunar);
+					}
 				}
 				// 保存用户详细信息
 				userInfoDao.updateByPrimaryKeySelective(userinfo);
@@ -393,11 +395,13 @@ public class UserServiceImpl implements UserService {
 						// 常住地
 						userinfo.setHomeplace(homeplaceP + "@@" + homeplaceC + "@@" + homeplaceX + "@@" + homeDetail);
 						String birthday = userinfo.getBirthday();
-						//(农历日期范围19000101~20491229)
-						int parseInt = Integer.parseInt(birthday.replace("-", ""));
-						if (parseInt > 19000130 && parseInt < 20500101) {
-							String solarToLunar = CalendarUtil.solarToLunar(birthday);
-							userinfo.setLunarbirthday(solarToLunar);
+						if (StringUtils.isNotBlank(birthday)) {
+							//(农历日期范围19000101~20491229)
+							int parseInt = Integer.parseInt(birthday.replace("-", ""));
+							if (parseInt > 19000130 && parseInt < 20500101) {
+								String solarToLunar = CalendarUtil.solarToLunar(birthday);
+								userinfo.setLunarbirthday(solarToLunar);
+							}
 						}
 						// 保存用户详细信息
 						userInfoDao.insertSelective(userinfo);
@@ -4287,11 +4291,13 @@ public class UserServiceImpl implements UserService {
 			// 常住地
 			userinfo.setHomeplace(homeplaceP + "@@" + homeplaceC + "@@" + homeplaceX + "@@" + homeDetail);
 			String birthday = userinfo.getBirthday();
-			//(农历日期范围19000101~20491229)
-			int parseInt = Integer.parseInt(birthday.replace("-", ""));
-			if (parseInt > 19000130 && parseInt < 20500101) {
-				String solarToLunar = CalendarUtil.solarToLunar(birthday);
-				userinfo.setLunarbirthday(solarToLunar);
+			if (StringUtils.isNotBlank(birthday)) {
+				//(农历日期范围19000101~20491229)
+				int parseInt = Integer.parseInt(birthday.replace("-", ""));
+				if (parseInt > 19000130 && parseInt < 20500101) {
+					String solarToLunar = CalendarUtil.solarToLunar(birthday);
+					userinfo.setLunarbirthday(solarToLunar);
+				}
 			}
 			// 用户信息表
 			status = userInfoDao.updateByPrimaryKeySelective(userinfo);
@@ -4841,11 +4847,13 @@ public class UserServiceImpl implements UserService {
 		//前台传参：阳历日期：yyyy-MM-dd
 		String birthday = userChildInfo.getBirthday();
 		try {
-			//(农历日期范围19000101~20491229)
-			int parseInt = Integer.parseInt(birthday.replace("-", ""));
-			if (parseInt > 19000130 && parseInt < 20500101) {
-				String solarToLunar = CalendarUtil.solarToLunar(birthday);
-				userInfo.setLunarbirthday(solarToLunar);
+			if (StringUtils.isNotBlank(birthday)) {
+				//(农历日期范围19000101~20491229)
+				int parseInt = Integer.parseInt(birthday.replace("-", ""));
+				if (parseInt > 19000130 && parseInt < 20500101) {
+					String solarToLunar = CalendarUtil.solarToLunar(birthday);
+					userInfo.setLunarbirthday(solarToLunar);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
