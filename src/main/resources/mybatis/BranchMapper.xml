@@ -584,6 +584,24 @@
 
 	<select id="selectBranchList"
 		parameterType="com.jp.entity.Branch" resultType="com.jp.entity.Branch">
+		select
+		DISTINCT a.*,(SELECT
+		count(*)
+		FROM
+		jp_user
+		WHERE
+		branchid =
+		a.branchid
+		AND familyid = #{familyid,jdbcType=VARCHAR}
+		AND
+		deleteflag = 0
+		AND `status` = 0) usercount
+		from
+		jp_branch a right
+		join jp_user b on a.branchid=b.branchid where
+		a.familyid = #{familyid,jdbcType=VARCHAR}
+		and a.status=0
+		<!-- 
 		SELECT
 		branch.*, (
 		SELECT
@@ -604,13 +622,13 @@
 		branch.status=0
 
 		and
-		familyid = #{familyid,jdbcType=VARCHAR}
+		familyid = #{familyid,jdbcType=VARCHAR} -->
 		<if test="branchid != null and branchid != ''">
-			AND branchid = #{branchid,jdbcType=VARCHAR}
+			and a.branchid = #{branchid,jdbcType=VARCHAR}
 		</if>
 
 		<if test="branchname != null and branchname != ''">
-			and branchname like binary CONCAT('%',
+			and a.branchname like binary CONCAT('%',
 			CONCAT(#{branchname}), '%')
 		</if>
 		ORDER BY
