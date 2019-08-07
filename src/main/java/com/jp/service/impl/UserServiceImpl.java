@@ -279,7 +279,7 @@ public class UserServiceImpl implements UserService {
 				}
 				user.setUpdateid(CurrentUserContext.getCurrentUserId());
 				user.setUpdatetime(new Date());
-				userDao.updateByPrimaryKeySelective(user);
+				userDao.updateByPrimaryKey(user);
 				String birthplaceP = userinfo.getBirthplaceP() == null ? "" : userinfo.getBirthplaceP();
 				String birthplaceC = userinfo.getBirthplaceC() == null ? "" : userinfo.getBirthplaceC();
 				String birthplaceX = userinfo.getBirthplaceX() == null ? "" : userinfo.getBirthplaceX();
@@ -302,7 +302,7 @@ public class UserServiceImpl implements UserService {
 					}
 				}
 				// 保存用户详细信息
-				userInfoDao.updateByPrimaryKeySelective(userinfo);
+				userInfoDao.updateByPrimaryKey(userinfo);
 
 				// 删除教育经历
 				UsereduQuery fq = new UsereduQuery();
