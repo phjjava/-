@@ -138,7 +138,7 @@ public interface UserService {
 	 * @参数 @throws Exception
 	 * @return String
 	 */
-	Result mergeMate(User user, Userinfo userInfo, String usernameBefore) throws Exception;
+	Result mergeMate(User user, Userinfo userInfo) throws Exception;
 
 	/**
 	 * @描述 登录
