@@ -963,7 +963,7 @@
 		where 1=1 and u.phone =	#{phone,jdbcType=VARCHAR} 
 		and u.password = #{password,jdbcType=VARCHAR} 
 		and u.deleteflag=0 and u.`status`=0 
-		and	u.livestatus=0 and 
+		and	u.livestatus=0 
 	</select>
 
 	<select id="validatePhone" resultType="com.jp.entity.User">
