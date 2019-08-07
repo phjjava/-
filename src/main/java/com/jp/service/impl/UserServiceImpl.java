@@ -1743,12 +1743,22 @@ public class UserServiceImpl implements UserService {
 			String birthplace = userInfo.getBirthplaceP() + "@@" + userInfo.getBirthplaceC() + "@@"
 					+ userInfo.getBirthplaceX();
 			userInfo.setBirthplace(birthplace);
+			User user1 = userDao.selectByPrimaryKey(user.getUserid());
+			if(user1 == null ) {
+				result.setCode(ConstantUtils.RESULT_FAIL);
+				result.setMsg("用户不存在！");
+				return result;
+			}
 			if (matetype == 0 || matetype == 1) {
 				if (StringTools.trimNotEmpty(user.getMateid())) {
 					// 修改用户配偶信息
 					User userMmateUpdate = new User();
 					String phone = user.getPhone();
 					userMmateUpdate.setUserid(user.getMateid());
+					userMmateUpdate.setBranchid(user1.getBranchid());
+					userMmateUpdate.setBranchname(user1.getBranchname());
+					userMmateUpdate.setGenlevel(user1.getGenlevel());
+					userMmateUpdate.setMatename(user1.getUsername());
 					userMmateUpdate.setPhone(phone);
 					if (StringTools.trimNotEmpty(phone)) {
 						userMmateUpdate.setPassword(MD5Util.string2MD5(phone.substring(phone.length() - 6)));
@@ -1784,13 +1794,15 @@ public class UserServiceImpl implements UserService {
 						userMmate.setFamilyname(CurrentUserContext.getCurrentFamilyName());
 						userMmate.setCreateid(CurrentUserContext.getCurrentUserId());
 						userMmate.setCreatetime(new Date());
+						userMmate.setBranchid(user1.getBranchid());
+						userMmate.setBranchname(user1.getBranchname());
+						userMmate.setGenlevel(user1.getGenlevel());
+						userMmate.setMatename(user1.getUsername());
 						userMmate.setStatus(0);
 						userMmate.setIsdirect(0);
 						userMmate.setMateid(user.getUserid());
-						userMmate.setMatename(user.getUsername());
 						userMmate.setUsername(user.getMatename());
 						userMmate.setSex(user.getSex());
-						userMmate.setGenlevel(user.getGenlevel());
 						userMmate.setDeleteflag(0);
 						userMmate.setPinyinfirst(PinyinUtil.getPinYinFirstChar(user.getMatename()));
 						userMmate.setPinyinfull(PinyinUtil.getPinyinFull(user.getMatename()));
@@ -1845,10 +1857,12 @@ public class UserServiceImpl implements UserService {
 				userMates.setStatus(0);
 				userMates.setIsdirect(0);
 				userMates.setMateid(user.getUserid());
-				userMates.setMatename(user.getUsername());
 				userMates.setUsername(user.getMatename());
+				userMates.setBranchid(user1.getBranchid());
+				userMates.setBranchname(user1.getBranchname());
+				userMates.setGenlevel(user1.getGenlevel());
+				userMates.setMatename(user1.getUsername());
 				userMates.setSex(user.getSex());
-				userMates.setGenlevel(user.getGenlevel());
 				userMates.setDeleteflag(0);
 				userMates.setPinyinfirst(PinyinUtil.getPinYinFirstChar(user.getMatename()));
 				userMates.setPinyinfull(PinyinUtil.getPinyinFull(user.getMatename()));
