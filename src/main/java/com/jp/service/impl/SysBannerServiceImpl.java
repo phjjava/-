@@ -107,15 +107,13 @@ public class SysBannerServiceImpl implements SysBannerService{
 	@Override
 	public void realDelete(String bannerid) {
 		// TODO Auto-generated method stub
-		System.out.println("bannerid="+bannerid);
 		pagehomeDao.deleteByPrimaryKey(bannerid);
 	}
 
 
 	@Override
 	public SysMation SelectMationOne(String mationid) {
-		// TODO Auto-generated method stub
-				
+		// TODO Auto-generated method stub	
 		return badao.selectByPrimaryKey(mationid);
 	}
 

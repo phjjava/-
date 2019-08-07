@@ -1,5 +1,6 @@
 package com.jp.dao;
 
+import com.jp.entity.InstructionTemplateQuery;
 import com.jp.entity.IntroudceTemplate;
 import com.jp.entity.IntroudceTemplateExample;
 import java.util.List;
@@ -15,8 +16,8 @@ public interface IntroudceTemplateDao {
     int insert(IntroudceTemplate record);
 
     int insertSelective(IntroudceTemplate record);
-
-    List<IntroudceTemplate> selectByExample(IntroudceTemplateExample example);
+    
+    List<IntroudceTemplate> selectByExample(IntroudceTemplateExample introudceTemplateExample);
 
     IntroudceTemplate selectByPrimaryKey(String id);
 
@@ -27,4 +28,10 @@ public interface IntroudceTemplateDao {
     int updateByPrimaryKeySelective(IntroudceTemplate record);
 
     int updateByPrimaryKey(IntroudceTemplate record);
+    //模板书分页列表
+	List<IntroudceTemplate> selectByExample(InstructionTemplateQuery iq);
+	
+	void intemplateDeleteAll(String[] ids);
+	//模板书下拉框
+	List<IntroudceTemplate> selectByExample();
 }

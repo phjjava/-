@@ -255,4 +255,13 @@
       sort = #{sort,jdbcType=INTEGER}
     where id = #{id,jdbcType=VARCHAR}
   </update>
+  
+  <delete id="intemplateDeleteAll">
+  		 <foreach collection="array" item="item" index="index" separator=";">
+	     delete from  jp_introudcetemplate 
+	     where id = 
+		#{item,jdbcType=VARCHAR}
+		</foreach>
+  </delete>
+  
 </mapper>

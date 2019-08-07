@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.jp.entity.BannerQuery;
 import com.jp.entity.SysNotice;
 
 public interface SysNoticeDao {
@@ -20,6 +21,6 @@ public interface SysNoticeDao {
 
 	int noticeDeleteAll(String[] mationtypeids);
 
-	List<SysNotice> selectByExample(@Param("noticetitle") String noticetitle);
+	List<SysNotice> selectByExample(@Param("bq") BannerQuery bq, @Param("noticetitle") String noticetitle);
 
 }
