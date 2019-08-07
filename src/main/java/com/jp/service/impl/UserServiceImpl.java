@@ -122,7 +122,7 @@ import com.jp.util.WebUtil;
 import com.jp.util.ZodiacUtil;
 
 @Service
-public class UserServiceImpl1 implements UserService {
+public class UserServiceImpl implements UserService {
 	private final Logger log_ = LogManager.getLogger(UserController.class);
 	@Autowired
 	private UserDao userDao;
