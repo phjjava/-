@@ -42,7 +42,7 @@ public class IntroudceTemplateDetailServiceImpl implements IntroudceTemplateDeta
 		}
 		iq.setOrderByClause("sort");
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		List<IntroudceTemplateDetail> list = inDetailDao.selectByExample(title);
+		List<IntroudceTemplateDetail> list = inDetailDao.selectByExample1(iq,title);
 		pageModel.setList(list);
 		return pageModel;
 	}
