@@ -249,7 +249,7 @@ public class SysMationController {
 	 * 类型表列表
 	 * 
 	 */
-	@ResponseBody
+	/*@ResponseBody
 	@RequestMapping(value = "/findtypelist", method = RequestMethod.POST)
     public JsonResponse findtypelist()  {
 		Result result = null;
@@ -267,7 +267,37 @@ public class SysMationController {
 			log_.error("[JPSYSTEM]", e);
 		}
     	return res;
-    }
+    }*/
+	@RequestMapping(value = "/findtypelist", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse findtypelist(PageModel<MationType> pageModel, MationType mation, ModelMap model) {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			mationService.pageQuery(pageModel, mation);
+			if (pageModel.getList() != null) {
+				if (pageModel.getPageSize() == 0) {
+					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
+						pageModel.setPageNo(pageModel.getPageNo() - 1);
+						mationService.pageQuery(pageModel, mation);
+					}
+				}
+			}
+
+			result = new Result(MsgConstants.RESUL_SUCCESS);	
+			res = new JsonResponse(result);
+			res.setData(pageModel.getList());
+			res.setCount(pageModel.getPageInfo().getTotal());
+			
+		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		return res;
+	}
+	
 	/**
 	 * 类型表详情
 	 * 

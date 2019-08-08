@@ -19,7 +19,6 @@ import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
-import com.jp.entity.BannerHomePage;
 import com.jp.entity.JpXing;
 import com.jp.service.JpXingService;
 import com.jp.util.StringTools;
@@ -57,6 +56,7 @@ public class JpXingController {
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
 		res.setData(pageModel);
+		res.setCount(pageModel.getPageInfo().getTotal());
 		return res;
 	}
 	
