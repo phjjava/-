@@ -53,7 +53,7 @@ public class FunctionMenuServiceImpl implements FunctionMenuService {
 		}
 		try {
 			IndexExample example = new IndexExample();
-			example.or().andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
+			//			example.or().andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
 			example.setOrderByClause("sort asc");
 			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 			List<Index> list = indexMapper.selectByExample(example);
@@ -186,11 +186,8 @@ public class FunctionMenuServiceImpl implements FunctionMenuService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		Index index = new Index();
-		index.setId(menuid);
-		index.setDeleteflag(ConstantUtils.DELETE_TRUE);
 		try {
-			int status = indexMapper.updateByPrimaryKeySelective(index);
+			int status = indexMapper.deleteByPrimaryKey(menuid);
 			if (status > 0) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);
@@ -198,6 +195,43 @@ public class FunctionMenuServiceImpl implements FunctionMenuService {
 			}
 		} catch (Exception e) {
 			log_.error("[delete方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
+	}
+
+	@Override
+	public JsonResponse changeStatus(String menuid, Integer status) {
+		Result result = null;
+		JsonResponse res = null;
+		if (menuid == null || "".equals(menuid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数menuid不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (status == null || "".equals(status + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数status不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			Index index = new Index();
+			index.setId(menuid);
+			index.setDeleteflag(status);
+			int count = indexMapper.updateByPrimaryKeySelective(index);
+			if (count > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[changeStatus方法---异常:]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
 			return res;

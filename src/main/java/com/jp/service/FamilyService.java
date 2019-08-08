@@ -30,7 +30,7 @@ public interface FamilyService {
 
 	/**
 	 * 
-	 * @描述 查询单个家族
+	 * @描述 查询单个家族及家族版本名称
 	 * @作者 sj
 	 * @时间 2017年5月10日上午9:43:33
 	 * @参数 @param familyid
@@ -38,7 +38,7 @@ public interface FamilyService {
 	 * @参数 @throws Exception
 	 * @return SysFamily
 	 */
-	SysFamily selectByPrimaryKey(String familyid) throws Exception;
+	SysFamily selectByFamilyid(String familyid) throws Exception;
 
 	/**
 	 * 
