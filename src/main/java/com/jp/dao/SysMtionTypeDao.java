@@ -2,6 +2,7 @@ package com.jp.dao;
 
 import java.util.List;
 
+import com.jp.entity.BannerQuery;
 import com.jp.entity.MationType;
 
 public interface SysMtionTypeDao {
@@ -15,5 +16,7 @@ public interface SysMtionTypeDao {
 	int mationtypeDeleteAll(String[] mationtypeids);
 
 	List<MationType> selecttypeone(String typeid);
+
+	List<MationType> selectByExample(BannerQuery bq);
 
 }
