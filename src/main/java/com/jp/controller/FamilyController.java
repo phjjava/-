@@ -57,7 +57,7 @@ public class FamilyController {
 		User user = null;
 		try {
 			if (StringTools.trimNotEmpty(familyid)) {
-				family = familyService.selectByPrimaryKey(familyid);
+				family = familyService.selectByFamilyid(familyid);
 				UserManager manager = userManagerService.selectByFamilyId(familyid);
 				if (manager != null) {
 					user = userService.selectByPrimaryKey(manager.getUserid());

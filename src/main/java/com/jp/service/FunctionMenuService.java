@@ -16,4 +16,6 @@ public interface FunctionMenuService {
 
 	JsonResponse delete(String menuid);
 
+	JsonResponse changeStatus(String menuid, Integer status);
+
 }
