@@ -104,6 +104,13 @@
     from jp_sys_family
     where familyid = #{familyid,jdbcType=VARCHAR}
   </select>
+  <select id="selectByFamilyid" resultMap="BaseResultMap" parameterType="java.lang.String" >
+      select 
+    familyid,familycode,familyname,remark,status,createid,createtime,updateid,updatetime,version,surname,versionname
+    from jp_sys_family t1
+	LEFT JOIN jp_sys_version t2 ON t1.version = t2.versionid 
+    where familyid = #{familyid,jdbcType=VARCHAR}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from jp_sys_family
     where familyid = #{familyid,jdbcType=VARCHAR}

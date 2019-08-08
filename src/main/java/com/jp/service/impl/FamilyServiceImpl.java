@@ -339,8 +339,8 @@ public class FamilyServiceImpl implements FamilyService {
 	}
 
 	@Override
-	public SysFamily selectByPrimaryKey(String familyid) throws Exception {
-		return sysFamilyDao.selectByPrimaryKey(familyid);
+	public SysFamily selectByFamilyid(String familyid) throws Exception {
+		return sysFamilyDao.selectByFamilyid(familyid);
 	}
 
 	@Override

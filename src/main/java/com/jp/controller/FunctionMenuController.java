@@ -97,4 +97,10 @@ public class FunctionMenuController {
 		return functionMenuService.delete(menuid);
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/changeStatus", method = RequestMethod.GET)
+	public JsonResponse changeStatus(String menuid, Integer status) {
+		return functionMenuService.changeStatus(menuid, status);
+	}
+
 }
