@@ -1744,7 +1744,7 @@ public class UserServiceImpl implements UserService {
 					+ userInfo.getBirthplaceX();
 			userInfo.setBirthplace(birthplace);
 			User user1 = userDao.selectByPrimaryKey(user.getUserid());
-			if(user1 == null ) {
+			if (user1 == null) {
 				result.setCode(ConstantUtils.RESULT_FAIL);
 				result.setMsg("用户不存在！");
 				return result;
@@ -2720,9 +2720,10 @@ public class UserServiceImpl implements UserService {
 		}
 		// 通过手机号查询当前用户信息
 		UserQuery phoneExample = new UserQuery();
-		phoneExample.or().andPhoneEqualTo(usercode.getPhone()).andStatusEqualTo(0).andDeleteflagEqualTo(0);
-		phoneExample.setOrderByClause("logintime desc");
-		List<User> selectByExample = userDao.selectByExample(phoneExample);
+		Map<String, String> userparams = new HashMap<String, String>();
+		userparams.put("familyid", null);
+		userparams.put("phone", usercode.getPhone());
+		List<User> selectByExample = userDao.selectByFamilyId(userparams);
 		if (selectByExample == null || selectByExample.isEmpty()) {
 			phoneExample.clear();
 			phoneExample.or().andPhoneEqualTo(usercode.getPhone()).andStatusNotEqualTo(0).andDeleteflagEqualTo(0);
@@ -2739,7 +2740,6 @@ public class UserServiceImpl implements UserService {
 				res.setData(selectByExample);
 				return res;
 			}
-
 		}
 
 		// 查询数据库该手机号对应的最新的验证码
@@ -3015,6 +3015,12 @@ public class UserServiceImpl implements UserService {
 		if (userList.size() == 1) {
 			// 单企业用户登录,查询完APP权限后直接返回
 			User user = userList.get(0);
+			if (user.getFamilystatus() != null && user.getFamilystatus() == 1) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("该家族已被停用！");
+				res = new JsonResponse(result);
+				return res;
+			}
 			LoginThirdExample example = new LoginThirdExample();
 			example.or().andUseridEqualTo(user.getUserid()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
 			user.setThirds(loginThirdMapper.selectByExample(example));
@@ -5198,16 +5204,18 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		User usere = userDao.selectByPrimaryKey(userid);
-		UserQuery example = new UserQuery();
 		if (StringUtils.isBlank(entity.getFamilyid())) {
-			example.or().andPhoneEqualTo(usere.getPhone()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
-		} else {
-			example.or().andPhoneEqualTo(usere.getPhone()).andFamilyidEqualTo(entity.getFamilyid())
-					.andDeleteflagEqualTo(0).andStatusEqualTo(0);
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数familyid为比传！");
+			res = new JsonResponse(result);
+			return res;
 		}
+		User usere = userDao.selectByPrimaryKey(userid);
 
-		List<User> dbuserList = userDao.selectByExample(example);
+		Map<String, String> userparams = new HashMap<String, String>();
+		userparams.put("familyid", entity.getFamilyid());
+		userparams.put("phone", usere.getPhone());
+		List<User> dbuserList = userDao.selectByFamilyId(userparams);
 		//		@SuppressWarnings("unchecked")
 		//		List<User> dbuserList = (List<User>) result.getData();
 		////////////////////////// 添加api登录的app用户
