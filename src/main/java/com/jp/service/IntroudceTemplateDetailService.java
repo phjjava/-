@@ -51,5 +51,7 @@ public interface IntroudceTemplateDetailService {
 	 * @return
 	 */
 	List<IntroudceTemplate> selecttypelist();
+	
+	int selectCount();
 
 }

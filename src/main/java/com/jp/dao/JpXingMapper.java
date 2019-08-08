@@ -31,7 +31,9 @@ public interface JpXingMapper {
 
 	List<JpXing> selectByExample(InstructionTemplateQuery iq);
 
-	List<JpXing> selectByExample1(@Param("xname")String xname);
+	List<JpXing> selectByExample1(@Param("xname")String xname,@Param("iq") InstructionTemplateQuery iq);
 
 	int xingDeleteAll(@Param("array") String[] ids);
+
+	int SelectCount(@Param("xname")String xname);
 }

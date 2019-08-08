@@ -41,4 +41,6 @@ public interface IntroudceTemplateDetailDao {
 	void intemplateDeleteAll(String[] ids);
 
 	List<IntroudceTemplateDetail> selectByExample1(@Param("iq")InstructionTemplateQuery iq, @Param("title") String title);
+
+	int selectCount();
 }

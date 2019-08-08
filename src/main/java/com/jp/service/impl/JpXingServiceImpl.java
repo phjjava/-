@@ -38,8 +38,6 @@ public class JpXingServiceImpl implements JpXingService{
 		// TODO Auto-generated method stub
 		InstructionTemplateQuery iq = new InstructionTemplateQuery();
 		com.jp.entity.InstructionTemplateQuery.Criteria criteria = iq.createCriteria();
-		//criteria.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
-		// criteria.andFamilyidEqualTo(introduce.getFamilyid());
 		xing.setDeleteflag(0);
 		if (StringTools.trimNotEmpty(xing.getDeleteflag())) {
 			criteria.andDeleteflagEqualTo(xing.getDeleteflag());
@@ -47,7 +45,7 @@ public class JpXingServiceImpl implements JpXingService{
 		iq.setOrderByClause("sort");
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		if(xname!=null) {
-			List<JpXing> list = xingMapper.selectByExample1(xname);
+			List<JpXing> list = xingMapper.selectByExample1(xname,iq);
 			pageModel.setList(list);
 			return pageModel;
 		}else {
@@ -70,6 +68,12 @@ public class JpXingServiceImpl implements JpXingService{
 	public int xingDeleteAll(String[] ids) {
 		// TODO Auto-generated method stub
 		return xingMapper.xingDeleteAll(ids);
+	}
+
+	@Override
+	public int SelectCount(String xname) {
+		// TODO Auto-generated method stub
+		return xingMapper.SelectCount(xname);
 	}
 
 }

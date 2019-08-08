@@ -56,7 +56,7 @@ public class JpXingController {
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
 		res.setData(pageModel);
-		res.setCount(pageModel.getPageInfo().getTotal());
+		res.setCount(xingService.SelectCount(xname));
 		return res;
 	}
 	
