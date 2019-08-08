@@ -1233,7 +1233,7 @@
 	<select id="selectByFamilyId" parameterType="Map"
 		resultType="com.jp.entity.User">
 		SELECT
-		u.*, f.*
+		u.*, f.familyid,f.familycode,f.familyname,f.status familystatus
 		FROM
 		jp_user u,
 		jp_sys_family f
@@ -1241,7 +1241,6 @@
 		AND u.deleteflag = 0
 		AND u.`status` = 0
 		AND u.livestatus = 0
-		AND	f.`status`=0
 		AND	u.familyid is not null
 
 		<if test="familyid != null">
