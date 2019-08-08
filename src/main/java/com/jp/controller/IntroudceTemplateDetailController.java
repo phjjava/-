@@ -85,7 +85,7 @@ public class IntroudceTemplateDetailController {
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
 		res.setData(pageModel);
-		res.setCount(pageModel.getPageInfo().getTotal());
+		res.setCount(inService.selectCount());
 		return res;
 	}
 	

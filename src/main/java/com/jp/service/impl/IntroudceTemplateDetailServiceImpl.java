@@ -83,5 +83,11 @@ public class IntroudceTemplateDetailServiceImpl implements IntroudceTemplateDeta
 		return inDao.selectByExample();
 	}
 
+	@Override
+	public int selectCount() {
+		// TODO Auto-generated method stub
+		return inDetailDao.selectCount();
+	}
+
 	
 }

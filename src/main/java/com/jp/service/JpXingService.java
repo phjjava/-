@@ -38,5 +38,7 @@ public interface JpXingService {
 	 * @param xingtypeArray
 	 */
 	int xingDeleteAll(@Param("array") String[] ids);
+	
+	int SelectCount(String xname);
 
 }
