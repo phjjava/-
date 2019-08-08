@@ -131,4 +131,12 @@ public class SearchComplex {
 		this.livestatus = livestatus;
 	}
 
+	@Override
+	public String toString() {
+		return "SearchComplex [sex=" + sex + ", branchid=" + branchid + ", agefrom=" + agefrom + ", ageto=" + ageto
+				+ ", ismarry=" + ismarry + ", genlevel=" + genlevel + ", areacode=" + areacode + ", isdirect="
+				+ isdirect + ", livestatus=" + livestatus + ", familyid=" + familyid + ", education=" + education
+				+ ", start=" + start + ", count=" + count + "]";
+	}
+
 }

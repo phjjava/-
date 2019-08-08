@@ -580,7 +580,7 @@ public class FamilyServiceImpl implements FamilyService {
 				return res;
 			}
 			SysFamilyQuery sysFamilyExample = new SysFamilyQuery();
-			sysFamilyExample.or().andFamilycodeEqualTo(family.getFamilycode());
+			sysFamilyExample.or().andFamilycodeEqualTo(family.getFamilycode()).andStatusEqualTo(0);
 			List<SysFamily> sysFamilys = sysFamilyDao.selectByExample(sysFamilyExample);
 			if (sysFamilys != null && sysFamilys.size() > 0) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
@@ -717,8 +717,14 @@ public class FamilyServiceImpl implements FamilyService {
 			user.setUpdateid(userId);
 			user.setPinyinfirst(PinyinUtil.getPinYinFirstChar(user.getUsername()));
 			user.setPinyinfull(PinyinUtil.getPinyinFull(user.getUsername()));
-			if (StringTools.trimNotEmpty(user.getPhone())) {
-				user.setPassword(MD5Util.string2MD5(user.getPhone().substring(user.getPhone().length() - 6)));
+			user.setPassword(MD5Util.string2MD5(user.getPhone().substring(user.getPhone().length() - 6)));
+			List<User> list = userDao.selectByPhoneAndStatus(user.getPhone());
+			if (list.size() > 0) {
+				for (User user2 : list) {
+					if (user2.getPassword() != null) {
+						user.setPassword(user2.getPassword());
+					}
+				}
 			}
 			// userinfo
 			userInfo.setUserid(userId);

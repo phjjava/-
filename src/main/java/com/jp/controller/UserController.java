@@ -776,7 +776,7 @@ public class UserController {
 		String jsonReplace = jsonstr.replace("\"\"", "null");
 		User user = JacksonUtil.fromJsonToObject(jsonReplace, User.class);
 		try {
-			result = userService.mergeMate(user, user.getUserInfo(), "");
+			result = userService.mergeMate(user, user.getUserInfo());
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			e.printStackTrace();

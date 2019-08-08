@@ -960,11 +960,10 @@
 		select u.*,f.`status` familystatus
 		from jp_user u join jp_sys_family f
 		on u.familyid=f.familyid
-		where 1=1 and u.phone =
-		#{phone,jdbcType=VARCHAR} and u.password =
-		#{password,
-		jdbcType=VARCHAR} and u.deleteflag=0 and u.`status`=0 and
-		u.livestatus=0 and f.`status`=0
+		where 1=1 and u.phone =	#{phone,jdbcType=VARCHAR} 
+		and u.password = #{password,jdbcType=VARCHAR} 
+		and u.deleteflag=0 and u.`status`=0 
+		and	u.livestatus=0 
 	</select>
 
 	<select id="validatePhone" resultType="com.jp.entity.User">
@@ -1266,29 +1265,83 @@
 		parameterType="com.jp.entity.SearchComplex"
 		resultType="com.jp.entity.User">
 		SELECT
-		u.*,ur.birthday,year(CURRENT_DATE)-substring_index(ur.birthday,'-',1)
-		age FROM `jp_user` u, jp_branch b,jp_userinfo ur
-		where 1=1 and
-		u.deleteflag=0
+		u.*,ur.birthday,year(CURRENT_DATE)-substring_index(ur.birthday,'-',1) age 
+		FROM `jp_user` u, jp_branch b,jp_userinfo ur
+		where 1=1 and u.deleteflag=0
 		and u.branchid = b.branchid
 		and u.userid = ur.userid
 
-		<if test="areacode != null">
+		<if test="areacode != null and areacode != ''">
 			and b.areacode = #{areacode}
 		</if>
-		<if test="branchid != null">
+		<if test="branchid != null and branchid != ''">
 			and u.branchid = #{branchid}
 		</if>
-		<if test="sex != null">
+		<if test="sex != null ">
 			and u.sex = #{sex}
 		</if>
-		<if test="genlevel != null">
+		<if test="genlevel != null ">
 			and u.genlevel = #{genlevel}
 		</if>
-		<if test="isdirect != null">
+		<if test="isdirect != null ">
 			and u.isdirect = #{isdirect}
 		</if>
-		<if test="ismarry != null">
+		<if test="ismarry != null ">
+			and u.ismarry = #{ismarry}
+		</if>
+		<if test="livestatus != null ">
+			and u.livestatus = #{livestatus}
+		</if>
+
+		<if test="livestatus == '0'.toString()">
+			and (ur.birthday is not NULL and TRIM(ur.birthday)!='')
+		</if>
+
+		<if test="agefrom !=null ">
+
+			and year(CURRENT_DATE)-substring_index(ur.birthday,'-',1) <![CDATA[ >= ]]>
+			#{agefrom}
+		</if>
+		<if test="ageto !=null ">
+			and year(CURRENT_DATE)-substring_index(ur.birthday,'-',1) <![CDATA[ <= ]]>
+			#{ageto}
+		</if>
+		<if test="familyid != null and familyid != ''">
+			and u.familyid = #{familyid}
+		</if>
+		<if test="education != null and education != ''">
+			and ur.education = #{education}
+		</if>
+		<if test="count != null">
+			limit ${count}
+		</if>
+		<if test="start != null">
+			offset ${start}
+		</if>
+	</select>
+	<select id="searchComplexCount"
+		parameterType="com.jp.entity.SearchComplex"
+		resultType="java.lang.Integer">
+		SELECT count(*) as count FROM `jp_user` u, jp_branch b,jp_userinfo ur
+		where 1=1 and u.deleteflag=0
+		and u.branchid = b.branchid
+		and u.userid = ur.userid
+		<if test="areacode != null and areacode != ''">
+			and b.areacode = #{areacode}
+		</if>
+		<if test="branchid != null and branchid != ''">
+			and u.branchid = #{branchid}
+		</if>
+		<if test="sex != null ">
+			and u.sex = #{sex}
+		</if>
+		<if test="genlevel != null ">
+			and u.genlevel = #{genlevel}
+		</if>
+		<if test="isdirect != null ">
+			and u.isdirect = #{isdirect}
+		</if>
+		<if test="ismarry != null ">
 			and u.ismarry = #{ismarry}
 		</if>
 		<if test="livestatus != null">
@@ -1299,26 +1352,20 @@
 			and (ur.birthday is not NULL and TRIM(ur.birthday)!='')
 		</if>
 
-		<if test="agefrom !=null">
+		<if test="agefrom !=null ">
 
 			and year(CURRENT_DATE)-substring_index(ur.birthday,'-',1) <![CDATA[ >= ]]>
 			#{agefrom}
 		</if>
-		<if test="ageto !=null">
+		<if test="ageto !=null ">
 			and year(CURRENT_DATE)-substring_index(ur.birthday,'-',1) <![CDATA[ <= ]]>
 			#{ageto}
 		</if>
-		<if test="familyid != null">
+		<if test="familyid != null and familyid != ''">
 			and u.familyid = #{familyid}
 		</if>
-		<if test="education != null">
+		<if test="education != null and education != ''">
 			and ur.education = #{education}
-		</if>
-		<if test="count != null">
-			limit ${count}
-		</if>
-		<if test="start != null">
-			offset ${start}
 		</if>
 	</select>
 	<select id="getUseridListOfAfterUpdatedtime"
@@ -1394,7 +1441,7 @@
 		u.branchid=#{branchid,jdbcType=VARCHAR} order by u.pinyinfirst
 	</select>
 	<select id="selectFamilycode" resultMap="BaseResultMap">
-		select t1.familyname,t1.familyid,t1.status,t2.familycode 
+		select t1.familyname,t1.familyid,t1.status,t2.familycode,t2.status familystatus
 		from jp_user t1
 		LEFT JOIN jp_sys_family t2 
 		ON	t1.familyid = t2.familyid
@@ -1425,56 +1472,6 @@
 		</if>
 		<if test="familyid != null">
 			and m.familyid = #{familyid,jdbcType=VARCHAR}
-		</if>
-	</select>
-	<select id="searchComplexCount"
-		parameterType="com.jp.entity.SearchComplex"
-		resultType="java.lang.Integer">
-		SELECT count(*) as count FROM `jp_user` u, jp_branch b,jp_userinfo ur
-		where 1=1 and u.deleteflag=0
-		and u.branchid = b.branchid
-		and u.userid = ur.userid
-		and u.deleteflag = 0
-		<if test="areacode != null and areacode != ''">
-			and b.areacode = #{areacode}
-		</if>
-		<if test="branchid != null and branchid != ''">
-			and u.branchid = #{branchid}
-		</if>
-		<if test="sex != null and sex != ''">
-			and u.sex = #{sex}
-		</if>
-		<if test="genlevel != null and genlevel != ''">
-			and u.genlevel = #{genlevel}
-		</if>
-		<if test="isdirect != null and isdirect != ''">
-			and u.isdirect = #{isdirect}
-		</if>
-		<if test="ismarry != null and ismarry != ''">
-			and u.ismarry = #{ismarry}
-		</if>
-		<if test="livestatus != null and livestatus != ''">
-			and u.livestatus = #{livestatus}
-		</if>
-
-		<if test="livestatus == '0'.toString()">
-			and (ur.birthday is not NULL and TRIM(ur.birthday)!='')
-		</if>
-
-		<if test="agefrom !=null and agefrom != ''">
-
-			and year(CURRENT_DATE)-substring_index(ur.birthday,'-',1) <![CDATA[ >= ]]>
-			#{agefrom}
-		</if>
-		<if test="ageto !=null and ageto != ''">
-			and year(CURRENT_DATE)-substring_index(ur.birthday,'-',1) <![CDATA[ <= ]]>
-			#{ageto}
-		</if>
-		<if test="familyid != null and familyid != ''">
-			and u.familyid = #{familyid}
-		</if>
-		<if test="education != null and education != ''">
-			and ur.education = #{education}
 		</if>
 	</select>
 	<select id="selectByUserids" resultType="com.jp.entity.User">
