@@ -66,6 +66,13 @@ public interface SysMationService {
 	 * @return
 	 */
 	List<MationType> selecttypeone(String typeid);
+	/**
+	 * 类型列表
+	 * @param pageModel
+	 * @param mation
+	 * @return
+	 */
+	PageModel<MationType> pageQuery(PageModel<MationType> pageModel, MationType mation);
 
 	
 

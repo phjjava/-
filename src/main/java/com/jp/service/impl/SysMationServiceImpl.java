@@ -92,6 +92,23 @@ public class SysMationServiceImpl implements SysMationService{
 		// TODO Auto-generated method stub
 		return typedao.selecttypeone(typeid);
 	}
+	@Override
+	public PageModel<MationType> pageQuery(PageModel<MationType> pageModel, MationType mation) {
+		// TODO Auto-generated method stub
+		BannerQuery bq = new BannerQuery();
+		Criteria createCriteria = bq.createCriteria();
+		if(mation.getDeleteflag() != null){
+			createCriteria.andDeleteflagEqualTo(mation.getDeleteflag());
+		}
+		bq.setOrderByClause("createtime DESC");
+		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+		List<MationType> list;
+			list = typedao.selectByExample(bq);
+
+		pageModel.setList(list);
+		pageModel.setPageInfo(new PageInfo<MationType>(list));
+		return pageModel;
+	}
 	
 
 }
