@@ -11,6 +11,7 @@
     <result column="updateid" property="updateid" jdbcType="VARCHAR" />
     <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
     <result column="deleteflag" property="deleteflag" jdbcType="INTEGER" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
     <result column="sort" property="sort" jdbcType="INTEGER" />
     <collection property="introudceTemplate" resultMap="roleMap"/>
   </resultMap>
@@ -86,7 +87,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, templateid, type, title, createid, createtime, updateid, updatetime, deleteflag, 
+    id, templateid, type, title, createid, createtime, updateid, updatetime, deleteflag,content, 
     sort
   </sql>
   <sql id="Blob_Column_List" >
@@ -109,11 +110,28 @@
     </if>
   </select>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.IntroudceTemplateDetailExample" >
+    select 
+	<if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_introducetemplate_detail
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample1" resultMap="BaseResultMap" parameterType="com.jp.entity.IntroudceTemplateDetailExample" >
     select * from jp_introducetemplate_detail d left join jp_introudcetemplate s on d.templateid=s.id
 		<if test="title!=null">
-		where s.title like concat("%",#{title},"%")
+		where d.title like concat("%",#{title},"%")
 		</if>
-		order by s.createtime desc
+		<!-- <if test="_parameter != null" >
+     		 <include refid="Example_Where_Clause" />
+    	</if> -->
+		order by d.createtime desc
     <!-- <if test="distinct" >
       distinct
     </if>
