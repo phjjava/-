@@ -574,6 +574,11 @@ on user.userid = manager.userid
 <!--     <foreach collection="list" item="item" index="index" open="and user.branchid in (" separator="," close=")">
 		#{item}
 	</foreach>   -->
+	<if test="user.branchid != null and user.branchid != ''" >
+       order by -user.genlevel desc
+    </if>
+	
+	
   </select>
   <insert id="importUser">
 	     insert into jp_userinfo (userid,birthday,lunarbirthday,education,zodica,constellation,birthplace,homeplace,nation,background,remark)
