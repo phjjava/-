@@ -157,13 +157,13 @@ public interface UserDao {
 
 	int searchComplexCount(SearchComplex searchComplex);
 
-	List<User> selectByUserids(@Param("array") String[] strs,@Param("familyid") String familyid);
+	List<User> selectByUserids(@Param("array") String[] strs, @Param("familyid") String familyid);
 
-	List<User> selectUserByNoBranchids(@Param("array") String[] strs,@Param("familyid") String familyid);
+	List<User> selectUserByNoBranchids(@Param("array") String[] strs, @Param("familyid") String familyid);
 
-	List<User> selectUserByNoTag(@Param("array") String[] strs,@Param("familyid") String familyid);
+	List<User> selectUserByNoTag(@Param("array") String[] strs, @Param("familyid") String familyid);
 
-	List<User> selectByNoUserids(@Param("array") List<String> strs,@Param("familyid") String familyid);
+	List<User> selectByNoUserids(@Param("array") List<String> strs, @Param("familyid") String familyid);
 
 	//根据用户家族id查询该家族的分支数
 	@Select("select max(genlevel) as genlevel from jp_user where familyid =#{familyid}")
@@ -179,6 +179,5 @@ public interface UserDao {
 	List<GenUserOtherVO> getUserByAncestor(@Param("familyid") String familyid, @Param("familyname") String familyname,
 			@Param("genlevel") Integer genlevel);
 
-	int getUserByAncestorCount(@Param("familyid") String familyid, @Param("familyname") String familyname,
-			@Param("genlevel") Integer genlevel);
+	int getUserByAncestorCount(@Param("familyid") String familyid, @Param("genlevel") Integer genlevel);
 }

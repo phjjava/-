@@ -1023,6 +1023,12 @@ public class UserController {
 	public JsonResponse validatePhone(User user) {
 		Result result = new Result(MsgConstants.RESUL_SUCCESS); // 默认通过验证
 		JsonResponse res = null;
+		if (!StringTools.trimNotEmpty(user.getPhone())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数phone不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 			List<User> userList = userService.validatePhone(user);

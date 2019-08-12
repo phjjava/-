@@ -40,6 +40,7 @@ import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
+import com.jp.common.SysTokenMap;
 import com.jp.controller.UserController;
 import com.jp.dao.BranchDao;
 import com.jp.dao.BranchalbumMapper;
@@ -81,7 +82,6 @@ import com.jp.entity.NoticetopQuery;
 import com.jp.entity.OnLineUser;
 import com.jp.entity.SearchComplex;
 import com.jp.entity.SysFamily;
-import com.jp.entity.SysTokenMap;
 import com.jp.entity.SysVersionPrivilege;
 import com.jp.entity.User;
 import com.jp.entity.UserAppLimit;
@@ -754,14 +754,10 @@ public class UserServiceImpl implements UserService {
 			// }
 			wb.close();
 		} else {
-			ExcelUtil eutil = null;
-			HSSFWorkbook wb = null;
-			HSSFSheet sheet = null;
-			POIFSFileSystem fs;
-			fs = new POIFSFileSystem(file.getInputStream());
-			wb = new HSSFWorkbook(fs);
-			sheet = wb.getSheetAt(0);
-			eutil = new ExcelUtil(wb, sheet);
+			POIFSFileSystem fs = new POIFSFileSystem(file.getInputStream());
+			HSSFWorkbook wb = new HSSFWorkbook(fs);
+			HSSFSheet sheet = wb.getSheetAt(0);
+			ExcelUtil eutil = new ExcelUtil(wb, sheet);
 			// 获取上传的所有行数
 			int lastRowNum = sheet.getLastRowNum();
 			// boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(),
@@ -779,7 +775,8 @@ public class UserServiceImpl implements UserService {
 			userStringList = new ArrayList<String>();
 			for (int i = 1; i < lastRowNum + 1; i++) {
 				if (sheet.getRow(i) != null) {
-					String genlevelstr = eutil.toDecimalFormat(eutil.getCellContent(sheet.getRow(i).getCell(0)).trim());// 世系
+					String genlevelstr = ExcelUtil
+							.toDecimalFormat(eutil.getCellContent(sheet.getRow(i).getCell(0)).trim());// 世系
 					String username = eutil.getCellContent(sheet.getRow(i).getCell(1)).trim();
 					if (!StringTools.trimNotEmpty(username)) {
 						continue;
