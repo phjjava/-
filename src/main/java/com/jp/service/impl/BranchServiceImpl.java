@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -601,12 +602,14 @@ public class BranchServiceImpl implements BranchService {
 				return res;
 			}
 			User mate_user = new User();
-			User gen_user = new User();
-			gen_user = users.get(0);
+			User gen_user = users.get(0);
+			if (gen_user.getGenlevel() == null || "".equals(gen_user.getGenlevel() + "")) {
+				result = new Result(MsgConstants.GENLEVEL_IS_NULL);
+				res = new JsonResponse(result);
+				return res;
+			}
 			// 获取配偶
-			if (gen_user.getMateid() == null || "".equals(gen_user.getMateid())) {
-				// 不存在配偶的情况
-			} else {
+			if (StringUtils.isNotBlank(gen_user.getMateid())) {
 				UserQuery userExample1 = new UserQuery();
 				userExample1.or().andUseridEqualTo(gen_user.getMateid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
 				List<User> users2 = userDao.selectByExample(userExample1);
@@ -636,11 +639,6 @@ public class BranchServiceImpl implements BranchService {
 			genUserVO.setUser(genUser);
 			genUserVO.setMateuser(mateuser);
 
-			if (gen_user.getGenlevel() == null || "".equals(gen_user.getGenlevel())) {
-				result = new Result(MsgConstants.GENLEVEL_IS_NULL);
-				res = new JsonResponse(result);
-				return res;
-			}
 			getUserListFromGenUser(genUserVO, gen_user.getGenlevel());
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
@@ -687,9 +685,12 @@ public class BranchServiceImpl implements BranchService {
 				return res;
 			}
 			User mate_user = new User();
-			User gen_user = new User();
-			gen_user = users.get(0);
-
+			User gen_user = users.get(0);
+			if (gen_user.getGenlevel() == null || "".equals(gen_user.getGenlevel() + "")) {
+				result = new Result(MsgConstants.GENLEVEL_IS_NULL);
+				res = new JsonResponse(result);
+				return res;
+			}
 			// 初始化起始人实例
 			GenUserOther genUserOther = new GenUserOther();
 			genUserOther.setGenlevel(gen_user.getGenlevel());
@@ -700,9 +701,7 @@ public class BranchServiceImpl implements BranchService {
 			genUserOther.setPid(gen_user.getPid());
 
 			// 初始化配偶实例
-			if (gen_user.getMateid() == null || "".equals(gen_user.getMateid())) {
-				// 不存在配偶的情况
-			} else {
+			if (StringUtils.isNotBlank(gen_user.getMateid())) {
 				UserQuery userExample1 = new UserQuery();
 				userExample1.or().andUseridEqualTo(gen_user.getMateid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
 				List<User> users2 = userDao.selectByExample(userExample1);
@@ -968,9 +967,7 @@ public class BranchServiceImpl implements BranchService {
 			// 获取孩子配偶实例
 			User mateuser = null;
 			// 获取配偶
-			if (user.getMateid() == null || "".equals(user.getMateid())) {
-				// 不存在配偶的情况
-			} else {
+			if (StringUtils.isNotBlank(user.getMateid())) {
 				UserQuery userExample1 = new UserQuery();
 				userExample1.or().andUseridEqualTo(user.getMateid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
 				List<User> users2 = userDao.selectByExample(userExample1);
@@ -1008,19 +1005,14 @@ public class BranchServiceImpl implements BranchService {
 	public void getUserListOnlyFromGenUser(GenUserOther entity, int genlevel, List<GenUserOther> genUserOthers) {
 		// 查询孩子列表
 		String userid = entity.getUserid();
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("status", "0");
-		map.put("pid", userid);
-		map.put("deleteflag", "0");
-		List<User> users = userDao.selectByMapOrder(map);
-
+		UserQuery userExample = new UserQuery();
+		userExample.or().andPidEqualTo(userid).andDeleteflagEqualTo(0).andStatusEqualTo(0);
+		List<User> users = userDao.selectByExample(userExample);
 		for (User user : users) {
 			// 获取孩子配偶实例
 			User mateuser = new User();
 			// 获取配偶
-			if (user.getMateid() == null || "".equals(user.getMateid())) {
-				// 不存在配偶的情况
-			} else {
+			if (StringUtils.isNotBlank(user.getMateid())) {
 				UserQuery userExample1 = new UserQuery();
 				userExample1.or().andUseridEqualTo(user.getMateid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
 				List<User> users2 = userDao.selectByExample(userExample1);
@@ -1030,8 +1022,7 @@ public class BranchServiceImpl implements BranchService {
 			}
 			// 初始孩子实例
 			GenUserOther gen_UserOther = new GenUserOther();
-			if (user.getLivestatus() != null)
-				gen_UserOther.setLivestatus(Integer.valueOf(user.getLivestatus()));
+			gen_UserOther.setLivestatus(user.getLivestatus());
 			gen_UserOther.setGenlevel(user.getGenlevel());
 			gen_UserOther.setImgurl(user.getImgurl());
 			gen_UserOther.setSex(user.getSex());
@@ -1042,9 +1033,7 @@ public class BranchServiceImpl implements BranchService {
 			// 初始孩子配偶实例
 			GenUserOther mate_user_other = new GenUserOther();
 			if (mateuser != null) {
-				if (mateuser.getLivestatus() != null) {
-					mate_user_other.setLivestatus(mateuser.getLivestatus());
-				}
+				mate_user_other.setLivestatus(mateuser.getLivestatus());
 				mate_user_other.setGenlevel(mateuser.getGenlevel());
 				mate_user_other.setImgurl(mateuser.getImgurl());
 				mate_user_other.setSex(mateuser.getSex());
