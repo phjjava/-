@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jp.dao.WorshipAncestorDictMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jp.entity.WorshipAncestorDict">
+        <id column="id" property="id" />
+        <result column="faction" property="faction" />
+        <result column="lineage" property="lineage" />
+        <result column="description" property="description" />
+        <result column="dict_sort" property="dictSort" />
+        <result column="createname" property="createname" />
+        <result column="createid" property="createid" />
+        <result column="createtime" property="createtime" />
+        <result column="deleteflag" property="deleteflag" />
+    </resultMap>
+	<select id="selectList" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    	select * from jp_worship_ancestor_dict ORDER BY dict_sort limit 0,#{last}
+  </select>
+</mapper>

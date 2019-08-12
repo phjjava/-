@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.UserinfoMapper" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.Userinfo" >
+    <id column="userId" property="userid" jdbcType="VARCHAR" />
+    <result column="birthday" property="birthday" jdbcType="VARCHAR" />
+    <result column="lunarbirthday" property="lunarbirthday" jdbcType="VARCHAR" />
+    <result column="education" property="education" jdbcType="VARCHAR" />
+    <result column="zodica" property="zodica" jdbcType="VARCHAR" />
+    <result column="constellation" property="constellation" jdbcType="VARCHAR" />
+    <result column="nation" property="nation" jdbcType="VARCHAR" />
+    <result column="background" property="background" jdbcType="VARCHAR" />
+    <result column="birthplace" property="birthplace" jdbcType="VARCHAR" />
+    <result column="homeplace" property="homeplace" jdbcType="VARCHAR" />
+    <result column="QQ" property="qq" jdbcType="VARCHAR" />
+    <result column="weixin" property="weixin" jdbcType="VARCHAR" />
+    <result column="mail" property="mail" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="telsee" property="telsee" jdbcType="INTEGER" />
+    <result column="qqsee" property="qqsee" jdbcType="INTEGER" />
+    <result column="wxsee" property="wxsee" jdbcType="INTEGER" />
+    <result column="mailsee" property="mailsee" jdbcType="INTEGER" />
+    <result column="remarksee" property="remarksee" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.jp.entity.Userinfo" extends="BaseResultMap" >
+    <result column="remark" property="remark" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      userId, birthday, lunarbirthday, education, zodica, constellation, nation, background, 
+      birthplace, homeplace, QQ, weixin, mail, tel, telsee, qqsee, wxsee, mailsee, remarksee
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <sql id="Blob_Column_List" >
+    remark
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.jp.entity.UserinfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from jp_userinfo
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.UserinfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_userinfo
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select 
+    userId,birthday,lunarbirthday,education,zodica,constellation,nation,background,birthplace,homeplace,QQ,weixin,mail,tel,telsee,qqsee,wxsee,mailsee,remarksee,remark
+    ,
+    <include refid="Blob_Column_List" />
+    from jp_userinfo
+    where userId = #{userid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from jp_userinfo
+    where userId = #{userid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.UserinfoExample" >
+    delete from jp_userinfo
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.Userinfo" >
+    insert into jp_userinfo (userId, birthday, lunarbirthday, 
+      education, zodica, constellation, 
+      nation, background, birthplace, 
+      homeplace, QQ, weixin, 
+      mail, tel, telsee, 
+      qqsee, wxsee, mailsee, 
+      remarksee, remark)
+    values (#{userid,jdbcType=VARCHAR}, #{birthday,jdbcType=VARCHAR}, #{lunarbirthday,jdbcType=VARCHAR}, 
+      #{education,jdbcType=VARCHAR}, #{zodica,jdbcType=VARCHAR}, #{constellation,jdbcType=VARCHAR}, 
+      #{nation,jdbcType=VARCHAR}, #{background,jdbcType=VARCHAR}, #{birthplace,jdbcType=VARCHAR}, 
+      #{homeplace,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, #{weixin,jdbcType=VARCHAR}, 
+      #{mail,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, #{telsee,jdbcType=INTEGER}, 
+      #{qqsee,jdbcType=INTEGER}, #{wxsee,jdbcType=INTEGER}, #{mailsee,jdbcType=INTEGER}, 
+      #{remarksee,jdbcType=INTEGER}, #{remark,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.Userinfo" >
+    insert into jp_userinfo
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        userId,
+      </if>
+      <if test="birthday != null" >
+        birthday,
+      </if>
+      <if test="lunarbirthday != null" >
+        lunarbirthday,
+      </if>
+      <if test="education != null" >
+        education,
+      </if>
+      <if test="zodica != null" >
+        zodica,
+      </if>
+      <if test="constellation != null" >
+        constellation,
+      </if>
+      <if test="nation != null" >
+        nation,
+      </if>
+      <if test="background != null" >
+        background,
+      </if>
+      <if test="birthplace != null" >
+        birthplace,
+      </if>
+      <if test="homeplace != null" >
+        homeplace,
+      </if>
+      <if test="qq != null" >
+        QQ,
+      </if>
+      <if test="weixin != null" >
+        weixin,
+      </if>
+      <if test="mail != null" >
+        mail,
+      </if>
+      <if test="tel != null" >
+        tel,
+      </if>
+      <if test="telsee != null" >
+        telsee,
+      </if>
+      <if test="qqsee != null" >
+        qqsee,
+      </if>
+      <if test="wxsee != null" >
+        wxsee,
+      </if>
+      <if test="mailsee != null" >
+        mailsee,
+      </if>
+      <if test="remarksee != null" >
+        remarksee,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null" >
+        #{birthday,jdbcType=VARCHAR},
+      </if>
+      <if test="lunarbirthday != null" >
+        #{lunarbirthday,jdbcType=VARCHAR},
+      </if>
+      <if test="education != null" >
+        #{education,jdbcType=VARCHAR},
+      </if>
+      <if test="zodica != null" >
+        #{zodica,jdbcType=VARCHAR},
+      </if>
+      <if test="constellation != null" >
+        #{constellation,jdbcType=VARCHAR},
+      </if>
+      <if test="nation != null" >
+        #{nation,jdbcType=VARCHAR},
+      </if>
+      <if test="background != null" >
+        #{background,jdbcType=VARCHAR},
+      </if>
+      <if test="birthplace != null" >
+        #{birthplace,jdbcType=VARCHAR},
+      </if>
+      <if test="homeplace != null" >
+        #{homeplace,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null" >
+        #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="weixin != null" >
+        #{weixin,jdbcType=VARCHAR},
+      </if>
+      <if test="mail != null" >
+        #{mail,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="telsee != null" >
+        #{telsee,jdbcType=INTEGER},
+      </if>
+      <if test="qqsee != null" >
+        #{qqsee,jdbcType=INTEGER},
+      </if>
+      <if test="wxsee != null" >
+        #{wxsee,jdbcType=INTEGER},
+      </if>
+      <if test="mailsee != null" >
+        #{mailsee,jdbcType=INTEGER},
+      </if>
+      <if test="remarksee != null" >
+        #{remarksee,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.UserinfoExample" resultType="java.lang.Integer" >
+    select count(*) from jp_userinfo
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_userinfo
+    <set >
+      <if test="record.userid != null" >
+        userId = #{record.userid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.birthday != null" >
+        birthday = #{record.birthday,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lunarbirthday != null" >
+        lunarbirthday = #{record.lunarbirthday,jdbcType=VARCHAR},
+      </if>
+      <if test="record.education != null" >
+        education = #{record.education,jdbcType=VARCHAR},
+      </if>
+      <if test="record.zodica != null" >
+        zodica = #{record.zodica,jdbcType=VARCHAR},
+      </if>
+      <if test="record.constellation != null" >
+        constellation = #{record.constellation,jdbcType=VARCHAR},
+      </if>
+      <if test="record.nation != null" >
+        nation = #{record.nation,jdbcType=VARCHAR},
+      </if>
+      <if test="record.background != null" >
+        background = #{record.background,jdbcType=VARCHAR},
+      </if>
+      <if test="record.birthplace != null" >
+        birthplace = #{record.birthplace,jdbcType=VARCHAR},
+      </if>
+      <if test="record.homeplace != null" >
+        homeplace = #{record.homeplace,jdbcType=VARCHAR},
+      </if>
+      <if test="record.qq != null" >
+        QQ = #{record.qq,jdbcType=VARCHAR},
+      </if>
+      <if test="record.weixin != null" >
+        weixin = #{record.weixin,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mail != null" >
+        mail = #{record.mail,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tel != null" >
+        tel = #{record.tel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.telsee != null" >
+        telsee = #{record.telsee,jdbcType=INTEGER},
+      </if>
+      <if test="record.qqsee != null" >
+        qqsee = #{record.qqsee,jdbcType=INTEGER},
+      </if>
+      <if test="record.wxsee != null" >
+        wxsee = #{record.wxsee,jdbcType=INTEGER},
+      </if>
+      <if test="record.mailsee != null" >
+        mailsee = #{record.mailsee,jdbcType=INTEGER},
+      </if>
+      <if test="record.remarksee != null" >
+        remarksee = #{record.remarksee,jdbcType=INTEGER},
+      </if>
+      <if test="record.remark != null" >
+        remark = #{record.remark,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update jp_userinfo
+    set userId = #{record.userid,jdbcType=VARCHAR},
+      birthday = #{record.birthday,jdbcType=VARCHAR},
+      lunarbirthday = #{record.lunarbirthday,jdbcType=VARCHAR},
+      education = #{record.education,jdbcType=VARCHAR},
+      zodica = #{record.zodica,jdbcType=VARCHAR},
+      constellation = #{record.constellation,jdbcType=VARCHAR},
+      nation = #{record.nation,jdbcType=VARCHAR},
+      background = #{record.background,jdbcType=VARCHAR},
+      birthplace = #{record.birthplace,jdbcType=VARCHAR},
+      homeplace = #{record.homeplace,jdbcType=VARCHAR},
+      QQ = #{record.qq,jdbcType=VARCHAR},
+      weixin = #{record.weixin,jdbcType=VARCHAR},
+      mail = #{record.mail,jdbcType=VARCHAR},
+      tel = #{record.tel,jdbcType=VARCHAR},
+      telsee = #{record.telsee,jdbcType=INTEGER},
+      qqsee = #{record.qqsee,jdbcType=INTEGER},
+      wxsee = #{record.wxsee,jdbcType=INTEGER},
+      mailsee = #{record.mailsee,jdbcType=INTEGER},
+      remarksee = #{record.remarksee,jdbcType=INTEGER},
+      remark = #{record.remark,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_userinfo
+    set userId = #{record.userid,jdbcType=VARCHAR},
+      birthday = #{record.birthday,jdbcType=VARCHAR},
+      lunarbirthday = #{record.lunarbirthday,jdbcType=VARCHAR},
+      education = #{record.education,jdbcType=VARCHAR},
+      zodica = #{record.zodica,jdbcType=VARCHAR},
+      constellation = #{record.constellation,jdbcType=VARCHAR},
+      nation = #{record.nation,jdbcType=VARCHAR},
+      background = #{record.background,jdbcType=VARCHAR},
+      birthplace = #{record.birthplace,jdbcType=VARCHAR},
+      homeplace = #{record.homeplace,jdbcType=VARCHAR},
+      QQ = #{record.qq,jdbcType=VARCHAR},
+      weixin = #{record.weixin,jdbcType=VARCHAR},
+      mail = #{record.mail,jdbcType=VARCHAR},
+      tel = #{record.tel,jdbcType=VARCHAR},
+      telsee = #{record.telsee,jdbcType=INTEGER},
+      qqsee = #{record.qqsee,jdbcType=INTEGER},
+      wxsee = #{record.wxsee,jdbcType=INTEGER},
+      mailsee = #{record.mailsee,jdbcType=INTEGER},
+      remarksee = #{record.remarksee,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.Userinfo" >
+    update jp_userinfo
+    <set >
+      <if test="birthday != null" >
+        birthday = #{birthday,jdbcType=VARCHAR},
+      </if>
+      <if test="lunarbirthday != null" >
+        lunarbirthday = #{lunarbirthday,jdbcType=VARCHAR},
+      </if>
+      <if test="education != null" >
+        education = #{education,jdbcType=VARCHAR},
+      </if>
+      <if test="zodica != null" >
+        zodica = #{zodica,jdbcType=VARCHAR},
+      </if>
+      <if test="constellation != null" >
+        constellation = #{constellation,jdbcType=VARCHAR},
+      </if>
+      <if test="nation != null" >
+        nation = #{nation,jdbcType=VARCHAR},
+      </if>
+      <if test="background != null" >
+        background = #{background,jdbcType=VARCHAR},
+      </if>
+      <if test="birthplace != null" >
+        birthplace = #{birthplace,jdbcType=VARCHAR},
+      </if>
+      <if test="homeplace != null" >
+        homeplace = #{homeplace,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null" >
+        QQ = #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="weixin != null" >
+        weixin = #{weixin,jdbcType=VARCHAR},
+      </if>
+      <if test="mail != null" >
+        mail = #{mail,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="telsee != null" >
+        telsee = #{telsee,jdbcType=INTEGER},
+      </if>
+      <if test="qqsee != null" >
+        qqsee = #{qqsee,jdbcType=INTEGER},
+      </if>
+      <if test="wxsee != null" >
+        wxsee = #{wxsee,jdbcType=INTEGER},
+      </if>
+      <if test="mailsee != null" >
+        mailsee = #{mailsee,jdbcType=INTEGER},
+      </if>
+      <if test="remarksee != null" >
+        remarksee = #{remarksee,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where userId = #{userid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.jp.entity.Userinfo" >
+    update jp_userinfo
+    set birthday = #{birthday,jdbcType=VARCHAR},
+      lunarbirthday = #{lunarbirthday,jdbcType=VARCHAR},
+      education = #{education,jdbcType=VARCHAR},
+      zodica = #{zodica,jdbcType=VARCHAR},
+      constellation = #{constellation,jdbcType=VARCHAR},
+      nation = #{nation,jdbcType=VARCHAR},
+      background = #{background,jdbcType=VARCHAR},
+      birthplace = #{birthplace,jdbcType=VARCHAR},
+      homeplace = #{homeplace,jdbcType=VARCHAR},
+      QQ = #{qq,jdbcType=VARCHAR},
+      weixin = #{weixin,jdbcType=VARCHAR},
+      mail = #{mail,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      telsee = #{telsee,jdbcType=INTEGER},
+      qqsee = #{qqsee,jdbcType=INTEGER},
+      wxsee = #{wxsee,jdbcType=INTEGER},
+      mailsee = #{mailsee,jdbcType=INTEGER},
+      remarksee = #{remarksee,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=LONGVARCHAR}
+    where userId = #{userid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.Userinfo" >
+    update jp_userinfo
+    set birthday = #{birthday,jdbcType=VARCHAR},
+      lunarbirthday = #{lunarbirthday,jdbcType=VARCHAR},
+      education = #{education,jdbcType=VARCHAR},
+      zodica = #{zodica,jdbcType=VARCHAR},
+      constellation = #{constellation,jdbcType=VARCHAR},
+      nation = #{nation,jdbcType=VARCHAR},
+      background = #{background,jdbcType=VARCHAR},
+      birthplace = #{birthplace,jdbcType=VARCHAR},
+      homeplace = #{homeplace,jdbcType=VARCHAR},
+      QQ = #{qq,jdbcType=VARCHAR},
+      weixin = #{weixin,jdbcType=VARCHAR},
+      mail = #{mail,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      telsee = #{telsee,jdbcType=INTEGER},
+      qqsee = #{qqsee,jdbcType=INTEGER},
+      wxsee = #{wxsee,jdbcType=INTEGER},
+      mailsee = #{mailsee,jdbcType=INTEGER},
+      remarksee = #{remarksee,jdbcType=INTEGER}
+    where userId = #{userid,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selecUserList" resultType="com.jp.entity.User">
+  <!--   
+  select
+      user.userid as userid,user.username as username,user.sex as sex,user.isdirect,userInfo.birthday as searchBirthday
+      ,user.brotherpos as brotherpos,user.genlevel as genlevel,user.branchname as branchname,user.status as status
+     from jp_user user left join jp_userinfo userInfo
+    on userInfo.userid = user.userid
+    where user.deleteflag=0 and
+    user.familyid = #{user.familyid}
+    -->
+	
+select user.*,IFNULL(manager.ismanager,0) ismanager ,IFNULL(manager.ebtype,0) ebtype from (select
+      uu.userid as userid,uu.username as username,uu.sex as sex,uu.isdirect,userInfo.birthday as searchBirthday
+      ,uu.brotherpos as brotherpos,uu.genlevel as genlevel,uu.branchname as branchname,uu.status as status,uu.ismarry,uu.branchid
+      ,uu.familyid,uu.phone
+     from jp_user uu left join jp_userinfo userInfo
+    on userInfo.userid = uu.userid
+    where uu.deleteflag=0 and  uu.familyid = #{user.familyid}) user LEFT OUTER JOIN 
+(select r.userid,r.ismanager,r.ebtype from jp_user_manager r  where r.ebtype=1 and r.ismanager=1 and r.familyid=#{user.familyid}) manager
+on user.userid = manager.userid
+	where 1=1
+    <if test="user.username != null and user.username != ''" >
+       and user.username like   CONCAT('%',#{user.username,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="user.genlevel != null" >
+       and user.genlevel = #{user.genlevel,jdbcType=INTEGER}
+    </if>
+    <if test="user.branchid != null and user.branchid != ''" >
+       and user.branchid = #{user.branchid,jdbcType=INTEGER}
+    </if>
+    <if test="user.searchBirthplace != null and user.searchBirthplace != ''" >
+       and userInfo.birthplace like   CONCAT('%',#{user.searchBirthplace,jdbcType=VARCHAR},'%') 
+    </if>
+     <if test="user.status != null " >
+       and user.status = #{user.status,jdbcType=INTEGER}
+    </if>
+     <if test="user.isMarry != null" >
+       and user.ismarry = #{user.isMarry,jdbcType=INTEGER}
+    </if>
+    <if test="user.isdirect != null" >
+       and user.isdirect = #{user.isdirect,jdbcType=INTEGER}
+    </if>
+    <if test="user.livestatus != null" >
+       and user.livestatus = #{user.livestatus,jdbcType=INTEGER}
+    </if>
+    <if test="user.sex != null" >
+       and user.sex = #{user.sex,jdbcType=INTEGER}
+    </if>
+<!--     <foreach collection="list" item="item" index="index" open="and user.branchid in (" separator="," close=")">
+		#{item}
+	</foreach>   -->
+	<if test="user.branchid != null and user.branchid != ''" >
+       order by -user.genlevel desc
+    </if>
+	
+	
+  </select>
+  <insert id="importUser">
+	     insert into jp_userinfo (userid,birthday,lunarbirthday,education,zodica,constellation,birthplace,homeplace,nation,background,remark)
+	     values
+	     <foreach collection="list" item="item" index="index" separator=",">
+				(#{item.userid},#{item.birthday},#{item.lunarbirthday},#{item.education},#{item.zodica},
+				#{item.constellation},#{item.birthplace},#{item.homeplace},
+				#{item.nation},#{item.background},#{item.remark}
+				)
+		</foreach>
+  </insert>
+  
+  <select id="selecUserListByBranch" resultType="com.jp.entity.User">
+  	select u.* from jp_user u,jp_branch m 
+  	where u.branchid = m.branchid 
+  	and m.branchname like  CONCAT('%',#{branchname,jdbcType=VARCHAR},'%')
+  </select>
+</mapper>

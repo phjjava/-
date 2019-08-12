@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.UsereduDao" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.Useredu" >
+    <id column="userid" property="userid" jdbcType="VARCHAR" />
+    <id column="eduid" property="eduid" jdbcType="VARCHAR" />
+    <result column="university" property="university" jdbcType="VARCHAR" />
+    <result column="major" property="major" jdbcType="VARCHAR" />
+    <result column="degree" property="degree" jdbcType="VARCHAR" />
+    <result column="issecret" property="issecret" jdbcType="INTEGER" />
+    <result column="educontent" property="educontent" jdbcType="VARCHAR" />
+    <result column="datefrom" property="datefrom" jdbcType="VARCHAR" />
+    <result column="dateto" property="dateto" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      userid, eduid, university, major, degree, issecret,educontent,datefrom,dateto
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.UsereduQuery" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_useredu
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.jp.entity.UsereduKey" >
+    select 
+    userid,eduid,university,major,degree,issecret,educontent,datefrom,dateto
+    from jp_useredu
+    where userid = #{userid,jdbcType=VARCHAR}
+      and eduid = #{eduid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.jp.entity.UsereduKey" >
+    delete from jp_useredu
+    where userid = #{userid,jdbcType=VARCHAR}
+      and eduid = #{eduid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.UsereduQuery" >
+    delete from jp_useredu
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.Useredu" >
+    insert into jp_useredu (userid, eduid, university, 
+      major, degree, issecret,educontent,datefrom,dateto
+      )
+    values (#{userid,jdbcType=VARCHAR}, #{eduid,jdbcType=VARCHAR}, #{university,jdbcType=VARCHAR}, 
+      #{major,jdbcType=VARCHAR}, #{degree,jdbcType=VARCHAR}, #{issecret,jdbcType=INTEGER},
+      #{educontent,jdbcType=VARCHAR}, #{datefrom,jdbcType=VARCHAR}, #{dateto,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.Useredu" >
+    insert into jp_useredu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="eduid != null" >
+        eduid,
+      </if>
+      <if test="university != null" >
+        university,
+      </if>
+      <if test="major != null" >
+        major,
+      </if>
+      <if test="degree != null" >
+        degree,
+      </if>
+      <if test="issecret != null" >
+        issecret,
+      </if>
+      <if test="educontent != null" >
+        educontent,
+      </if>
+      <if test="datefrom != null" >
+        datefrom,
+      </if>
+      <if test="dateto != null" >
+        dateto,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="eduid != null" >
+        #{eduid,jdbcType=VARCHAR},
+      </if>
+      <if test="university != null" >
+        #{university,jdbcType=VARCHAR},
+      </if>
+      <if test="major != null" >
+        #{major,jdbcType=VARCHAR},
+      </if>
+      <if test="degree != null" >
+        #{degree,jdbcType=VARCHAR},
+      </if>
+      <if test="issecret != null" >
+        #{issecret,jdbcType=INTEGER},
+      </if>
+      <if test="educontent != null" >
+        #{educontent,jdbcType=VARCHAR},
+      </if>
+      <if test="datefrom != null" >
+        #{datefrom,jdbcType=VARCHAR},
+      </if>
+      <if test="dateto != null" >
+        #{dateto,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.UsereduQuery" resultType="java.lang.Integer" >
+    select count(*) from jp_useredu
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_useredu
+    <set >
+      <if test="record.userid != null" >
+        userid = #{record.userid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.eduid != null" >
+        eduid = #{record.eduid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.university != null" >
+        university = #{record.university,jdbcType=VARCHAR},
+      </if>
+      <if test="record.major != null" >
+        major = #{record.major,jdbcType=VARCHAR},
+      </if>
+      <if test="record.degree != null" >
+        degree = #{record.degree,jdbcType=VARCHAR},
+      </if>
+      <if test="record.issecret != null" >
+        issecret = #{record.issecret,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_useredu
+    set userid = #{record.userid,jdbcType=VARCHAR},
+      eduid = #{record.eduid,jdbcType=VARCHAR},
+      university = #{record.university,jdbcType=VARCHAR},
+      major = #{record.major,jdbcType=VARCHAR},
+      degree = #{record.degree,jdbcType=VARCHAR},
+      issecret = #{record.issecret,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.Useredu" >
+    update jp_useredu
+    <set >
+      <if test="university != null" >
+        university = #{university,jdbcType=VARCHAR},
+      </if>
+      <if test="major != null" >
+        major = #{major,jdbcType=VARCHAR},
+      </if>
+      <if test="degree != null" >
+        degree = #{degree,jdbcType=VARCHAR},
+      </if>
+      <if test="issecret != null" >
+        issecret = #{issecret,jdbcType=INTEGER},
+      </if>
+      <if test="educontent != null" >
+        educontent = #{educontent,jdbcType=VARCHAR},
+      </if>
+      <if test="datefrom != null" >
+        datefrom = #{datefrom,jdbcType=VARCHAR},
+      </if>
+      <if test="dateto != null" >
+        dateto = #{dateto,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where userid = #{userid,jdbcType=VARCHAR}
+      and eduid = #{eduid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.Useredu" >
+    update jp_useredu
+    set university = #{university,jdbcType=VARCHAR},
+      major = #{major,jdbcType=VARCHAR},
+      degree = #{degree,jdbcType=VARCHAR},
+      issecret = #{issecret,jdbcType=INTEGER}
+    where userid = #{userid,jdbcType=VARCHAR}
+      and eduid = #{eduid,jdbcType=VARCHAR}
+  </update>
+  <insert id="insertEduExp">
+	insert into jp_useredu (userid,university,major,eduid,datefrom,dateto,issecret,educontent)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.userid},#{item.university},#{item.major},#{item.eduid}
+			,#{item.datefrom},#{item.dateto},#{item.issecret},#{item.educontent})
+		</foreach>
+  </insert>
+   <select id="selectByUserId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    *
+    from jp_useredu
+    where userid = #{userid,jdbcType=VARCHAR}
+  </select>
+</mapper>

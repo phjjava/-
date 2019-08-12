@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.NoticefileDao" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.Noticefile" >
+    <id column="noticeid" property="noticeid" jdbcType="VARCHAR" />
+    <id column="fileid" property="fileid" jdbcType="VARCHAR" />
+    <id column="branchid" property="branchid" jdbcType="VARCHAR" />
+    <result column="filetype" property="filetype" jdbcType="TINYINT" />
+    <result column="fileurl" property="fileurl" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="filename" property="filename" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      noticeid, fileid, branchid, filetype, fileurl, sort,filename
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.NoticefileQuery" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_noticefile
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.jp.entity.NoticefileKey" >
+    select 
+    noticeid,fileid,branchid,filetype,fileurl,sort,filename
+    from jp_noticefile
+    where noticeid = #{noticeid,jdbcType=VARCHAR}
+      and fileid = #{fileid,jdbcType=VARCHAR}
+      and branchid = #{branchid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.jp.entity.NoticefileKey" >
+    delete from jp_noticefile
+    where noticeid = #{noticeid,jdbcType=VARCHAR}
+      and fileid = #{fileid,jdbcType=VARCHAR}
+      and branchid = #{branchid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.NoticefileQuery" >
+    delete from jp_noticefile
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.Noticefile" >
+    insert into jp_noticefile (noticeid, fileid, branchid, 
+      filetype, fileurl, sort,filename
+      )
+    values (#{noticeid,jdbcType=VARCHAR}, #{fileid,jdbcType=VARCHAR}, #{branchid,jdbcType=VARCHAR}, 
+      #{filetype,jdbcType=TINYINT}, #{fileurl,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}, #{filename,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective"  parameterType="com.jp.entity.Noticefile">
+    insert into jp_noticefile
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="noticeid != null" >
+        noticeid,
+      </if>
+      <if test="fileid != null" >
+        fileid,
+      </if>
+      <if test="branchid != null" >
+        branchid,
+      </if>
+      <if test="filetype != null" >
+        filetype,
+      </if>
+      <if test="fileurl != null" >
+        fileurl,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="filename != null" >
+        filename,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="noticeid != null" >
+        #{noticeid,jdbcType=VARCHAR},
+      </if>
+      <if test="fileid != null" >
+        #{fileid,jdbcType=VARCHAR},
+      </if>
+      <if test="branchid != null" >
+        #{branchid,jdbcType=VARCHAR},
+      </if>
+      <if test="filetype != null" >
+        #{filetype,jdbcType=TINYINT},
+      </if>
+      <if test="fileurl != null" >
+        #{fileurl,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="filename != null" >
+        #{filename,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.NoticefileQuery" resultType="java.lang.Integer" >
+    select count(*) from jp_noticefile
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_noticefile
+    <set >
+      <if test="record.noticeid != null" >
+        noticeid = #{record.noticeid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fileid != null" >
+        fileid = #{record.fileid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.branchid != null" >
+        branchid = #{record.branchid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.filetype != null" >
+        filetype = #{record.filetype,jdbcType=TINYINT},
+      </if>
+      <if test="record.fileurl != null" >
+        fileurl = #{record.fileurl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sort != null" >
+        sort = #{record.sort,jdbcType=INTEGER},
+      </if>
+      <if test="record.filename != null" >
+        sort = #{record.filename,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_noticefile
+    set noticeid = #{record.noticeid,jdbcType=VARCHAR},
+      fileid = #{record.fileid,jdbcType=VARCHAR},
+      branchid = #{record.branchid,jdbcType=VARCHAR},
+      filetype = #{record.filetype,jdbcType=TINYINT},
+      fileurl = #{record.fileurl,jdbcType=VARCHAR},
+      sort = #{record.sort,jdbcType=INTEGER},
+      filename = #{record.filename,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.Noticefile" >
+    update jp_noticefile
+    <set >
+      <if test="filetype != null" >
+        filetype = #{filetype,jdbcType=TINYINT},
+      </if>
+      <if test="fileurl != null" >
+        fileurl = #{fileurl,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="filename != null" >
+        filename = #{filename,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where noticeid = #{noticeid,jdbcType=VARCHAR}
+      and fileid = #{fileid,jdbcType=VARCHAR}
+      and branchid = #{branchid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.Noticefile" >
+    update jp_noticefile
+    set filetype = #{filetype,jdbcType=TINYINT},
+      fileurl = #{fileurl,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=INTEGER},
+      filename = #{filename,jdbcType=VARCHAR}
+    where noticeid = #{noticeid,jdbcType=VARCHAR}
+      and fileid = #{fileid,jdbcType=VARCHAR}
+      and branchid = #{branchid,jdbcType=VARCHAR}
+  </update>
+  <insert id="insertnoticefileSelective">
+    insert into jp_noticefile (noticeid,fileurl,fileid,branchid,filetype,filename,sort,filename)
+    values
+     <foreach collection="list" item="item" index="index" separator=",">
+		(#{item.noticeid},#{item.fileurl},#{item.fileid},#{item.branchid},
+		#{item.filetype},#{item.filename},#{item.sort}),#{item.filename}
+	</foreach>
+  </insert>
+  <delete id="deletefile">
+     <foreach collection="array" item="item" index="index" separator=";">
+      delete from jp_noticefile
+      where fileid = #{item,jdbcType=VARCHAR}
+    </foreach>
+  </delete>
+</mapper>
