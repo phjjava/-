@@ -1,0 +1,44 @@
+/*! Amaze UI v2.7.2 | by Amaze UI Team | (c) 2016 AllMobilize, Inc. | Licensed under MIT | 2016-12-16T16:25:57+0800 */
+/* ==========================================================================
+   Component: Base
+ ============================================================================ */
+/**
+ * Fix the flawed CSS box model - Yes, IE6's box model is better
+ * Browser support: IE8+
+ * via: http://paulirish.com/2012/box-sizing-border-box-ftw/
+ */
+*,
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+html {
+  -ms-text-size-adjust: 100%;
+  /* 1 */
+  -webkit-text-size-adjust: 100%;
+  /* 1 */
+}
+
+/**
+ * 1. http://usabilitypost.com/2012/11/15/w-optimizelegibility-on-mobile-devices/
+ * 2. http://maxvoltar.com/archive/-webkit-font-smoothing
+ * NOTE: http://usabilitypost.com/2012/11/05/stop-fixing-font-smoothing/
+ * 3. http://maximilianhoffmann.com/posts/better-font-rendering-on-osx
+ *    http://jaydenseric.com/blog/css-font-smoothing-for-firefox-mac
+ */
+body,
+input,
+textarea,
+select,
+button {
+  text-rendering: optimizeLegibility;
+  /* 1 */
+  -webkit-font-smoothing: antialiased;
+  /* 2 */
+  -moz-osx-font-smoothing: grayscale;
+  /* 3 Default: auto */
+  -moz-font-feature-settings: "liga", "kern";
+}
+

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.SysFuncVersionDao" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.SysFuncVersion" >
+    <id column="functionid" property="functionid" jdbcType="VARCHAR" />
+    <id column="versionid" property="versionid" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      functionid, versionid
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.SysFuncVersionQuery" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_sys_func_version
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.jp.entity.SysFuncVersion" >
+    delete from jp_sys_func_version
+    where functionid = #{functionid,jdbcType=VARCHAR}
+      and versionid = #{versionid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByVersionid" parameterType="java.lang.String" >
+    delete from jp_sys_func_version
+    where versionid = #{versionid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.SysFuncVersionQuery" >
+    delete from jp_sys_func_version
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.SysFuncVersion" >
+    insert into jp_sys_func_version (functionid, versionid)
+    values (#{functionid,jdbcType=VARCHAR}, #{versionid,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.SysFuncVersion" >
+    insert into jp_sys_func_version
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="functionid != null" >
+        functionid,
+      </if>
+      <if test="versionid != null" >
+        versionid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="functionid != null" >
+        #{functionid,jdbcType=VARCHAR},
+      </if>
+      <if test="versionid != null" >
+        #{versionid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.SysFuncVersionQuery" resultType="java.lang.Integer" >
+    select count(*) from jp_sys_func_version
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_sys_func_version
+    <set >
+      <if test="record.functionid != null" >
+        functionid = #{record.functionid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.versionid != null" >
+        versionid = #{record.versionid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_sys_func_version
+    set functionid = #{record.functionid,jdbcType=VARCHAR},
+      versionid = #{record.versionid,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <insert id="insertBatch">
+    insert into jp_sys_func_version (functionid, versionid)
+    values 
+    <foreach collection="array" item="item" index="index" separator=",">
+		(#{item}, #{versionid})
+		</foreach>
+  </insert>
+</mapper>

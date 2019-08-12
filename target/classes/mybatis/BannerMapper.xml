@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.BannerDao" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.Banner" >
+    <id column="bannerid" property="bannerid" jdbcType="VARCHAR" />
+    <result column="bannername" property="bannername" jdbcType="VARCHAR" />
+    <result column="bannerweburl" property="bannerweburl" jdbcType="VARCHAR" />
+    <result column="bannerphoneurl" property="bannerphoneurl" jdbcType="VARCHAR" />
+    <result column="bannerurl" property="bannerurl" jdbcType="VARCHAR" />
+    <result column="bannerdesc" property="bannerdesc" jdbcType="VARCHAR" />
+    <result column="createid" property="createid" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="updateid" property="updateid" jdbcType="VARCHAR" />
+    <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="familyid" property="familyid" jdbcType="VARCHAR" />
+    <result column="gotype" property="gotype" jdbcType="TINYINT" />
+    <result column="deleteflag" property="deleteflag" jdbcType="INTEGER" />
+    <result column="goname" property="goname" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      bannerid, bannername, bannerweburl, bannerphoneurl, bannerurl, bannerdesc, createid, 
+      createtime, updateid, updatetime, remark, familyid, gotype, deleteflag,goname
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.BannerQuery" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_banner
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    bannerid,bannername,bannerweburl,bannerphoneurl,bannerurl,bannerdesc,createid,createtime,updateid,updatetime,remark,familyid,gotype,deleteflag
+    from jp_banner
+    where bannerid = #{bannerid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from jp_banner
+    where bannerid = #{bannerid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.BannerQuery" >
+    delete from jp_banner
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.Banner" >
+    insert into jp_banner (bannerid, bannername, bannerweburl, 
+      bannerphoneurl, bannerurl, bannerdesc, 
+      createid, createtime, updateid, 
+      updatetime, remark, familyid, 
+      gotype, deleteflag,goname)
+    values (#{bannerid,jdbcType=VARCHAR}, #{bannername,jdbcType=VARCHAR}, #{bannerweburl,jdbcType=VARCHAR}, 
+      #{bannerphoneurl,jdbcType=VARCHAR}, #{bannerurl,jdbcType=VARCHAR}, #{bannerdesc,jdbcType=VARCHAR}, 
+      #{createid,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}, #{updateid,jdbcType=VARCHAR}, 
+      #{updatetime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, #{familyid,jdbcType=VARCHAR}, 
+      #{gotype,jdbcType=TINYINT}, #{deleteflag,jdbcType=INTEGER},#{goname,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.Banner" >
+    insert into jp_banner
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="bannerid != null" >
+        bannerid,
+      </if>
+      <if test="goname != null" >
+        goname,
+      </if>
+      <if test="bannername != null" >
+        bannername,
+      </if>
+      <if test="bannerweburl != null" >
+        bannerweburl,
+      </if>
+      <if test="bannerphoneurl != null" >
+        bannerphoneurl,
+      </if>
+      <if test="bannerurl != null" >
+        bannerurl,
+      </if>
+      <if test="bannerdesc != null" >
+        bannerdesc,
+      </if>
+      <if test="createid != null" >
+        createid,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="updateid != null" >
+        updateid,
+      </if>
+      <if test="updatetime != null" >
+        updatetime,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="familyid != null" >
+        familyid,
+      </if>
+      <if test="gotype != null" >
+        gotype,
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="bannerid != null" >
+        #{bannerid,jdbcType=VARCHAR},
+      </if>
+      <if test="goname != null" >
+        #{goname,jdbcType=VARCHAR},
+      </if>
+      <if test="bannername != null" >
+        #{bannername,jdbcType=VARCHAR},
+      </if>
+      <if test="bannerweburl != null" >
+        #{bannerweburl,jdbcType=VARCHAR},
+      </if>
+      <if test="bannerphoneurl != null" >
+        #{bannerphoneurl,jdbcType=VARCHAR},
+      </if>
+      <if test="bannerurl != null" >
+        #{bannerurl,jdbcType=VARCHAR},
+      </if>
+      <if test="bannerdesc != null" >
+        #{bannerdesc,jdbcType=VARCHAR},
+      </if>
+      <if test="createid != null" >
+        #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateid != null" >
+        #{updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="familyid != null" >
+        #{familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="gotype != null" >
+        #{gotype,jdbcType=TINYINT},
+      </if>
+      <if test="deleteflag != null" >
+        #{deleteflag,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.BannerQuery" resultType="java.lang.Integer" >
+    select count(*) from jp_banner
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_banner
+    <set >
+      <if test="record.bannerid != null" >
+        bannerid = #{record.bannerid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goname != null" >
+        bannerid = #{record.goname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bannername != null" >
+        bannername = #{record.bannername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bannerweburl != null" >
+        bannerweburl = #{record.bannerweburl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bannerphoneurl != null" >
+        bannerphoneurl = #{record.bannerphoneurl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bannerurl != null" >
+        bannerurl = #{record.bannerurl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bannerdesc != null" >
+        bannerdesc = #{record.bannerdesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createid != null" >
+        createid = #{record.createid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createtime != null" >
+        createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateid != null" >
+        updateid = #{record.updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updatetime != null" >
+        updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.remark != null" >
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.familyid != null" >
+        familyid = #{record.familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gotype != null" >
+        gotype = #{record.gotype,jdbcType=TINYINT},
+      </if>
+      <if test="record.deleteflag != null" >
+        deleteflag = #{record.deleteflag,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_banner
+    set bannerid = #{record.bannerid,jdbcType=VARCHAR},
+      bannername = #{record.bannername,jdbcType=VARCHAR},
+      bannerweburl = #{record.bannerweburl,jdbcType=VARCHAR},
+      bannerphoneurl = #{record.bannerphoneurl,jdbcType=VARCHAR},
+      bannerurl = #{record.bannerurl,jdbcType=VARCHAR},
+      bannerdesc = #{record.bannerdesc,jdbcType=VARCHAR},
+      createid = #{record.createid,jdbcType=VARCHAR},
+      createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      updateid = #{record.updateid,jdbcType=VARCHAR},
+      updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      familyid = #{record.familyid,jdbcType=VARCHAR},
+      gotype = #{record.gotype,jdbcType=TINYINT},
+      deleteflag = #{record.deleteflag,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.Banner" >
+    update jp_banner
+    <set >
+      <if test="bannername != null" >
+        bannername = #{bannername,jdbcType=VARCHAR},
+      </if>
+      <if test="bannerweburl != null" >
+        bannerweburl = #{bannerweburl,jdbcType=VARCHAR},
+      </if>
+      <if test="bannerphoneurl != null" >
+        bannerphoneurl = #{bannerphoneurl,jdbcType=VARCHAR},
+      </if>
+      <if test="bannerurl != null" >
+        bannerurl = #{bannerurl,jdbcType=VARCHAR},
+      </if>
+      <if test="bannerdesc != null" >
+        bannerdesc = #{bannerdesc,jdbcType=VARCHAR},
+      </if>
+      <if test="createid != null" >
+        createid = #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateid != null" >
+        updateid = #{updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="familyid != null" >
+        familyid = #{familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="gotype != null" >
+        gotype = #{gotype,jdbcType=TINYINT},
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag = #{deleteflag,jdbcType=INTEGER},
+      </if>
+       <if test="goname != null" >
+        goname = #{goname,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where bannerid = #{bannerid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.Banner" >
+    update jp_banner
+    set bannername = #{bannername,jdbcType=VARCHAR},
+      bannerweburl = #{bannerweburl,jdbcType=VARCHAR},
+      bannerphoneurl = #{bannerphoneurl,jdbcType=VARCHAR},
+      bannerurl = #{bannerurl,jdbcType=VARCHAR},
+      bannerdesc = #{bannerdesc,jdbcType=VARCHAR},
+      createid = #{createid,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=TIMESTAMP},
+      updateid = #{updateid,jdbcType=VARCHAR},
+      updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR},
+      familyid = #{familyid,jdbcType=VARCHAR},
+      gotype = #{gotype,jdbcType=TINYINT},
+      deleteflag = #{deleteflag,jdbcType=INTEGER},
+      goname = #{goname,jdbcType=VARCHAR}
+    where bannerid = #{bannerid,jdbcType=VARCHAR}
+  </update>
+  <update id="batchDelete">
+      <foreach collection="array" item="item" index="index" separator=";">
+	     update  jp_banner 
+	     set deleteflag = 1
+	     where bannerid = 
+		#{item,jdbcType=VARCHAR}
+		</foreach>
+  </update>
+</mapper>

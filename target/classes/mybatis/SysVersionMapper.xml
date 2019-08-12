@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.SysVersionDao" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.SysVersion" >
+    <id column="versionid" property="versionid" jdbcType="VARCHAR" />
+    <result column="versionname" property="versionname" jdbcType="VARCHAR" />
+    <result column="usercount" property="usercount" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      versionid, versionname, usercount
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.SysVersionQuery" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_sys_version
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    versionid,versionname,usercount
+    from jp_sys_version
+    where versionid = #{versionid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from jp_sys_version
+    where versionid = #{versionid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.SysVersionQuery" >
+    delete from jp_sys_version
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.SysVersion" >
+    insert into jp_sys_version (versionid, versionname, usercount
+      )
+    values (#{versionid,jdbcType=VARCHAR}, #{versionname,jdbcType=VARCHAR}, #{usercount,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.SysVersion" >
+    insert into jp_sys_version
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="versionid != null" >
+        versionid,
+      </if>
+      <if test="versionname != null" >
+        versionname,
+      </if>
+      <if test="usercount != null" >
+        usercount,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="versionid != null" >
+        #{versionid,jdbcType=VARCHAR},
+      </if>
+      <if test="versionname != null" >
+        #{versionname,jdbcType=VARCHAR},
+      </if>
+      <if test="usercount != null" >
+        #{usercount,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.SysVersionQuery" resultType="java.lang.Integer" >
+    select count(*) from jp_sys_version
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_sys_version
+    <set >
+      <if test="record.versionid != null" >
+        versionid = #{record.versionid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.versionname != null" >
+        versionname = #{record.versionname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.usercount != null" >
+        usercount = #{record.usercount,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_sys_version
+    set versionid = #{record.versionid,jdbcType=VARCHAR},
+      versionname = #{record.versionname,jdbcType=VARCHAR},
+      usercount = #{record.usercount,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.SysVersion" >
+    update jp_sys_version
+    <set >
+      <if test="versionname != null" >
+        versionname = #{versionname,jdbcType=VARCHAR},
+      </if>
+      <if test="usercount != null" >
+        usercount = #{usercount,jdbcType=INTEGER},
+      </if>
+    </set>
+    where versionid = #{versionid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.SysVersion" >
+    update jp_sys_version
+    set versionname = #{versionname,jdbcType=VARCHAR},
+      usercount = #{usercount,jdbcType=INTEGER}
+    where versionid = #{versionid,jdbcType=VARCHAR}
+  </update>
+</mapper>

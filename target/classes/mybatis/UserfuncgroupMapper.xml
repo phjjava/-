@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.UserfuncgroupDao" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.Userfuncgroup" >
+    <id column="userfuncgroupid" property="userfuncgroupid" jdbcType="VARCHAR" />
+    <result column="userid" property="userid" jdbcType="VARCHAR" />
+    <result column="fungroupid" property="fungroupid" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      userfuncgroupid, userid, fungroupid
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.UserfuncgroupQuery" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_userfuncgroup
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    userfuncgroupid,userid,fungroupid
+    from jp_userfuncgroup
+    where userfuncgroupid = #{userfuncgroupid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from jp_userfuncgroup
+    where userfuncgroupid = #{userfuncgroupid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.UserfuncgroupQuery" >
+    delete from jp_userfuncgroup
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.Userfuncgroup" >
+    insert into jp_userfuncgroup (userfuncgroupid, userid, fungroupid
+      )
+    values (#{userfuncgroupid,jdbcType=VARCHAR}, #{userid,jdbcType=VARCHAR}, #{fungroupid,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.Userfuncgroup" >
+    insert into jp_userfuncgroup
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userfuncgroupid != null" >
+        userfuncgroupid,
+      </if>
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="fungroupid != null" >
+        fungroupid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userfuncgroupid != null" >
+        #{userfuncgroupid,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="fungroupid != null" >
+        #{fungroupid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.UserfuncgroupQuery" resultType="java.lang.Integer" >
+    select count(*) from jp_userfuncgroup
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_userfuncgroup
+    <set >
+      <if test="record.userfuncgroupid != null" >
+        userfuncgroupid = #{record.userfuncgroupid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userid != null" >
+        userid = #{record.userid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fungroupid != null" >
+        fungroupid = #{record.fungroupid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_userfuncgroup
+    set userfuncgroupid = #{record.userfuncgroupid,jdbcType=VARCHAR},
+      userid = #{record.userid,jdbcType=VARCHAR},
+      fungroupid = #{record.fungroupid,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.Userfuncgroup" >
+    update jp_userfuncgroup
+    <set >
+      <if test="userid != null" >
+        userid = #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="fungroupid != null" >
+        fungroupid = #{fungroupid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where userfuncgroupid = #{userfuncgroupid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.Userfuncgroup" >
+    update jp_userfuncgroup
+    set userid = #{userid,jdbcType=VARCHAR},
+      fungroupid = #{fungroupid,jdbcType=VARCHAR}
+    where userfuncgroupid = #{userfuncgroupid,jdbcType=VARCHAR}
+  </update>
+</mapper>

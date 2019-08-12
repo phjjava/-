@@ -1,0 +1,749 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.UserImportMapper" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.User" >
+    <id column="userid" property="userid" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="sessionid" property="sessionid" jdbcType="VARCHAR" />
+    <result column="logintime" property="logintime" jdbcType="TIMESTAMP" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="usedname" property="usedname" jdbcType="VARCHAR" />
+    <result column="livestatus" property="livestatus" jdbcType="TINYINT" />
+    <result column="sex" property="sex" jdbcType="TINYINT" />
+    <result column="ismarry" property="isMarry" jdbcType="INTEGER" />
+    <result column="mateid" property="mateid" jdbcType="VARCHAR" />
+    <result column="matename" property="matename" jdbcType="VARCHAR" />
+    <result column="matetypeStr" property="matetypestr" jdbcType="VARCHAR" />
+    <result column="pid" property="pid" jdbcType="VARCHAR" />
+    <result column="pname" property="pname" jdbcType="VARCHAR" />
+    <result column="familyid" property="familyid" jdbcType="VARCHAR" />
+    <result column="familyname" property="familyname" jdbcType="VARCHAR" />
+    <result column="branchid" property="branchid" jdbcType="VARCHAR" />
+    <result column="branchname" property="branchname" jdbcType="VARCHAR" />
+    <result column="isdirect" property="isdirect" jdbcType="TINYINT" />
+    <result column="isborn" property="isborn" jdbcType="TINYINT" />
+    <result column="genlevel" property="genlevel" jdbcType="INTEGER" />
+    <result column="brotherpos" property="brotherpos" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="deleteflag" property="deleteflag" jdbcType="TINYINT" />
+    <result column="imgurl" property="imgurl" jdbcType="VARCHAR" />
+    <result column="idcard" property="idcard" jdbcType="CHAR" />
+    <result column="pinyinFirst" property="pinyinfirst" jdbcType="CHAR" />
+    <result column="pinyinFull" property="pinyinfull" jdbcType="VARCHAR" />
+    <result column="dietime" property="dietime" jdbcType="VARCHAR" />
+    <result column="fixplace" property="fixplace" jdbcType="VARCHAR" />
+    <result column="remarkelse" property="remarkelse" jdbcType="VARCHAR" />
+    <result column="createid" property="createid" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="updateid" property="updateid" jdbcType="VARCHAR" />
+    <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="excelid" property="excelid" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      userid, phone, password, sessionid, logintime, username, usedname, livestatus, sex, 
+      ismarry, mateid, matename, matetypeStr, pid, pname, familyid, familyname, branchid, 
+      branchname, isdirect, isborn, genlevel, brotherpos, status, deleteflag, imgurl, idcard, 
+      pinyinFirst, pinyinFull, dietime, fixplace, remarkelse, createid, createtime, updateid, 
+      updatetime, excelid
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.UserImportExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_user_import_history
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    userid,phone,password,sessionid,logintime,username,usedname,livestatus,sex,ismarry,mateid,matename,matetypeStr,pid,pname,familyid,familyname,branchid,branchname,isdirect,isborn,genlevel,brotherpos,status,deleteflag,imgurl,idcard,pinyinFirst,pinyinFull,dietime,fixplace,remarkelse,createid,createtime,updateid,updatetime,excelid
+    from jp_user_import_history
+    where userid = #{userid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from jp_user_import_history
+    where userid = #{userid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.UserImportExample" >
+    delete from jp_user_import_history
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.UserImport" >
+    insert into jp_user_import_history (userid, phone, password, 
+      sessionid, logintime, username, 
+      usedname, livestatus, sex, 
+      ismarry, mateid, matename, 
+      matetypeStr, pid, pname, 
+      familyid, familyname, branchid, 
+      branchname, isdirect, isborn, 
+      genlevel, brotherpos, status, 
+      deleteflag, imgurl, idcard, 
+      pinyinFirst, pinyinFull, dietime, 
+      fixplace, remarkelse, createid, 
+      createtime, updateid, updatetime, 
+      excelid)
+    values (#{userid,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{sessionid,jdbcType=VARCHAR}, #{logintime,jdbcType=TIMESTAMP}, #{username,jdbcType=VARCHAR}, 
+      #{usedname,jdbcType=VARCHAR}, #{livestatus,jdbcType=TINYINT}, #{sex,jdbcType=TINYINT}, 
+      #{ismarry,jdbcType=INTEGER}, #{mateid,jdbcType=VARCHAR}, #{matename,jdbcType=VARCHAR}, 
+      #{matetypestr,jdbcType=VARCHAR}, #{pid,jdbcType=VARCHAR}, #{pname,jdbcType=VARCHAR}, 
+      #{familyid,jdbcType=VARCHAR}, #{familyname,jdbcType=VARCHAR}, #{branchid,jdbcType=VARCHAR}, 
+      #{branchname,jdbcType=VARCHAR}, #{isdirect,jdbcType=TINYINT}, #{isborn,jdbcType=TINYINT}, 
+      #{genlevel,jdbcType=INTEGER}, #{brotherpos,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, 
+      #{deleteflag,jdbcType=TINYINT}, #{imgurl,jdbcType=VARCHAR}, #{idcard,jdbcType=CHAR}, 
+      #{pinyinfirst,jdbcType=CHAR}, #{pinyinfull,jdbcType=VARCHAR}, #{dietime,jdbcType=VARCHAR}, 
+      #{fixplace,jdbcType=VARCHAR}, #{remarkelse,jdbcType=VARCHAR}, #{createid,jdbcType=VARCHAR}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{updateid,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP}, 
+      #{excelid,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.UserImport" >
+    insert into jp_user_import_history
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="sessionid != null" >
+        sessionid,
+      </if>
+      <if test="logintime != null" >
+        logintime,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="usedname != null" >
+        usedname,
+      </if>
+      <if test="livestatus != null" >
+        livestatus,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="ismarry != null" >
+        ismarry,
+      </if>
+      <if test="mateid != null" >
+        mateid,
+      </if>
+      <if test="matename != null" >
+        matename,
+      </if>
+      <if test="matetypestr != null" >
+        matetypeStr,
+      </if>
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="pname != null" >
+        pname,
+      </if>
+      <if test="familyid != null" >
+        familyid,
+      </if>
+      <if test="familyname != null" >
+        familyname,
+      </if>
+      <if test="branchid != null" >
+        branchid,
+      </if>
+      <if test="branchname != null" >
+        branchname,
+      </if>
+      <if test="isdirect != null" >
+        isdirect,
+      </if>
+      <if test="isborn != null" >
+        isborn,
+      </if>
+      <if test="genlevel != null" >
+        genlevel,
+      </if>
+      <if test="brotherpos != null" >
+        brotherpos,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag,
+      </if>
+      <if test="imgurl != null" >
+        imgurl,
+      </if>
+      <if test="idcard != null" >
+        idcard,
+      </if>
+      <if test="pinyinfirst != null" >
+        pinyinFirst,
+      </if>
+      <if test="pinyinfull != null" >
+        pinyinFull,
+      </if>
+      <if test="dietime != null" >
+        dietime,
+      </if>
+      <if test="fixplace != null" >
+        fixplace,
+      </if>
+      <if test="remarkelse != null" >
+        remarkelse,
+      </if>
+      <if test="createid != null" >
+        createid,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="updateid != null" >
+        updateid,
+      </if>
+      <if test="updatetime != null" >
+        updatetime,
+      </if>
+      <if test="excelid != null" >
+        excelid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="sessionid != null" >
+        #{sessionid,jdbcType=VARCHAR},
+      </if>
+      <if test="logintime != null" >
+        #{logintime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="usedname != null" >
+        #{usedname,jdbcType=VARCHAR},
+      </if>
+      <if test="livestatus != null" >
+        #{livestatus,jdbcType=TINYINT},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=TINYINT},
+      </if>
+      <if test="ismarry != null" >
+        #{ismarry,jdbcType=INTEGER},
+      </if>
+      <if test="mateid != null" >
+        #{mateid,jdbcType=VARCHAR},
+      </if>
+      <if test="matename != null" >
+        #{matename,jdbcType=VARCHAR},
+      </if>
+      <if test="matetypestr != null" >
+        #{matetypestr,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        #{pid,jdbcType=VARCHAR},
+      </if>
+      <if test="pname != null" >
+        #{pname,jdbcType=VARCHAR},
+      </if>
+      <if test="familyid != null" >
+        #{familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="familyname != null" >
+        #{familyname,jdbcType=VARCHAR},
+      </if>
+      <if test="branchid != null" >
+        #{branchid,jdbcType=VARCHAR},
+      </if>
+      <if test="branchname != null" >
+        #{branchname,jdbcType=VARCHAR},
+      </if>
+      <if test="isdirect != null" >
+        #{isdirect,jdbcType=TINYINT},
+      </if>
+      <if test="isborn != null" >
+        #{isborn,jdbcType=TINYINT},
+      </if>
+      <if test="genlevel != null" >
+        #{genlevel,jdbcType=INTEGER},
+      </if>
+      <if test="brotherpos != null" >
+        #{brotherpos,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="deleteflag != null" >
+        #{deleteflag,jdbcType=TINYINT},
+      </if>
+      <if test="imgurl != null" >
+        #{imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="idcard != null" >
+        #{idcard,jdbcType=CHAR},
+      </if>
+      <if test="pinyinfirst != null" >
+        #{pinyinfirst,jdbcType=CHAR},
+      </if>
+      <if test="pinyinfull != null" >
+        #{pinyinfull,jdbcType=VARCHAR},
+      </if>
+      <if test="dietime != null" >
+        #{dietime,jdbcType=VARCHAR},
+      </if>
+      <if test="fixplace != null" >
+        #{fixplace,jdbcType=VARCHAR},
+      </if>
+      <if test="remarkelse != null" >
+        #{remarkelse,jdbcType=VARCHAR},
+      </if>
+      <if test="createid != null" >
+        #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateid != null" >
+        #{updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="excelid != null" >
+        #{excelid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.UserImportExample" resultType="java.lang.Integer" >
+    select count(*) from jp_user_import_history
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_user_import_history
+    <set >
+      <if test="record.userid != null" >
+        userid = #{record.userid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.phone != null" >
+        phone = #{record.phone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.password != null" >
+        password = #{record.password,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sessionid != null" >
+        sessionid = #{record.sessionid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.logintime != null" >
+        logintime = #{record.logintime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.username != null" >
+        username = #{record.username,jdbcType=VARCHAR},
+      </if>
+      <if test="record.usedname != null" >
+        usedname = #{record.usedname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.livestatus != null" >
+        livestatus = #{record.livestatus,jdbcType=TINYINT},
+      </if>
+      <if test="record.sex != null" >
+        sex = #{record.sex,jdbcType=TINYINT},
+      </if>
+      <if test="record.ismarry != null" >
+        ismarry = #{record.ismarry,jdbcType=INTEGER},
+      </if>
+      <if test="record.mateid != null" >
+        mateid = #{record.mateid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.matename != null" >
+        matename = #{record.matename,jdbcType=VARCHAR},
+      </if>
+      <if test="record.matetypestr != null" >
+        matetypeStr = #{record.matetypestr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pid != null" >
+        pid = #{record.pid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pname != null" >
+        pname = #{record.pname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.familyid != null" >
+        familyid = #{record.familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.familyname != null" >
+        familyname = #{record.familyname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.branchid != null" >
+        branchid = #{record.branchid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.branchname != null" >
+        branchname = #{record.branchname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isdirect != null" >
+        isdirect = #{record.isdirect,jdbcType=TINYINT},
+      </if>
+      <if test="record.isborn != null" >
+        isborn = #{record.isborn,jdbcType=TINYINT},
+      </if>
+      <if test="record.genlevel != null" >
+        genlevel = #{record.genlevel,jdbcType=INTEGER},
+      </if>
+      <if test="record.brotherpos != null" >
+        brotherpos = #{record.brotherpos,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.deleteflag != null" >
+        deleteflag = #{record.deleteflag,jdbcType=TINYINT},
+      </if>
+      <if test="record.imgurl != null" >
+        imgurl = #{record.imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.idcard != null" >
+        idcard = #{record.idcard,jdbcType=CHAR},
+      </if>
+      <if test="record.pinyinfirst != null" >
+        pinyinFirst = #{record.pinyinfirst,jdbcType=CHAR},
+      </if>
+      <if test="record.pinyinfull != null" >
+        pinyinFull = #{record.pinyinfull,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dietime != null" >
+        dietime = #{record.dietime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fixplace != null" >
+        fixplace = #{record.fixplace,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remarkelse != null" >
+        remarkelse = #{record.remarkelse,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createid != null" >
+        createid = #{record.createid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createtime != null" >
+        createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateid != null" >
+        updateid = #{record.updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updatetime != null" >
+        updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.excelid != null" >
+        excelid = #{record.excelid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_user_import_history
+    set userid = #{record.userid,jdbcType=VARCHAR},
+      phone = #{record.phone,jdbcType=VARCHAR},
+      password = #{record.password,jdbcType=VARCHAR},
+      sessionid = #{record.sessionid,jdbcType=VARCHAR},
+      logintime = #{record.logintime,jdbcType=TIMESTAMP},
+      username = #{record.username,jdbcType=VARCHAR},
+      usedname = #{record.usedname,jdbcType=VARCHAR},
+      livestatus = #{record.livestatus,jdbcType=TINYINT},
+      sex = #{record.sex,jdbcType=TINYINT},
+      ismarry = #{record.ismarry,jdbcType=INTEGER},
+      mateid = #{record.mateid,jdbcType=VARCHAR},
+      matename = #{record.matename,jdbcType=VARCHAR},
+      matetypeStr = #{record.matetypestr,jdbcType=VARCHAR},
+      pid = #{record.pid,jdbcType=VARCHAR},
+      pname = #{record.pname,jdbcType=VARCHAR},
+      familyid = #{record.familyid,jdbcType=VARCHAR},
+      familyname = #{record.familyname,jdbcType=VARCHAR},
+      branchid = #{record.branchid,jdbcType=VARCHAR},
+      branchname = #{record.branchname,jdbcType=VARCHAR},
+      isdirect = #{record.isdirect,jdbcType=TINYINT},
+      isborn = #{record.isborn,jdbcType=TINYINT},
+      genlevel = #{record.genlevel,jdbcType=INTEGER},
+      brotherpos = #{record.brotherpos,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=TINYINT},
+      deleteflag = #{record.deleteflag,jdbcType=TINYINT},
+      imgurl = #{record.imgurl,jdbcType=VARCHAR},
+      idcard = #{record.idcard,jdbcType=CHAR},
+      pinyinFirst = #{record.pinyinfirst,jdbcType=CHAR},
+      pinyinFull = #{record.pinyinfull,jdbcType=VARCHAR},
+      dietime = #{record.dietime,jdbcType=VARCHAR},
+      fixplace = #{record.fixplace,jdbcType=VARCHAR},
+      remarkelse = #{record.remarkelse,jdbcType=VARCHAR},
+      createid = #{record.createid,jdbcType=VARCHAR},
+      createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      updateid = #{record.updateid,jdbcType=VARCHAR},
+      updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+      excelid = #{record.excelid,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.UserImport" >
+    update jp_user_import_history
+    <set >
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="sessionid != null" >
+        sessionid = #{sessionid,jdbcType=VARCHAR},
+      </if>
+      <if test="logintime != null" >
+        logintime = #{logintime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="usedname != null" >
+        usedname = #{usedname,jdbcType=VARCHAR},
+      </if>
+      <if test="livestatus != null" >
+        livestatus = #{livestatus,jdbcType=TINYINT},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=TINYINT},
+      </if>
+      <if test="ismarry != null" >
+        ismarry = #{ismarry,jdbcType=INTEGER},
+      </if>
+      <if test="mateid != null" >
+        mateid = #{mateid,jdbcType=VARCHAR},
+      </if>
+      <if test="matename != null" >
+        matename = #{matename,jdbcType=VARCHAR},
+      </if>
+      <if test="matetypestr != null" >
+        matetypeStr = #{matetypestr,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        pid = #{pid,jdbcType=VARCHAR},
+      </if>
+      <if test="pname != null" >
+        pname = #{pname,jdbcType=VARCHAR},
+      </if>
+      <if test="familyid != null" >
+        familyid = #{familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="familyname != null" >
+        familyname = #{familyname,jdbcType=VARCHAR},
+      </if>
+      <if test="branchid != null" >
+        branchid = #{branchid,jdbcType=VARCHAR},
+      </if>
+      <if test="branchname != null" >
+        branchname = #{branchname,jdbcType=VARCHAR},
+      </if>
+      <if test="isdirect != null" >
+        isdirect = #{isdirect,jdbcType=TINYINT},
+      </if>
+      <if test="isborn != null" >
+        isborn = #{isborn,jdbcType=TINYINT},
+      </if>
+      <if test="genlevel != null" >
+        genlevel = #{genlevel,jdbcType=INTEGER},
+      </if>
+      <if test="brotherpos != null" >
+        brotherpos = #{brotherpos,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag = #{deleteflag,jdbcType=TINYINT},
+      </if>
+      <if test="imgurl != null" >
+        imgurl = #{imgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="idcard != null" >
+        idcard = #{idcard,jdbcType=CHAR},
+      </if>
+      <if test="pinyinfirst != null" >
+        pinyinFirst = #{pinyinfirst,jdbcType=CHAR},
+      </if>
+      <if test="pinyinfull != null" >
+        pinyinFull = #{pinyinfull,jdbcType=VARCHAR},
+      </if>
+      <if test="dietime != null" >
+        dietime = #{dietime,jdbcType=VARCHAR},
+      </if>
+      <if test="fixplace != null" >
+        fixplace = #{fixplace,jdbcType=VARCHAR},
+      </if>
+      <if test="remarkelse != null" >
+        remarkelse = #{remarkelse,jdbcType=VARCHAR},
+      </if>
+      <if test="createid != null" >
+        createid = #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateid != null" >
+        updateid = #{updateid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="excelid != null" >
+        excelid = #{excelid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where userid = #{userid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.UserImport" >
+    update jp_user_import_history
+    set phone = #{phone,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      sessionid = #{sessionid,jdbcType=VARCHAR},
+      logintime = #{logintime,jdbcType=TIMESTAMP},
+      username = #{username,jdbcType=VARCHAR},
+      usedname = #{usedname,jdbcType=VARCHAR},
+      livestatus = #{livestatus,jdbcType=TINYINT},
+      sex = #{sex,jdbcType=TINYINT},
+      ismarry = #{ismarry,jdbcType=INTEGER},
+      mateid = #{mateid,jdbcType=VARCHAR},
+      matename = #{matename,jdbcType=VARCHAR},
+      matetypeStr = #{matetypestr,jdbcType=VARCHAR},
+      pid = #{pid,jdbcType=VARCHAR},
+      pname = #{pname,jdbcType=VARCHAR},
+      familyid = #{familyid,jdbcType=VARCHAR},
+      familyname = #{familyname,jdbcType=VARCHAR},
+      branchid = #{branchid,jdbcType=VARCHAR},
+      branchname = #{branchname,jdbcType=VARCHAR},
+      isdirect = #{isdirect,jdbcType=TINYINT},
+      isborn = #{isborn,jdbcType=TINYINT},
+      genlevel = #{genlevel,jdbcType=INTEGER},
+      brotherpos = #{brotherpos,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      deleteflag = #{deleteflag,jdbcType=TINYINT},
+      imgurl = #{imgurl,jdbcType=VARCHAR},
+      idcard = #{idcard,jdbcType=CHAR},
+      pinyinFirst = #{pinyinfirst,jdbcType=CHAR},
+      pinyinFull = #{pinyinfull,jdbcType=VARCHAR},
+      dietime = #{dietime,jdbcType=VARCHAR},
+      fixplace = #{fixplace,jdbcType=VARCHAR},
+      remarkelse = #{remarkelse,jdbcType=VARCHAR},
+      createid = #{createid,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=TIMESTAMP},
+      updateid = #{updateid,jdbcType=VARCHAR},
+      updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      excelid = #{excelid,jdbcType=VARCHAR}
+    where userid = #{userid,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- 自写方法 -->
+  <insert id="importUser">
+	     insert into jp_user_import_history (userid,familyid,status,isdirect,genlevel,username,usedname,idcard,brotherpos,pname,livestatus
+	         ,ismarry,fixplace,phone,createtime,pid,password,mateid,matename,deleteflag,sex,familyname,dietime,pinyinFirst,pinyinFull,createid,updateid,updatetime,branchid,branchname,excelid)
+	     values
+	     <foreach collection="list" item="item" index="index" separator=",">
+				(#{item.userid},#{item.familyid},#{item.status},#{item.isdirect},
+				#{item.genlevel},#{item.username},#{item.usedname},#{item.idcard},
+				#{item.brotherpos},#{item.pname},#{item.livestatus},#{item.isMarry},
+				#{item.fixplace},#{item.phone},#{item.createtime},#{item.pid},#{item.password},
+				#{item.mateid},#{item.matename},#{item.deleteflag},#{item.sex},#{item.familyname},#{item.dietime},
+				#{item.pinyinfirst},#{item.pinyinfull},#{item.createid},#{item.updateid},#{item.updatetime},#{item.branchid},#{item.branchname},#{item.excelid})
+		</foreach>
+  </insert>
+  <update id="updateAleardyUser" parameterType="com.jp.entity.User" >
+   <foreach collection="list" item="item" index="index" separator=";">
+        update jp_user
+			set mateid = #{item.mateid,jdbcType=VARCHAR},
+	            matename = #{item.matename,jdbcType=VARCHAR}
+        where userid =
+		  #{item.userid}
+	</foreach>
+	</update>
+</mapper>
