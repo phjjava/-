@@ -188,15 +188,19 @@ public class BranchServiceImpl implements BranchService {
 					branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 					branch.setCreateid(userId);
 					count = branchDao.insertSelective(branch);
-				}
-				if (count > 0) {
-					updateUserBranch(branch.getBeginuserid(), branch.getBranchid(), branch.getBranchname());
-					// 更新session中的分支信息
-					LoginUserInfo userContext = CurrentUserContext.getUserContext();
-					User user = userContext.getUser();
-					List<Branch> branchList = branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(),
-							user.getUserid());
-					userContext.setBranchList(branchList);
+					if (count > 0) {
+						updateUserBranch(branch.getBeginuserid(), branch.getBranchid(), branch.getBranchname());
+						// 更新session中的分支信息
+						LoginUserInfo userContext = CurrentUserContext.getUserContext();
+						User user = userContext.getUser();
+						List<Branch> branchList = branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(),
+								user.getUserid());
+						userContext.setBranchList(branchList);
+					}
+				} else {
+					result = new Result(MsgConstants.BRANCH_SAVE_OUTMAX);
+					res = new JsonResponse(result);
+					return res;
 				}
 			}
 			if (count > 0) {

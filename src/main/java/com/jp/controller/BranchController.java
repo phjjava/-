@@ -2,8 +2,6 @@ package com.jp.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -13,8 +11,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
-import com.jp.dao.BranchDao;
-import com.jp.dao.UserDao;
 import com.jp.entity.Branch;
 import com.jp.service.BranchService;
 
@@ -22,14 +18,8 @@ import com.jp.service.BranchService;
 @RequestMapping("branch")
 public class BranchController {
 
-	private final Logger log_ = LogManager.getLogger(BranchController.class);
-
 	@Autowired
 	private BranchService branchService;
-	@Autowired
-	private BranchDao branchDao;
-	@Autowired
-	private UserDao userDao;
 
 	/**
 	 * 保存新增或编辑分支
