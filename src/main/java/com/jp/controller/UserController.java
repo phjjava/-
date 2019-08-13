@@ -697,25 +697,8 @@ public class UserController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/selectBranch", method = RequestMethod.POST)
-	public JsonResponse selectBranch(String familyid) {
-		// String gsonStr = null;
-		Result result = null;
-		JsonResponse res = null;
-		try {
-			PageModel<Branch> pageModelBranch = new PageModel<Branch>();
-			Branch branch = new Branch();
-			branchService.initBranch(pageModelBranch, branch);
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
-			res.setData(pageModelBranch.getList());
-			// gsonStr = GsonUtil.GsonString(pageModelBranch.getList());
-		} catch (Exception e) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			res = new JsonResponse(result);
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		return res;
+	public JsonResponse selectBranch(Branch branch) {
+		return branchService.initBranch(branch);
 	}
 
 	/**

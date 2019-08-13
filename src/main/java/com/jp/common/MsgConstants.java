@@ -32,6 +32,7 @@ public class MsgConstants {
 	public static final Result JUMP_MESSAGE = new Result(2009, "此跳转编号暂不支持!");
 
 	// 分支管理异常码
+	public static final Result BRANCH_SAVE_OUTMAX = new Result(2002, "保存失败，分支数量超过版本最大分支数量");
 	public static final Result BRANCH_VALIDATA_NAME = new Result(3001, "当前分支名称已存在");
 	public static final Result BRANCH_CHECK_BEGINER = new Result(3002, "该用户已发起过其他分支");
 	public static final Result BRANCH_NO_BEGINERID = new Result(3003, "分支起始人ID为空");

@@ -1,9 +1,5 @@
 package com.jp.controller;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,22 +11,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
-import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
-import com.jp.common.Result;
-import com.jp.common.UploadReturnEntity;
 import com.jp.entity.Branchalbum;
 import com.jp.entity.Branchphoto;
 import com.jp.service.BranchalbumService;
-import com.jp.util.GsonUtil;
-import com.jp.util.UUIDUtils;
-import com.jp.util.UploadUtil;
 
 @Controller
 @RequestMapping("branchalbum")
@@ -67,92 +54,6 @@ public class BranchalbumController {
 	}
 
 	/**
-	 * 分支上传图片（弃用）
-	 * @param files
-	 * @param request
-	 * @param albumid
-	 * @param branchid
-	 * @return
-	 */
-	@RequestMapping(value = "/saveBranchAlbum", method = RequestMethod.POST)
-	@ResponseBody
-	public JsonResponse saveBranchAlbum(@RequestParam("file") MultipartFile[] files, HttpServletRequest request,
-			String albumid, String branchid) {
-		Result result = null;
-		JsonResponse res = null;
-		String str = null;
-		try {
-			List<String> fileNams = new ArrayList<String>();
-			List<File> fileList = new ArrayList<File>();
-			File file = null;
-			for (MultipartFile fileM : files) {
-				String fileName = fileM.getOriginalFilename();
-				fileNams.add(fileName);
-			}
-			String pathDir = "/upload";
-			String logoRealPathDir = request.getSession().getServletContext().getRealPath(pathDir);
-			for (int i = 0; i < files.length; i++) {
-				MultipartFile fileMe = files[i];
-				logoRealPathDir = logoRealPathDir + "/" + fileMe.getOriginalFilename();
-				file = new File(logoRealPathDir);
-				files[i].transferTo(file);
-				fileList.add(file);
-			}
-			String status = UploadUtil.taskFileUpload(fileList, fileNams);
-			//
-			UploadReturnEntity upload = GsonUtil.GsonToBean(status, UploadReturnEntity.class);
-			if (upload != null && upload.getResult() == 0) {
-				HashMap<String, String> data = upload.getData();
-				String imgurl = data.get("url");
-				String smallImurl = data.get("iconUrl");
-				String picName = data.get("fileName");
-				Branchphoto branchPhoto = null;
-				List<Branchphoto> userPhotoList = new ArrayList<Branchphoto>();
-				for (int i = 0; i < files.length; i++) {
-					branchPhoto = new Branchphoto();
-					branchPhoto.setAlbumid(albumid);
-					branchPhoto.setBranchid(branchid);
-					branchPhoto.setImgurl(imgurl);
-					branchPhoto.setSmallimgurl(smallImurl);
-					branchPhoto.setDescription(picName);
-					branchPhoto.setCreatetime(new Date());
-					branchPhoto.setCreateid(CurrentUserContext.getCurrentUserId());
-					branchPhoto.setDeleteflag(0);
-					branchPhoto.setImgid(UUIDUtils.getUUID());
-					userPhotoList.add(branchPhoto);
-				}
-				baservice.insertBranchPhoto(userPhotoList);
-				str = "1";
-			} else {
-				str = "0";
-				result = new Result(MsgConstants.RESUL_FAIL);
-				res = new JsonResponse(result);
-				res.setData(str);
-				return res;
-			}
-			//
-			/*
-			 * Gson gson = new GsonBuilder().create(); JsonObject json =
-			 * gson.fromJson(status, JsonObject.class); JsonObject jsonInfo =
-			 * gson.fromJson(json.get("data"), JsonObject.class); String url = ""; url =
-			 * jsonInfo.get("url").toString(); String newStr = url.replaceAll("\"","");
-			 */
-		} catch (Exception e) {
-			e.printStackTrace();
-			str = "0";
-			log_.error("[JPSYSTEM]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			res.setData(str);
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(str);
-		return res;
-	}
-
-	/**
 	 * 批量保存照片信息
 	 * 
 	 * @param userPhotoList
@@ -161,49 +62,25 @@ public class BranchalbumController {
 	@RequestMapping(value = "/batchSavePhoto", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse batchSavePhoto(@RequestBody List<Branchphoto> userPhotoList) {
-
 		return baservice.insertBranchPhoto(userPhotoList);
 	}
 
 	/**
-	 * 
-	 * @描述 分支新增相册
-	 * @作者 sj
-	 * @时间 2017年5月17日上午10:31:58
-	 * @参数 @param userAlbum
-	 * @参数 @return
-	 * @return String
+	 * 分支新增相册
+	 * @param branchAlbum
+	 * @return
 	 */
 	@RequestMapping(value = "/mergeBranchAlbum", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse mergeBranchAlbum(Branchalbum branchAlbum) {
-		Result result = null;
-		JsonResponse res = null;
-		String ablumId = null;
-		try {
-			ablumId = baservice.mergeBranchAlbum(branchAlbum);
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(ablumId);
-		return res;
+		return baservice.mergeBranchAlbum(branchAlbum);
 	}
 
 	/**
-	 * @描述 相册信息和照片列表
-	 * @作者 sj
-	 * @时间 2017年5月22日上午12:52:29
-	 * @参数 @param albumid
-	 * @参数 @param userid
-	 * @参数 @param modelMap
-	 * @参数 @return
-	 * @return String
+	 * 相册信息和照片列表
+	 * @param albumid
+	 * @param branchid
+	 * @return
 	 */
 	@RequestMapping(value = "/showPhoto", method = RequestMethod.GET)
 	@ResponseBody
@@ -212,12 +89,9 @@ public class BranchalbumController {
 	}
 
 	/**
-	 * @描述 删除单张图片
-	 * @作者 sj
-	 * @时间 2017年5月18日下午3:02:34
-	 * @参数 @param userAlbum
-	 * @参数 @return
-	 * @return String
+	 * 删除单张图片
+	 * @param branchPhoto
+	 * @return
 	 */
 	@RequestMapping(value = "/deletPhoto", method = RequestMethod.POST)
 	@ResponseBody
@@ -228,50 +102,20 @@ public class BranchalbumController {
 	}
 
 	/**
-	 * 
-	 * @描述 去单张照片编辑界面（编辑回显？）
-	 * @作者 sj
-	 * @时间 2017年5月21日下午4:01:46
-	 * @参数 @param request
-	 * @参数 @param modelMap
-	 * @参数 @return
-	 * @return String
+	 * 单张照片编辑回显
+	 * @param request
+	 * @return
 	 */
 	@RequestMapping(value = "/editbranchphoto", method = RequestMethod.GET)
 	@ResponseBody
-	public JsonResponse edituserphoto(HttpServletRequest request) {
-		Result result = null;
-		JsonResponse res = null;
-		Branchphoto branchphoto = null;
-		try {
-			String branchid = request.getParameter("branchid");
-			String albumid = request.getParameter("albumid");
-			String imgid = request.getParameter("imgid");
-			// BranchphotoKey key = new BranchphotoKey();
-			// key.setImgid(imgid);
-			// key.setAlbumid(albumid);
-			// key.setBranchid(branchid);
-			branchphoto = baservice.selectByPrimaryKey(imgid);
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(branchphoto);
-		return res;
+	public JsonResponse edituserphoto(String imgid) {
+		return baservice.selectByPrimaryKey(imgid);
 	}
 
 	/**
-	 * @描述 保存用户照片 编辑照片说明
-	 * @作者 sj
-	 * @时间 2017年5月21日下午4:17:41
-	 * @参数 @param userAlbum
-	 * @参数 @return
-	 * @return String
+	 * 保存用户照片 编辑照片说明
+	 * @param branchphoto
+	 * @return
 	 */
 	@RequestMapping(value = "/mergeBranchPhoto", method = RequestMethod.POST)
 	@ResponseBody
@@ -280,20 +124,14 @@ public class BranchalbumController {
 	}
 
 	/**
-	 * 
-	 * @描述 批量删除相册(逻辑删除)
-	 * @作者 jinlizhi
-	 * @时间 2017年6月5日下午3:11:57
-	 * @参数 @param albumids
-	 * @参数 @return
-	 * @return String
+	 * 批量删除相册(逻辑删除)
+	 * @param albumids
+	 * @return
 	 */
 	@RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse batchDelete(String albumids) {
-		String albumid = albumids.substring(0, albumids.length());
-		String albumidArray[] = albumid.split(",");
-		return baservice.batchDelete(albumidArray);
+		return baservice.batchDelete(albumids);
 	}
 
 	/**

@@ -516,8 +516,8 @@
 
 	<!-- 自写方法 -->
 	<select id="selectByFamilyid" parameterType="java.lang.String"
-		resultType="java.lang.String">
-		select branchid from jp_branch where familyid =
+		resultType="java.lang.Integer">
+		select count(1) from jp_branch where familyid =
 		#{familyid,jdbcType=VARCHAR}
 	</select>
 
