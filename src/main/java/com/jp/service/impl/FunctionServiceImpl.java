@@ -10,16 +10,14 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jp.common.PageModel;
 import com.jp.dao.FunctionDao;
-import com.jp.dao.FunctionRoleMapper;
+import com.jp.dao.UserManagerMapper;
 import com.jp.entity.Function;
 import com.jp.entity.FunctionQuery;
-import com.jp.entity.UserManagerExample;
 import com.jp.entity.FunctionQuery.Criteria;
 import com.jp.entity.UserManager;
+import com.jp.entity.UserManagerExample;
 import com.jp.service.FunctionService;
 import com.jp.util.StringTools;
-import com.jp.dao.UserManagerMapper;
-
 
 @Service
 public class FunctionServiceImpl implements FunctionService {
@@ -28,32 +26,29 @@ public class FunctionServiceImpl implements FunctionService {
 	private FunctionDao functionDao;
 	@Autowired
 	private UserManagerMapper userManagerMapper;
-	@Autowired
-	private FunctionRoleMapper functionRoleMapper;
-	
+
 	@Override
-	public PageModel pageQuery(PageModel pageModel,Function function) throws Exception {
-		
+	public PageModel<Function> pageQuery(PageModel<Function> pageModel, Function function) throws Exception {
+
 		FunctionQuery fq = new FunctionQuery();
 		Criteria createCriteria = fq.createCriteria();
-		
-		if(StringTools.trimNotEmpty(function.getFunctionid())){
+
+		if (StringTools.trimNotEmpty(function.getFunctionid())) {
 			createCriteria.andFunctionidEqualTo(function.getFunctionid());
 		}
-		
 
-		if(StringTools.trimNotEmpty(pageModel.getSortOrder())){
+		if (StringTools.trimNotEmpty(pageModel.getSortOrder())) {
 			fq.setOrderByClause(pageModel.getSortOrder() + " " + pageModel.getSortType());
-		}else{
-//			fq.setOrderByClause("");
-//			pageModel.setSortOrder("id");
-//			pageModel.setSortType("desc");
+		} else {
+			//			fq.setOrderByClause("");
+			//			pageModel.setSortOrder("id");
+			//			pageModel.setSortType("desc");
 		}
 
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		List<Function>list = functionDao.selectByExample(fq);
+		List<Function> list = functionDao.selectByExample(fq);
 		pageModel.setPageInfo(new PageInfo<Function>(list));
-		
+
 		return pageModel;
 	}
 
@@ -64,19 +59,19 @@ public class FunctionServiceImpl implements FunctionService {
 
 	@Override
 	public void deleteAndAll(Function function) throws Exception {
-		
+
 	}
-	
+
 	@Override
-	public List<Function> selectFunctionListByRoleid(String familyid,String roleid) throws Exception {
-		
-		return functionDao.selectFunctionListByRoleid(familyid , roleid);
+	public List<Function> selectFunctionListByRoleid(String familyid, String roleid) throws Exception {
+
+		return functionDao.selectFunctionListByRoleid(familyid, roleid);
 	}
-	
+
 	@Override
-	public List<Function> selectFunctionListByRoleidAndFamilyid(String familyid,String roleid) throws Exception {
-		
-		return functionDao.selectFunctionListByRoleidAndFamilyid(familyid , roleid);
+	public List<Function> selectFunctionListByRoleidAndFamilyid(String familyid, String roleid) throws Exception {
+
+		return functionDao.selectFunctionListByRoleidAndFamilyid(familyid, roleid);
 	}
 
 	@Override
@@ -86,23 +81,21 @@ public class FunctionServiceImpl implements FunctionService {
 		example.setOrderByClause("ebtype desc,ismanager desc");
 		List<UserManager> managers = userManagerMapper.selectByExample(example);
 		List<Function> rtnlist = new ArrayList<Function>();
-		for(UserManager manager : managers) {
+		for (UserManager manager : managers) {
 			//总编委会主任查询所有的菜单
-			 if(manager.getIsmanager()==1 && manager.getEbtype()==1) {
-				 rtnlist = functionDao.selectFunctionListByRoleid(familyid, null);
-				 return rtnlist;
-			 }
-			 rtnlist = functionDao.selectFunctionByUserid(familyid,userid);
+			if (manager.getIsmanager() == 1 && manager.getEbtype() == 1) {
+				rtnlist = functionDao.selectFunctionListByRoleid(familyid, null);
+				return rtnlist;
+			}
+			rtnlist = functionDao.selectFunctionByUserid(familyid, userid);
 		}
-		
+
 		return rtnlist;
 	}
 
 	@Override
-	public List<Function> selectFunctionListByEbid(String familyid,String userid,String ebid,String postid) {
-		return functionDao.selectFunctionListByEbid(familyid,userid,ebid,postid);
+	public List<Function> selectFunctionListByEbid(String familyid, String userid, String ebid, String postid) {
+		return functionDao.selectFunctionListByEbid(familyid, userid, ebid, postid);
 	}
-	
 
-	
 }

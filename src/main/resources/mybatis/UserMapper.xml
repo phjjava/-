@@ -656,9 +656,7 @@
 			<if test="livestatus != null">
 				livestatus = #{livestatus,jdbcType=TINYINT},
 			</if>
-			<if test="phone != null">
 				phone = #{phone,jdbcType=VARCHAR},
-			</if>
 			<if test="usedname != null">
 				usedname = #{usedname,jdbcType=VARCHAR},
 			</if>

@@ -55,52 +55,24 @@ public class BranchalbumController {
 	}
 
 	/**
-	 * @描述 分支相册列表查询
-	 * @作者 sj
-	 * @时间 2017年5月21日下午10:43:55
-	 * @参数 @param pageModel
-	 * @参数 @param ranchalbum
-	 * @参数 @return
-	 * @return String
+	 * 分支相册列表查询
+	 * @param pageModel
+	 * @param ranchalbum
+	 * @return
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse list(PageModel<Branchalbum> pageModel, Branchalbum ranchalbum) {
-		Result result = null;
-		JsonResponse res = null;
-		try {
-			baservice.pageQuery(pageModel, ranchalbum);
-			if (pageModel.getList() != null) {
-				if (pageModel.getPageSize() == 0) {
-					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
-						pageModel.setPageNo(pageModel.getPageNo() - 1);
-						baservice.pageQuery(pageModel, ranchalbum);
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(pageModel);
-		return res;
+		return baservice.pageQuery(pageModel, ranchalbum);
 	}
 
 	/**
-	 * @描述 分支上传图片（弃用）
-	 * @作者 sj
-	 * @时间 2017年5月21日下午11:15:06
-	 * @参数 @param files
-	 * @参数 @param request
-	 * @参数 @param albumid
-	 * @参数 @param userid
-	 * @参数 @return
-	 * @return String
+	 * 分支上传图片（弃用）
+	 * @param files
+	 * @param request
+	 * @param albumid
+	 * @param branchid
+	 * @return
 	 */
 	@RequestMapping(value = "/saveBranchAlbum", method = RequestMethod.POST)
 	@ResponseBody
