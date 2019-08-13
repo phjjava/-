@@ -1,6 +1,7 @@
 package com.jp.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import com.github.pagehelper.PageInfo;
 import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
+import com.jp.common.LoginUserInfo;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
@@ -24,12 +26,12 @@ import com.jp.dao.SysFamilyDao;
 import com.jp.dao.SysVersionPrivilegeMapper;
 import com.jp.dao.UserDao;
 import com.jp.dao.UserManagerMapper;
+import com.jp.dao.UserbranchDao;
 import com.jp.entity.Branch;
 import com.jp.entity.BranchAreaCity;
 import com.jp.entity.BranchCityBranch;
 import com.jp.entity.BranchKey;
 import com.jp.entity.BranchQuery;
-import com.jp.entity.BranchQuery.Criteria;
 import com.jp.entity.BranchValidArea;
 import com.jp.entity.GenUser;
 import com.jp.entity.GenUserOther;
@@ -40,7 +42,10 @@ import com.jp.entity.User;
 import com.jp.entity.UserManager;
 import com.jp.entity.UserManagerExample;
 import com.jp.entity.UserQuery;
+import com.jp.entity.Userbranch;
+import com.jp.entity.UserbranchQuery;
 import com.jp.service.BranchService;
+import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 
 @Service
@@ -58,6 +63,10 @@ public class BranchServiceImpl implements BranchService {
 	private SysFamilyDao sysFamilyDao;
 	@Autowired
 	private SysVersionPrivilegeMapper sysVersionPrivilegeMapper;
+	@Autowired
+	private BranchService branchService;
+	@Autowired
+	private UserbranchDao userBranchDao;
 
 	/**
 	 * 从起始人按父子关系，递归更新分支用户（包括配偶）的分支属性
@@ -96,73 +105,199 @@ public class BranchServiceImpl implements BranchService {
 	}
 
 	@Override
-	public PageModel<Branch> pageQuery(PageModel<Branch> pageModel, Branch branch) throws Exception {
-		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		List<Branch> list = branchDao.selectBranchListByFamilyAndUserid(CurrentUserContext.getCurrentFamilyId(), null,
-				branch.getBranchname());
-		UserQuery ex = new UserQuery();
-		for (Branch b : list) {
-			ex.clear();
-			ex.or().andBranchidEqualTo(b.getBranchid()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE)
-					.andStatusEqualTo(ConstantUtils.USER_STATUS_OK);
-			int num = userDao.countByExample(ex);
-			b.setUsercount(num);
+	public JsonResponse pageQuery(PageModel<Branch> pageModel, Branch branch) {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			String userid = CurrentUserContext.getCurrentUserId();
+			UserbranchQuery userbranchQuery = new UserbranchQuery();
+			userbranchQuery.or().andUseridEqualTo(userid);
+			List<Userbranch> userbranchList = userBranchDao.selectByExample(userbranchQuery);
+			BranchKey key = new BranchKey();
+			for (Userbranch b : userbranchList) {
+				key.setBranchid(b.getBranchid());
+				key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				Branch bran = branchDao.selectByPrimaryKey(key);
+				if (bran.getBranchid() != null && !"".equals(bran.getBranchid()))
+					branch.setBranchid(b.getBranchid());
+			}
+			branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+
+			UserManagerExample example = new UserManagerExample();
+			example.or().andUseridEqualTo(CurrentUserContext.getCurrentUserId());
+			example.setOrderByClause("ebtype desc,ismanager desc");
+			List<UserManager> managers = userManagerMapper.selectByExample(example);
+			List<Branch> branchList = new ArrayList<>();
+			for (UserManager manager : managers) {
+				PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+				if (manager.getEbtype() == 1) {
+					branchList = branchDao.selectBranchListByFamilyAndUserid(CurrentUserContext.getCurrentFamilyId(),
+							null, branch.getBranchname());
+					break;
+				} else {
+					branchList = branchDao.getBranchsByFamilyAndUserid(CurrentUserContext.getCurrentFamilyId(),
+							CurrentUserContext.getCurrentUserId(), branch.getBranchname());
+					break;
+				}
+			}
+			UserQuery userQuery = new UserQuery();
+			for (Branch b : branchList) {
+				userQuery.clear();
+				userQuery.or().andBranchidEqualTo(b.getBranchid()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE)
+						.andStatusEqualTo(ConstantUtils.USER_STATUS_OK);
+				int num = userDao.countByExample(userQuery);
+				b.setUsercount(num);
+			}
+			if (branchList != null) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(branchList);
+				res.setCount(new PageInfo<Branch>(branchList).getTotal());
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[pageQuery方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-		pageModel.setList(list);
-		pageModel.setPageInfo(new PageInfo<Branch>(list));
-		return pageModel;
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
-	public int insert(Branch branch) throws Exception {
+	public JsonResponse save(Branch branch) {
+		Result result = null;
+		JsonResponse res = null;
+		Integer count = 0;
+		try {
+			String userId = CurrentUserContext.getCurrentUserId();
+			if (StringTools.notEmpty(branch.getBranchid())) {// 修改
+				branch.setUpdateid(userId);
+				branch.setUpdatetime(new Date());
+				count = branchDao.updateByPrimaryKeySelective(branch);
+				if (count > 0) {
+					updateUserBranch(branch.getBeginuserid(), branch.getBranchid(), branch.getBranchname());
+				}
+			} else {// 新增
+				boolean flag = checkFamilyBranchNumber(1);
+				if (flag) {
+					branch.setStatus(0);// 使用中
+					branch.setBranchid(UUIDUtils.getUUID());
+					branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+					branch.setCreateid(userId);
+					count = branchDao.insertSelective(branch);
+					if (count > 0) {
+						updateUserBranch(branch.getBeginuserid(), branch.getBranchid(), branch.getBranchname());
+						// 更新session中的分支信息
+						LoginUserInfo userContext = CurrentUserContext.getUserContext();
+						User user = userContext.getUser();
+						List<Branch> branchList = branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(),
+								user.getUserid());
+						userContext.setBranchList(branchList);
+					}
+				} else {
+					result = new Result(MsgConstants.BRANCH_SAVE_OUTMAX);
+					res = new JsonResponse(result);
+					return res;
+				}
+			}
+			if (count > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
+	}
+
+	/**
+	 * 检查新增分支是否超过了家族版本限制
+	 * @param count
+	 * @return
+	 */
+	public boolean checkFamilyBranchNumber(int count) {
+		Integer branchCount = 0; // 最多容纳家族分支数量
+		String familyId = CurrentUserContext.getCurrentFamilyId();
 		// 查询家族，获取家族使用的版本
-		SysFamily sysFamily = sysFamilyDao.selectByPrimaryKey(branch.getFamilyid());
+		SysFamily sysFamily = sysFamilyDao.selectByPrimaryKey(familyId);
 		// 查询家族版本特权，获取家族可创建的分支数量
 		SysVersionPrivilege sysVersionPrivilege = sysVersionPrivilegeMapper.selectVersionValue(sysFamily.getVersion(),
 				ConstantUtils.VERSION_BRANCH);
+		if (sysVersionPrivilege != null && sysVersionPrivilege.getPrivilegevalue() != null) {
+			if (sysVersionPrivilege.getPrivilegevalue().equals(ConstantUtils.VERSION_UNLIMITED)) {
+				// 钻石豪华版容纳家族人数不限
+				return true;
+			}
+			branchCount = Integer.valueOf(sysVersionPrivilege.getPrivilegevalue());
+		}
 		// 查询家族现在已创建的分支数量
-		List<String> branchids = branchDao.selectByFamilyid(branch.getFamilyid());
-		if ("1".equals(sysVersionPrivilege.getPrivilegevalue())) {
-			// 普通版只能免费创建分支1个
-			if (branchids.size() >= 1) {
-				return -1;// 暂时返回-1，表示不能创建分支了
-			}
+		int haveBranchCount = branchDao.selectByFamilyid(familyId);
+		if (branchCount - haveBranchCount - count >= 0) {
+			return true;
 		}
-		if ("5".equals(sysVersionPrivilege.getPrivilegevalue())) {
-			// 旗舰版只能免费创建分支5个
-			if (branchids.size() >= 5) {
-				return -1;// 暂时返回-1，表示不能创建分支了
+		return false;
+	}
+
+	@Override
+	public JsonResponse get(String branchid) {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			BranchKey key = new BranchKey();
+			key.setBranchid(branchid);
+			key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			Branch branch = branchDao.selectByPrimaryKey(key);
+			// 根据beginuserid获取世系信息
+			User user = userDao.selectByPrimaryKey(branch.getBeginuserid());
+			// 增加返回世系信息
+			if (user != null) {
+				branch.setGenlevel(user.getGenlevel() + "世");
 			}
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(branch);
+			return res;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-		int count = branchDao.insertSelective(branch);
-		updateUserBranch(branch.getBeginuserid(), branch.getBranchid(), branch.getBranchname());
-		return count;
 	}
 
 	@Override
-	public Branch get(String branchid) throws Exception {
-
-		BranchQuery bq = new BranchQuery();
-		Criteria createCriteria = bq.createCriteria();
-
-		createCriteria.andBranchidEqualTo(branchid);
-
-		List<Branch> branch = branchDao.selectByExample(bq);
-		return branch.get(0);
-	}
-
-	@Override
-	public PageModel<Branch> initBranch(PageModel<Branch> pageModel, Branch branch) throws Exception {
-		List<Branch> list = branchDao.selectBranchList(branch);
-		pageModel.setList(list);
-		pageModel.setPageInfo(new PageInfo<Branch>(list));
-		return pageModel;
-	}
-
-	@Override
-	public int update(Branch branch) throws Exception {
-		updateUserBranch(branch.getBeginuserid(), branch.getBranchid(), branch.getBranchname());
-		return branchDao.updateByPrimaryKeySelective(branch);
+	public JsonResponse initBranch(Branch branch) {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			List<Branch> list = branchDao.selectBranchList(branch);
+			if (list != null) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(list);
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[initBranch方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
@@ -191,37 +326,86 @@ public class BranchServiceImpl implements BranchService {
 	}
 
 	@Override
-	public int changeStatus(Branch branch) throws Exception {
-		return branchDao.updateByBranchidSelective(branch);
+	public JsonResponse changeStatus(Branch branch) {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			int status = branchDao.updateByBranchidSelective(branch);
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[changeStatus方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
-	public boolean validateBranchname(Branch branch) throws Exception {
-		String result = "";
-		int count = branchDao.validateBranchname(branch);
-		if (count > 0) {
-			return false;
-		} else {
-			return true;
+	public JsonResponse validateBranchname(String branchname) {
+		Result result = null;
+		JsonResponse res = null;
+		String branchName = StringTools.trimNotEmpty(branchname) ? branchname.trim() : null;
+		try {
+			BranchQuery example = new BranchQuery();
+			example.or().andBranchnameEqualTo(branchName).andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+			List<Branch> selectRt = branchDao.selectByExample(example);
+			if (selectRt != null && selectRt.size() > 0) {
+				result = new Result(MsgConstants.BRANCH_VALIDATA_NAME);
+				res = new JsonResponse(result);
+				res.setData(false);
+				return res;
+			}
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(true);
+			return res;
+		} catch (Exception e) {
+			log_.error("[PLMERROR:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			res.setData(false);
+			return res;
 		}
 	}
 
 	@Override
-	public PageModel<Branch> selectBranchListByFamilyAndUserid(PageModel<Branch> pageModel, Branch branch)
-			throws Exception {
-		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		List<Branch> list = branchDao.getBranchsByFamilyAndUserid(CurrentUserContext.getCurrentFamilyId(),
-				CurrentUserContext.getCurrentUserId(), branch.getBranchname());
-		UserQuery ex = new UserQuery();
-		for (Branch b : list) {
-			ex.clear();
-			ex.or().andBranchidEqualTo(b.getBranchid());
-			int num = userDao.countByExample(ex);
-			b.setUsercount(num);
+	public JsonResponse checkBeginer(String beginuserid) {
+		Result result = null;
+		JsonResponse res = null;
+		if (StringUtils.isNotBlank(beginuserid)) {
+			result = new Result(MsgConstants.BRANCH_NO_BEGINERID);
+			res = new JsonResponse(result);
+			res.setData(false);
+			return res;
 		}
-		pageModel.setList(list);
-		pageModel.setPageInfo(new PageInfo<Branch>(list));
-		return pageModel;
+		try {
+			BranchQuery example = new BranchQuery();
+			example.or().andBeginuseridEqualTo(beginuserid);
+			List<Branch> selectRt = branchDao.selectByExample(example);
+			if (selectRt != null && selectRt.size() > 0) {
+				result = new Result(MsgConstants.BRANCH_CHECK_BEGINER);
+				res = new JsonResponse(result);
+				res.setData(false);
+				return res;
+			}
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(true);
+			return res;
+		} catch (Exception e) {
+			log_.error("[PLMERROR:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			res.setData(false);
+			return res;
+		}
 	}
 
 	/**

@@ -13,7 +13,7 @@ public interface BranchalbumService {
 
 	JsonResponse get(String albumid);
 
-	String mergeBranchAlbum(Branchalbum branchalbum);
+	JsonResponse mergeBranchAlbum(Branchalbum branchalbum);
 
 	JsonResponse insertBranchPhoto(List<Branchphoto> userPhotoList);
 
@@ -21,19 +21,9 @@ public interface BranchalbumService {
 
 	JsonResponse updateByPrimaryKeySelective(Branchphoto record);
 
-	Branchphoto selectByPrimaryKey(String key);
+	JsonResponse selectByPrimaryKey(String imgid);
 
-	/**
-	 * 相册批量删除 (逻辑删除)
-	 * 
-	 * @描述 TODO
-	 * @作者 jinlizhi
-	 * @时间 2017年6月5日上午11:54:14
-	 * @参数 @param albumidArray
-	 * @参数 @return
-	 * @return int
-	 */
-	JsonResponse batchDelete(String[] albumidArray);
+	JsonResponse batchDelete(String albumids);
 
 	/**
 	 * 修改相册的状态字段
