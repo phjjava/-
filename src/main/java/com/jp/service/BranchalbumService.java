@@ -9,7 +9,7 @@ import com.jp.entity.Branchphoto;
 
 public interface BranchalbumService {
 
-	PageModel<Branchalbum> pageQuery(PageModel<Branchalbum> pageModel, Branchalbum ranchalbum) throws Exception;
+	JsonResponse pageQuery(PageModel<Branchalbum> pageModel, Branchalbum ranchalbum);
 
 	JsonResponse get(String albumid);
 

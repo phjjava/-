@@ -29,7 +29,7 @@ public class FunctionController {
 			functionService.pageQuery(pageModel,function);
 			if (pageModel.getList() != null) {
 				if (pageModel.getList().size() == 0) {
-					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
+					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo()+"")) {
 						pageModel.setPageNo(pageModel.getPageNo() - 1);
 						functionService.pageQuery(pageModel,function);
 					}

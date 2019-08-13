@@ -56,7 +56,7 @@ public class UploadFileController {
 					file.mkdirs();
 				}
 				file = new File(logoRealPathDir, fileMe.getOriginalFilename());
-				files[i].transferTo(file);
+				fileMe.transferTo(file);
 				fileList.add(file);
 			}
 			// String status = UploadUtil.taskFileUpload(fileList, fileNams);
