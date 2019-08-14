@@ -21,12 +21,12 @@ public class ConstantUtils implements Serializable {
 	});
 	/* 获取图片附件上传路径 */
 	public static final String JIAPU_UPLOAD_URL = res.getString("jiapu.upload.url");
-	public static final String JIAPU_DOWNLOAD_URL = res.getString("jiapu.download.url");
+	/*public static final String JIAPU_DOWNLOAD_URL = res.getString("jiapu.download.url");
 	public static final String JIAPU_SHOW_URL = res.getString("jiapu.show.url");
 	public static final String JIAPU_AVATAR_UPLOAD_URL = res.getString("jiapu.avatar.upload.url");
 	public static final String JIAPU_AVATAR_DOWNLOAD_URL = res.getString("jiapu.avatar.download.url");
 	public static final String JIAPU_IP = res.getString("jiapu.ip");
-
+*/
 	// avatar
 	/**
 	 * 删除状态
