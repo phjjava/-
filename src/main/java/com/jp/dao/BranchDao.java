@@ -73,6 +73,4 @@ public interface BranchDao {
 	List<Branch> selectArea(String familyid);
 
 	List<Branch> selectCity(String familyid);
-
-	List<Branch> initBranch(Branch branch);
 }
