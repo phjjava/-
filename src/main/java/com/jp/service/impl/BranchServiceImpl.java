@@ -64,8 +64,6 @@ public class BranchServiceImpl implements BranchService {
 	@Autowired
 	private SysVersionPrivilegeMapper sysVersionPrivilegeMapper;
 	@Autowired
-	private BranchService branchService;
-	@Autowired
 	private UserbranchDao userBranchDao;
 
 	/**
@@ -193,7 +191,7 @@ public class BranchServiceImpl implements BranchService {
 						// 更新session中的分支信息
 						LoginUserInfo userContext = CurrentUserContext.getUserContext();
 						User user = userContext.getUser();
-						List<Branch> branchList = branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(),
+						List<Branch> branchList = selectBranchListByFamilyAndUserid(user.getFamilyid(),
 								user.getUserid());
 						userContext.setBranchList(branchList);
 					}

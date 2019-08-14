@@ -1742,7 +1742,7 @@ public class UserServiceImpl implements UserService {
 			userInfo.setBirthplace(birthplace);
 			User user1 = userDao.selectByPrimaryKey(user.getUserid());
 			if (user1 == null) {
-				result.setCode(ConstantUtils.RESULT_FAIL);
+				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("用户不存在！");
 				return result;
 			}
@@ -1751,12 +1751,15 @@ public class UserServiceImpl implements UserService {
 					// 修改用户配偶信息
 					User userMmateUpdate = new User();
 					String phone = user.getPhone();
-					userMmateUpdate.setUserid(user.getMateid());
+					userMmateUpdate.setUserid(user1.getMateid());
 					userMmateUpdate.setBranchid(user1.getBranchid());
 					userMmateUpdate.setBranchname(user1.getBranchname());
 					userMmateUpdate.setGenlevel(user1.getGenlevel());
 					userMmateUpdate.setMatename(user1.getUsername());
 					userMmateUpdate.setPhone(phone);
+					userMmateUpdate.setIsMarry(1);
+					userMmateUpdate.setPid(user1.getPid());
+					userMmateUpdate.setPname(user1.getPname());
 					if (StringTools.trimNotEmpty(phone)) {
 						userMmateUpdate.setPassword(MD5Util.string2MD5(phone.substring(phone.length() - 6)));
 					}
@@ -1798,9 +1801,12 @@ public class UserServiceImpl implements UserService {
 						userMmate.setStatus(0);
 						userMmate.setIsdirect(0);
 						userMmate.setMateid(user.getUserid());
-						userMmate.setUsername(user.getMatename());
+						userMmate.setUsername(user1.getMatename());
 						userMmate.setSex(user.getSex());
 						userMmate.setDeleteflag(0);
+						userMmate.setIsMarry(1);
+						userMmate.setPid(user1.getPid());
+						userMmate.setPname(user1.getPname());
 						userMmate.setPinyinfirst(PinyinUtil.getPinYinFirstChar(user.getMatename()));
 						userMmate.setPinyinfull(PinyinUtil.getPinyinFull(user.getMatename()));
 						if (user.getLivestatus() != 0) {
@@ -1823,7 +1829,11 @@ public class UserServiceImpl implements UserService {
 							result = new Result(MsgConstants.USER_SAVE_HAVEREPEAT);
 						} else {
 							userDao.insertSelective(userMmate);
-							userDao.addmateid(user.getUserid(), userid, user.getMatename());
+							user1.setIsMarry(1);
+							user1.setMateid(userid);
+							user1.setMatename(user.getMatename());
+							user1.setMatetypeStr(user.getMatetypeStr());
+							userDao.updateByPrimaryKeySelective(user1);
 							// userinfo 表
 							userInfo.setUserid(userid);
 							/*
@@ -1861,6 +1871,9 @@ public class UserServiceImpl implements UserService {
 				userMates.setMatename(user1.getUsername());
 				userMates.setSex(user.getSex());
 				userMates.setDeleteflag(0);
+				userMates.setIsMarry(1);
+				userMates.setPid(user1.getPid());
+				userMates.setPname(user1.getPname());
 				userMates.setPinyinfirst(PinyinUtil.getPinYinFirstChar(user.getMatename()));
 				userMates.setPinyinfull(PinyinUtil.getPinyinFull(user.getMatename()));
 				userMates.setLivestatus(user.getLivestatus());

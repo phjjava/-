@@ -996,8 +996,7 @@
 	</select>
 	<update id="addmateid">
 		update jp_user
-		set mateid =
-		#{mateid,jdbcType=VARCHAR},
+		set mateid = #{mateid,jdbcType=VARCHAR},
 		matename = #{matename,jdbcType=VARCHAR}
 		where userid = #{userid,jdbcType=VARCHAR}
 	</update>

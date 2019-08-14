@@ -656,9 +656,7 @@
 			<if test="livestatus != null">
 				livestatus = #{livestatus,jdbcType=TINYINT},
 			</if>
-			<if test="phone != null">
 				phone = #{phone,jdbcType=VARCHAR},
-			</if>
 			<if test="usedname != null">
 				usedname = #{usedname,jdbcType=VARCHAR},
 			</if>
@@ -998,8 +996,7 @@
 	</select>
 	<update id="addmateid">
 		update jp_user
-		set mateid =
-		#{mateid,jdbcType=VARCHAR},
+		set mateid = #{mateid,jdbcType=VARCHAR},
 		matename = #{matename,jdbcType=VARCHAR}
 		where userid = #{userid,jdbcType=VARCHAR}
 	</update>
@@ -1588,7 +1585,7 @@
 		WHERE
 			familyid = #{familyid} 
 			AND genlevel = #{genlevel} 
-			AND username LIKE #{familyname} 
+			AND livestatus = 1 
 			
 	</select>
 </mapper>
