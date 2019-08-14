@@ -1,4 +1,4 @@
-﻿package com.jp.service;
+package com.jp.service;
 
 import java.util.List;
 

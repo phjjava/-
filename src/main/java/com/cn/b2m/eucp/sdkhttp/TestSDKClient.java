@@ -1,4 +1,4 @@
-﻿package com.cn.b2m.eucp.sdkhttp;
+package com.cn.b2m.eucp.sdkhttp;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
