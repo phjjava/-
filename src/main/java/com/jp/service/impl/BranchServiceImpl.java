@@ -280,7 +280,7 @@ public class BranchServiceImpl implements BranchService {
 		JsonResponse res = null;
 		try {
 			branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-			List<Branch> list = branchDao.selectBranchList(branch);
+			List<Branch> list = branchDao.initBranch(branch);
 			if (list != null) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);

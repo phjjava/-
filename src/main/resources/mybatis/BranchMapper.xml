@@ -582,6 +582,24 @@
 	</select>
 
 
+	<select id="initBranch"
+		parameterType="com.jp.entity.Branch" resultType="com.jp.entity.Branch">
+		select DISTINCT * from jp_branch 
+		where 
+		familyid = #{familyid,jdbcType=VARCHAR}
+		and status = 0 
+		<if test="branchid != null and branchid != ''">
+			and branchid = #{branchid,jdbcType=VARCHAR}
+		</if>
+
+		<if test="branchname != null and branchname != ''">
+			and branchname like binary CONCAT('%',
+			CONCAT(#{branchname}), '%')
+		</if>
+		ORDER BY
+		sort DESC
+	</select>
+
 	<select id="selectBranchList"
 		parameterType="com.jp.entity.Branch" resultType="com.jp.entity.Branch">
 		select
