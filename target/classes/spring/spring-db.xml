@@ -151,6 +151,9 @@
     <tx:advice id="txAdvice" transaction-manager="transactionManager">
         <tx:attributes>
             <tx:method name="get*" propagation="SUPPORTS" read-only="true" />
+            <tx:method name="list*" propagation="SUPPORTS" read-only="true" />
+            <tx:method name="init*" propagation="SUPPORTS" read-only="true" />
+            <tx:method name="check*" propagation="SUPPORTS" read-only="true" />
             <tx:method name="detail*" propagation="SUPPORTS" read-only="true" />
             <tx:method name="load*" propagation="SUPPORTS" read-only="true" />
             <tx:method name="search*" propagation="SUPPORTS" read-only="true" />
