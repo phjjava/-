@@ -62,6 +62,16 @@
 		<result column="branchname" property="branchname"
 			jdbcType="VARCHAR" />
 		<result column="ismarry" property="isMarry" jdbcType="TINYINT" />
+		<collection property="member" resultMap="memberMap"/>
+	</resultMap>
+	<resultMap id="memberMap" type="com.jp.entity.JpMember">
+    <id column="mid" jdbcType="VARCHAR" property="mid" />
+    <result column="mname" jdbcType="VARCHAR" property="mname" />
+    <result column="mimgurl" jdbcType="VARCHAR" property="mimgurl" />
+    <result column="member" jdbcType="INTEGER" property="member" />
+    <result column="starttime" jdbcType="TIMESTAMP" property="starttime" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="memberStatus" jdbcType="INTEGER" property="memberstatus" />
 	</resultMap>
 	<sql id="Example_Where_Clause">
 		<where>
@@ -1590,5 +1600,9 @@
 			AND genlevel = #{genlevel} 
 			AND username LIKE #{familyname} 
 			
+	</select>
+	
+	<select id="selectByPrimaryKey1" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select * from jp_user u left join jp_member m on u.userid=m.mid where u.userid= #{userid,jdbcType=VARCHAR}
 	</select>
 </mapper>

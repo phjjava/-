@@ -13,7 +13,6 @@ import com.jp.dao.BranchphotoMapper;
 import com.jp.dao.SysMationdao;
 import com.jp.entity.BannerHomePage;
 import com.jp.entity.BannerQuery;
-import com.jp.entity.MationExample;
 import com.jp.entity.SysMation;
 import com.jp.entity.BannerQuery.Criteria;
 import com.jp.service.SysBannerService;

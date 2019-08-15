@@ -58,5 +58,6 @@ public class MsgConstants {
 	public static final Result FAMILYID_REPETITION = new Result(6001, "请不要重复申请该家族");
 	public static final Result FAMILYID_REPULSE = new Result(6002, "该家族已拒绝您的申请");
 	public static final Result FAMILYID_RESTRICT = new Result(6003, "一个用户最多只能关联两个家族");
+	public static final Result MOMBER_RECORD = new Result(6004, "未找到对应的充值记录");
 
 }

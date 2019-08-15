@@ -181,4 +181,10 @@ public interface UserDao {
 
 	int getUserByAncestorCount(@Param("familyid") String familyid, @Param("familyname") String familyname,
 			@Param("genlevel") Integer genlevel);
+	/**
+	 * 得到某用户的会员级别，member是null或者1为默认的普通会员
+	 * @param userid
+	 * @return
+	 */
+	User selectByPrimaryKey1(String userid);
 }

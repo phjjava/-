@@ -2,7 +2,9 @@ package com.jp.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -193,6 +195,17 @@ public class User implements Serializable {
 	/**
 	 * 用户列表查询新增字段
 	 */
+	/**
+	 * 关联类型
+	 */
+	private Set<JpMember> member = new HashSet<JpMember>();
+	public Set<JpMember> getMember() {
+		return member;
+	}
+
+	public void setMember(Set<JpMember> member) {
+		this.member = member;
+	}
 
 	// 自属性
 	private String searchBirthplace;
@@ -245,7 +258,8 @@ public class User implements Serializable {
 	private Long count;
 	private String cityname;
 	private String citycode;
-
+	
+	
 	public Long getStart() {
 		return start;
 	}
