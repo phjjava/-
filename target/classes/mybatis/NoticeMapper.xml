@@ -1,0 +1,636 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.NoticeMapper">
+	<resultMap id="BaseResultMap" type="com.jp.entity.Notice">
+		<id column="noticeid" property="noticeid" jdbcType="VARCHAR" />
+		<result column="branchid" property="branchid"
+			jdbcType="VARCHAR" />
+		<result column="familyid" property="familyid"
+			jdbcType="VARCHAR" />
+		<result column="noticetype" property="noticetype"
+			jdbcType="INTEGER" />
+		<result column="noticetitle" property="noticetitle"
+			jdbcType="VARCHAR" />
+		<result column="deleteflag" property="deleteflag"
+			jdbcType="INTEGER" />
+		<result column="createid" property="createid"
+			jdbcType="VARCHAR" />
+		<result column="createtime" property="createtime"
+			jdbcType="TIMESTAMP" />
+		<result column="updateid" property="updateid"
+			jdbcType="VARCHAR" />
+		<result column="updatetime" property="updatetime"
+			jdbcType="TIMESTAMP" />
+		<result column="createname" property="createname"
+			jdbcType="VARCHAR" />
+		<result column="imgurl" property="imgurl" jdbcType="VARCHAR" />
+		<result column="branchname" property="branchname"
+			jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="INTEGER" />
+	</resultMap>
+	<resultMap id="ResultMapWithBLOBs"
+		type="com.jp.entity.Notice" extends="BaseResultMap">
+		<result column="noticecontent" property="noticecontent"
+			jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<sql id="Example_Where_Clause">
+		<where>
+			<foreach collection="oredCriteria" item="criteria"
+				separator="or">
+				<if test="criteria.valid">
+					<trim prefix="(" suffix=")" prefixOverrides="and">
+						<foreach collection="criteria.criteria" item="criterion">
+							<choose>
+								<when test="criterion.noValue">
+									and ${criterion.condition}
+								</when>
+								<when test="criterion.singleValue">
+									and ${criterion.condition} #{criterion.value}
+								</when>
+								<when test="criterion.betweenValue">
+									and ${criterion.condition} #{criterion.value}
+									and
+									#{criterion.secondValue}
+								</when>
+								<when test="criterion.listValue">
+									and ${criterion.condition}
+									<foreach collection="criterion.value" item="listItem"
+										open="(" close=")" separator=",">
+										#{listItem}
+									</foreach>
+								</when>
+							</choose>
+						</foreach>
+					</trim>
+				</if>
+			</foreach>
+		</where>
+	</sql>
+	<sql id="Update_By_Example_Where_Clause">
+		<where>
+			<foreach collection="example.oredCriteria" item="criteria"
+				separator="or">
+				<if test="criteria.valid">
+					<trim prefix="(" suffix=")" prefixOverrides="and">
+						<foreach collection="criteria.criteria" item="criterion">
+							<choose>
+								<when test="criterion.noValue">
+									and ${criterion.condition}
+								</when>
+								<when test="criterion.singleValue">
+									and ${criterion.condition} #{criterion.value}
+								</when>
+								<when test="criterion.betweenValue">
+									and ${criterion.condition} #{criterion.value}
+									and
+									#{criterion.secondValue}
+								</when>
+								<when test="criterion.listValue">
+									and ${criterion.condition}
+									<foreach collection="criterion.value" item="listItem"
+										open="(" close=")" separator=",">
+										#{listItem}
+									</foreach>
+								</when>
+							</choose>
+						</foreach>
+					</trim>
+				</if>
+			</foreach>
+		</where>
+	</sql>
+	<sql id="Base_Column_List">
+		<if test="fields == null">
+			noticeid, branchid, familyid, noticetype, noticetitle,
+			noticecontent,deleteflag, createid, createtime,
+			updateid, updatetime,
+			createname, imgurl, branchname, type
+		</if>
+		<if test="fields != null">
+			${fields}
+		</if>
+	</sql>
+	<sql id="Blob_Column_List">
+		noticecontent
+	</sql>
+	<select id="selectByExampleWithBLOBs"
+		resultMap="ResultMapWithBLOBs"
+		parameterType="com.jp.entity.NoticeExample">
+		select
+		<if test="distinct">
+			distinct
+		</if>
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from jp_notice
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="orderByClause != null">
+			order by ${orderByClause}
+		</if>
+	</select>
+	<select id="selectByExample" resultMap="BaseResultMap"
+		parameterType="com.jp.entity.NoticeExample">
+		select
+		<if test="distinct">
+			distinct
+		</if>
+		<include refid="Base_Column_List" />
+		from jp_notice
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="orderByClause != null">
+			order by ${orderByClause}
+		</if>
+		<if test="startRow != null">
+			limit #{startRow} , #{pageSize}
+		</if>
+	</select>
+	<select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs"
+		parameterType="java.lang.String">
+		select
+		noticeid,branchid,familyid,noticetype,noticetitle,deleteflag,createid,createtime,updateid,updatetime,createname,imgurl,branchname,type,noticecontent
+		,
+		<include refid="Blob_Column_List" />
+		from jp_notice
+		where noticeid = #{noticeid,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		jp_notice
+		where noticeid = #{noticeid,jdbcType=VARCHAR}
+	</delete>
+	<delete id="deleteByExample"
+		parameterType="com.jp.entity.NoticeExample">
+		delete from jp_notice
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</delete>
+	<insert id="insert" parameterType="com.jp.entity.Notice">
+		insert into jp_notice
+		(noticeid, branchid, familyid,
+		noticetype, noticetitle, deleteflag,
+		createid, createtime, updateid,
+		updatetime, createname, imgurl,
+		branchname, type, noticecontent
+		)
+		values (#{noticeid,jdbcType=VARCHAR},
+		#{branchid,jdbcType=VARCHAR},
+		#{familyid,jdbcType=VARCHAR},
+		#{noticetype,jdbcType=INTEGER}, #{noticetitle,jdbcType=VARCHAR},
+		#{deleteflag,jdbcType=INTEGER},
+		#{createid,jdbcType=VARCHAR},
+		#{createtime,jdbcType=TIMESTAMP},
+		#{updateid,jdbcType=VARCHAR},
+		#{updatetime,jdbcType=TIMESTAMP}, #{createname,jdbcType=VARCHAR},
+		#{imgurl,jdbcType=VARCHAR},
+		#{branchname,jdbcType=VARCHAR},
+		#{type,jdbcType=INTEGER},
+		#{noticecontent,jdbcType=LONGVARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective"
+		parameterType="com.jp.entity.Notice">
+		insert into jp_notice
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="noticeid != null">
+				noticeid,
+			</if>
+			<if test="branchid != null">
+				branchid,
+			</if>
+			<if test="familyid != null">
+				familyid,
+			</if>
+			<if test="noticetype != null">
+				noticetype,
+			</if>
+			<if test="noticetitle != null">
+				noticetitle,
+			</if>
+			<if test="deleteflag != null">
+				deleteflag,
+			</if>
+			<if test="createid != null">
+				createid,
+			</if>
+			<if test="createtime != null">
+				createtime,
+			</if>
+			<if test="updateid != null">
+				updateid,
+			</if>
+			<if test="updatetime != null">
+				updatetime,
+			</if>
+			<if test="createname != null">
+				createname,
+			</if>
+			<if test="imgurl != null">
+				imgurl,
+			</if>
+			<if test="branchname != null">
+				branchname,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="noticecontent != null">
+				noticecontent,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="noticeid != null">
+				#{noticeid,jdbcType=VARCHAR},
+			</if>
+			<if test="branchid != null">
+				#{branchid,jdbcType=VARCHAR},
+			</if>
+			<if test="familyid != null">
+				#{familyid,jdbcType=VARCHAR},
+			</if>
+			<if test="noticetype != null">
+				#{noticetype,jdbcType=INTEGER},
+			</if>
+			<if test="noticetitle != null">
+				#{noticetitle,jdbcType=VARCHAR},
+			</if>
+			<if test="deleteflag != null">
+				#{deleteflag,jdbcType=INTEGER},
+			</if>
+			<if test="createid != null">
+				#{createid,jdbcType=VARCHAR},
+			</if>
+			<if test="createtime != null">
+				#{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateid != null">
+				#{updateid,jdbcType=VARCHAR},
+			</if>
+			<if test="updatetime != null">
+				#{updatetime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createname != null">
+				#{createname,jdbcType=VARCHAR},
+			</if>
+			<if test="imgurl != null">
+				#{imgurl,jdbcType=VARCHAR},
+			</if>
+			<if test="branchname != null">
+				#{branchname,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=INTEGER},
+			</if>
+			<if test="noticecontent != null">
+				#{noticecontent,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<select id="countByExample"
+		parameterType="com.jp.entity.NoticeExample"
+		resultType="java.lang.Integer">
+		select count(*) from jp_notice
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</select>
+	<update id="updateByExampleSelective" parameterType="map">
+		update jp_notice
+		<set>
+			<if test="record.noticeid != null">
+				noticeid = #{record.noticeid,jdbcType=VARCHAR},
+			</if>
+			<if test="record.branchid != null">
+				branchid = #{record.branchid,jdbcType=VARCHAR},
+			</if>
+			<if test="record.familyid != null">
+				familyid = #{record.familyid,jdbcType=VARCHAR},
+			</if>
+			<if test="record.noticetype != null">
+				noticetype = #{record.noticetype,jdbcType=INTEGER},
+			</if>
+			<if test="record.noticetitle != null">
+				noticetitle = #{record.noticetitle,jdbcType=VARCHAR},
+			</if>
+			<if test="record.deleteflag != null">
+				deleteflag = #{record.deleteflag,jdbcType=INTEGER},
+			</if>
+			<if test="record.createid != null">
+				createid = #{record.createid,jdbcType=VARCHAR},
+			</if>
+			<if test="record.createtime != null">
+				createtime = #{record.createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="record.updateid != null">
+				updateid = #{record.updateid,jdbcType=VARCHAR},
+			</if>
+			<if test="record.updatetime != null">
+				updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="record.createname != null">
+				createname = #{record.createname,jdbcType=VARCHAR},
+			</if>
+			<if test="record.imgurl != null">
+				imgurl = #{record.imgurl,jdbcType=VARCHAR},
+			</if>
+			<if test="record.branchname != null">
+				branchname = #{record.branchname,jdbcType=VARCHAR},
+			</if>
+			<if test="record.type != null">
+				type = #{record.type,jdbcType=INTEGER},
+			</if>
+			<if test="record.noticecontent != null">
+				noticecontent =
+				#{record.noticecontent,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		<if test="_parameter != null">
+			<include refid="Update_By_Example_Where_Clause" />
+		</if>
+	</update>
+	<update id="updateByExampleWithBLOBs" parameterType="map">
+		update jp_notice
+		set noticeid = #{record.noticeid,jdbcType=VARCHAR},
+		branchid = #{record.branchid,jdbcType=VARCHAR},
+		familyid =
+		#{record.familyid,jdbcType=VARCHAR},
+		noticetype =
+		#{record.noticetype,jdbcType=INTEGER},
+		noticetitle =
+		#{record.noticetitle,jdbcType=VARCHAR},
+		deleteflag =
+		#{record.deleteflag,jdbcType=INTEGER},
+		createid =
+		#{record.createid,jdbcType=VARCHAR},
+		createtime =
+		#{record.createtime,jdbcType=TIMESTAMP},
+		updateid =
+		#{record.updateid,jdbcType=VARCHAR},
+		updatetime =
+		#{record.updatetime,jdbcType=TIMESTAMP},
+		createname =
+		#{record.createname,jdbcType=VARCHAR},
+		imgurl =
+		#{record.imgurl,jdbcType=VARCHAR},
+		branchname =
+		#{record.branchname,jdbcType=VARCHAR},
+		type =
+		#{record.type,jdbcType=INTEGER},
+		noticecontent =
+		#{record.noticecontent,jdbcType=LONGVARCHAR}
+		<if test="_parameter != null">
+			<include refid="Update_By_Example_Where_Clause" />
+		</if>
+	</update>
+	<update id="updateByExample" parameterType="map">
+		update jp_notice
+		set noticeid = #{record.noticeid,jdbcType=VARCHAR},
+		branchid = #{record.branchid,jdbcType=VARCHAR},
+		familyid =
+		#{record.familyid,jdbcType=VARCHAR},
+		noticetype =
+		#{record.noticetype,jdbcType=INTEGER},
+		noticetitle =
+		#{record.noticetitle,jdbcType=VARCHAR},
+		deleteflag =
+		#{record.deleteflag,jdbcType=INTEGER},
+		createid =
+		#{record.createid,jdbcType=VARCHAR},
+		createtime =
+		#{record.createtime,jdbcType=TIMESTAMP},
+		updateid =
+		#{record.updateid,jdbcType=VARCHAR},
+		updatetime =
+		#{record.updatetime,jdbcType=TIMESTAMP},
+		createname =
+		#{record.createname,jdbcType=VARCHAR},
+		imgurl =
+		#{record.imgurl,jdbcType=VARCHAR},
+		branchname =
+		#{record.branchname,jdbcType=VARCHAR},
+		type =
+		#{record.type,jdbcType=INTEGER}
+		<if test="_parameter != null">
+			<include refid="Update_By_Example_Where_Clause" />
+		</if>
+	</update>
+	<update id="updateByPrimaryKeySelective"
+		parameterType="com.jp.entity.Notice">
+		update jp_notice
+		<set>
+			<if test="branchid != null">
+				branchid = #{branchid,jdbcType=VARCHAR},
+			</if>
+			<if test="familyid != null">
+				familyid = #{familyid,jdbcType=VARCHAR},
+			</if>
+			<if test="noticetype != null">
+				noticetype = #{noticetype,jdbcType=INTEGER},
+			</if>
+			<if test="noticetitle != null">
+				noticetitle = #{noticetitle,jdbcType=VARCHAR},
+			</if>
+			<if test="deleteflag != null">
+				deleteflag = #{deleteflag,jdbcType=INTEGER},
+			</if>
+			<if test="createid != null">
+				createid = #{createid,jdbcType=VARCHAR},
+			</if>
+			<if test="createtime != null">
+				createtime = #{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateid != null">
+				updateid = #{updateid,jdbcType=VARCHAR},
+			</if>
+			<if test="updatetime != null">
+				updatetime = #{updatetime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createname != null">
+				createname = #{createname,jdbcType=VARCHAR},
+			</if>
+			<if test="imgurl != null">
+				imgurl = #{imgurl,jdbcType=VARCHAR},
+			</if>
+			<if test="branchname != null">
+				branchname = #{branchname,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=INTEGER},
+			</if>
+			<if test="noticecontent != null">
+				noticecontent = #{noticecontent,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where noticeid = #{noticeid,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKeyWithBLOBs"
+		parameterType="com.jp.entity.Notice">
+		update jp_notice
+		set branchid =
+		#{branchid,jdbcType=VARCHAR},
+		familyid = #{familyid,jdbcType=VARCHAR},
+		noticetype = #{noticetype,jdbcType=INTEGER},
+		noticetitle =
+		#{noticetitle,jdbcType=VARCHAR},
+		deleteflag =
+		#{deleteflag,jdbcType=INTEGER},
+		createid =
+		#{createid,jdbcType=VARCHAR},
+		createtime =
+		#{createtime,jdbcType=TIMESTAMP},
+		updateid =
+		#{updateid,jdbcType=VARCHAR},
+		updatetime =
+		#{updatetime,jdbcType=TIMESTAMP},
+		createname =
+		#{createname,jdbcType=VARCHAR},
+		imgurl = #{imgurl,jdbcType=VARCHAR},
+		branchname = #{branchname,jdbcType=VARCHAR},
+		type =
+		#{type,jdbcType=INTEGER},
+		noticecontent =
+		#{noticecontent,jdbcType=LONGVARCHAR}
+		where noticeid =
+		#{noticeid,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey"
+		parameterType="com.jp.entity.Notice">
+		update jp_notice
+		set branchid =
+		#{branchid,jdbcType=VARCHAR},
+		familyid = #{familyid,jdbcType=VARCHAR},
+		noticetype = #{noticetype,jdbcType=INTEGER},
+		noticetitle =
+		#{noticetitle,jdbcType=VARCHAR},
+		deleteflag =
+		#{deleteflag,jdbcType=INTEGER},
+		createid =
+		#{createid,jdbcType=VARCHAR},
+		createtime =
+		#{createtime,jdbcType=TIMESTAMP},
+		updateid =
+		#{updateid,jdbcType=VARCHAR},
+		updatetime =
+		#{updatetime,jdbcType=TIMESTAMP},
+		createname =
+		#{createname,jdbcType=VARCHAR},
+		imgurl = #{imgurl,jdbcType=VARCHAR},
+		branchname = #{branchname,jdbcType=VARCHAR},
+		type =
+		#{type,jdbcType=INTEGER}
+		where noticeid = #{noticeid,jdbcType=VARCHAR}
+	</update>
+
+	<update id="batchDelete">
+		<foreach collection="array" item="item" index="index"
+			separator=";">
+			update jp_notice
+			set deleteflag = 1
+			where noticeid =
+			#{item,jdbcType=VARCHAR}
+		</foreach>
+	</update>
+	<select id="selectBranchNoticeList"
+		parameterType="com.jp.entity.Notice" resultType="com.jp.entity.Notice">
+		select noitce.* from
+		jp_notice noitce left join jp_branch branch
+		on noitce.branchid =
+		branch.branchid
+	</select>
+	<select id="selectNoticeMangeList"
+		resultType="com.jp.entity.NoticeVO"
+		parameterType="com.jp.entity.NoticeExample">
+		select
+		<if test="distinct">
+			distinct
+		</if>
+		<include refid="Base_Column_List" />
+		, (SELECT COUNT(*) FROM jp_noticeread nr
+		WHERE nr.noticeid =	jp_notice.`noticeid`) AS readCount
+		from jp_notice
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="orderByClause != null">
+			order by ${orderByClause}
+		</if>
+		<if test="startRow != null">
+			limit #{startRow} , #{pageSize}
+		</if>
+	</select>
+	<!-- 自写方法 -->
+	<select id="findByIdsMap" resultMap="BaseResultMap"
+		parameterType="Map">
+		Select
+		<include refid="Base_Column_List" />
+		from jp_notice where deleteflag=0 and branchid in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		order by updatetime desc
+		<if test="count != null">
+			limit ${count}
+		</if>
+		<if test="start != null">
+			offset ${start}
+		</if>
+	</select>
+	<select id="selectByCityCode" resultType="com.jp.entity.Notice"
+		parameterType="Map">
+		select t.noticeid, t.noticetype, t.noticetitle,
+			 t.createid, t.createtime,
+			t.updateid, t.updatetime,
+			t.createname, t.branchname, t.type,t1.countReads from (
+		select m.* from jp_notice m left join jp_branch n on
+		m.branchid = n.branchid
+		where n.areacode = #{cityCode} and n.familyid =
+		#{familyid}
+		union
+		select m.* from jp_notice m left join jp_branch n on
+		m.branchid = n.branchid
+		where n.citycode = #{cityCode} and n.familyid =
+		#{familyid}
+		union
+		select m.* from jp_notice m left join jp_branch n on
+		m.branchid = n.branchid
+		where n.xcode = #{cityCode} and n.familyid =
+		#{familyid}
+		) t
+		LEFT JOIN 
+		(SELECT noticeid,count(*) countReads FROM jp_noticeread GROUP BY noticeid) t1 
+		ON t.noticeid = t1.noticeid
+		order by t.createtime desc
+		<if test="count != null and start != null" >
+			limit ${start},${count}
+		</if>
+	</select>
+	
+	<select id="selectNotices" parameterType="java.util.Map" resultType="com.jp.entity.Notice">
+  		select t.noticeid, t.noticetype, t.noticetitle,	t.createid, t.createtime,
+		t.updateid, t.updatetime,t.createname, t.branchname, t.type,t1.countReads 
+		FROM `jp_notice` t
+		LEFT JOIN 
+		(SELECT noticeid,count(*) countReads FROM jp_noticeread GROUP BY noticeid) t1 
+		ON t.noticeid = t1.noticeid
+  		WHERE deleteflag = 0
+	  	<if test="familyid != null">
+	  		and t.familyid=#{familyid,jdbcType=VARCHAR}
+	  	</if>
+	  	<if test="noticetype != null">
+	  		and t.noticetype=#{noticetype,jdbcType=VARCHAR}
+	  	</if>
+	  	<if test="branchid != null">
+	  		and t.branchid=#{branchid,jdbcType=VARCHAR}
+	  	</if>
+	  	order by t.createtime desc
+	  	<if test="count != null and start != null" >
+			limit ${start},${count}
+		</if>
+  </select>
+</mapper>

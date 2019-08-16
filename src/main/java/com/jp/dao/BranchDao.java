@@ -41,9 +41,7 @@ public interface BranchDao {
 
 	int updateByBranchidSelective(Branch record);
 
-	int validateBranchname(Branch record);
-
-	List<String> selectByFamilyid(String familyid);
+	int selectByFamilyid(String familyid);
 
 	List<Branch> getBranchsByFamilyAndUserid(@Param("familyid") String familyid, @Param("userid") String userid,
 			@Param("branchname") String branchname);

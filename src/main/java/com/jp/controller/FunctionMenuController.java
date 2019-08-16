@@ -55,30 +55,13 @@ public class FunctionMenuController {
 
 	/**
 	 * 
-	 * @描述 删除
-	 * @作者 chenxiaobing
-	 * @时间 2019年4月17日下午5:32:11
-	 * @参数 @param banner
-	 * @参数 @param model
-	 * @参数 @return
+	 * @描述 批量删除
 	 * @return String
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
-	public String batchDelete(String menuids) {
-		String result = null;
-		try {
-			// a,b,c
-			String bannerid = menuids.substring(0, menuids.length());
-			String menuArray[] = bannerid.split(",");
-			result = functionMenuService.batchDelete(menuArray);
-			//result = "1";
-		} catch (Exception e) {
-			result = "0";
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		return result;
+	public JsonResponse batchDelete(String menuids) {
+		return functionMenuService.batchDelete(menuids);
 	}
 
 	/**

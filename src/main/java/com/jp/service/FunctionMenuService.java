@@ -12,7 +12,7 @@ public interface FunctionMenuService {
 
 	JsonResponse get(String id);
 
-	String batchDelete(String[] menuArray);
+	JsonResponse batchDelete(String menuids);
 
 	JsonResponse delete(String menuid);
 

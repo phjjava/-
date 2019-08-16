@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.FunctionRoleMapper" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.FunctionRoleKey" >
+    <id column="userid" property="userid" jdbcType="VARCHAR" />
+    <id column="functionid" property="functionid" jdbcType="VARCHAR" />
+    <id column="ebid" property="ebid" jdbcType="VARCHAR" />
+    <id column="postid" property="postid" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      userid, functionid, ebid, postid
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.FunctionRoleExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_function_role
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.jp.entity.FunctionRoleKey" >
+    delete from jp_function_role
+    where userid = #{userid,jdbcType=VARCHAR}
+      and functionid = #{functionid,jdbcType=VARCHAR}
+      and ebid = #{ebid,jdbcType=VARCHAR}
+      and postid = #{postid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.FunctionRoleExample" >
+    delete from jp_function_role
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.FunctionRoleKey" >
+    insert into jp_function_role (userid, functionid, ebid, 
+      postid)
+    values (#{userid,jdbcType=VARCHAR}, #{functionid,jdbcType=VARCHAR}, #{ebid,jdbcType=VARCHAR}, 
+      #{postid,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.FunctionRoleKey" >
+    insert into jp_function_role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="functionid != null" >
+        functionid,
+      </if>
+      <if test="ebid != null" >
+        ebid,
+      </if>
+      <if test="postid != null" >
+        postid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="functionid != null" >
+        #{functionid,jdbcType=VARCHAR},
+      </if>
+      <if test="ebid != null" >
+        #{ebid,jdbcType=VARCHAR},
+      </if>
+      <if test="postid != null" >
+        #{postid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.FunctionRoleExample" resultType="java.lang.Integer" >
+    select count(*) from jp_function_role
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_function_role
+    <set >
+      <if test="record.userid != null" >
+        userid = #{record.userid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.functionid != null" >
+        functionid = #{record.functionid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.ebid != null" >
+        ebid = #{record.ebid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.postid != null" >
+        postid = #{record.postid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_function_role
+    set userid = #{record.userid,jdbcType=VARCHAR},
+      functionid = #{record.functionid,jdbcType=VARCHAR},
+      ebid = #{record.ebid,jdbcType=VARCHAR},
+      postid = #{record.postid,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  
+  <!-- 自写方法 -->
+  <insert id="insertBatch">
+    insert into jp_function_role (userid, functionid,ebid,postid)
+    values 
+    <foreach collection="array" item="item" index="index" separator=",">
+		(#{userid},#{item},#{ebid},#{postid})
+	</foreach>
+  </insert>
+</mapper>

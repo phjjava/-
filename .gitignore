@@ -2,7 +2,6 @@
 /.settings/
 /.project
 /.classpath
-target/
 #eclipse files
 .classpath
 .project
@@ -52,3 +51,4 @@ captures/
 /.idea/
 /out/
 
+/target/

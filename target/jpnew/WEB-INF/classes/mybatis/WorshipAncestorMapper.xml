@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jp.dao.WorshipAncestorMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jp.entity.WorshipAncestor">
+        <id column="id" property="id" />
+        <result column="oblationid" property="oblationid" />
+        <result column="oblation" property="oblation" />
+        <result column="oblationtypeid" property="oblationtypeid" />
+        <result column="oblationtype" property="oblationtype" />
+        <result column="createid" property="createid" />
+        <result column="createname" property="createname" />
+        <result column="familyid" property="familyid" />
+        <result column="worshipid" property="worshipid" />
+        <result column="worshipname" property="worshipname" />
+        <result column="createtime" property="createtime" />
+        <result column="deleteflag" property="deleteflag" />
+    </resultMap>
+    
+   <insert id="insertSelective" parameterType="com.jp.entity.Worship" >
+    insert into jp_worship_ancestor
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="oblationid != null" >
+        oblationid,
+      </if>
+      <if test="oblation != null" >
+        oblation,
+      </if>
+      <if test="oblationtypeid != null" >
+        oblationtypeid,
+      </if>
+      <if test="oblationtype != null" >
+        oblationtype,
+      </if>
+      <if test="createid != null" >
+        createid,
+      </if>
+      <if test="createname != null" >
+        createname,
+      </if>
+      <if test="familyid != null" >
+        familyid,
+      </if>
+      <if test="worshipid != null" >
+        worshipid,
+      </if>
+      <if test="worshipname != null" >
+        worshipname,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="deleteflag != null" >
+        deleteflag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="oblationid != null" >
+        #{oblationid,jdbcType=VARCHAR},
+      </if>
+      <if test="oblation != null" >
+        #{oblation,jdbcType=VARCHAR},
+      </if>
+      <if test="oblationtypeid != null" >
+        #{oblationtypeid,jdbcType=VARCHAR},
+      </if>
+      <if test="oblationtype != null" >
+        #{oblationtype,jdbcType=VARCHAR},
+      </if>
+      <if test="createid != null" >
+        #{createid,jdbcType=VARCHAR},
+      </if>
+      <if test="createname != null" >
+        #{createname,jdbcType=VARCHAR},
+      </if>
+      <if test="familyid != null" >
+        #{familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="worshipid != null" >
+        #{worshipid,jdbcType=VARCHAR},
+      </if>
+      <if test="worshipname != null" >
+        #{worshipname,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteflag != null" >
+        #{deleteflag,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="selectNoTimeOutByType" parameterType="java.lang.String" resultType="com.jp.entity.WorshipAncestor">
+  	select m.*,n.imgurl as imgurl
+  	from jp_worship_ancestor m,jp_worship_oblation n 
+  	where m.oblationid = n.id and m.familyid=#{familyid,jdbcType=VARCHAR}
+  	and m.worshipid=#{worshipid,jdbcType=VARCHAR}
+  	and m.oblationtypeid=#{typeid,jdbcType=VARCHAR} 
+  	and date_add(m.createtime, interval n.duration minute) &gt; now()
+  	order by m.createtime desc
+  	limit 0,2
+  </select>
+  <select id="selectByWorshipid" parameterType="java.lang.String" resultType="com.jp.entity.WorshipAncestor">
+  	select m.*,n.imgurl as oblationurl,u.imgurl as imgurl
+  	from jp_worship_ancestor m,jp_worship_oblation n,jp_user u
+  	where m.oblationid = n.id
+  	and m.createid = u.userid and m.worshipid = #{worshipid} and m.familyid = #{familyid} and m.deleteflag = 0 ORDER BY createtime desc
+  </select>
+  <select id="selectByWorshipidAndCreateid" parameterType="java.lang.String" resultType="com.jp.entity.WorshipAncestor">
+  	select m.*,n.imgurl as oblationurl,u.imgurl as imgurl
+  	from jp_worship_ancestor m,jp_worship_oblation n,jp_user u
+  	where m.oblationid = n.id
+  	and m.createid = u.userid and m.worshipid = #{worshipid}  and m.familyid = #{familyid} and m.createid = #{createid} and m.deleteflag = 0 ORDER BY createtime desc
+  </select>
+</mapper>

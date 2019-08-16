@@ -606,7 +606,7 @@ public class NoticeServiceImpl implements NoticeService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		result = new Result(MsgConstants.RESUL_FAIL);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
 		result.setMsg("没有数据");
 		res = new JsonResponse(result);
 		return res;

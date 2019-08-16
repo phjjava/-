@@ -1,5 +1,6 @@
 package com.jp.service.impl;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -171,9 +172,36 @@ public class FunctionMenuServiceImpl implements FunctionMenuService {
 	}
 
 	@Override
-	public String batchDelete(String[] menuArray) {
-
-		return "";
+	public JsonResponse batchDelete(String menuids) {
+		Result result = null;
+		JsonResponse res = null;
+		if (menuids == null || "".equals(menuids)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数menuids不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			String bannerid = menuids.substring(0, menuids.length());
+			String menuArray[] = bannerid.split(",");
+			List<String> list = Arrays.asList(menuArray);
+			IndexExample example = new IndexExample();
+			example.or().andIdIn(list);
+			int status = indexMapper.deleteByExample(example);
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[batchDelete方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override

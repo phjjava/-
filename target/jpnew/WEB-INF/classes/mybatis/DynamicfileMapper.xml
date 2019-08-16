@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.DynamicfileDao" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.Dynamicfile" >
+    <id column="fileid" property="fileid" jdbcType="VARCHAR" />
+    <id column="dyid" property="dyid" jdbcType="VARCHAR" />
+    <id column="branchid" property="branchid" jdbcType="VARCHAR" />
+    <result column="filetype" property="filetype" jdbcType="INTEGER" />
+    <result column="fileurl" property="fileurl" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      fileid, dyid, branchid, filetype, fileurl, sort,filename
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.DynamicfileQuery" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_dynamicfile
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.jp.entity.DynamicfileKey" >
+    select 
+    fileid,dyid,branchid,filetype,fileurl,sort
+    from jp_dynamicfile
+    where fileid = #{fileid,jdbcType=VARCHAR}
+      and dyid = #{dyid,jdbcType=VARCHAR}
+      and branchid = #{branchid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.jp.entity.DynamicfileKey" >
+    delete from jp_dynamicfile
+    where fileid = #{fileid,jdbcType=VARCHAR}
+      and dyid = #{dyid,jdbcType=VARCHAR}
+      and branchid = #{branchid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.DynamicfileQuery" >
+    delete from jp_dynamicfile
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.Dynamicfile" >
+    insert into jp_dynamicfile (fileid, dyid, branchid, 
+      filetype, fileurl, sort
+      )
+    values (#{fileid,jdbcType=VARCHAR}, #{dyid,jdbcType=VARCHAR}, #{branchid,jdbcType=VARCHAR}, 
+      #{filetype,jdbcType=INTEGER}, #{fileurl,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.Dynamicfile" >
+    insert into jp_dynamicfile
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fileid != null" >
+        fileid,
+      </if>
+      <if test="dyid != null" >
+        dyid,
+      </if>
+      <if test="branchid != null" >
+        branchid,
+      </if>
+      <if test="filetype != null" >
+        filetype,
+      </if>
+      <if test="fileurl != null" >
+        fileurl,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fileid != null" >
+        #{fileid,jdbcType=VARCHAR},
+      </if>
+      <if test="dyid != null" >
+        #{dyid,jdbcType=VARCHAR},
+      </if>
+      <if test="branchid != null" >
+        #{branchid,jdbcType=VARCHAR},
+      </if>
+      <if test="filetype != null" >
+        #{filetype,jdbcType=INTEGER},
+      </if>
+      <if test="fileurl != null" >
+        #{fileurl,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.DynamicfileQuery" resultType="java.lang.Integer" >
+    select count(*) from jp_dynamicfile
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_dynamicfile
+    <set >
+      <if test="record.fileid != null" >
+        fileid = #{record.fileid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dyid != null" >
+        dyid = #{record.dyid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.branchid != null" >
+        branchid = #{record.branchid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.filetype != null" >
+        filetype = #{record.filetype,jdbcType=INTEGER},
+      </if>
+      <if test="record.fileurl != null" >
+        fileurl = #{record.fileurl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sort != null" >
+        sort = #{record.sort,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_dynamicfile
+    set fileid = #{record.fileid,jdbcType=VARCHAR},
+      dyid = #{record.dyid,jdbcType=VARCHAR},
+      branchid = #{record.branchid,jdbcType=VARCHAR},
+      filetype = #{record.filetype,jdbcType=INTEGER},
+      fileurl = #{record.fileurl,jdbcType=VARCHAR},
+      sort = #{record.sort,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.Dynamicfile" >
+    update jp_dynamicfile
+    <set >
+      <if test="filetype != null" >
+        filetype = #{filetype,jdbcType=INTEGER},
+      </if>
+      <if test="fileurl != null" >
+        fileurl = #{fileurl,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+    </set>
+    where fileid = #{fileid,jdbcType=VARCHAR}
+      and dyid = #{dyid,jdbcType=VARCHAR}
+      and branchid = #{branchid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.Dynamicfile" >
+    update jp_dynamicfile
+    set filetype = #{filetype,jdbcType=INTEGER},
+      fileurl = #{fileurl,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=INTEGER}
+    where fileid = #{fileid,jdbcType=VARCHAR}
+      and dyid = #{dyid,jdbcType=VARCHAR}
+      and branchid = #{branchid,jdbcType=VARCHAR}
+  </update>
+  <insert id="insertdyfileSelective">
+    insert into jp_dynamicfile (dyid,fileurl,fileid,branchid,filetype,filename,sort)
+    values
+     <foreach collection="list" item="item" index="index" separator=",">
+		(#{item.dyid},#{item.fileurl},#{item.fileid},#{item.branchid},
+		#{item.filetype},#{item.filename},#{item.sort})
+	</foreach>
+  </insert>
+  <delete id="deletefile">
+     <foreach collection="array" item="item" index="index" separator=";">
+      delete from jp_dynamicfile
+      where fileid = #{item,jdbcType=VARCHAR}
+    </foreach>
+  </delete>
+</mapper>

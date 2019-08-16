@@ -47,70 +47,95 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	private BranchDao branchDao;
 
 	@Override
-	public PageModel<Branchalbum> pageQuery(PageModel<Branchalbum> pageModel, Branchalbum branchalbum)
-			throws Exception {
-		// 当前登录人所管理的branchids
-
-		List<UserManager> managers = CurrentUserContext.getCurrentUserManager();
-		String familyid = CurrentUserContext.getCurrentFamilyId();
-		List<String> branchList = CurrentUserContext.getCurrentBranchIds();
-		List<Branchalbum> list = new ArrayList<Branchalbum>();
-		for (UserManager m : managers) {
-			BranchalbumExample example = new BranchalbumExample();
-			example.clear();
-			BranchalbumExample.Criteria criteria = example.createCriteria();
-			if (StringTools.trimNotEmpty(branchalbum.getBranchid())) {
-				criteria.andBranchidEqualTo(branchalbum.getBranchid());
-			}
-			if (StringTools.trimNotEmpty(branchalbum.getDeleteflag())) {
-				criteria.andDeleteflagEqualTo(branchalbum.getDeleteflag());
-			}
-			example.setOrderByClause("createtime DESC");
-			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-			if (m.getEbtype() == 1) {
-				criteria.andFamilyidEqualTo(familyid);
-				list = badao.selectByExample(example);
-				break;
-			} else {
-				criteria.andBranchidIn(branchList);
-				list = badao.selectBranchAlbumMangeList(example);
-			}
+	public JsonResponse pageQuery(PageModel<Branchalbum> pageModel, Branchalbum branchalbum) {
+		Result result = null;
+		JsonResponse res = null;
+		if (pageModel.getPageNo() == null || "".equals(pageModel.getPageNo() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageNo不能为空！");
+			res = new JsonResponse(result);
+			return res;
 		}
-		// if (branchList!=null&&branchList.size()>0) {
-		// criteria.andBranchidIn(branchList);
-		// }else{
-		// return pageModel;
-		// }
-
-		// List<Branchalbum> list = badao.selectByBranchIds(branchList);
-		// badao.selectBranchAlbumMangeList()\
-		BranchphotoExample example1 = new BranchphotoExample();
-		BranchKey key = new BranchKey();
-		for (Branchalbum al : list) {
-			example1.clear();
-			example1.or().andAlbumidEqualTo(al.getAlbumid()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
-			al.setAlbumNum(photodao.countByExample(example1));
-			if (!"0".equals(al.getBranchid())) {
-				key.setBranchid(al.getBranchid());
-				key.setFamilyid(familyid);
-				Branch branch = branchDao.selectByPrimaryKey(key);
-				String area = "";
-				if (branch.getArea() != null)
-					area += branch.getArea();
-				if (branch.getCityname() != null)
-					area += "_" + branch.getCityname();
-				if (branch.getXname() != null)
-					area += "_" + branch.getXname();
-				if (branch.getAddress() != null)
-					area += "_" + branch.getAddress();
-				area += " " + branch.getBranchname();
-				al.setBranchname(area);
-			}
-
+		if (pageModel.getPageSize() == null || "".equals(pageModel.getPageSize() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageSize不能为空！");
+			res = new JsonResponse(result);
+			return res;
 		}
-		pageModel.setList(list);
-		pageModel.setPageInfo(new PageInfo<Branchalbum>(list));
-		return pageModel;
+		try {
+			// 当前登录人所管理的branchids
+			List<UserManager> managers = CurrentUserContext.getCurrentUserManager();
+			String familyid = CurrentUserContext.getCurrentFamilyId();
+			List<String> branchList = CurrentUserContext.getCurrentBranchIds();
+			List<Branchalbum> list = new ArrayList<Branchalbum>();
+			for (UserManager m : managers) {
+				BranchalbumExample example = new BranchalbumExample();
+				example.clear();
+				BranchalbumExample.Criteria criteria = example.createCriteria();
+				if (StringTools.trimNotEmpty(branchalbum.getBranchid())) {
+					criteria.andBranchidEqualTo(branchalbum.getBranchid());
+				}
+				if (StringTools.trimNotEmpty(branchalbum.getDeleteflag())) {
+					criteria.andDeleteflagEqualTo(branchalbum.getDeleteflag());
+				}
+				example.setOrderByClause("createtime DESC");
+				PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+				if (m.getEbtype() == 1) {
+					criteria.andFamilyidEqualTo(familyid);
+					list = badao.selectByExample(example);
+					break;
+				} else {
+					criteria.andBranchidIn(branchList);
+					list = badao.selectBranchAlbumMangeList(example);
+				}
+			}
+			// if (branchList!=null&&branchList.size()>0) {
+			// criteria.andBranchidIn(branchList);
+			// }else{
+			// return pageModel;
+			// }
+
+			// List<Branchalbum> list = badao.selectByBranchIds(branchList);
+			// badao.selectBranchAlbumMangeList()\
+			BranchphotoExample example1 = new BranchphotoExample();
+			BranchKey key = new BranchKey();
+			for (Branchalbum al : list) {
+				example1.clear();
+				example1.or().andAlbumidEqualTo(al.getAlbumid()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
+				al.setAlbumNum(photodao.countByExample(example1));
+				if (!"0".equals(al.getBranchid())) {
+					key.setBranchid(al.getBranchid());
+					key.setFamilyid(familyid);
+					Branch branch = branchDao.selectByPrimaryKey(key);
+					String area = "";
+					if (branch.getArea() != null)
+						area += branch.getArea();
+					if (branch.getCityname() != null)
+						area += "_" + branch.getCityname();
+					if (branch.getXname() != null)
+						area += "_" + branch.getXname();
+					if (branch.getAddress() != null)
+						area += "_" + branch.getAddress();
+					area += " " + branch.getBranchname();
+					al.setBranchname(area);
+				}
+
+			}
+			if (list != null) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(list);
+				res.setCount(new PageInfo<Branchalbum>(list).getTotal());
+				return res;
+			}
+		} catch (Exception e) {
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
@@ -141,36 +166,52 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	}
 
 	@Override
-	public String mergeBranchAlbum(Branchalbum branchalbum) {
+	public JsonResponse mergeBranchAlbum(Branchalbum branchalbum) {
+		Result result = null;
+		JsonResponse res = null;
+		int status = 0;
 		String ablumId = "";
-		if (StringTools.trimNotEmpty(branchalbum.getAlbumid())) {
-			branchalbum.setUpdatetime(new Date());
-			branchalbum.setUpdateid(CurrentUserContext.getCurrentUserId());
-			BranchalbumExample query = new BranchalbumExample();
-			query.or().andAlbumidEqualTo(branchalbum.getAlbumid());
-			if (!StringTools.trimNotEmpty(branchalbum.getBranchid())) {
-				branchalbum.setBranchid("0");
+		try {
+			if (StringTools.trimNotEmpty(branchalbum.getAlbumid())) {
+				branchalbum.setUpdatetime(new Date());
+				branchalbum.setUpdateid(CurrentUserContext.getCurrentUserId());
+				BranchalbumExample query = new BranchalbumExample();
+				query.or().andAlbumidEqualTo(branchalbum.getAlbumid());
+				if (!StringTools.trimNotEmpty(branchalbum.getBranchid())) {
+					branchalbum.setBranchid("0");
+				}
+				branchalbum.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				status = badao.updateByExampleSelective(branchalbum, query);
+				// badao.updateByPrimaryKeySelective(branchalbum);
+			} else {
+				if (!StringTools.trimNotEmpty(branchalbum.getBranchid())) {
+					branchalbum.setBranchid("0");
+				}
+				ablumId = UUIDUtils.getUUID();
+				branchalbum.setAlbumid(ablumId);
+				branchalbum.setCreatetime(new Date());
+				branchalbum.setCreateid(CurrentUserContext.getCurrentUserId());
+				branchalbum.setUpdatetime(new Date());
+				branchalbum.setUpdateid(CurrentUserContext.getCurrentUserId());
+				branchalbum.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				// 0未删除
+				branchalbum.setDeleteflag(0);
+				status = badao.insertSelective(branchalbum);
 			}
-			branchalbum.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-			badao.updateByExampleSelective(branchalbum, query);
-			// badao.updateByPrimaryKeySelective(branchalbum);
-		} else {
-
-			if (!StringTools.trimNotEmpty(branchalbum.getBranchid())) {
-				branchalbum.setBranchid("0");
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(ablumId);
+				return res;
 			}
-			ablumId = UUIDUtils.getUUID();
-			branchalbum.setAlbumid(ablumId);
-			branchalbum.setCreatetime(new Date());
-			branchalbum.setCreateid(CurrentUserContext.getCurrentUserId());
-			branchalbum.setUpdatetime(new Date());
-			branchalbum.setUpdateid(CurrentUserContext.getCurrentUserId());
-			branchalbum.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-			// 0未删除
-			branchalbum.setDeleteflag(0);
-			badao.insertSelective(branchalbum);
+		} catch (Exception e) {
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-		return ablumId;
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
@@ -238,6 +279,12 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	public JsonResponse updateByPrimaryKeySelective(Branchphoto record) {
 		Result result = null;
 		JsonResponse res = null;
+		if (record.getImgid() == null || "".equals(record.getImgid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数imgid不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			int status = photodao.updateByPrimaryKeySelective(record);
 			if (status > 0) {
@@ -258,15 +305,48 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	}
 
 	@Override
-	public Branchphoto selectByPrimaryKey(String key) {
-		return photodao.selectByPrimaryKey(key);
+	public JsonResponse selectByPrimaryKey(String imgid) {
+		Result result = null;
+		JsonResponse res = null;
+		if (imgid == null || "".equals(imgid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数imgid不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			Branchphoto branchphoto = photodao.selectByPrimaryKey(imgid);
+			if (branchphoto != null) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(branchphoto);
+				return res;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
-	public JsonResponse batchDelete(String[] albumidArray) {
+	public JsonResponse batchDelete(String albumids) {
 		Result result = null;
 		JsonResponse res = null;
+		if (albumids == null || "".equals(albumids)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数albumids不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
+			String albumid = albumids.substring(0, albumids.length());
+			String albumidArray[] = albumid.split(",");
 			int status = badao.batchDelete(albumidArray);
 			if (status > 0) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
@@ -289,6 +369,18 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	public JsonResponse changeStatus(Branchalbum branchAlbum) {
 		Result result = null;
 		JsonResponse res = null;
+		if (branchAlbum.getAlbumid() == null || "".equals(branchAlbum.getAlbumid())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数albumid不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (branchAlbum.getDeleteflag() == null || "".equals(branchAlbum.getDeleteflag())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数deleteflag不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			int status = badao.updateByPrimaryKeySelective(branchAlbum);
 			if (status > 0) {
