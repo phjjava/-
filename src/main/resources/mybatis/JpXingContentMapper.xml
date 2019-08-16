@@ -67,19 +67,20 @@
   <sql id="Base_Column_List" >
     xingid, diccode, content
   </sql>
-  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.JpXingContentExample" >
+  <select id="selectByExample" resultType="java.lang.String" parameterType="com.jp.entity.JpXingContentExample" >
     select
-    <if test="distinct" >
+    <!-- <if test="distinct" >
       distinct
-    </if>
+    </if> -->
     <include refid="Base_Column_List" />
     from jp_xing_content
-    <if test="_parameter != null" >
+    <!-- <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
-    </if>
-    <if test="orderByClause != null" >
+    </if> -->
+    where xingid=#{id,jdbcType=VARCHAR} and diccode=#{code,jdbcType=VARCHAR}
+    <!-- <if test="orderByClause != null" >
       order by ${orderByClause}
-    </if>
+    </if> -->
   </select>
   <delete id="deleteByExample" parameterType="com.jp.entity.JpXingContentExample" >
     delete from jp_xing_content
@@ -140,6 +141,21 @@
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.JpXing" >
+    update jp_xing_content
+    <set >
+      <if test="xingid != null" >
+        xingid = #{xingid,jdbcType=VARCHAR},
+      </if>
+      <if test="diccode != null" >
+        diccode = #{diccode,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where xingid = #{xingid,jdbcType=VARCHAR} and diccode = #{diccode,jdbcType=VARCHAR}
   </update>
   <update id="updateByExample" parameterType="map" >
     update jp_xing_content

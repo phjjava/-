@@ -21,6 +21,8 @@ import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.entity.JpXing;
+import com.jp.entity.JpXingContent;
+import com.jp.entity.JpXingDic;
 import com.jp.service.JpXingService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
@@ -77,20 +79,63 @@ public class JpXingController {
 		}
 		return res;
 	}
-	
+	/**
+	 * 姓氏字典内容获取
+	 * @param jpxing
+	 * @param model
+	 * @param Id
+	 * @return
+	 */
+		@RequestMapping(value = "/diclist", method = RequestMethod.POST)
+		@ResponseBody
+		public JsonResponse diclist() {
+			Result result = null;
+			JsonResponse res = null;
+			try {
+				List<JpXingDic> list= xingService.diclist();
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(list);
+			} catch (Exception e) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				res = new JsonResponse(result);
+				e.printStackTrace();
+				log_.error("[JPGL]", e);
+			}
+			return res;
+		}
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public JsonResponse save(JpXing jpxing, ModelMap model,String Id) {
+	public JsonResponse save(JpXing jpxing, ModelMap model,String id,String diccode,String content) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		Integer count = 0;
-		
+		String contentcount = null;
 		try {
 			if (StringTools.notEmpty(jpxing.getId())) {
 				// 修改
 				jpxing.setUpdatetime(new Date());
 				jpxing.setUpdateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
 				count = xingService.update(jpxing);
+				contentcount=xingService.selectContent(id,diccode);
+				
+				if(contentcount==null) {
+					//姓氏具体简介内容表(增加数据)
+					JpXingContent xingContent=new JpXingContent();
+					xingContent.setXingid(id);
+					xingContent.setContent(content);
+					xingContent.setDiccode(diccode);
+					xingService.insert(xingContent);
+				}else {
+					//姓氏具体简介内容表(修改数据)
+					JpXingContent xingContent=new JpXingContent();
+					xingContent.setXingid(id);
+					xingContent.setContent(content);
+					xingContent.setDiccode(diccode);
+					System.out.println("xingContent="+xingContent);
+					xingService.update(xingContent);
+				}
+				
 			} else {
 				// 新增
 					jpxing.setDeleteflag(ConstantUtils.DELETE_FALSE);

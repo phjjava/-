@@ -14,7 +14,7 @@ public interface JpXingDicMapper {
 
     int insertSelective(JpXingDic record);
 
-    List<JpXingDic> selectByExample(JpXingDicExample example);
+    List<JpXingDic> selectByExample();
 
     int updateByExampleSelective(@Param("record") JpXingDic record, @Param("example") JpXingDicExample example);
 
