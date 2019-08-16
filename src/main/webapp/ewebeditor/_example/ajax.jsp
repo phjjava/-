@@ -6,7 +6,6 @@
 <script type="text/javascript" src="../ewebeditor.js"></script>
 <link rel='stylesheet' type='text/css' href='example.css'>
 
-
 <script type="text/javascript">
 var editor, html;
 function CreateEditor(){
