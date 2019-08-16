@@ -15,6 +15,7 @@ import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.dao.SysFuncVersionDao;
 import com.jp.dao.SysVersionDao;
+import com.jp.dao.SysVersionPrivilegeMapper;
 import com.jp.entity.SysFuncVersion;
 import com.jp.entity.SysFuncVersionQuery;
 import com.jp.entity.SysVersion;
@@ -31,6 +32,8 @@ public class SysVersionServiceImpl implements SysVersionService {
 
 	@Autowired
 	private SysVersionDao sysVersionDao;
+	@Autowired
+	private SysVersionPrivilegeMapper sysVPMapper;
 
 	@Autowired
 	private SysFuncVersionDao sysFuncVersionDao;
@@ -90,6 +93,8 @@ public class SysVersionServiceImpl implements SysVersionService {
 		}
 		try {
 			status = sysVersionDao.deleteByPrimaryKey(versionid);
+			//删除版本特权值
+			sysVPMapper.deleteByVersionid(versionid);
 			if (status > 0) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);
