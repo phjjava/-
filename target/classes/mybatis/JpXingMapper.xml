@@ -146,23 +146,15 @@ LEFT JOIN jp_xing_dic di on c.diccode =di.code
     order by x.sort desc
   </select>
   <select id="selectByExample1" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select
-    <!-- <if test="distinct" >
-      distinct
-    </if> -->
-    <include refid="Base_Column_List" />
-    from jp_xing
-    <if test="xname!=null">
-		where xname like concat("%",#{xname},"%")
-	</if>
+    select x.id, x.xname,c.xingid,c.content,di.name diccode from jp_xing x left join 
+    jp_xing_content c on x.id=c.xingid LEFT JOIN jp_xing_dic di on c.diccode =di.code where xname like concat("%",#{xname},"%")
     
   </select>
   <!-- 更改 -->
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select 
-    <include refid="Base_Column_List" />
-    from jp_xing
-    where id = #{id,jdbcType=VARCHAR}
+    select x.id, x.xname,c.xingid,c.content,di.name diccode from jp_xing x left join 
+    jp_xing_content c on x.id=c.xingid LEFT JOIN jp_xing_dic di on c.diccode =di.code
+    where x.id = #{id,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from jp_xing
@@ -373,6 +365,7 @@ LEFT JOIN jp_xing_dic di on c.diccode =di.code
   </update>
   
   <select id="hotlist" resultMap="BaseResultMap">
-  		select * from jp_xing order by rcount desc limit 5
+  		select x.id, x.xname,c.xingid,c.content,di.name diccode from jp_xing x left join jp_xing_content c on x.id=c.xingid
+LEFT JOIN jp_xing_dic di on c.diccode =di.code  order by rcount desc limit 5
   </select>
 </mapper>

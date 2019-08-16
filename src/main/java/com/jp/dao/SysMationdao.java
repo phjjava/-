@@ -40,7 +40,7 @@ public interface SysMationdao {
 
 	void updateCount(String mationid);
 
-	List<SysMation> selectByExample(@Param("mationtitle") String mationtitle);
+	List<SysMation> selectByExample(@Param("mationtitle") String mationtitle,@Param("typename") String typename,@Param("deleteflag") Integer deleteflag);
 	List<SysMation> selectByExample();
 
 }
