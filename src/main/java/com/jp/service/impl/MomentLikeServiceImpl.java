@@ -98,6 +98,7 @@ public class MomentLikeServiceImpl implements MomentLikeService {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			result.setMsg("点赞成功！");
 			res = new JsonResponse(result);
+			System.out.println("点赞res="+res);
 			return res;
 		}
 		result = new Result(MsgConstants.RESUL_FAIL);

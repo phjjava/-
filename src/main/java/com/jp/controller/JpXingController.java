@@ -1,6 +1,7 @@
 package com.jp.controller;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,7 +31,13 @@ public class JpXingController {
 	private final Logger log_ = LogManager.getLogger(JpXingController.class);
 	@Autowired
 	private JpXingService xingService;
-	
+	/**
+	 * 百家姓管理
+	 * @param pageModel
+	 * @param xing
+	 * @param xname
+	 * @return
+	 */
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse list(PageModel<JpXing> pageModel, JpXing xing,String xname) {
@@ -56,7 +63,18 @@ public class JpXingController {
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
 		res.setData(pageModel);
-		res.setCount(xingService.SelectCount(xname));
+		
+		if(pageModel.getList()==null) {
+			res.setCount(0);
+		}else {
+			if(xname.equals("ALL")) {
+				xname=null;
+				res.setCount(xingService.SelectCount(xname));
+			}else {
+				res.setCount(xingService.SelectCount(xname));
+			}
+			
+		}
 		return res;
 	}
 	
@@ -81,6 +99,7 @@ public class JpXingController {
 					jpxing.setId(UUIDUtils.getUUID());
 					jpxing.setUpdatetime(new Date());
 					jpxing.setCreatetime(new Date());
+					jpxing.setRcount(0);
 					count = xingService.insert(jpxing);
 			}
 			if(count > 0) {
@@ -133,5 +152,39 @@ public class JpXingController {
 		res = new JsonResponse(result);
 		return res;
 	}
+	/**
+	 * api接口
+	 */
+	//热门姓氏
+	@RequestMapping(value = "/hotlist", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse hotlist() {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			List<JpXing> list= xingService.hotlist();
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(list);
+		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			e.printStackTrace();
+			log_.error("[JPGL]", e);
+		}
+		return res;
+	}
 	
+	/**
+	 * api百家姓列表接口
+	 * @param pageModel
+	 * @param xing
+	 * @param xname
+	 * @return
+	 */
+	@RequestMapping(value = "/namelist", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse namelist(PageModel<JpXing> pageModel, JpXing xing,String xname) {
+		return xingService.pageQuery1(pageModel, xing,xname);
+	}
 }

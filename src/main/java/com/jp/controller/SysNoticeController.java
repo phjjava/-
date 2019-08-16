@@ -66,12 +66,12 @@ public class SysNoticeController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/selectOne", method = RequestMethod.POST)
-    public JsonResponse selectOne(String noticeid)  {
+    public JsonResponse selectOne(String noticeid,Integer code)  {
 		Result result = null;
 		JsonResponse res = null;
     	List<SysNotice> gotypeList = null;
     	try {
-    		gotypeList = noticeService.selectOne(noticeid);
+    		gotypeList = noticeService.selectOne(noticeid,code);
     			result = new Result(MsgConstants.RESUL_SUCCESS);
         		res = new JsonResponse(result);
         		res.setData(gotypeList);

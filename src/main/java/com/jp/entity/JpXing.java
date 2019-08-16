@@ -1,6 +1,7 @@
 package com.jp.entity;
 
 import java.util.Date;
+import java.util.Set;
 
 public class JpXing {
     private String id;
@@ -20,8 +21,28 @@ public class JpXing {
     private Integer sort;
 
     private Integer deleteflag;
+    
+    private Integer rcount;
+    
+    private Set<JpXingContent> xingContent;
 
-    public String getId() {
+	public Set<JpXingContent> getXingContent() {
+		return xingContent;
+	}
+
+	public void setXingContent(Set<JpXingContent> xingContent) {
+		this.xingContent = xingContent;
+	}
+
+	public Integer getRcount() {
+		return rcount;
+	}
+
+	public void setRcount(Integer rcount) {
+		this.rcount = rcount;
+	}
+
+	public String getId() {
         return id;
     }
 

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.dao.JpMemberRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.jp.entity.JpMemberRecord" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="recordid" property="recordid" jdbcType="VARCHAR" />
+    <result column="recordname" property="recordname" jdbcType="VARCHAR" />
+    <result column="recordmoney" property="recordmoney" jdbcType="VARCHAR" />
+    <result column="recordtime" property="recordtime" jdbcType="TIMESTAMP" />
+    <result column="recordstatus" property="recordstatus" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, recordid, recordname, recordmoney, recordtime, recordstatus
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.JpMemberRecordExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_member_record
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from jp_member_record
+    where recordid = #{id,jdbcType=VARCHAR} and recordstatus=0
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from jp_member_record
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jp.entity.JpMemberRecordExample" >
+    delete from jp_member_record
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jp.entity.JpMemberRecord" >
+    insert into jp_member_record (id, recordid, recordname, 
+      recordmoney, recordtime, recordstatus
+      )
+    values (#{id,jdbcType=VARCHAR}, #{recordid,jdbcType=VARCHAR}, #{recordname,jdbcType=VARCHAR}, 
+      #{recordmoney,jdbcType=VARCHAR}, #{recordtime,jdbcType=TIMESTAMP}, #{recordstatus,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jp.entity.JpMemberRecord" >
+    insert into jp_member_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="recordid != null" >
+        recordid,
+      </if>
+      <if test="recordname != null" >
+        recordname,
+      </if>
+      <if test="recordmoney != null" >
+        recordmoney,
+      </if>
+      <if test="recordtime != null" >
+        recordtime,
+      </if>
+      <if test="recordstatus != null" >
+        recordstatus,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="recordid != null" >
+        #{recordid,jdbcType=VARCHAR},
+      </if>
+      <if test="recordname != null" >
+        #{recordname,jdbcType=VARCHAR},
+      </if>
+      <if test="recordmoney != null" >
+        #{recordmoney,jdbcType=VARCHAR},
+      </if>
+      <if test="recordtime != null" >
+        #{recordtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="recordstatus != null" >
+        #{recordstatus,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jp.entity.JpMemberRecordExample" resultType="java.lang.Integer" >
+    select count(*) from jp_member_record
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jp_member_record
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.recordid != null" >
+        recordid = #{record.recordid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.recordname != null" >
+        recordname = #{record.recordname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.recordmoney != null" >
+        recordmoney = #{record.recordmoney,jdbcType=VARCHAR},
+      </if>
+      <if test="record.recordtime != null" >
+        recordtime = #{record.recordtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.recordstatus != null" >
+        recordstatus = #{record.recordstatus,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jp_member_record
+    set id = #{record.id,jdbcType=VARCHAR},
+      recordid = #{record.recordid,jdbcType=VARCHAR},
+      recordname = #{record.recordname,jdbcType=VARCHAR},
+      recordmoney = #{record.recordmoney,jdbcType=VARCHAR},
+      recordtime = #{record.recordtime,jdbcType=TIMESTAMP},
+      recordstatus = #{record.recordstatus,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jp.entity.JpMemberRecord" >
+    update jp_member_record
+    <set >
+      <if test="recordid != null" >
+        recordid = #{recordid,jdbcType=VARCHAR},
+      </if>
+      <if test="recordname != null" >
+        recordname = #{recordname,jdbcType=VARCHAR},
+      </if>
+      <if test="recordmoney != null" >
+        recordmoney = #{recordmoney,jdbcType=VARCHAR},
+      </if>
+      <if test="recordtime != null" >
+        recordtime = #{recordtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="recordstatus != null" >
+        recordstatus = #{recordstatus,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jp.entity.JpMemberRecord" >
+    update jp_member_record
+    set recordid = #{recordid,jdbcType=VARCHAR},
+      recordname = #{recordname,jdbcType=VARCHAR},
+      recordmoney = #{recordmoney,jdbcType=VARCHAR},
+      recordtime = #{recordtime,jdbcType=TIMESTAMP},
+      recordstatus = #{recordstatus,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <!-- 自己写sql -->
+  <update id="updateStatus" parameterType="java.lang.String">
+  	update jp_member_record set recordstatus=1 where recordid=#{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
