@@ -989,7 +989,8 @@
 	<select id="validatePhoneAddUser"
 		resultType="com.jp.entity.User" parameterType="com.jp.entity.User">
 		select*from jp_user user where user.phone = #{phone}
-		and user.familyid = #{familyid,jdbcType=VARCHAR}
+		and user.familyid
+		= #{familyid,jdbcType=VARCHAR}
 		<!-- <if test="userid != null and userid != ''"> and userid = #{userid,jdbcType=VARCHAR} 
 			</if> -->
 	</select>
