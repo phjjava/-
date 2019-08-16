@@ -11,9 +11,13 @@ import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
+import com.jp.dao.JpXingContentMapper;
+import com.jp.dao.JpXingDicMapper;
 import com.jp.dao.JpXingMapper;
 import com.jp.entity.InstructionTemplateQuery;
 import com.jp.entity.JpXing;
+import com.jp.entity.JpXingContent;
+import com.jp.entity.JpXingDic;
 import com.jp.service.JpXingService;
 import com.jp.util.StringTools;
 
@@ -21,6 +25,12 @@ import com.jp.util.StringTools;
 public class JpXingServiceImpl implements JpXingService{
 	@Autowired
 	private JpXingMapper xingMapper;
+	
+	@Autowired
+	private JpXingDicMapper dicMapper;
+	
+	@Autowired
+	private JpXingContentMapper contentMapper;
 
 	@Override
 	public Integer update(JpXing jpxing) {
@@ -139,6 +149,30 @@ public class JpXingServiceImpl implements JpXingService{
 		}
 		
 		
+	}
+
+	@Override
+	public List<JpXingDic> diclist() {
+		// TODO Auto-generated method stub
+		return dicMapper.selectByExample();
+	}
+
+	@Override
+	public String  selectContent(String id, String code) {
+		// TODO Auto-generated method stub
+		return contentMapper.selectByExample(id,code);
+	}
+
+	@Override
+	public void insert(JpXingContent xingContent) {
+		// TODO Auto-generated method stub
+		contentMapper.insertSelective(xingContent);
+	}
+
+	@Override
+	public void update(JpXingContent xingContent) {
+		// TODO Auto-generated method stub
+		contentMapper.updateByPrimaryKeySelective(xingContent);
 	}
 	
 
