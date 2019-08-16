@@ -36,4 +36,10 @@ public interface JpXingMapper {
 	int xingDeleteAll(@Param("array") String[] ids);
 
 	int SelectCount(@Param("xname")String xname);
+
+	void updateRcount(String xname);
+
+	List<JpXing> hotlist();
+
+	List<JpXing> selectByExampleNew(InstructionTemplateQuery iq);
 }

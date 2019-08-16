@@ -7,23 +7,14 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jp.common.ConstantUtils;
-import com.jp.common.JsonResponse;
-import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
-import com.jp.common.Result;
-import com.jp.dao.SysMtionTypeDao;
 import com.jp.dao.SysNoticeDao;
 import com.jp.dao.SysNoticeTypeDao;
 import com.jp.entity.BannerQuery;
-import com.jp.entity.SysMation;
 import com.jp.entity.SysNotice;
 import com.jp.entity.SysNoticeType;
-import com.jp.entity.WorshipOblationType;
-import com.jp.entity.WorshipOblationTypeExample;
 import com.jp.entity.BannerQuery.Criteria;
 import com.jp.service.SysNoticeService;
 
@@ -61,9 +52,12 @@ public class SysNoticeServiceImpl implements SysNoticeService{
 		return noticedao.insertSelective(notice);
 	}
 	@Override
-	public List<SysNotice> selectOne(String noticeid) {
+	public List<SysNotice> selectOne(String noticeid,Integer code) {
 		// TODO Auto-generated method stub
-		noticedao.updatecount(noticeid);
+		//用于区分前端后台调用接口
+		if(code==1) {
+			noticedao.updatecount(noticeid);
+		}
 		return noticedao.selectOne(noticeid);
 	}
 	@Override

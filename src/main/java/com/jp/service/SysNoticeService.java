@@ -31,9 +31,10 @@ public interface SysNoticeService {
 	/**
 	 * 公告详情
 	 * @param noticeid
+	 * @param code 
 	 * @return
 	 */
-	List<SysNotice> selectOne(String noticeid);
+	List<SysNotice> selectOne(String noticeid, Integer code);
 	
 	/**
 	 * 以下公告类型接口

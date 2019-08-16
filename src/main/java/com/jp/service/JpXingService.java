@@ -1,9 +1,11 @@
 package com.jp.service;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
-import com.jp.entity.BannerHomePage;
 import com.jp.entity.JpXing;
 
 public interface JpXingService {
@@ -40,5 +42,18 @@ public interface JpXingService {
 	int xingDeleteAll(@Param("array") String[] ids);
 	
 	int SelectCount(String xname);
+	/**api
+	 * 热门姓氏
+	 * @return
+	 */
+	List<JpXing> hotlist();
+	/**
+	 * api百家姓列表接口
+	 * @param pageModel
+	 * @param xing
+	 * @param xname
+	 * @return
+	 */
+	JsonResponse pageQuery1(PageModel<JpXing> pageModel, JpXing xing, String xname);
 
 }

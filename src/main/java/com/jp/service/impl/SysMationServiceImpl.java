@@ -4,14 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.PageModel;
 import com.jp.dao.SysMationdao;
 import com.jp.dao.SysMtionTypeDao;
-import com.jp.entity.BannerHomePage;
 import com.jp.entity.BannerQuery;
 import com.jp.entity.MationType;
 import com.jp.entity.SysMation;
