@@ -146,9 +146,39 @@
 	<select id="selectByExample" resultMap="BaseResultMap"
 		parameterType="com.jp.entity.SysMation">
 		select * from jp_sys_mation s left join jp_sys_mationtype t on s.relevanceid=t.typeid
+		<!-- <if test="mationtitle!=null">
+		where s.mationtitle like concat("%",#{mationtitle},"%")
+		</if> -->
 		<if test="mationtitle!=null">
 		where s.mationtitle like concat("%",#{mationtitle},"%")
+			<if test="typename!=null">
+				and t.typename like concat("%",#{typename},"%")
+					<if test="deleteflag!=null">
+					and s.deleteflag like concat("%",#{deleteflag},"%")
+					</if>
+			</if>
 		</if>
+		<if test="mationtitle==null">
+			<if test="typename!=null">
+				where t.typename like concat("%",#{typename},"%")
+				<if test="deleteflag!=null">
+					and s.deleteflag like concat("%",#{deleteflag},"%")
+				</if>
+			</if>
+		</if>
+		<if test="mationtitle==null">
+			<if test="typename==null">
+				<if test="deleteflag!=null">
+					where s.deleteflag like concat("%",#{deleteflag},"%")
+				</if>
+			</if>
+		</if>
+		<!-- <if test="typename!=null">
+		where t.typename like concat("%",#{typename},"%")
+		</if>
+		<if test="deleteflag!=null">
+		where s.deleteflag like concat("%",#{deleteflag},"%")
+		</if> -->
 		order by s.stick desc,s.createtime desc
 		<!-- <if test="distinct">
 			distinct
