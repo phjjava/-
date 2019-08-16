@@ -132,7 +132,6 @@ public class JpXingController {
 					xingContent.setXingid(id);
 					xingContent.setContent(content);
 					xingContent.setDiccode(diccode);
-					System.out.println("xingContent="+xingContent);
 					xingService.update(xingContent);
 				}
 				
