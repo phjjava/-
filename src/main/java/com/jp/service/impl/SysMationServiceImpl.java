@@ -22,7 +22,7 @@ public class SysMationServiceImpl implements SysMationService{
 	@Autowired
 	private SysMtionTypeDao typedao;
 	@Override
-	public PageModel<SysMation> pageQuery(PageModel<SysMation> pageModel, SysMation mation,String mationtitle) {
+	public PageModel<SysMation> pageQuery(PageModel<SysMation> pageModel, SysMation mation,String mationtitle,String typename,Integer deleteflag) {
 		// TODO Auto-generated method stub
 		BannerQuery bq = new BannerQuery();
 		Criteria createCriteria = bq.createCriteria();
@@ -36,7 +36,7 @@ public class SysMationServiceImpl implements SysMationService{
 		if(bq.equals(null)) {
 			list = badao.selectByExample();
 		}else {
-			list = badao.selectByExample(mationtitle);
+			list = badao.selectByExample(mationtitle,typename,deleteflag);
 		}
 		
 		
@@ -105,6 +105,12 @@ public class SysMationServiceImpl implements SysMationService{
 		pageModel.setList(list);
 		pageModel.setPageInfo(new PageInfo<MationType>(list));
 		return pageModel;
+	}
+	//状态更改
+	@Override
+	public Integer changeStatus(SysMation mation) {
+		// TODO Auto-generated method stub
+		return badao.updateByPrimaryKeySelective(mation);
 	}
 	
 

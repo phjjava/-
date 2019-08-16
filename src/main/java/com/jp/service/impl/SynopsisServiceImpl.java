@@ -29,7 +29,7 @@ public class SynopsisServiceImpl implements SynopsisService{
 		if(jpSynopsis.getDeleteflag() != null){
 			createCriteria.andDeleteflagEqualTo(jpSynopsis.getDeleteflag());
 		}
-		bq.setOrderByClause("createtime DESC");
+		bq.setOrderByClause("sort");
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		List<JpSynopsis> list = syDao.selectByExample(bq);
 		

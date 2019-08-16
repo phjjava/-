@@ -16,7 +16,11 @@ public interface JpXingContentMapper {
 
     List<JpXingContent> selectByExample(JpXingContentExample example);
 
-    int updateByExampleSelective(@Param("record") JpXingContent record, @Param("example") JpXingContentExample example);
+    int updateByExampleSelective(@Param("record") JpXingContent record);
 
     int updateByExample(@Param("record") JpXingContent record, @Param("example") JpXingContentExample example);
+
+	String selectByExample(@Param("id")String id,@Param("code") String code);
+
+	void updateByPrimaryKeySelective(JpXingContent xingContent);
 }
