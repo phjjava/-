@@ -57,8 +57,16 @@ public interface SysMationService {
 	 * @param mationtypeArray
 	 */
 	int mationtypeDeleteAll(@Param("array")String[] mationtypeArray)throws Exception;
-	
-	PageModel<SysMation> pageQuery(PageModel<SysMation> pageModel, SysMation mation, String mationtitle);
+	/**
+	 * 列表分页搜索接口
+	 * @param pageModel
+	 * @param mation
+	 * @param mationtitle
+	 * @param typename
+	 * @param deleteflag 
+	 * @return
+	 */
+	PageModel<SysMation> pageQuery(PageModel<SysMation> pageModel, SysMation mation, String mationtitle, String typename, Integer deleteflag);
 	
 	/**
 	 * 类型详情
@@ -73,6 +81,12 @@ public interface SysMationService {
 	 * @return
 	 */
 	PageModel<MationType> pageQuery(PageModel<MationType> pageModel, MationType mation);
+	/**
+	 * 状态更改
+	 * @param mation
+	 * @return
+	 */
+	Integer changeStatus(SysMation mation);
 
 	
 
