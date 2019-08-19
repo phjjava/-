@@ -27,10 +27,8 @@ import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
-import com.jp.entity.BannerHomePage;
 import com.jp.entity.MationType;
 import com.jp.entity.SysMation;
-import com.jp.entity.SysUser;
 import com.jp.service.SysMationService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
@@ -44,16 +42,16 @@ public class SysMationController {
 	private SysMationService mationService;
 	@RequestMapping(value = "/selectlist", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse homepagelist(PageModel<SysMation> pageModel, SysMation mation, ModelMap model,String mationtitle) {
+	public JsonResponse homepagelist(PageModel<SysMation> pageModel, SysMation mation, ModelMap model,String mationtitle,String typename,Integer deleteflag) {
 		Result result = null;
 		JsonResponse res = null;
 		try {
-			mationService.pageQuery(pageModel, mation,mationtitle);
+			mationService.pageQuery(pageModel, mation,mationtitle,typename,deleteflag);
 			if (pageModel.getList() != null) {
 				if (pageModel.getPageSize() == 0) {
 					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
 						pageModel.setPageNo(pageModel.getPageNo() - 1);
-						mationService.pageQuery(pageModel, mation,mationtitle);
+						mationService.pageQuery(pageModel, mation,mationtitle,typename,deleteflag);
 					}
 				}
 			}
@@ -118,6 +116,29 @@ public class SysMationController {
 		}
     	return res;
     }
+	/**
+	 * 状态更改
+	 * @param banner
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
+	public JsonResponse changeStatus(SysMation mation) {
+		Result result = new Result(MsgConstants.RESUL_FAIL);
+		JsonResponse res = null;
+		Integer count = 0;
+		try {
+			count = mationService.changeStatus(mation);
+			if(count > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		res = new JsonResponse(result);
+		return res;
+	}
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public JsonResponse save(SysMation mation, ModelMap model,String mationid) {
@@ -392,5 +413,16 @@ public class SysMationController {
 		}
 		res = new JsonResponse(result);
 		return res;
+	}
+	/**
+	 * api接口
+	 * 咨询列表接口
+	 * @param pageModel
+	 * @return
+	 */
+	@RequestMapping(value = "/apilist", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse namelist(PageModel<SysMation> pageModel,  SysMation mation) {
+		return mationService.pageQueryApi(pageModel, mation);
 	}
 }

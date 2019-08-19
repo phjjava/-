@@ -18,6 +18,7 @@ import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
+import com.jp.entity.SysMation;
 import com.jp.entity.SysNotice;
 import com.jp.entity.SysNoticeType;
 import com.jp.service.SysNoticeService;
@@ -66,12 +67,12 @@ public class SysNoticeController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/selectOne", method = RequestMethod.POST)
-    public JsonResponse selectOne(String noticeid)  {
+    public JsonResponse selectOne(String noticeid,Integer code)  {
 		Result result = null;
 		JsonResponse res = null;
     	List<SysNotice> gotypeList = null;
     	try {
-    		gotypeList = noticeService.selectOne(noticeid);
+    		gotypeList = noticeService.selectOne(noticeid,code);
     			result = new Result(MsgConstants.RESUL_SUCCESS);
         		res = new JsonResponse(result);
         		res.setData(gotypeList);
@@ -324,5 +325,17 @@ public class SysNoticeController {
 		}
 		res = new JsonResponse(result);
 		return res;
+	}
+	
+	/**
+	 * api接口
+	 * 公告列表接口
+	 * @param pageModel
+	 * @return
+	 */
+	@RequestMapping(value = "/apilist", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse namelist(PageModel<SysNotice> pageModel, SysNotice notice) {
+		return noticeService.pageQueryApi(pageModel, notice);
 	}
 }

@@ -21,6 +21,7 @@ import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.entity.BannerHomePage;
 import com.jp.entity.JpSynopsis;
+import com.jp.entity.SysMation;
 import com.jp.entity.SysUser;
 import com.jp.service.SynopsisService;
 import com.jp.util.StringTools;
@@ -161,6 +162,18 @@ public class SynopsisController {
 		}
 		res = new JsonResponse(result);
 		return res;
+	}
+	
+	/**
+	 * api接口
+	 * 介绍家谱列表接口
+	 * @param pageModel
+	 * @return
+	 */
+	@RequestMapping(value = "/apilist", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse namelist(PageModel<JpSynopsis> pageModel,  JpSynopsis jpSynopsis) {
+		return syservice.pageQueryApi(pageModel, jpSynopsis);
 	}
 
 }

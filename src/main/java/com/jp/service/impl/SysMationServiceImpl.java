@@ -4,11 +4,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jp.common.CurrentUserContext;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.dao.SysMationdao;
 import com.jp.dao.SysMtionTypeDao;
 import com.jp.entity.BannerHomePage;
@@ -25,7 +26,7 @@ public class SysMationServiceImpl implements SysMationService{
 	@Autowired
 	private SysMtionTypeDao typedao;
 	@Override
-	public PageModel<SysMation> pageQuery(PageModel<SysMation> pageModel, SysMation mation,String mationtitle) {
+	public PageModel<SysMation> pageQuery(PageModel<SysMation> pageModel, SysMation mation,String mationtitle,String typename,Integer deleteflag) {
 		// TODO Auto-generated method stub
 		BannerQuery bq = new BannerQuery();
 		Criteria createCriteria = bq.createCriteria();
@@ -39,7 +40,7 @@ public class SysMationServiceImpl implements SysMationService{
 		if(bq.equals(null)) {
 			list = badao.selectByExample();
 		}else {
-			list = badao.selectByExample(mationtitle);
+			list = badao.selectByExample(mationtitle,typename,deleteflag);
 		}
 		
 		
@@ -108,6 +109,33 @@ public class SysMationServiceImpl implements SysMationService{
 		pageModel.setList(list);
 		pageModel.setPageInfo(new PageInfo<MationType>(list));
 		return pageModel;
+	}
+	//状态更改
+	@Override
+	public Integer changeStatus(SysMation mation) {
+		// TODO Auto-generated method stub
+		return badao.updateByPrimaryKeySelective(mation);
+	}
+	/**
+	 * api列表
+	 */
+	@Override
+	public JsonResponse pageQueryApi(PageModel<SysMation> pageModel, SysMation mation) {
+		// TODO Auto-generated method stub
+		JsonResponse res = null;
+		Result result = null;
+		BannerQuery bq = new BannerQuery();
+		Criteria createCriteria = bq.createCriteria();
+		if(mation.getDeleteflag() != null){
+			createCriteria.andDeleteflagEqualTo(mation.getDeleteflag());
+		}
+		bq.setOrderByClause("createtime DESC");
+		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			List<SysMation> list = badao.selectByExampleNew(bq);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(list);
+			return res;
 	}
 	
 

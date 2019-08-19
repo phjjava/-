@@ -102,6 +102,24 @@
       limit #{startRow} , #{pageSize}
     </if>
   </select>
+  <!-- api列表接口 -->
+  <select id="selectByExampleNew" resultMap="BaseResultMap" parameterType="com.jp.entity.BannerQuery" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_sys_bannner where deleteflag=0
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="startRow != null" >
+      limit #{startRow} , #{pageSize}
+    </if>
+  </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
     bannerid,bannername,bannerweburl,bannerphoneurl,bannerurl,bannerdesc,createid,createtime,updateid,updatetime,remark,gotype,deleteflag
