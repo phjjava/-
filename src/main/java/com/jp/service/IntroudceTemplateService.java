@@ -2,6 +2,7 @@ package com.jp.service;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.IntroudceTemplate;
 
@@ -43,5 +44,12 @@ public interface IntroudceTemplateService {
 	 * @param intemplateidsArray
 	 */
 	void batchDelete(@Param("array") String[] ids)throws Exception;
+	/**
+	 * api接口
+	 * @param pageModel
+	 * @param intemplate
+	 * @return
+	 */
+	JsonResponse pageQueryApi(PageModel<IntroudceTemplate> pageModel, IntroudceTemplate intemplate);
 
 }

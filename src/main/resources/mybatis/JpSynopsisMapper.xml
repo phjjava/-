@@ -94,7 +94,7 @@
     <if test="distinct" >
       distinct
     </if>
-    <include refid="Base_Column_List" />
+    id, title, createid, createtime, updateid, updatetime, deleteflag, sort,imgurl
     from jp_synopsis where deleteflag=0
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
