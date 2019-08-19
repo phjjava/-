@@ -27,11 +27,8 @@ import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
-import com.jp.entity.BannerHomePage;
 import com.jp.entity.MationType;
 import com.jp.entity.SysMation;
-import com.jp.entity.SysNotice;
-import com.jp.entity.SysUser;
 import com.jp.service.SysMationService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
@@ -416,5 +413,16 @@ public class SysMationController {
 		}
 		res = new JsonResponse(result);
 		return res;
+	}
+	/**
+	 * api接口
+	 * 咨询列表接口
+	 * @param pageModel
+	 * @return
+	 */
+	@RequestMapping(value = "/apilist", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse namelist(PageModel<SysMation> pageModel,  SysMation mation) {
+		return mationService.pageQueryApi(pageModel, mation);
 	}
 }

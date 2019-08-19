@@ -10,19 +10,21 @@ import com.jp.entity.IntroudceTemplateDetail;
 
 public interface IntroudceTemplateDetailService {
 	/**
-	 * 模板书分支列表
-	 * @param itid
-	 * @return
-	 */
-	IntroudceTemplateDetail get(String itid);
-	/**
 	 * 模板书分支回显
 	 * @param pageModel
+	 * @param deleteflag 
+	 * @param templatename 
 	 * @param intemplate
 	 * @return
 	 * @throws Exception
 	 */
-	PageModel<IntroudceTemplateDetail> pageQuery(PageModel<IntroudceTemplateDetail> pageModel, IntroudceTemplateDetail intemplateDetail,String title)throws Exception;
+	IntroudceTemplateDetail get(String itid);
+	/**
+	 * 模板书分支列表
+	 * @param itid
+	 * @return
+	 */
+	PageModel<IntroudceTemplateDetail> pageQuery(PageModel<IntroudceTemplateDetail> pageModel, IntroudceTemplateDetail intemplateDetail,String title, String templatename, Integer deleteflag)throws Exception;
 	/**
 	 * 模板书分支新增
 	 * @param intemplate

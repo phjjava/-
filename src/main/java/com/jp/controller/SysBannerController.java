@@ -31,6 +31,7 @@ import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.entity.BannerHomePage;
 import com.jp.entity.GoTypeResult;
+import com.jp.entity.JpXing;
 import com.jp.entity.SysGoTypeResult;
 import com.jp.entity.SysMation;
 import com.jp.entity.SysUser;
@@ -367,6 +368,18 @@ public class SysBannerController {
 		res = new JsonResponse(result);
 		res.setData(mationOneList);
 		return res;
+	}
+	
+	/**
+	 * api接口
+	 * banner列表接口
+	 * @param pageModel
+	 * @return
+	 */
+	@RequestMapping(value = "/apilist", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse namelist(PageModel<BannerHomePage> pageModel,  BannerHomePage banner) {
+		return bpservice.pageQueryApi(pageModel, banner);
 	}
 
 }

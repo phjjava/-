@@ -9,9 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.dao.SysNoticeDao;
 import com.jp.dao.SysNoticeTypeDao;
+import com.jp.entity.BannerHomePage;
 import com.jp.entity.BannerQuery;
 import com.jp.entity.SysNotice;
 import com.jp.entity.SysNoticeType;
@@ -121,6 +125,23 @@ public class SysNoticeServiceImpl implements SysNoticeService{
 		  TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); 
 		  return 0;
 		}
+	}
+	@Override
+	public JsonResponse pageQueryApi(PageModel<SysNotice> pageModel, SysNotice notice) {
+		JsonResponse res = null;
+		Result result = null;
+		BannerQuery bq = new BannerQuery();
+		Criteria createCriteria = bq.createCriteria();
+		if(notice.getDeleteflag() != null){
+			createCriteria.andDeleteflagEqualTo(notice.getDeleteflag());
+		}
+		bq.setOrderByClause("createtime DESC");
+		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			List<SysNotice> list = noticedao.selectByExampleNew(bq);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(list);
+			return res;
 	}
 	
 }

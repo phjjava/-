@@ -7,7 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.dao.SysBannerDao;
 import com.jp.dao.BranchphotoMapper;
 import com.jp.dao.SysMationdao;
@@ -127,6 +130,27 @@ public class SysBannerServiceImpl implements SysBannerService{
 	public void updateCount(String mationid) {
 		// TODO Auto-generated method stub
 		badao.updateCount(mationid);
+	}
+	/**
+	 * api列表接口
+	 */
+	@Override
+	public JsonResponse pageQueryApi(PageModel<BannerHomePage> pageModel, BannerHomePage banner) {
+		// TODO Auto-generated method stub
+		JsonResponse res = null;
+		Result result = null;
+		BannerQuery bq = new BannerQuery();
+		Criteria createCriteria = bq.createCriteria();
+		if(banner.getDeleteflag() != null){
+			createCriteria.andDeleteflagEqualTo(banner.getDeleteflag());
+		}
+		bq.setOrderByClause("createtime DESC");
+		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			List<BannerHomePage> list = pagehomeDao.selectByExampleNew(bq);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(list);
+			return res;
 	}
 
 	

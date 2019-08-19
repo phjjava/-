@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.SysNotice;
 import com.jp.entity.SysNoticeType;
@@ -87,6 +88,13 @@ public interface SysNoticeService {
 	 * @return
 	 */
 	Integer changeStatus(SysNotice notice);
+	/**
+	 * api公告列表接口
+	 * @param pageModel
+	 * @param notice
+	 * @return
+	 */
+	JsonResponse pageQueryApi(PageModel<SysNotice> pageModel, SysNotice notice);
 
 
 }
