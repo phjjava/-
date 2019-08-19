@@ -96,11 +96,11 @@
        	 	<mvc:exclude-mapping path="/user/checkSMSCode"/>
        	 	<mvc:exclude-mapping path="/user/restPassword"/>
        	 	<mvc:exclude-mapping path="/user/getOnlineUser"/>
-       	 	<mvc:exclude-mapping path="/system/bannerhomepage/homepagelist"/><!-- 首页banner -->
+       	 	<mvc:exclude-mapping path="/system/bannerhomepage/apilist"/><!-- 首页banner -->
        	 	<mvc:exclude-mapping path="/system/bannerhomepage/get"/><!-- 首页banner详情 -->
-       	 	<mvc:exclude-mapping path="/system/mation/selectlist"/>	<!-- 首页资讯 -->
+       	 	<mvc:exclude-mapping path="/system/mation/apilist"/>	<!-- 首页资讯 -->
        	 	<mvc:exclude-mapping path="/system/bannerhomepage/SelectMationOne"/>	<!-- 首页资讯详情 -->
-       	 	<mvc:exclude-mapping path="/system/sysnotice/selectlist"/>	<!-- 首页公告 -->
+       	 	<mvc:exclude-mapping path="/system/sysnotice/apilist"/>	<!-- 首页公告 -->
        	 	<mvc:exclude-mapping path="/system/sysnotice/selectOne"/>	<!-- 首页公告详情 -->
        	 	<mvc:exclude-mapping path="/system/xing/namelist"/>	<!-- 首页百家姓 -->
        	 	<mvc:exclude-mapping path="/system/xing/get"/>	<!-- 首页百家姓详情 -->

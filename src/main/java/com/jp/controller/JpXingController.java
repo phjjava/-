@@ -104,7 +104,42 @@ public class JpXingController {
 			}
 			return res;
 		}
-	@ResponseBody
+		@ResponseBody
+		@RequestMapping(value = "/save", method = RequestMethod.POST)
+		public JsonResponse save(JpXing jpxing, ModelMap model,String Id) {
+			Result result = new Result(MsgConstants.RESUL_FAIL);
+			JsonResponse res = null;
+			Integer count = 0;
+			
+			try {
+				if (StringTools.notEmpty(jpxing.getId())) {
+					// 修改
+					jpxing.setUpdatetime(new Date());
+					jpxing.setUpdateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
+					count = xingService.update(jpxing);
+				} else {
+					// 新增
+						jpxing.setDeleteflag(ConstantUtils.DELETE_FALSE);
+						jpxing.setCreateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
+						jpxing.setUpdateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
+						jpxing.setId(UUIDUtils.getUUID());
+						jpxing.setUpdatetime(new Date());
+						jpxing.setCreatetime(new Date());
+						jpxing.setRcount(0);
+						count = xingService.insert(jpxing);
+				}
+				if(count > 0) {
+					result = new Result(MsgConstants.RESUL_SUCCESS);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				log_.error("[JPSYSTEM]", e);
+			}
+			res = new JsonResponse(result);
+			return res;
+		}
+	//未启用	
+	/*@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public JsonResponse save(JpXing jpxing, ModelMap model,String id,String diccode,String content) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
@@ -155,7 +190,7 @@ public class JpXingController {
 		}
 		res = new JsonResponse(result);
 		return res;
-	}
+	}*/
 	
 	@RequestMapping(value = "/get", method = RequestMethod.GET)
 	@ResponseBody
