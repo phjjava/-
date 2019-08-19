@@ -279,7 +279,7 @@ public class UserServiceImpl implements UserService {
 				}
 				user.setUpdateid(CurrentUserContext.getCurrentUserId());
 				user.setUpdatetime(new Date());
-				userDao.updateByPrimaryKeySelective(user);
+				userDao.updateByPrimaryKeySelectivePhone(user);
 				String birthplaceP = userinfo.getBirthplaceP() == null ? "" : userinfo.getBirthplaceP();
 				String birthplaceC = userinfo.getBirthplaceC() == null ? "" : userinfo.getBirthplaceC();
 				String birthplaceX = userinfo.getBirthplaceX() == null ? "" : userinfo.getBirthplaceX();
