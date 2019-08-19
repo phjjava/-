@@ -9,10 +9,16 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jp.common.CurrentUserContext;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.dao.IntroudceTemplateDao;
+import com.jp.entity.BannerQuery;
 import com.jp.entity.InstructionTemplateQuery;
 import com.jp.entity.IntroudceTemplate;
+import com.jp.entity.SysMation;
+import com.jp.entity.BannerQuery.Criteria;
 import com.jp.service.IntroudceTemplateService;
 import com.jp.util.StringTools;
 
@@ -72,6 +78,25 @@ public class IntroudceTemplateServiceImpl implements IntroudceTemplateService{
 	public void batchDelete(String[] ids) throws Exception {
 		// TODO Auto-generated method stub
 		inDao.intemplateDeleteAll(ids);
+	}
+
+	@Override
+	public JsonResponse pageQueryApi(PageModel<IntroudceTemplate> pageModel, IntroudceTemplate intemplate) {
+		// TODO Auto-generated method stub
+		JsonResponse res = null;
+		Result result = null;
+		BannerQuery bq = new BannerQuery();
+		Criteria createCriteria = bq.createCriteria();
+		if(intemplate.getDeleteflag() != null){
+			createCriteria.andDeleteflagEqualTo(intemplate.getDeleteflag());
+		}
+		bq.setOrderByClause("createtime DESC");
+		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			List<SysMation> list = inDao.selectByExampleNew(bq);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(list);
+			return res;
 	}
 
 }

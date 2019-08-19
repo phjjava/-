@@ -194,5 +194,54 @@ public class IntroudceTemplateDetailController {
 		}
     	return res;
     }
-
+	/**
+	 * api模板书章节目录
+	 */
+	@RequestMapping(value = "/apiFindList", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse apiFindList(String id) {
+		Result result = null;
+		JsonResponse res = null;
+		List<IntroudceTemplateDetail> detail=null;
+		try {
+			detail=inService.apiFindList(id);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			res.setData(detail);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(detail);
+		return res;
+	}
+	/**
+	 * api详情模板书章节详情
+	 */
+	@RequestMapping(value = "/apiFindOne", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse apiFindOne(String id) {
+		Result result = null;
+		JsonResponse res = null;
+		IntroudceTemplateDetail detail=null;
+		try {
+			detail=inService.apiFindOne(id);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			res.setData(detail);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(detail);
+		return res;
+	}
 }

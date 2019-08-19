@@ -55,5 +55,17 @@ public interface IntroudceTemplateDetailService {
 	List<IntroudceTemplate> selecttypelist();
 	
 	int selectCount();
+	/**
+	 * api模板书章节目录
+	 * @param id
+	 * @return
+	 */
+	List<IntroudceTemplateDetail> apiFindList(String id);
+	/**
+	 * 对应章节详情
+	 * @param id
+	 * @return
+	 */
+	IntroudceTemplateDetail apiFindOne(String id);
 
 }

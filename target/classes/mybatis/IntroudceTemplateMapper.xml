@@ -87,6 +87,21 @@
       order by ${orderByClause}
     </if>
   </select>
+  <!-- api接口 -->
+  <select id="selectByExampleNew" resultMap="BaseResultMap" parameterType="com.jp.entity.IntroudceTemplateExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jp_introudcetemplate where deleteflag=0
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
     <include refid="Base_Column_List" />
