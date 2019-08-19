@@ -1,8 +1,11 @@
 package com.jp.dao;
 
+import com.jp.entity.BannerQuery;
 import com.jp.entity.InstructionTemplateQuery;
 import com.jp.entity.IntroudceTemplate;
 import com.jp.entity.IntroudceTemplateExample;
+import com.jp.entity.SysMation;
+
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -34,4 +37,6 @@ public interface IntroudceTemplateDao {
 	void intemplateDeleteAll(String[] ids);
 	//模板书下拉框
 	List<IntroudceTemplate> selectByExample();
+	//api接口
+	List<SysMation> selectByExampleNew(BannerQuery bq);
 }

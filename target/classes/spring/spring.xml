@@ -107,6 +107,9 @@
        	 	<mvc:exclude-mapping path="/system/xing/hotlist"/>	<!-- 首页百家姓热门姓氏 -->
        	 	<mvc:exclude-mapping path="/system/synopsis/apilist"/>	<!-- 首页介绍家谱 -->
        	 	<mvc:exclude-mapping path="/system/synopsis/get"/>	<!-- 首页介绍家谱详情 -->
+       	 	<mvc:exclude-mapping path="/system/intemplateDetail/apiFindOne"/>	<!-- 章节详情 -->
+       	 	<mvc:exclude-mapping path="/system/intemplateDetail/apiFindList"/>	<!-- 章节目录 -->
+       	 	<mvc:exclude-mapping path="/system/intemplate/apilist"/>	<!-- 模板书列表 -->
        	 	
        	 	
        	 	<mvc:exclude-mapping path="/user/loginB"/>	<!-- H5登录 -->
