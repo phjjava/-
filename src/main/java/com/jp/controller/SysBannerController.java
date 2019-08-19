@@ -31,6 +31,7 @@ import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.entity.BannerHomePage;
 import com.jp.entity.GoTypeResult;
+import com.jp.entity.JpXing;
 import com.jp.entity.SysGoTypeResult;
 import com.jp.entity.SysMation;
 import com.jp.entity.SysUser;
@@ -62,7 +63,7 @@ public class SysBannerController {
 			}
 
 			//获取是否登录
-			SysUser loginStatus = CurrentSystemUserContext.getSystemUserContext();
+			SysUser loginStatus = null;
 			result = new Result(MsgConstants.RESUL_SUCCESS);	
 			res = new JsonResponse(result);
 			res.setData(pageModel.getList());
@@ -350,13 +351,15 @@ public class SysBannerController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/SelectMationOne", method = RequestMethod.POST)
-	public JsonResponse SelectMationOne(String mationid) {
+	public JsonResponse SelectMationOne(String mationid,Integer code) {
 		SysMation mationOneList = null;
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		try {
 			mationOneList = bpservice.SelectMationOne(mationid);
-			bpservice.updateCount(mationid);
+			if(code==1) {
+				bpservice.updateCount(mationid);
+			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -365,6 +368,18 @@ public class SysBannerController {
 		res = new JsonResponse(result);
 		res.setData(mationOneList);
 		return res;
+	}
+	
+	/**
+	 * api接口
+	 * banner列表接口
+	 * @param pageModel
+	 * @return
+	 */
+	@RequestMapping(value = "/apilist", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse namelist(PageModel<BannerHomePage> pageModel,  BannerHomePage banner) {
+		return bpservice.pageQueryApi(pageModel, banner);
 	}
 
 }

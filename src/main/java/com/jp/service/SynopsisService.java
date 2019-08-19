@@ -2,6 +2,7 @@ package com.jp.service;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.JpSynopsis;
 
@@ -42,5 +43,12 @@ public interface SynopsisService {
 	 * @param ids
 	 */
 	int batchDelete(@Param("array") String[] ids);
+	/**
+	 * api列表
+	 * @param pageModel
+	 * @param jpSynopsis
+	 * @return
+	 */
+	JsonResponse pageQueryApi(PageModel<JpSynopsis> pageModel, JpSynopsis jpSynopsis);
 
 }

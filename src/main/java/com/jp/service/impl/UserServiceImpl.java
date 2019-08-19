@@ -279,7 +279,7 @@ public class UserServiceImpl implements UserService {
 				}
 				user.setUpdateid(CurrentUserContext.getCurrentUserId());
 				user.setUpdatetime(new Date());
-				userDao.updateByPrimaryKeySelective(user);
+				userDao.updateByPrimaryKeySelectivePhone(user);
 				String birthplaceP = userinfo.getBirthplaceP() == null ? "" : userinfo.getBirthplaceP();
 				String birthplaceC = userinfo.getBirthplaceC() == null ? "" : userinfo.getBirthplaceC();
 				String birthplaceX = userinfo.getBirthplaceX() == null ? "" : userinfo.getBirthplaceX();
@@ -518,7 +518,8 @@ public class UserServiceImpl implements UserService {
 		String branchid = request.getParameter("branchid");
 		BranchKey branchkey = new BranchKey();
 		branchkey.setBranchid(branchid);
-		branchkey.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+		String familyId = CurrentUserContext.getCurrentFamilyId();
+		branchkey.setFamilyid(familyId);
 		Branch branch = branchDao.selectByPrimaryKey(branchkey);
 		if (branch == null) {
 			result = new Result(MsgConstants.USER_NO_BRANCH);
@@ -585,6 +586,14 @@ public class UserServiceImpl implements UserService {
 					String liveStatus = xssfRow.getCell(3).getStringCellValue().trim();// 在世状态
 					String iMarryied = xssfRow.getCell(4).getStringCellValue().trim();// 是否婚配
 					String phone = xssfRow.getCell(5).getStringCellValue().trim();// 手机号
+					if (StringUtils.isNotBlank(phone)) {
+						List<User> userList1 = userDao.validatePhone(familyId, null, phone);
+						if (userList1.size() > 0) {
+							result = new Result(MsgConstants.USER_PHONE_REPEAT);
+							res = new JsonResponse(result);
+							return res;
+						}
+					}
 					if (StringTools.trimNotEmpty(phone)) {
 						phone = nf.format(Double.parseDouble(phone));
 					}
@@ -619,7 +628,7 @@ public class UserServiceImpl implements UserService {
 					user = new User();
 					user.setExcelid(excelid);
 					user.setUserid(userId);
-					user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+					user.setFamilyid(familyId);
 					user.setFamilyname(CurrentUserContext.getCurrentFamilyName());
 					user.setStatus(0);
 					user.setIsdirect(1);

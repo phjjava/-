@@ -41,6 +41,7 @@ import com.jp.entity.DynamicExample;
 import com.jp.entity.DynamicVO;
 import com.jp.entity.Dynamicfile;
 import com.jp.entity.DynamicfileQuery;
+import com.jp.entity.DynamicfileQuery.Criteria;
 import com.jp.entity.Dyprise;
 import com.jp.entity.DypriseQuery;
 import com.jp.entity.Dyread;
@@ -77,64 +78,165 @@ public class DynamicServiceImpl implements DynamicService {
 	private UserManagerMapper userManagerMapper;
 
 	@Override
-	public PageModel<Dynamic> pageQuery(PageModel<Dynamic> pageModel, Dynamic dynamic) throws Exception {
-		// Dynamic dynamic = new Dynamic();
-		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		List<String> branchList = CurrentUserContext.getCurrentBranchIds();
-		String familyid = CurrentUserContext.getCurrentFamilyId();
-		String userid = CurrentUserContext.getCurrentUserId();
-
-		List<Dynamic> list = new ArrayList<Dynamic>();
-
-		UserManagerExample example = new UserManagerExample();
-		example.or().andUseridEqualTo(userid);
-		example.setOrderByClause("ebtype desc,ismanager desc");
-		List<UserManager> managers = userManagerMapper.selectByExample(example);
-		UserManager manager = managers.get(0);
-		if (manager.getEbtype() == 1) {// 验证是否是总编委会
-			DynamicExample example1 = new DynamicExample();
-			example1.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
-
-			// list = dydao.selectByExample(example1);
-			dynamic.setFamilyid(familyid);
-			list = dydao.selectReadOfManager(dynamic);
-		} else {
-			list = dydao.selectdyread(dynamic, branchList);
+	public JsonResponse pageQuery(PageModel<Dynamic> pageModel, Dynamic dynamic) {
+		Result result = null;
+		JsonResponse res = null;
+		if (pageModel.getPageNo() == null || "".equals(pageModel.getPageNo() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageNo不能为空！");
+			res = new JsonResponse(result);
+			return res;
 		}
+		if (pageModel.getPageSize() == null || "".equals(pageModel.getPageSize() + "")) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageSize不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			List<String> branchList = CurrentUserContext.getCurrentBranchIds();
+			String familyid = CurrentUserContext.getCurrentFamilyId();
+			String userid = CurrentUserContext.getCurrentUserId();
 
-		pageModel.setList(list);
-		pageModel.setPageInfo(new PageInfo<Dynamic>(list));
-		return pageModel;
+			List<Dynamic> list = new ArrayList<Dynamic>();
+
+			UserManagerExample example = new UserManagerExample();
+			example.or().andUseridEqualTo(userid);
+			example.setOrderByClause("ebtype desc,ismanager desc");
+			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			List<UserManager> managers = userManagerMapper.selectByExample(example);
+			UserManager manager = managers.get(0);
+			if (manager.getEbtype() == 1) {// 验证是否是总编委会
+				DynamicExample example1 = new DynamicExample();
+				example1.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
+
+				// list = dydao.selectByExample(example1);
+				dynamic.setFamilyid(familyid);
+				list = dydao.selectReadOfManager(dynamic);
+			} else {
+				list = dydao.selectdyread(dynamic, branchList);
+			}
+			if (list != null) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(list);
+				res.setCount(new PageInfo<Dynamic>(list).getTotal());
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[pageQuery方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
-	public Dynamic get(String dyid) throws Exception {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		Dynamic dynamic = dydao.selectByPrimaryKey(dyid);
-		if (dynamic != null) {
-			BranchKey key = new BranchKey();
-			key.setBranchid(dynamic.getBranchid());
-			key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-			Branch branch = branchDao.selectByPrimaryKey(key);
-			if (branch != null) {
-				dynamic.setBranchnamePlus(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname() + "_"
-						+ branch.getAddress() + "_" + branch.getBranchname());
+	public JsonResponse get(String dyid) {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			Dynamic dynamic = dydao.selectByPrimaryKey(dyid);
+			if (dynamic != null) {
+				BranchKey key = new BranchKey();
+				key.setBranchid(dynamic.getBranchid());
+				key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				Branch branch = branchDao.selectByPrimaryKey(key);
+				if (branch != null) {
+					dynamic.setBranchnamePlus(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname()
+							+ "_" + branch.getAddress() + "_" + branch.getBranchname());
+				}
+				dynamic.setCreatetimeStr(formatter.format(dynamic.getCreatetime()));
 			}
-			dynamic.setCreatetimeStr(formatter.format(dynamic.getCreatetime()));
-			return dynamic;
-		} else {
-			return null;
+			// 获取置顶top信息
+			initDyTop(dyid, dynamic);
+			DynamicfileQuery dfq = new DynamicfileQuery();
+			Criteria criteria = dfq.createCriteria();
+			if (StringTools.trimNotEmpty(dynamic.getDyid())) {
+				criteria.andDyidEqualTo(dynamic.getDyid());
+			}
+			List<Dynamicfile> dylist = dyfdao.selectByExample(dfq);
+			dynamic.setDynamicFiles(dylist); // 动态包含附件列表
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(dynamic); // 动态
+		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			e.printStackTrace();
+			log_.error("[JPGL]", e);
+		}
+		return res;
+
+	}
+
+	/**
+	 * 
+	 * @描述 初始化dytop信息
+	 * @作者 jinlizhi
+	 * @时间 2017年5月19日下午9:32:29
+	 * @参数 @param dyid
+	 * @参数 @param dynamic
+	 * @return void
+	 */
+	private void initDyTop(String dyid, Dynamic dynamic) {
+		DytopQuery example = new DytopQuery();
+		example.or().andDyidEqualTo(dyid);
+		List<Dytop> dytopList = dytopDao.selectByExample(example);
+		if (dytopList != null && !dytopList.isEmpty()) {
+			StringBuffer sb = new StringBuffer();
+			// StringBuffer sbname = new StringBuffer();
+			List<Dytop> list = new ArrayList<>();
+			for (Dytop dytop : dytopList) {
+				BranchKey key = new BranchKey();
+				key.setBranchid(dytop.getBranchid());
+				key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				Branch branch = branchDao.selectByPrimaryKey(key);
+				if (branch != null) {
+					dytop.setTobranchName(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname() + "_"
+							+ branch.getAddress() + "_" + branch.getBranchname());
+				}
+				list.add(dytop);
+				// sbname.append(branch.getArea() + "_" + branch.getCityname() + "_" +
+				// branch.getXname() + "_" + branch.getBranchname());
+				// sbname.append(",");
+				sb.append(dytop.getBranchid());
+				sb.append(",");
+			}
+			String braStr = sb.toString();
+			String substring = braStr.substring(0, braStr.length() - 1);
+			// String subname = sbname.substring(0, sbname.length() - 1);
+			dynamic.setTobranchid(substring);
+			dynamic.setDytops(list);
 		}
 	}
 
-	public int changeStatus(Dynamic dynamic) throws Exception {
-		int count = dydao.updateByPrimaryKeySelective(dynamic);
-		if (count == 1) {
-			return count;
-		} else {
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-			return 0;
+	public JsonResponse changeStatus(Dynamic dynamic) {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			int count = dydao.updateByPrimaryKeySelective(dynamic);
+			if (count > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			} else {
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				result = new Result(MsgConstants.RESUL_FAIL);
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[changeStatus方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
+
 	}
 
 	@Override
@@ -241,13 +343,28 @@ public class DynamicServiceImpl implements DynamicService {
 	}
 
 	@Override
-	public int batchDelete(String[] dyids) throws Exception {
-		return dydao.batchDelete(dyids);
-	}
-
-	@Override
-	public List<Dynamicfile> selectdyfile(DynamicfileQuery example) {
-		return dyfdao.selectByExample(example);
+	public JsonResponse batchDelete(String dyids) {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			// a,b,c
+			String dyid = dyids.substring(0, dyids.length());
+			String dyidArray[] = dyid.split(",");
+			int status = dydao.batchDelete(dyidArray);
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
+		} catch (Exception e) {
+			log_.error("[batchDelete方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	/**

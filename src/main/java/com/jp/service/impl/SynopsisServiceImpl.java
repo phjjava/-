@@ -8,11 +8,15 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.dao.SynopsisDao;
 import com.jp.entity.BannerHomePage;
 import com.jp.entity.BannerQuery;
 import com.jp.entity.JpSynopsis;
+import com.jp.entity.SysMation;
 import com.jp.entity.BannerQuery.Criteria;
 import com.jp.service.SynopsisService;
 
@@ -29,7 +33,7 @@ public class SynopsisServiceImpl implements SynopsisService{
 		if(jpSynopsis.getDeleteflag() != null){
 			createCriteria.andDeleteflagEqualTo(jpSynopsis.getDeleteflag());
 		}
-		bq.setOrderByClause("createtime DESC");
+		bq.setOrderByClause("sort");
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		List<JpSynopsis> list = syDao.selectByExample(bq);
 		
@@ -72,6 +76,25 @@ public class SynopsisServiceImpl implements SynopsisService{
 	public int batchDelete(String[] ids) {
 		// TODO Auto-generated method stub
 		return syDao.batchDelete(ids);
+	}
+
+	@Override
+	public JsonResponse pageQueryApi(PageModel<JpSynopsis> pageModel, JpSynopsis jpSynopsis) {
+		// TODO Auto-generated method stub
+		JsonResponse res = null;
+		Result result = null;
+		BannerQuery bq = new BannerQuery();
+		Criteria createCriteria = bq.createCriteria();
+		if(jpSynopsis.getDeleteflag() != null){
+			createCriteria.andDeleteflagEqualTo(jpSynopsis.getDeleteflag());
+		}
+		bq.setOrderByClause("sort");
+		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			List<JpSynopsis> list = syDao.selectByExampleNew(bq);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(list);
+			return res;
 	}
 
 }

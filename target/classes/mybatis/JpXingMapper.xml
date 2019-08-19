@@ -11,7 +11,15 @@
     <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
     <result column="sort" property="sort" jdbcType="INTEGER" />
     <result column="deleteflag" property="deleteflag" jdbcType="INTEGER" />
+    <result column="rcount" property="rcount" jdbcType="INTEGER" />
+    <collection property="xingContent" resultMap="xingMap"></collection>
   </resultMap>
+  <resultMap id="xingMap" type="com.jp.entity.JpXingContent" >
+    <result column="xingid" property="xingid" jdbcType="VARCHAR" />
+    <result column="diccode" property="diccode" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+  </resultMap>
+  
   <sql id="Example_Where_Clause" >
     <where >
       <foreach collection="oredCriteria" item="criteria" separator="or" >
@@ -71,9 +79,9 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, xname, intro, createid, createtime, updateid, updatetime, sort, deleteflag
+    id, xname, createid, createtime, updateid, updatetime, sort, deleteflag,rcount
   </sql>
-  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.JpXingExample" >
+  <!-- <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.JpXingExample" >
     select
     <if test="distinct" >
       distinct
@@ -89,26 +97,64 @@
   </select>
   <select id="selectByExample1" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select
-    <!-- <if test="distinct" >
+    <if test="distinct" >
       distinct
-    </if> -->
+    </if>
     <include refid="Base_Column_List" />
     from jp_xing
     <if test="xname!=null">
 		where xname like concat("%",#{xname},"%")
 	</if>
-    <!-- <if test="_parameter != null" >
+    <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
     <if test="orderByClause != null" >
       order by ${orderByClause}
-    </if> -->
-  </select>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select 
+    </if>
+  </select> -->
+  <!-- 更改 -->
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.JpXingExample" >
+    select x.id, x.xname, x.createid, x.createtime, x.updateid, x.updatetime, x.sort, x.deleteflag,x.rcount,c.* from jp_xing x left join jp_xing_content c on x.id=c.xingid
+    <!-- <if test="distinct" >
+      distinct
+    </if>
     <include refid="Base_Column_List" />
     from jp_xing
-    where id = #{id,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if> -->
+    order by x.sort desc
+    <!-- <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if> -->
+  </select>
+  <!-- 更改 API接口sql-->
+  <select id="selectByExampleNew" resultMap="BaseResultMap" parameterType="com.jp.entity.JpXingExample" >
+    select x.id, x.xname,c.xingid,c.content,di.name diccode from jp_xing x left join jp_xing_content c on x.id=c.xingid
+LEFT JOIN jp_xing_dic di on c.diccode =di.code 
+    <if test="distinct" >
+      distinct
+    </if>
+    <!-- <include refid="Base_Column_List" />
+    from jp_xing -->
+    <!-- <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if> -->
+    <!-- <if test="orderByClause != null" >
+      order by x.${orderByClause}
+    </if> -->
+    order by x.sort desc
+  </select>
+  <select id="selectByExample1" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select x.id, x.xname,c.xingid,c.content,di.name diccode from jp_xing x left join 
+    jp_xing_content c on x.id=c.xingid LEFT JOIN jp_xing_dic di on c.diccode =di.code where xname like concat("%",#{xname},"%")
+    
+  </select>
+  <!-- 更改 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select x.id, x.xname,c.xingid,c.content,di.name diccode from jp_xing x left join 
+    jp_xing_content c on x.id=c.xingid LEFT JOIN jp_xing_dic di on c.diccode =di.code
+    where x.id = #{id,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from jp_xing
@@ -160,6 +206,9 @@
       <if test="deleteflag != null" >
         deleteflag,
       </if>
+      <if test="rcount != null" >
+        rcount,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -188,6 +237,9 @@
       </if>
       <if test="deleteflag != null" >
         #{deleteflag,jdbcType=INTEGER},
+      </if>
+      <if test="rcount != null" >
+        #{rcount,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -274,6 +326,9 @@
       <if test="deleteflag != null" >
         deleteflag = #{deleteflag,jdbcType=INTEGER},
       </if>
+      <if test="rcount != null" >
+        rcount = #{rcount,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -304,5 +359,13 @@
   	<if test="xname==null">
   		select count(*) from jp_xing
   	</if>
+  </select>
+  <update id="updateRcount" parameterType="java.lang.String">
+  		update jp_xing set rcount=rcount+1 where xname=#{xname,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="hotlist" resultMap="BaseResultMap">
+  		select x.id, x.xname,c.xingid,c.content,di.name diccode from jp_xing x left join jp_xing_content c on x.id=c.xingid
+LEFT JOIN jp_xing_dic di on c.diccode =di.code  order by rcount desc limit 5
   </select>
 </mapper>

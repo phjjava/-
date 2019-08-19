@@ -22,5 +22,7 @@ public interface SysNoticeDao {
 	int noticeDeleteAll(String[] mationtypeids);
 
 	List<SysNotice> selectByExample(@Param("bq") BannerQuery bq, @Param("noticetitle") String noticetitle);
+	//api接口
+	List<SysNotice> selectByExampleNew(BannerQuery bq);
 
 }

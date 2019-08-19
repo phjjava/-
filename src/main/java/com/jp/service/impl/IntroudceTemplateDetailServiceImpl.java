@@ -30,7 +30,7 @@ public class IntroudceTemplateDetailServiceImpl implements IntroudceTemplateDeta
 
 	@Override
 	public PageModel<IntroudceTemplateDetail> pageQuery(PageModel<IntroudceTemplateDetail> pageModel,
-			IntroudceTemplateDetail intemplateDetail,String title) throws Exception {
+			IntroudceTemplateDetail intemplateDetail,String title,String templatename,Integer deleteflag) throws Exception {
 		// TODO Auto-generated method stub
 		InstructionTemplateQuery iq = new InstructionTemplateQuery();
 		Criteria criteria = iq.createCriteria();
@@ -42,7 +42,7 @@ public class IntroudceTemplateDetailServiceImpl implements IntroudceTemplateDeta
 		}
 		iq.setOrderByClause("sort");
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		List<IntroudceTemplateDetail> list = inDetailDao.selectByExample1(iq,title);
+		List<IntroudceTemplateDetail> list = inDetailDao.selectByExample1(iq,title,templatename,deleteflag);
 		pageModel.setList(list);
 		return pageModel;
 	}
