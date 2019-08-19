@@ -128,22 +128,34 @@
 		<if test="title!=null">
 		where d.title like concat("%",#{title},"%")
 		</if>
+		<if test="templatename!=null">
+				and s.templatename like concat("%",#{templatename},"%")
+					<if test="deleteflag!=null">
+					and d.deleteflag like concat("%",#{deleteflag},"%")
+					</if>
+			</if>
+		</if>
+		<if test="title==null">
+			<if test="templatename!=null">
+				where s.templatename like concat("%",#{templatename},"%")
+				<if test="deleteflag!=null">
+					and d.deleteflag like concat("%",#{deleteflag},"%")
+				</if>
+			</if>
+		</if>
+		<if test="title==null">
+			<if test="templatename==null">
+				<if test="deleteflag!=null">
+					where d.deleteflag like concat("%",#{deleteflag},"%")
+				</if>
+			</if>
+		</if>
 		<!-- <if test="_parameter != null" >
      		 <include refid="Example_Where_Clause" />
     	</if> -->
 		order by d.createtime desc
-    <!-- <if test="distinct" >
-      distinct
-    </if>
-    <include refid="Base_Column_List" />
-    from jp_introducetemplate_detail
-    <if test="_parameter != null" >
-      <include refid="Example_Where_Clause" />
-    </if>
-    <if test="orderByClause != null" >
-      order by ${orderByClause}
-    </if> -->
-  </select>
+	</select>
+  
   <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
   select * from jp_introducetemplate_detail d left join jp_introudcetemplate s on d.templateid=s.id
     <!-- select 

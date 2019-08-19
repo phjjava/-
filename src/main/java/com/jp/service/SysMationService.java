@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.MationType;
 import com.jp.entity.SysMation;
@@ -87,6 +88,13 @@ public interface SysMationService {
 	 * @return
 	 */
 	Integer changeStatus(SysMation mation);
+	/**
+	 * api列表
+	 * @param pageModel
+	 * @param mation
+	 * @return
+	 */
+	JsonResponse pageQueryApi(PageModel<SysMation> pageModel, SysMation mation);
 
 	
 

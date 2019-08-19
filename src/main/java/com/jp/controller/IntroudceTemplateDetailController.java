@@ -62,16 +62,16 @@ public class IntroudceTemplateDetailController {
 
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse list(PageModel<IntroudceTemplateDetail> pageModel, IntroudceTemplateDetail intemplateDetail,String title) {
+	public JsonResponse list(PageModel<IntroudceTemplateDetail> pageModel, IntroudceTemplateDetail intemplateDetail,String title,String templatename,Integer deleteflag) {
 		Result result = null;
 		JsonResponse res = null;
 		try {
-			inService.pageQuery(pageModel, intemplateDetail,title);
+			inService.pageQuery(pageModel, intemplateDetail,title,templatename,deleteflag);
 			if (pageModel.getList() != null) {
 				if (pageModel.getPageSize() == 0) {
 					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
 						pageModel.setPageNo(pageModel.getPageNo() - 1);
-						inService.pageQuery(pageModel, intemplateDetail,title);
+						inService.pageQuery(pageModel, intemplateDetail,title,templatename,deleteflag);
 					}
 				}
 			}

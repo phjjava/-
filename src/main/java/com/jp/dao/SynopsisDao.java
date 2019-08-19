@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.jp.entity.BannerQuery;
 import com.jp.entity.JpSynopsis;
 import com.jp.entity.JpSynopsisExample;
+import com.jp.entity.SysMation;
 
 public interface SynopsisDao {
 	int countByExample(JpSynopsisExample example);
@@ -32,4 +33,6 @@ public interface SynopsisDao {
     int updateByPrimaryKey(JpSynopsis record);
 
 	int batchDelete(String[] ids);
+
+	List<JpSynopsis> selectByExampleNew(BannerQuery bq);
 }

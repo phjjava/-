@@ -6,9 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
 import com.jp.dao.SysMationdao;
 import com.jp.dao.SysMtionTypeDao;
+import com.jp.entity.BannerHomePage;
 import com.jp.entity.BannerQuery;
 import com.jp.entity.MationType;
 import com.jp.entity.SysMation;
@@ -111,6 +115,27 @@ public class SysMationServiceImpl implements SysMationService{
 	public Integer changeStatus(SysMation mation) {
 		// TODO Auto-generated method stub
 		return badao.updateByPrimaryKeySelective(mation);
+	}
+	/**
+	 * api列表
+	 */
+	@Override
+	public JsonResponse pageQueryApi(PageModel<SysMation> pageModel, SysMation mation) {
+		// TODO Auto-generated method stub
+		JsonResponse res = null;
+		Result result = null;
+		BannerQuery bq = new BannerQuery();
+		Criteria createCriteria = bq.createCriteria();
+		if(mation.getDeleteflag() != null){
+			createCriteria.andDeleteflagEqualTo(mation.getDeleteflag());
+		}
+		bq.setOrderByClause("createtime DESC");
+		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			List<SysMation> list = badao.selectByExampleNew(bq);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(list);
+			return res;
 	}
 	
 

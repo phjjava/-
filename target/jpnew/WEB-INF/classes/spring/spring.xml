@@ -83,9 +83,6 @@
             <!-- 不拦截登录请求 -->
             <!-- web登录 -->
        	 	<mvc:exclude-mapping path="/code/**"/>
-       	 	<mvc:exclude-mapping path="/system/bannerhomepage/homepagelist"/><!-- 首页banner -->
-       	 	<mvc:exclude-mapping path="/system/mation/selectlist"/>	<!-- 首页资讯 -->
-       	 	<mvc:exclude-mapping path="/system/sysnotice/selectlist"/>	<!-- 首页资讯 -->
        	 	<mvc:exclude-mapping path="/login/choose"/>
        	 	<mvc:exclude-mapping path="/login/tochoose"/>
        	 	<mvc:exclude-mapping path="/login/login"/>
@@ -99,6 +96,18 @@
        	 	<mvc:exclude-mapping path="/user/checkSMSCode"/>
        	 	<mvc:exclude-mapping path="/user/restPassword"/>
        	 	<mvc:exclude-mapping path="/user/getOnlineUser"/>
+       	 	<mvc:exclude-mapping path="/system/bannerhomepage/homepagelist"/><!-- 首页banner -->
+       	 	<mvc:exclude-mapping path="/system/bannerhomepage/get"/><!-- 首页banner详情 -->
+       	 	<mvc:exclude-mapping path="/system/mation/selectlist"/>	<!-- 首页资讯 -->
+       	 	<mvc:exclude-mapping path="/system/bannerhomepage/SelectMationOne"/>	<!-- 首页资讯详情 -->
+       	 	<mvc:exclude-mapping path="/system/sysnotice/selectlist"/>	<!-- 首页公告 -->
+       	 	<mvc:exclude-mapping path="/system/sysnotice/selectOne"/>	<!-- 首页公告详情 -->
+       	 	<mvc:exclude-mapping path="/system/xing/namelist"/>	<!-- 首页百家姓 -->
+       	 	<mvc:exclude-mapping path="/system/xing/get"/>	<!-- 首页百家姓详情 -->
+       	 	<mvc:exclude-mapping path="/system/xing/hotlist"/>	<!-- 首页百家姓热门姓氏 -->
+       	 	<mvc:exclude-mapping path="/system/synopsis/apilist"/>	<!-- 首页介绍家谱 -->
+       	 	<mvc:exclude-mapping path="/system/synopsis/get"/>	<!-- 首页介绍家谱详情 -->
+       	 	
        	 	
        	 	<mvc:exclude-mapping path="/user/loginB"/>	<!-- H5登录 -->
        	 	<mvc:exclude-mapping path="/platform/getPlatform"/>	<!-- 获取版本号 -->

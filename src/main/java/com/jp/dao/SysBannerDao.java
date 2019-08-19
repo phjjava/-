@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.jp.entity.BannerHomePage;
 import com.jp.entity.BannerQuery;
+import com.jp.entity.InstructionTemplateQuery;
 
 public interface SysBannerDao {
 
@@ -20,5 +21,7 @@ public interface SysBannerDao {
 	int batchDeleteAll(@Param("array") String[] bannerids);
 
 	void deleteByPrimaryKey(String bannerid);
+
+	List<BannerHomePage> selectByExampleNew(BannerQuery bq);
 
 }

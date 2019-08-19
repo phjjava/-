@@ -40,7 +40,7 @@ public interface IntroudceTemplateDetailDao {
 
 	void intemplateDeleteAll(String[] ids);
 
-	List<IntroudceTemplateDetail> selectByExample1(@Param("iq")InstructionTemplateQuery iq, @Param("title") String title);
+	List<IntroudceTemplateDetail> selectByExample1(@Param("iq")InstructionTemplateQuery iq, @Param("title") String title, @Param("templatename")String templatename, @Param("deleteflag")Integer deleteflag);
 
 	int selectCount();
 }
