@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jp.dao.HomeStateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jp.entity.HomeState">
+        <id column="userid" property="userid" />
+        <result column="bannerStatus" property="bannerStatus" />
+        <result column="mationStatus" property="mationStatus" />
+        <result column="noticeStatus" property="noticeStatus" />
+        <result column="xingStatus" property="xingStatus" />
+        <result column="synopsisStatus" property="synopsisStatus" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        userid, bannerStatus, mationStatus, noticeStatus, xingStatus, synopsisStatus
+    </sql>
+
+</mapper>
