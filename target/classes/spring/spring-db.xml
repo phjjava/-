@@ -162,13 +162,4 @@
         </tx:attributes>
     </tx:advice>
     
-    <!-- 管理通知对象 -->
-    <bean id="loginAround" class="com.jp.advice.LoginAroundAdvice"></bean>
-    <!-- 配置登录切点方法 -->
-    <aop:config>
-		<aop:pointcut expression="execution(* com.jp.service.*.login(..))" id="login"/>
-		<!-- 配置环绕通知 -->
-		<aop:advisor advice-ref="loginAround" pointcut-ref="login"/>
-	</aop:config>
-    
 </beans>
