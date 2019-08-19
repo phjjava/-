@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.BannerHomePage;
 import com.jp.entity.GoTypeResult;
@@ -82,6 +83,13 @@ public interface SysBannerService {
 	 * @param mationid
 	 */
 	void updateCount(String mationid);
+	/**
+	 * api接口
+	 * @param pageModel
+	 * @param banner
+	 * @return
+	 */
+	JsonResponse pageQueryApi(PageModel<BannerHomePage> pageModel, BannerHomePage banner);
 	
 	
 	

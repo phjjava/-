@@ -3,13 +3,12 @@ package com.jp.dao;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import com.jp.entity.BannerHomePage;
 import com.jp.entity.BannerQuery;
 import com.jp.entity.MationExample;
 import com.jp.entity.MationType;
 import com.jp.entity.Nation;
-import com.jp.entity.NationExample;
 import com.jp.entity.SysMation;
 
 public interface SysMationdao {
@@ -40,7 +39,9 @@ public interface SysMationdao {
 
 	void updateCount(String mationid);
 
-	List<SysMation> selectByExample(@Param("mationtitle") String mationtitle);
+	List<SysMation> selectByExample(@Param("mationtitle") String mationtitle,@Param("typename") String typename,@Param("deleteflag") Integer deleteflag);
 	List<SysMation> selectByExample();
+	//api接口
+	List<SysMation> selectByExampleNew(BannerQuery bq);
 
 }

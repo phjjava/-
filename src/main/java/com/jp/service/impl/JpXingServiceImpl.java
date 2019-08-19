@@ -7,12 +7,17 @@ import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
+import com.jp.common.Result;
+import com.jp.dao.JpXingContentMapper;
+import com.jp.dao.JpXingDicMapper;
 import com.jp.dao.JpXingMapper;
-import com.jp.entity.BannerHomePage;
 import com.jp.entity.InstructionTemplateQuery;
-import com.jp.entity.IntroudceTemplate;
 import com.jp.entity.JpXing;
+import com.jp.entity.JpXingContent;
+import com.jp.entity.JpXingDic;
 import com.jp.service.JpXingService;
 import com.jp.util.StringTools;
 
@@ -20,6 +25,12 @@ import com.jp.util.StringTools;
 public class JpXingServiceImpl implements JpXingService{
 	@Autowired
 	private JpXingMapper xingMapper;
+	
+	@Autowired
+	private JpXingDicMapper dicMapper;
+	
+	@Autowired
+	private JpXingContentMapper contentMapper;
 
 	@Override
 	public Integer update(JpXing jpxing) {
@@ -44,14 +55,19 @@ public class JpXingServiceImpl implements JpXingService{
 		}
 		iq.setOrderByClause("sort");
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		if(xname!=null) {
-			List<JpXing> list = xingMapper.selectByExample1(xname,iq);
-			pageModel.setList(list);
-			return pageModel;
-		}else {
+		if(xname==null) {
+			return null;
+		}else if(xname.equals("ALL")){
 			List<JpXing> list = xingMapper.selectByExample(iq);
 			pageModel.setList(list);
 			pageModel.setPageInfo(new PageInfo<JpXing>(list));
+			return pageModel;
+		}else{
+			List<JpXing> list = xingMapper.selectByExample1(xname,iq);
+			if(list!=null) {
+				xingMapper.updateRcount(xname);
+			}
+			pageModel.setList(list);
 			return pageModel;
 		}
 		
@@ -75,5 +91,89 @@ public class JpXingServiceImpl implements JpXingService{
 		// TODO Auto-generated method stub
 		return xingMapper.SelectCount(xname);
 	}
+
+	@Override
+	public List<JpXing> hotlist() {
+		// TODO Auto-generated method stub
+		return xingMapper.hotlist();
+	}
+	/**
+	 * api百家姓接口
+	 */
+	@Override
+	public JsonResponse pageQuery1(PageModel<JpXing> pageModel, JpXing xing,String xname) {
+		// TODO Auto-generated method stub
+		JsonResponse res = null;
+		Result result = null;
+		InstructionTemplateQuery iq = new InstructionTemplateQuery();
+		com.jp.entity.InstructionTemplateQuery.Criteria criteria = iq.createCriteria();
+		xing.setDeleteflag(0);
+		if (StringTools.trimNotEmpty(xing.getDeleteflag())) {
+			criteria.andDeleteflagEqualTo(xing.getDeleteflag());
+		}
+		iq.setOrderByClause("sort");
+		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+		//判断查询条件
+		if(xname==null) {
+			return null;
+		}else if(xname.equals("ALL")){
+			List<JpXing> list = xingMapper.selectByExampleNew(iq);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(list);
+			if(list==null) {
+				res.setCount(0);
+			}else {
+				if(xname.equals("ALL")) {
+					xname=null;
+					res.setCount(xingMapper.SelectCount(xname));
+				}else {
+					res.setCount(xingMapper.SelectCount(xname));
+				}
+			}
+			return res;
+		}else{
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			List<JpXing> list = xingMapper.selectByExample1(xname,iq);
+			if(list!=null) {
+				xingMapper.updateRcount(xname);
+			}
+			if(list==null) {
+				res.setCount(0);
+			}else {
+				res.setCount(xingMapper.SelectCount(xname));
+			}
+			res.setData(list);
+			return res;
+		}
+		
+		
+	}
+
+	@Override
+	public List<JpXingDic> diclist() {
+		// TODO Auto-generated method stub
+		return dicMapper.selectByExample();
+	}
+
+	@Override
+	public String  selectContent(String id, String code) {
+		// TODO Auto-generated method stub
+		return contentMapper.selectByExample(id,code);
+	}
+
+	@Override
+	public void insert(JpXingContent xingContent) {
+		// TODO Auto-generated method stub
+		contentMapper.insertSelective(xingContent);
+	}
+
+	@Override
+	public void update(JpXingContent xingContent) {
+		// TODO Auto-generated method stub
+		contentMapper.updateByPrimaryKeySelective(xingContent);
+	}
+	
 
 }

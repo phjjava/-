@@ -12,7 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,23 +21,14 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
-import com.jp.dao.BranchDao;
-import com.jp.dao.DytopDao;
-import com.jp.entity.Branch;
-import com.jp.entity.BranchKey;
 import com.jp.entity.Dynamic;
 import com.jp.entity.Dynamicfile;
-import com.jp.entity.DynamicfileQuery;
-import com.jp.entity.Dytop;
-import com.jp.entity.DytopQuery;
 import com.jp.service.DynamicService;
 import com.jp.util.JacksonUtil;
-import com.jp.util.StringTools;
 import com.jp.util.UploadUtil;
 
 @Controller
@@ -46,131 +36,49 @@ import com.jp.util.UploadUtil;
 public class DynamicController {
 	@Autowired
 	private DynamicService dyservice;
-	@Autowired
-	private DytopDao dytopDao;
-	@Autowired
-	private BranchDao branchDao;
 
 	private final Logger log_ = LogManager.getLogger(DynamicController.class);
 
+	/**
+	 * 动态详细信息回显
+	 * @param dyid
+	 * @return
+	 */
 	@ResponseBody
 	@RequestMapping(value = "/get", method = RequestMethod.GET)
-	public JsonResponse get(HttpServletRequest request, ModelMap model) {
-		Result result = null;
-		JsonResponse res = null;
-		try {
-			String dyid = request.getParameter("dyid");
-			Dynamic dynamic = dyservice.get(dyid);
-			// 获取置顶top信息
-			initDyTop(dyid, dynamic);
-			DynamicfileQuery dfq = new DynamicfileQuery();
-			com.jp.entity.DynamicfileQuery.Criteria criteria = dfq.createCriteria();
-			if (StringTools.trimNotEmpty(dynamic.getDyid())) {
-				criteria.andDyidEqualTo(dynamic.getDyid());
-			}
-			List<Dynamicfile> dylist = dyservice.selectdyfile(dfq);
-			dynamic.setDynamicFiles(dylist); // 动态包含附件列表
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
-			res.setData(dynamic); // 动态
-		} catch (Exception e) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			res = new JsonResponse(result);
-			e.printStackTrace();
-			log_.error("[JPGL]", e);
-		}
-		return res;
+	public JsonResponse get(String dyid) {
+		return dyservice.get(dyid);
 	}
 
 	/**
-	 * 
-	 * @描述 初始化dytop信息
-	 * @作者 jinlizhi
-	 * @时间 2017年5月19日下午9:32:29
-	 * @参数 @param dyid
-	 * @参数 @param dynamic
-	 * @return void
+	 * 分页查询动态
+	 * @param pageModel
+	 * @param dynamic
+	 * @return
 	 */
-	private void initDyTop(String dyid, Dynamic dynamic) {
-		DytopQuery example = new DytopQuery();
-		example.or().andDyidEqualTo(dyid);
-		List<Dytop> dytopList = dytopDao.selectByExample(example);
-		if (dytopList != null && !dytopList.isEmpty()) {
-			StringBuffer sb = new StringBuffer();
-			// StringBuffer sbname = new StringBuffer();
-			List<Dytop> list = new ArrayList<>();
-			for (Dytop dytop : dytopList) {
-				BranchKey key = new BranchKey();
-				key.setBranchid(dytop.getBranchid());
-				key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-				Branch branch = branchDao.selectByPrimaryKey(key);
-				if (branch != null) {
-					dytop.setTobranchName(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname() + "_"
-							+ branch.getAddress() + "_" + branch.getBranchname());
-				}
-				list.add(dytop);
-				// sbname.append(branch.getArea() + "_" + branch.getCityname() + "_" +
-				// branch.getXname() + "_" + branch.getBranchname());
-				// sbname.append(",");
-				sb.append(dytop.getBranchid());
-				sb.append(",");
-			}
-			String braStr = sb.toString();
-			String substring = braStr.substring(0, braStr.length() - 1);
-			// String subname = sbname.substring(0, sbname.length() - 1);
-			dynamic.setTobranchid(substring);
-			dynamic.setDytops(list);
-		}
-	}
-
 	@ResponseBody
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
-	public JsonResponse list(PageModel<Dynamic> pageModel, Dynamic dynamic, ModelMap model) {
-		Result result = null;
-		JsonResponse res = null;
-		try {
-			dyservice.pageQuery(pageModel, dynamic);
-			if (pageModel.getList() != null) {
-				if (pageModel.getPageSize() == 0) {
-					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
-						pageModel.setPageNo(pageModel.getPageNo() - 1);
-						dyservice.pageQuery(pageModel, dynamic);
-					}
-				}
-			}
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
-			res.setData(pageModel.getList());
-			res.setCount(pageModel.getPageInfo().getTotal());
-		} catch (Exception e) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			res = new JsonResponse(result);
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		return res;
-
+	public JsonResponse list(PageModel<Dynamic> pageModel, Dynamic dynamic) {
+		return dyservice.pageQuery(pageModel, dynamic);
 	}
 
+	/**
+	 *  置顶状态
+	 * @param dynamic
+	 * @return
+	 */
 	@ResponseBody
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
 	public JsonResponse changeStatus(Dynamic dynamic) {
-		Result result = new Result(MsgConstants.RESUL_FAIL);
-		JsonResponse res = null;
-		Integer count = 0;
-		try {
-			count = dyservice.changeStatus(dynamic);
-			if (count > 0) {
-				result = new Result(MsgConstants.RESUL_SUCCESS);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		res = new JsonResponse(result);
-		return res;
+		return dyservice.changeStatus(dynamic);
 	}
 
+	/**
+	 * 保存或编辑动态
+	 * @param request
+	 * @return
+	 * @throws IOException
+	 */
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST, produces = { "application/json;charset=UTF-8" })
 	public JsonResponse saveDynamic(HttpServletRequest request) throws IOException {
@@ -197,22 +105,7 @@ public class DynamicController {
 	@ResponseBody
 	@RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
 	public JsonResponse batchDelete(String dyids) {
-		Result result = new Result(MsgConstants.RESUL_FAIL);
-		JsonResponse res = null;
-		try {
-			// a,b,c
-			String dyid = dyids.substring(0, dyids.length());
-			String dyidArray[] = dyid.split(",");
-			int status = dyservice.batchDelete(dyidArray);
-			if (status > 0) {
-				result = new Result(MsgConstants.RESUL_SUCCESS);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		res = new JsonResponse(result);
-		return res;
+		return dyservice.batchDelete(dyids);
 	}
 
 	/**
