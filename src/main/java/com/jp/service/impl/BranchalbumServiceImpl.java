@@ -122,10 +122,11 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 
 			}
 			if (list != null) {
+				pageModel.setList(list);
+				pageModel.setPageInfo(new PageInfo<Branchalbum>(list));
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);
-				res.setData(list);
-				res.setCount(new PageInfo<Branchalbum>(list).getTotal());
+				res.setData(pageModel);
 				return res;
 			}
 		} catch (Exception e) {
