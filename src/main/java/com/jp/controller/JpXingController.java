@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -200,6 +201,9 @@ public class JpXingController {
 		try {
 			String id = request.getParameter("id");
 			JpXing xing = xingService.get(id);
+			//获取姓氏来源内容,处理非法字符
+			String intronew=xing.getIntro().replace("\\r\\n", " ");
+			xing.setIntro(intronew.replace("\\\"", " "));
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(xing);
