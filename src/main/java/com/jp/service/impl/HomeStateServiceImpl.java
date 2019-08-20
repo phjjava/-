@@ -44,18 +44,19 @@ public class HomeStateServiceImpl extends ServiceImpl<HomeStateMapper, HomeState
 		try {
 			// 获取当前用户自定义首页设置
 			HomeState state = homeStateMapper.selectByUserid(homeState.getUserid());
-
-			if (state == null) {// 当前用户没有改动过默认设置，直接返回系统默认
-				result = new Result(MsgConstants.RESUL_SUCCESS);
-				result.setMsg("当前用户没有改动过首页设置，请直接返回系统默认！");
-				res = new JsonResponse(result);
-				return res;
-			} else {// 返回用户自定义的首页设置
-				result = new Result(MsgConstants.RESUL_SUCCESS);
-				res = new JsonResponse(result);
-				res.setData(state);
-				return res;
+			if (state == null) {// 给用户设置默认开启
+				homeState.setBannerStatus(1);
+				homeState.setSynopsisStatus(1);
+				homeState.setMationStatus(1);
+				homeState.setNoticeStatus(1);
+				homeState.setXingStatus(1);
+				homeStateMapper.insertHomeState(homeState);
+				state = homeStateMapper.selectByUserid(homeState.getUserid());
 			}
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(state);
+			return res;
 		} catch (Exception e) {
 			log_.error("[queryHomeState方法---异常:]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
@@ -65,56 +66,31 @@ public class HomeStateServiceImpl extends ServiceImpl<HomeStateMapper, HomeState
 	}
 
 	@Override
-	public JsonResponse editHomeState(HomeState homeState) {
+	public JsonResponse editHomeState(String code, Integer status, String userid) {
 		Result result = null;
 		JsonResponse res = null;
 		// 参数校验
-		if (StringUtils.isBlank(homeState.getUserid())) {
+		if (StringUtils.isBlank(code)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数code不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (status == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数status不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringUtils.isBlank(userid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数userid不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (homeState.getMationStatus() == null) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("参数mationStatus不能为空！");
-			res = new JsonResponse(result);
-			return res;
-		}
-		if (homeState.getNoticeStatus() == null) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("参数noticeStatus不能为空！");
-			res = new JsonResponse(result);
-			return res;
-		}
-		if (homeState.getBannerStatus() == null) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("参数bannerStatus不能为空！");
-			res = new JsonResponse(result);
-			return res;
-		}
-		if (homeState.getSynopsisStatus() == null) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("参数synopsisStatus不能为空！");
-			res = new JsonResponse(result);
-			return res;
-		}
-		if (homeState.getXingStatus() == null) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("参数xingStatus不能为空！");
-			res = new JsonResponse(result);
-			return res;
-		}
-		int status = 0;
 		try {
-			// 获取当前用户自定义首页设置
-			HomeState state = homeStateMapper.selectByUserid(homeState.getUserid());
-			if (state != null) {
-				status = homeStateMapper.updateByUserid(homeState);
-			} else {
-				status = homeStateMapper.insertHomeState(homeState);
-			}
-			if (status > 0) {
+			int count = homeStateMapper.updateByUserid(code, status, userid);
+			if (count > 0) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);
 				return res;

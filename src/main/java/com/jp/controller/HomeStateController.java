@@ -35,8 +35,8 @@ public class HomeStateController {
 	 */
 	@RequestMapping(value = "/editHomeState", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse editHomeState(HomeState homeState) {
-		return homeStateService.editHomeState(homeState);
+	public JsonResponse editHomeState(String code, Integer status, String userid) {
+		return homeStateService.editHomeState(code, status, userid);
 	}
 
 }

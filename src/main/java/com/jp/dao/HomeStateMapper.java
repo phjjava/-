@@ -21,8 +21,8 @@ public interface HomeStateMapper extends BaseMapper<HomeState> {
 	@Select("SELECT * FROM `jp_home_state` WHERE userid = #{userid}")
 	HomeState selectByUserid(@Param("userid") String userid);
 
-	@Update("UPDATE jp_home_state SET bannerStatus = #{bannerStatus} ,mationStatus = #{mationStatus} ,noticeStatus = #{noticeStatus} , xingStatus = #{xingStatus} , synopsisStatus = #{synopsisStatus} WHERE userid = #{userid}")
-	int updateByUserid(HomeState homeState);
+	@Update("UPDATE jp_home_state SET #{code} = #{status} WHERE userid = #{userid}")
+	int updateByUserid(String code, int status, String userid);
 
 	@Insert("INSERT INTO jp_home_state VALUES(#{userid},#{bannerStatus},#{mationStatus},#{noticeStatus},#{xingStatus},#{synopsisStatus});")
 	int insertHomeState(HomeState homeState);
