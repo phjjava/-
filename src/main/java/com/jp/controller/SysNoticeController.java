@@ -18,7 +18,6 @@ import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
-import com.jp.entity.SysMation;
 import com.jp.entity.SysNotice;
 import com.jp.entity.SysNoticeType;
 import com.jp.service.SysNoticeService;
