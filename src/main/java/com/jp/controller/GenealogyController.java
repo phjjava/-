@@ -17,6 +17,11 @@ public class GenealogyController {
 	@Autowired
 	private GenealogyService genealogyService;
 
+	/**
+	 * 未登录的世系表
+	 * @param genealogy
+	 * @return
+	 */
 	@RequestMapping(value = "/queryGenealogy", method = RequestMethod.GET)
 	@ResponseBody
 	public JsonResponse queryGenealogy(Genealogy genealogy) {

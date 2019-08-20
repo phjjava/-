@@ -4,8 +4,8 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -48,7 +48,7 @@ public class FamousController {
 			famousService.selectContentList(pageModel, usercontent);
 			if (pageModel.getList() != null) {
 				if (pageModel.getList().size() == 0) {
-					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
+					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo() + "")) {
 						pageModel.setPageNo(pageModel.getPageNo() - 1);
 						famousService.selectContentList(pageModel, usercontent);
 					}
@@ -76,7 +76,7 @@ public class FamousController {
 			String userid = request.getParameter("userid");
 			Usercontent usercontent = famousService.get(userid);
 			// 增加回写branchid，branchname，address，genlevel，username字段
-			if(usercontent != null) {
+			if (usercontent != null) {
 				User user = userDao.selectByPrimaryKey(userid);
 				usercontent.setAddress(userDao.getAddressByUserid(userid));
 				usercontent.setUsername(user.getUsername());
@@ -106,7 +106,7 @@ public class FamousController {
 			Usercontent uc = usercontentDao.selectByPrimaryKey(usercontent.getUserid());
 			uc.setIssee(usercontent.getIssee());
 			count = usercontentDao.updateByPrimaryKey(uc);
-			if(count > 0) {
+			if (count > 0) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 			}
 		} catch (Exception e) {
@@ -149,7 +149,7 @@ public class FamousController {
 					usercontent.setIssee(ConstantUtils.ISSEE_DEFAULT);
 					count = famousService.insert(usercontent);
 				}
-				if(count > 0) {
+				if (count > 0) {
 					result = new Result(MsgConstants.RESUL_SUCCESS);
 				}
 			} else {
@@ -163,27 +163,27 @@ public class FamousController {
 		res = new JsonResponse(result);
 		return res;
 	}
-	
+
 	@ResponseBody
-    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
-    public JsonResponse batchDelete(String userids){
+	@RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+	public JsonResponse batchDelete(String userids) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
-    	int count = 0;
-    	try {
-	 		//a,b,c 
-	 		String id = userids.substring(0, userids.length());
-	 		String dyidArray [] = id.split(",");
-	 		count = famousService.batchDelete(dyidArray);
-	 		if(count > 0) {
-	 			result = new Result(MsgConstants.RESUL_SUCCESS);
-	 		}
-	 	} catch (Exception e) {
-	 		e.printStackTrace();
-	 		log_.error("[JPSYSTEM]", e);
-	 	}
-    	res = new JsonResponse(result);
-    	return res;
-    }
+		int count = 0;
+		try {
+			//a,b,c 
+			String id = userids.substring(0, userids.length());
+			String dyidArray[] = id.split(",");
+			count = famousService.batchDelete(dyidArray);
+			if (count > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		res = new JsonResponse(result);
+		return res;
+	}
 
 }

@@ -16,4 +16,6 @@ public interface HomeStateService extends IService<HomeState> {
 
 	JsonResponse queryHomeState(HomeState homeState);
 
+	JsonResponse editHomeState(String code, Integer status, String userid);
+
 }

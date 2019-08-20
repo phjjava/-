@@ -171,7 +171,7 @@
   </select>
   <!-- api详情 -->
    <select id="selectByPrimaryKeyOne" resultType="com.jp.entity.IntroudceTemplateDetail" parameterType="java.lang.String" >
-  select id, templateid, type, title, createid, createtime, updateid, updatetime, deleteflag,content, from jp_introducetemplate_detail where id = #{id,jdbcType=VARCHAR}
+  select id, templateid, type, title, createid, createtime, updateid, updatetime, deleteflag,content from jp_introducetemplate_detail where id = #{id,jdbcType=VARCHAR}
   </select> 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from jp_introducetemplate_detail

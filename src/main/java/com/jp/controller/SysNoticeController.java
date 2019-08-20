@@ -18,7 +18,6 @@ import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
-import com.jp.entity.SysMation;
 import com.jp.entity.SysNotice;
 import com.jp.entity.SysNoticeType;
 import com.jp.service.SysNoticeService;
@@ -154,7 +153,7 @@ public class SysNoticeController {
 			} else {
 				//新增
 				notice.setDeleteflag(ConstantUtils.DELETE_FALSE);
-				notice.setCreateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
+				notice.setCreateid("官方团队");
 				notice.setUpdateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
 				notice.setNoticeid(UUIDUtils.getUUID()); 
 				notice.setUpdatetime(new Date());
