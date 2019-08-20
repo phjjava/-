@@ -153,7 +153,7 @@ public class SysNoticeController {
 			} else {
 				//新增
 				notice.setDeleteflag(ConstantUtils.DELETE_FALSE);
-				notice.setCreateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
+				notice.setCreateid("官方团队");
 				notice.setUpdateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
 				notice.setNoticeid(UUIDUtils.getUUID()); 
 				notice.setUpdatetime(new Date());
