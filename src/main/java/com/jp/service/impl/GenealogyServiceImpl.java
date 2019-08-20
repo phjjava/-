@@ -1,5 +1,7 @@
 package com.jp.service.impl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ import com.jp.service.GenealogyService;
  */
 @Service
 public class GenealogyServiceImpl extends ServiceImpl<GenealogyMapper, Genealogy> implements GenealogyService {
+	private final Logger log_ = LogManager.getLogger(GenealogyServiceImpl.class);
 
 	@Autowired
 	private GenealogyMapper GenealogyMapper;
@@ -54,6 +57,7 @@ public class GenealogyServiceImpl extends ServiceImpl<GenealogyMapper, Genealogy
 				return res;
 			}
 		} catch (Exception e) {
+			log_.error("[queryGenealogy方法---异常:]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
 			return res;

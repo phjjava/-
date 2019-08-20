@@ -779,9 +779,7 @@
 				livestatus = #{livestatus,jdbcType=TINYINT},
 			</if>
 				phone = #{phone,jdbcType=VARCHAR},
-			<if test="usedname != null">
 				usedname = #{usedname,jdbcType=VARCHAR},
-			</if>
 			<if test="createtime != null">
 				createtime = #{createtime,jdbcType=TIMESTAMP},
 			</if>
@@ -794,9 +792,7 @@
 			<if test="updateid != null">
 				updateid = #{updateid,jdbcType=VARCHAR},
 			</if>
-			<if test="remarkelse != null">
 				remarkelse = #{remarkelse,jdbcType=VARCHAR},
-			</if>
 			<if test="branchid != null">
 				branchid = #{branchid,jdbcType=VARCHAR},
 			</if>
@@ -830,18 +826,14 @@
 			<if test="username != null">
 				username = #{username,jdbcType=VARCHAR},
 			</if>
-			<if test="idcard != null">
 				idcard = #{idcard,jdbcType=CHAR},
-			</if>
 			<if test="isborn != null">
 				isborn = #{isborn,jdbcType=TINYINT},
 			</if>
 			<if test="dietime != null">
 				dietime = #{dietime,jdbcType=VARCHAR},
 			</if>
-			<if test="fixplace != null">
 				fixplace = #{fixplace,jdbcType=VARCHAR},
-			</if>
 			<if test="isdirect != null">
 				isdirect = #{isdirect,jdbcType=TINYINT},
 			</if>
