@@ -120,7 +120,7 @@
 	<sql id="Base_Column_List">
 			mationid, imgid, imgurl, mationtitle,
 			mationcontent,deleteflag, createid, createtime,
-			updateid, updatetime,mationtype
+			updateid, updatetime,mationtype,count
 	</sql>
 	<!-- <sql id="Blob_Column_List">
 		noticecontent
@@ -195,7 +195,9 @@
 	<!-- api接口 -->
 	<select id="selectByExampleNew" resultMap="BaseResultMap"
 		parameterType="com.jp.entity.SysMation">
-		select * from jp_sys_mation s left join jp_sys_mationtype t on s.relevanceid=t.typeid where s.deleteflag=0
+		select s.mationid, s.imgid, s.imgurl, s.mationtitle,
+			s.deleteflag, s.createid, s.createtime,
+			s.updateid, s.updatetime,s.count from jp_sys_mation s left join jp_sys_mationtype t on s.relevanceid=t.typeid where s.deleteflag=0
 		<!-- <if test="mationtitle!=null">
 		where s.mationtitle like concat("%",#{mationtitle},"%")
 		</if> -->
@@ -225,7 +227,7 @@
 	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
 		select
-		s.mationid,s.relevanceid,s.imgurl,s.mationtitle,s.mationcontent,s.stick,t.typeid,t.typename
+		s.mationid,s.relevanceid,s.imgurl,s.mationtitle,s.mationcontent,s.createtime,s.stick,s.count,t.typeid,t.typename
 		<!-- <include refid="Base_Column_List" /> -->
 		from jp_sys_mation s left join jp_sys_mationtype t on  s.relevanceid=t.typeid
 		where mationid = #{mationid,jdbcType=VARCHAR}

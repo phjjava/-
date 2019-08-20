@@ -89,5 +89,17 @@ public class IntroudceTemplateDetailServiceImpl implements IntroudceTemplateDeta
 		return inDetailDao.selectCount();
 	}
 
+	@Override
+	public List<IntroudceTemplateDetail> apiFindList(String id) {
+		// TODO Auto-generated method stub
+		return inDetailDao.selectByPrimaryKeyNew(id);
+	}
+
+	@Override
+	public IntroudceTemplateDetail apiFindOne(String id) {
+		// TODO Auto-generated method stub
+		return inDetailDao.selectByPrimaryKeyOne(id);
+	}
+
 	
 }
