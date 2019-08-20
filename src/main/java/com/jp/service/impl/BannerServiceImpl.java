@@ -180,37 +180,37 @@ public class BannerServiceImpl implements BannerService {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		Integer count = 0;
-		if (StringUtils.isNotBlank(banner.getBannername())) {
+		if (StringUtils.isBlank(banner.getBannername())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannername不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringUtils.isNotBlank(banner.getBannerdesc())) {
+		if (StringUtils.isBlank(banner.getBannerdesc())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerdesc不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringUtils.isNotBlank(banner.getBannerphoneurl())) {
+		if (StringUtils.isBlank(banner.getBannerphoneurl())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerphoneurl不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringUtils.isNotBlank(banner.getBannerweburl())) {
+		if (StringUtils.isBlank(banner.getBannerweburl())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerweburl不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringUtils.isNotBlank(banner.getGotype() + "")) {
+		if (StringUtils.isBlank(banner.getGotype() + "")) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数gotype不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringUtils.isNotBlank(banner.getBannerurl())) {
+		if (StringUtils.isBlank(banner.getBannerurl())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerurl不能为空！");
 			res = new JsonResponse(result);
