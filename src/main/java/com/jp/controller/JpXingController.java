@@ -200,6 +200,7 @@ public class JpXingController {
 		try {
 			String id = request.getParameter("id");
 			JpXing xing = xingService.get(id);
+			xing.setIntro(xing.getIntro().replace("\\r\\n", " "));
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(xing);

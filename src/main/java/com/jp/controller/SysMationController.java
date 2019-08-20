@@ -159,7 +159,7 @@ public class SysMationController {
 			} else {
 				//新增
 				mation.setDeleteflag(ConstantUtils.DELETE_FALSE);
-				mation.setCreateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
+				mation.setCreateid("官方团队");
 				mation.setUpdateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
 				mation.setMationid(UUIDUtils.getUUID()); 
 				mation.setUpdatetime(new Date());
