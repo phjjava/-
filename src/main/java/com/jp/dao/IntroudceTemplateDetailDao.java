@@ -43,4 +43,8 @@ public interface IntroudceTemplateDetailDao {
 	List<IntroudceTemplateDetail> selectByExample1(@Param("iq")InstructionTemplateQuery iq, @Param("title") String title, @Param("templatename")String templatename, @Param("deleteflag")Integer deleteflag);
 
 	int selectCount();
+
+	List<IntroudceTemplateDetail> selectByPrimaryKeyNew(String id);
+
+	IntroudceTemplateDetail selectByPrimaryKeyOne(String id);
 }
