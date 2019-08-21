@@ -377,7 +377,7 @@ public class BranchServiceImpl implements BranchService {
 	public JsonResponse checkBeginer(String beginuserid) {
 		Result result = null;
 		JsonResponse res = null;
-		if (StringUtils.isNotBlank(beginuserid)) {
+		if (StringUtils.isBlank(beginuserid)) {
 			result = new Result(MsgConstants.BRANCH_NO_BEGINERID);
 			res = new JsonResponse(result);
 			res.setData(false);

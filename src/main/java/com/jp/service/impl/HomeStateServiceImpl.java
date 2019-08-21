@@ -66,30 +66,18 @@ public class HomeStateServiceImpl extends ServiceImpl<HomeStateMapper, HomeState
 	}
 
 	@Override
-	public JsonResponse editHomeState(String code, Integer status, String userid) {
+	public JsonResponse editHomeState(HomeState homeState) {
 		Result result = null;
 		JsonResponse res = null;
 		// 参数校验
-		if (StringUtils.isBlank(code)) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("参数code不能为空！");
-			res = new JsonResponse(result);
-			return res;
-		}
-		if (status == null) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("参数status不能为空！");
-			res = new JsonResponse(result);
-			return res;
-		}
-		if (StringUtils.isBlank(userid)) {
+		if (StringUtils.isBlank(homeState.getUserid())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数userid不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
 		try {
-			int count = homeStateMapper.updateByUserid(code, status, userid);
+			int count = homeStateMapper.updateByUseridSelective(homeState);
 			if (count > 0) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);

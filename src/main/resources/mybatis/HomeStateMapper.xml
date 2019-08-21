@@ -2,19 +2,42 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jp.dao.HomeStateMapper">
 
-    <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jp.entity.HomeState">
-        <id column="userid" property="userid" />
-        <result column="bannerStatus" property="bannerStatus" />
-        <result column="mationStatus" property="mationStatus" />
-        <result column="noticeStatus" property="noticeStatus" />
-        <result column="xingStatus" property="xingStatus" />
-        <result column="synopsisStatus" property="synopsisStatus" />
-    </resultMap>
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.jp.entity.HomeState">
+		<id column="userid" property="userid" />
+		<result column="bannerStatus" property="bannerStatus" />
+		<result column="mationStatus" property="mationStatus" />
+		<result column="noticeStatus" property="noticeStatus" />
+		<result column="xingStatus" property="xingStatus" />
+		<result column="synopsisStatus" property="synopsisStatus" />
+	</resultMap>
 
-    <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        userid, bannerStatus, mationStatus, noticeStatus, xingStatus, synopsisStatus
-    </sql>
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+		userid, bannerStatus, mationStatus, noticeStatus,
+		xingStatus, synopsisStatus
+	</sql>
+	<update id="updateByUseridSelective"
+		parameterType="com.jp.entity.HomeState">
+		update jp_home_state
+		<set>
+			<if test="bannerStatus != null">
+				bannerStatus = #{bannerStatus,jdbcType=INTEGER},
+			</if>
+			<if test="mationStatus != null">
+				mationStatus = #{mationStatus,jdbcType=INTEGER},
+			</if>
+			<if test="noticeStatus != null">
+				noticeStatus = #{noticeStatus,jdbcType=INTEGER},
+			</if>
+			<if test="xingStatus != null">
+				xingStatus = #{xingStatus,jdbcType=INTEGER},
+			</if>
+			<if test="synopsisStatus != null">
+				synopsisStatus = #{synopsisStatus,jdbcType=INTEGER},
+			</if>
+		</set>
+		where userid = #{userid,jdbcType=VARCHAR}
+	</update>
 
 </mapper>
