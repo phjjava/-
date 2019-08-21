@@ -2911,7 +2911,9 @@ public class UserServiceImpl implements UserService {
 		Jedis jedis = new Jedis(redisIp, redisPort);
 		try {
 			//账号验证
-			jedis.auth(redisPassword);
+			if (StringTools.notEmpty(redisPassword)) {
+				jedis.auth(redisPassword);
+			}
 			jedis.select(3);
 			//保存到Redis List类型,统一 定时插入mysql 
 			//	jedis.lpush(key, dataJson.toString());
