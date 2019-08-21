@@ -168,7 +168,7 @@ public interface UserDao {
 	List<User> selectByNoUserids(@Param("array") List<String> strs, @Param("familyid") String familyid);
 
 	//根据用户家族id查询该家族的分支数
-	@Select("select IFNULL(0,max(genlevel)) as genlevel from jp_user where familyid =#{familyid}")
+	@Select("select IFNULL(max(genlevel),0) as genlevel from jp_user where familyid =#{familyid}")
 	int getUserFamilyid(@Param("familyid") String familyid);
 
 	/**
