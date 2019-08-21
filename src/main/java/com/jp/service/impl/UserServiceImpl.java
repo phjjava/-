@@ -2909,13 +2909,18 @@ public class UserServiceImpl implements UserService {
 		}
 		String token = UUIDUtils.getUUID();
 		Jedis jedis = new Jedis(redisIp, redisPort);
-		//账号验证
-		jedis.auth(redisPassword);
-		jedis.select(3);
-		//保存到Redis List类型,统一 定时插入mysql 
-		//	jedis.lpush(key, dataJson.toString());
-		jedis.set(entity.getPhone(), token);
-
+		try {
+			//账号验证
+			jedis.auth(redisPassword);
+			jedis.select(3);
+			//保存到Redis List类型,统一 定时插入mysql 
+			//	jedis.lpush(key, dataJson.toString());
+			jedis.set(entity.getPhone(), token);
+		} finally {
+			if (jedis != null) {
+				jedis.close();
+			}
+		}
 		Map<String, String> tokenMap = new HashMap<>();
 		tokenMap.put("token", token);
 		result = new Result(MsgConstants.RESUL_SUCCESS);

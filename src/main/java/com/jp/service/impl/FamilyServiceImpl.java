@@ -675,10 +675,18 @@ public class FamilyServiceImpl implements FamilyService {
 				return res;
 			}
 			Jedis jedis = new Jedis(redisIp, redisPort);
-			//账号验证
-			jedis.auth(redisPassword);
-			jedis.select(3);
-			String token1 = jedis.get(user.getPhone());
+			String token1;
+			try {
+				//账号验证
+				jedis.auth(redisPassword);
+				jedis.select(3);
+				token1 = jedis.get(user.getPhone());
+				jedis.del(user.getPhone());
+			} finally {
+				if (jedis != null) {
+					jedis.close();
+				}
+			}
 			if (token1 == null || "".equals(token1)) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("请先去注册！");
@@ -691,7 +699,6 @@ public class FamilyServiceImpl implements FamilyService {
 				res = new JsonResponse(result);
 				return res;
 			}
-			jedis.del(user.getPhone());
 		}
 		try {
 
