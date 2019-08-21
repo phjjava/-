@@ -142,7 +142,7 @@ public interface UserDao {
 
 	List<User> selectBranchByTitle(Map<String, String> map);
 
-	List<User> selectFamilycode(@Param("phone") String phone, @Param("status") Integer status);
+	List<Map<String, Object>> selectFamilycode(@Param("phone") String phone, @Param("status") Integer status);
 
 	@Select("select*from jp_user where status in (0,1)  and deleteflag = 0 and familyid is not null and phone = #{phone}")
 	List<User> selectByPhoneInStatus(@Param("phone") String phone);

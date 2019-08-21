@@ -5169,7 +5169,7 @@ public class UserServiceImpl implements UserService {
 		Result result = null;
 		JsonResponse res = null;
 
-		List<User> users = userDao.selectFamilycode(entity.getPhone(), ConstantUtils.USER_STATUS_WAIT);
+		List<Map<String, Object>> users = userDao.selectFamilycode(entity.getPhone(), ConstantUtils.USER_STATUS_WAIT);
 		if (users.size() > 0) {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
@@ -5197,8 +5197,7 @@ public class UserServiceImpl implements UserService {
 			userQuery.or().andPhoneEqualTo(entity.getPhone()).andFamilyidIsNotNull().andDeleteflagEqualTo(0)
 					.andStatusEqualTo(ConstantUtils.USER_STATUS_OK);
 			List<User> users = userDao.selectByExample(userQuery);*/
-		List<User> users = userDao.selectFamilycode(entity.getPhone(), ConstantUtils.USER_STATUS_OK);
-
+		List<Map<String, Object>> users = userDao.selectFamilycode(entity.getPhone(), ConstantUtils.USER_STATUS_OK);
 		if (users.size() > 0) {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
