@@ -3729,7 +3729,10 @@ public class UserServiceImpl implements UserService {
 				userLimitVO.setGenlevel(user.getGenlevel().toString());
 			}
 			if (userInfo != null) {
-				userLimitVO.setHomeplace(userInfo.getHomeplace().replace("@", "").replace("null", ""));
+				String home = userInfo.getHomeplace();
+				if (StringTools.trimNotEmpty(home)) {
+					userLimitVO.setHomeplace(home.replace("@", "").replace("null", ""));
+				}
 			}
 			userLimitVO.setImgurl(user.getImgurl());
 			userLimitVO.setPostision(user.getBrotherpos());
@@ -3745,7 +3748,10 @@ public class UserServiceImpl implements UserService {
 					userLimitVO.setGenlevel(user.getGenlevel().toString());
 				}
 				if (userInfo != null) {
-					userLimitVO.setHomeplace(userInfo.getHomeplace().replace("@", "").replace("null", ""));
+					String home = userInfo.getHomeplace();
+					if (StringTools.trimNotEmpty(home)) {
+						userLimitVO.setHomeplace(home.replace("@", "").replace("null", ""));
+					}
 				}
 				userLimitVO.setImgurl(user.getImgurl());
 				if (pUser != null) {
