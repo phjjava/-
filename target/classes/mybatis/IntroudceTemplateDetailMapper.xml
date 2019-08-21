@@ -167,7 +167,7 @@
   </select>
   <!-- api目录 -->
   <select id="selectByPrimaryKeyNew" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
-  select id, templateid, type, title, createid, createtime, updateid, updatetime, deleteflag from jp_introducetemplate_detail where templateid = #{id,jdbcType=VARCHAR}
+  select id, templateid, type, title, createid, createtime, updateid, updatetime, deleteflag from jp_introducetemplate_detail where templateid = #{id,jdbcType=VARCHAR} and deleteflag=0
   </select>
   <!-- api详情 -->
    <select id="selectByPrimaryKeyOne" resultType="com.jp.entity.IntroudceTemplateDetail" parameterType="java.lang.String" >
