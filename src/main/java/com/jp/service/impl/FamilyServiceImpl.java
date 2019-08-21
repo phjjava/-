@@ -675,10 +675,12 @@ public class FamilyServiceImpl implements FamilyService {
 				return res;
 			}
 			Jedis jedis = new Jedis(redisIp, redisPort);
-			String token1;
+			String token1 = "";
 			try {
 				//账号验证
-				jedis.auth(redisPassword);
+				if (StringTools.notEmpty(redisPassword)) {
+					jedis.auth(redisPassword);
+				}
 				jedis.select(3);
 				token1 = jedis.get(user.getPhone());
 				jedis.del(user.getPhone());
