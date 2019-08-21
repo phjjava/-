@@ -191,5 +191,6 @@ public interface UserDao {
 	 */
 	User selectByPrimaryKey1(String userid);
 
+	
 	Integer getUserByAncestorCount(String familyid, Integer genlevel);
 }
