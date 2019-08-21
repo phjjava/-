@@ -197,7 +197,7 @@
 		parameterType="com.jp.entity.SysMation">
 		select s.mationid, s.imgid, s.imgurl, s.mationtitle,
 			s.deleteflag, s.createid, s.createtime,
-			s.updateid, s.updatetime,s.count from jp_sys_mation s left join jp_sys_mationtype t on s.relevanceid=t.typeid where s.deleteflag=0
+			s.updateid, s.updatetime,s.count from jp_sys_mation s left join jp_sys_mationtype t on s.relevanceid=t.typeid  where s.deleteflag=0
 		<!-- <if test="mationtitle!=null">
 		where s.mationtitle like concat("%",#{mationtitle},"%")
 		</if> -->
