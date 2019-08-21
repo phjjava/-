@@ -668,7 +668,9 @@ public class FamilyServiceImpl implements FamilyService {
 			}
 
 			Map<String, String> instanceMap = SysTokenMap.getInstanceMap();
+			System.out.println("**************=" + instanceMap);
 			if (instanceMap.get(user.getPhone()) == null || "".equals(instanceMap.get(user.getPhone()))) {
+				System.out.println("############=" + instanceMap.get(user.getPhone()));
 				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("请先去注册！");
 				res = new JsonResponse(result);
