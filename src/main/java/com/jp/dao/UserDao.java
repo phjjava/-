@@ -142,7 +142,7 @@ public interface UserDao {
 
 	List<User> selectBranchByTitle(Map<String, String> map);
 
-	List<User> selectFamilycode(@Param("phone") String phone, @Param("status") Integer status);
+	List<Map<String, Object>> selectFamilycode(@Param("phone") String phone, @Param("status") Integer status);
 
 	@Select("select*from jp_user where status in (0,1)  and deleteflag = 0 and familyid is not null and phone = #{phone}")
 	List<User> selectByPhoneInStatus(@Param("phone") String phone);
@@ -181,8 +181,7 @@ public interface UserDao {
 	List<GenUserOtherVO> getUserByAncestor(@Param("familyid") String familyid, @Param("familyname") String familyname,
 			@Param("genlevel") Integer genlevel);
 
-	int getUserByAncestorCount(@Param("familyid") String familyid, @Param("familyname") String familyname,
-			@Param("genlevel") Integer genlevel);
+	int getUserByAncestorCount(@Param("familyid") String familyid, @Param("genlevel") Integer genlevel);
 
 	/**
 	 * 得到某用户的会员级别，member是null或者1为默认的普通会员
@@ -191,5 +190,4 @@ public interface UserDao {
 	 */
 	User selectByPrimaryKey1(String userid);
 
-	Integer getUserByAncestorCount(String familyid, Integer genlevel);
 }
