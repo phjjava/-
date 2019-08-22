@@ -376,7 +376,7 @@ public class DynamicServiceImpl implements DynamicService {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		try {
-			if (entity.getMeautype() == null || "".equals(entity.getMeautype())) {
+			if (entity.getMeautype() == null) {
 				result.setMsg("参数meautype为空！");
 				res = new JsonResponse(result);
 				return res;

@@ -116,7 +116,7 @@ public class BannerServiceImpl implements BannerService {
 	public JsonResponse get(String bannerid) {
 		Result result = null;
 		JsonResponse res = null;
-		if (StringUtils.isNotBlank(bannerid)) {
+		if (StringUtils.isBlank(bannerid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerid不能为空！");
 			res = new JsonResponse(result);
@@ -144,13 +144,13 @@ public class BannerServiceImpl implements BannerService {
 	public JsonResponse changeStatus(Banner banner) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
-		if (StringUtils.isNotBlank(banner.getBannerid())) {
+		if (StringUtils.isBlank(banner.getBannerid())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerid不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringUtils.isNotBlank(banner.getDeleteflag() + "")) {
+		if (banner.getDeleteflag() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数deleteflag不能为空！");
 			res = new JsonResponse(result);
@@ -261,7 +261,7 @@ public class BannerServiceImpl implements BannerService {
 	public JsonResponse batchDelete(String bannerids) {
 		Result result = null;
 		JsonResponse res = null;
-		if (StringUtils.isNotBlank(bannerids)) {
+		if (StringUtils.isBlank(bannerids)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerids不能为空！");
 			res = new JsonResponse(result);
