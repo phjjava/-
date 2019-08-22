@@ -112,6 +112,7 @@ import com.jp.util.DateUtils;
 import com.jp.util.EmaySend;
 import com.jp.util.ExcelUtil;
 import com.jp.util.GsonUtil;
+import com.jp.util.JedisUtil;
 import com.jp.util.MD5Util;
 import com.jp.util.PinyinUtil;
 //import com.jp.util.Result;
@@ -120,8 +121,6 @@ import com.jp.util.UUIDUtils;
 import com.jp.util.ValidatorUtil;
 import com.jp.util.WebUtil;
 import com.jp.util.ZodiacUtil;
-
-import redis.clients.jedis.Jedis;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -170,12 +169,8 @@ public class UserServiceImpl implements UserService {
 	private BranchphotoMapper branchPhotoMapper;
 	@Autowired
 	private UserManagerMapper userManagerMapper;
-	@Value("${redis.ip}")
-	private String redisIp;
-	@Value("${redis.port}")
-	private Integer redisPort;
 	@Value("${redis.password}")
-	private String redisPassword;
+	private String redisAuth;
 
 	// 导入用户时重复的用户
 	private ArrayList<String> userStringList;
@@ -2908,21 +2903,7 @@ public class UserServiceImpl implements UserService {
 			return res;
 		}
 		String token = UUIDUtils.getUUID();
-		Jedis jedis = new Jedis(redisIp, redisPort);
-		try {
-			//账号验证
-			if (StringTools.notEmpty(redisPassword)) {
-				jedis.auth(redisPassword);
-			}
-			jedis.select(3);
-			//保存到Redis List类型,统一 定时插入mysql 
-			//	jedis.lpush(key, dataJson.toString());
-			jedis.set(entity.getPhone(), token);
-		} finally {
-			if (jedis != null) {
-				jedis.close();
-			}
-		}
+		JedisUtil.saveString(entity.getPhone(), token);
 		Map<String, String> tokenMap = new HashMap<>();
 		tokenMap.put("token", token);
 		result = new Result(MsgConstants.RESUL_SUCCESS);

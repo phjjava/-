@@ -54,13 +54,12 @@ import com.jp.entity.UserQuery;
 import com.jp.entity.Userinfo;
 import com.jp.entity.Version;
 import com.jp.service.FamilyService;
+import com.jp.util.JedisUtil;
 import com.jp.util.MD5Util;
 import com.jp.util.PinyinUtil;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 import com.jp.util.WebUtil;
-
-import redis.clients.jedis.Jedis;
 
 @Service
 public class FamilyServiceImpl implements FamilyService {
@@ -91,12 +90,8 @@ public class FamilyServiceImpl implements FamilyService {
 	private PostMapper postMapper;
 	@Resource
 	private BranchDao branchMapper;
-	@Value("${redis.ip}")
-	private String redisIp;
-	@Value("${redis.port}")
-	private Integer redisPort;
 	@Value("${redis.password}")
-	private String redisPassword;
+	private String redisAuth;
 
 	@Override
 	public JsonResponse merge(User user, Userinfo userInfo, SysFamily family) {
@@ -674,21 +669,7 @@ public class FamilyServiceImpl implements FamilyService {
 				res = new JsonResponse(result);
 				return res;
 			}
-			Jedis jedis = new Jedis(redisIp, redisPort);
-			String token1 = "";
-			try {
-				//账号验证
-				if (StringTools.notEmpty(redisPassword)) {
-					jedis.auth(redisPassword);
-				}
-				jedis.select(3);
-				token1 = jedis.get(user.getPhone());
-				jedis.del(user.getPhone());
-			} finally {
-				if (jedis != null) {
-					jedis.close();
-				}
-			}
+			String token1 = JedisUtil.queryString(user.getPhone());
 			if (token1 == null || "".equals(token1)) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("请先去注册！");
