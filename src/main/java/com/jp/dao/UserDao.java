@@ -169,7 +169,7 @@ public interface UserDao {
 
 	//根据用户家族id查询该家族的分支数
 	@Select("select IFNULL(max(genlevel),0) as genlevel from jp_user where familyid =#{familyid}")
-	int getUserFamilyid(@Param("familyid") String familyid);
+	Integer getUserFamilyid(@Param("familyid") String familyid);
 
 	/**
 	* 根据家族id 家族名 世系代数 查找用户
@@ -181,7 +181,7 @@ public interface UserDao {
 	List<GenUserOtherVO> getUserByAncestor(@Param("familyid") String familyid, @Param("familyname") String familyname,
 			@Param("genlevel") Integer genlevel);
 
-	int getUserByAncestorCount(@Param("familyid") String familyid, @Param("genlevel") Integer genlevel);
+	Integer getUserByAncestorCount(@Param("familyid") String familyid, @Param("genlevel") Integer genlevel);
 
 	/**
 	 * 得到某用户的会员级别，member是null或者1为默认的普通会员
