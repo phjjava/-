@@ -1550,7 +1550,7 @@
 		and
 		u.branchid=#{branchid,jdbcType=VARCHAR} order by u.pinyinfirst
 	</select>
-	<select id="selectFamilycode" resultMap="BaseResultMap">
+	<select id="selectFamilycode" resultType="map">
 		select t1.familyname,t1.familyid,t1.status,t2.familycode,t2.status familystatus
 		from jp_user t1
 		LEFT JOIN jp_sys_family t2 
@@ -1669,7 +1669,7 @@
 			g.userid = f.userid 
 			AND g.familyid = #{familyid} 
 			AND g.genlevel = #{genlevel} 
-			AND g.username LIKE #{familyname} 
+			AND g.isdirect = 1
 			) m
 			LEFT JOIN (
 		SELECT

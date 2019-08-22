@@ -142,7 +142,7 @@ public interface UserDao {
 
 	List<User> selectBranchByTitle(Map<String, String> map);
 
-	List<User> selectFamilycode(@Param("phone") String phone, @Param("status") Integer status);
+	List<Map<String, Object>> selectFamilycode(@Param("phone") String phone, @Param("status") Integer status);
 
 	@Select("select*from jp_user where status in (0,1)  and deleteflag = 0 and familyid is not null and phone = #{phone}")
 	List<User> selectByPhoneInStatus(@Param("phone") String phone);
@@ -168,7 +168,7 @@ public interface UserDao {
 	List<User> selectByNoUserids(@Param("array") List<String> strs, @Param("familyid") String familyid);
 
 	//根据用户家族id查询该家族的分支数
-	@Select("select max(genlevel) as genlevel from jp_user where familyid =#{familyid}")
+	@Select("select IFNULL(max(genlevel),0) as genlevel from jp_user where familyid =#{familyid}")
 	int getUserFamilyid(@Param("familyid") String familyid);
 
 	/**

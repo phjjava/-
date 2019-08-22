@@ -28,6 +28,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,7 +41,6 @@ import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
-import com.jp.common.SysTokenMap;
 import com.jp.controller.UserController;
 import com.jp.dao.BranchDao;
 import com.jp.dao.BranchalbumMapper;
@@ -121,6 +121,8 @@ import com.jp.util.ValidatorUtil;
 import com.jp.util.WebUtil;
 import com.jp.util.ZodiacUtil;
 
+import redis.clients.jedis.Jedis;
+
 @Service
 public class UserServiceImpl implements UserService {
 	private final Logger log_ = LogManager.getLogger(UserController.class);
@@ -168,6 +170,12 @@ public class UserServiceImpl implements UserService {
 	private BranchphotoMapper branchPhotoMapper;
 	@Autowired
 	private UserManagerMapper userManagerMapper;
+	@Value("${redis.ip}")
+	private String redisIp;
+	@Value("${redis.port}")
+	private Integer redisPort;
+	@Value("${redis.password}")
+	private String redisPassword;
 
 	// 导入用户时重复的用户
 	private ArrayList<String> userStringList;
@@ -2900,8 +2908,21 @@ public class UserServiceImpl implements UserService {
 			return res;
 		}
 		String token = UUIDUtils.getUUID();
-		Map<String, String> instanceMap = SysTokenMap.getInstanceMap();
-		instanceMap.put(entity.getPhone(), token);
+		Jedis jedis = new Jedis(redisIp, redisPort);
+		try {
+			//账号验证
+			if (StringTools.notEmpty(redisPassword)) {
+				jedis.auth(redisPassword);
+			}
+			jedis.select(3);
+			//保存到Redis List类型,统一 定时插入mysql 
+			//	jedis.lpush(key, dataJson.toString());
+			jedis.set(entity.getPhone(), token);
+		} finally {
+			if (jedis != null) {
+				jedis.close();
+			}
+		}
 		Map<String, String> tokenMap = new HashMap<>();
 		tokenMap.put("token", token);
 		result = new Result(MsgConstants.RESUL_SUCCESS);
@@ -3729,7 +3750,10 @@ public class UserServiceImpl implements UserService {
 				userLimitVO.setGenlevel(user.getGenlevel().toString());
 			}
 			if (userInfo != null) {
-				userLimitVO.setHomeplace(userInfo.getHomeplace().replace("@", "").replace("null", ""));
+				String home = userInfo.getHomeplace();
+				if (StringTools.trimNotEmpty(home)) {
+					userLimitVO.setHomeplace(home.replace("@", "").replace("null", ""));
+				}
 			}
 			userLimitVO.setImgurl(user.getImgurl());
 			userLimitVO.setPostision(user.getBrotherpos());
@@ -3745,7 +3769,10 @@ public class UserServiceImpl implements UserService {
 					userLimitVO.setGenlevel(user.getGenlevel().toString());
 				}
 				if (userInfo != null) {
-					userLimitVO.setHomeplace(userInfo.getHomeplace().replace("@", "").replace("null", ""));
+					String home = userInfo.getHomeplace();
+					if (StringTools.trimNotEmpty(home)) {
+						userLimitVO.setHomeplace(home.replace("@", "").replace("null", ""));
+					}
 				}
 				userLimitVO.setImgurl(user.getImgurl());
 				if (pUser != null) {
@@ -5169,7 +5196,7 @@ public class UserServiceImpl implements UserService {
 		Result result = null;
 		JsonResponse res = null;
 
-		List<User> users = userDao.selectFamilycode(entity.getPhone(), ConstantUtils.USER_STATUS_WAIT);
+		List<Map<String, Object>> users = userDao.selectFamilycode(entity.getPhone(), ConstantUtils.USER_STATUS_WAIT);
 		if (users.size() > 0) {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
@@ -5197,8 +5224,7 @@ public class UserServiceImpl implements UserService {
 			userQuery.or().andPhoneEqualTo(entity.getPhone()).andFamilyidIsNotNull().andDeleteflagEqualTo(0)
 					.andStatusEqualTo(ConstantUtils.USER_STATUS_OK);
 			List<User> users = userDao.selectByExample(userQuery);*/
-		List<User> users = userDao.selectFamilycode(entity.getPhone(), ConstantUtils.USER_STATUS_OK);
-
+		List<Map<String, Object>> users = userDao.selectFamilycode(entity.getPhone(), ConstantUtils.USER_STATUS_OK);
 		if (users.size() > 0) {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);

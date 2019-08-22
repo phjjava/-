@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import com.jp.common.ConstantUtils;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.Result;
@@ -62,6 +63,11 @@ public class WorshipAncestorDictServiceImpl implements WorshipAncestorDictServic
 				return res;
 			}
 			genlevel = userMapper.getUserFamilyid(familyid);
+			if(genlevel == 0 ) {
+				result = new Result(ConstantUtils.RESULT_SUCCESS,"暂无数据");
+				res = new JsonResponse(result);
+				return res;
+			}
 			//System.out.println("genlevel=="+genlevel);
 			Integer last = null;
 			//5世为一个世图 计算总共有几个世图
