@@ -13,7 +13,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
@@ -90,8 +89,6 @@ public class FamilyServiceImpl implements FamilyService {
 	private PostMapper postMapper;
 	@Resource
 	private BranchDao branchMapper;
-	@Value("${redis.password}")
-	private String redisAuth;
 
 	@Override
 	public JsonResponse merge(User user, Userinfo userInfo, SysFamily family) {
