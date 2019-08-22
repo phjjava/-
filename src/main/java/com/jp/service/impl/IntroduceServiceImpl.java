@@ -238,8 +238,11 @@ public class IntroduceServiceImpl implements IntroduceService {
 					params.put("type", "JX");
 				}
 				Introduce introduce = itdao.getIntroduceByType(params);
-				index.setParam1(introduce.getIntroduceid());
-				index.setParam2(introduce.getSort() + "");
+				if(introduce != null ) {
+					index.setParam1(introduce.getIntroduceid());
+					index.setParam2(introduce.getSort() + "");
+				}
+				
 			}
 
 			result = new Result(MsgConstants.RESUL_SUCCESS);

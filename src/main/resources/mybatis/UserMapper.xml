@@ -1669,7 +1669,7 @@
 			g.userid = f.userid 
 			AND g.familyid = #{familyid} 
 			AND g.genlevel = #{genlevel} 
-			AND g.username LIKE #{familyname} 
+			AND g.isdirect = 1
 			) m
 			LEFT JOIN (
 		SELECT
