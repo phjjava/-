@@ -88,6 +88,7 @@ import com.jp.entity.UserClildInfo;
 import com.jp.entity.UserDetail;
 import com.jp.entity.UserImportExample;
 import com.jp.entity.UserLimitVO;
+import com.jp.entity.UserManager;
 import com.jp.entity.UserManagerExample;
 import com.jp.entity.UserQuery;
 import com.jp.entity.UserVO;
@@ -241,7 +242,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Result merge(User user) throws Exception {
 		Result result = null;
-
+		if (!StringTools.trimNotEmpty(user.getUsername())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("姓名不能为空！");
+			return result;
+		}
 		try {
 			// 点击编辑后保存
 			if (StringTools.trimNotEmpty(user.getUserid())) {
@@ -280,6 +285,14 @@ public class UserServiceImpl implements UserService {
 				user.setUpdateid(CurrentUserContext.getCurrentUserId());
 				user.setUpdatetime(new Date());
 				userDao.updateByPrimaryKeySelectivePhone(user);
+				UserManagerExample ume = new UserManagerExample();
+				ume.or().andUseridEqualTo(user.getUserid());
+				List<UserManager> mnangers = userManagerMapper.selectMnangers(user.getUserid());
+				if (mnangers.size() > 0) {
+					UserManager userManager = new UserManager();
+					userManager.setUsername(user.getUsername());
+					userManagerMapper.updateByExampleSelective(userManager, ume);
+				}
 				String birthplaceP = userinfo.getBirthplaceP() == null ? "" : userinfo.getBirthplaceP();
 				String birthplaceC = userinfo.getBirthplaceC() == null ? "" : userinfo.getBirthplaceC();
 				String birthplaceX = userinfo.getBirthplaceX() == null ? "" : userinfo.getBirthplaceX();
