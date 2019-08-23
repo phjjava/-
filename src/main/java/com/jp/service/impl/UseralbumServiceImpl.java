@@ -20,6 +20,7 @@ import com.jp.entity.UseralbumQuery;
 import com.jp.entity.Userphoto;
 import com.jp.entity.UserphotoKey;
 import com.jp.entity.UserphotoQuery;
+import com.jp.service.UserService;
 import com.jp.service.UseralbumService;
 import com.jp.util.UUIDUtils;
 
@@ -29,6 +30,8 @@ public class UseralbumServiceImpl implements UseralbumService {
 	private UseralbumDao useralbumDao;
 	@Autowired
 	private UserphotoDao userphotoDao;
+	@Autowired
+	private UserService userService;
 
 	@Override
 	public Useralbum selectByPrimaryKey(UseralbumKey key) throws Exception {
@@ -189,6 +192,10 @@ public class UseralbumServiceImpl implements UseralbumService {
 		Result result = null;
 		JsonResponse res = null;
 		Integer sort = 0;
+		JsonResponse demoUser = userService.checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if ("".equals(userAlbum.getUserid()) || userAlbum.getUserid() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数用户ID不能为空！");
@@ -225,6 +232,10 @@ public class UseralbumServiceImpl implements UseralbumService {
 		Result result = null;
 		JsonResponse res = null;
 		Integer sort = 0;
+		JsonResponse demoUser = userService.checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if ("".equals(userPhoto.getUserid()) || userPhoto.getUserid() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数用户ID不能为空！");
@@ -273,6 +284,10 @@ public class UseralbumServiceImpl implements UseralbumService {
 		Result result = null;
 		JsonResponse res = null;
 		Integer sort = 0;
+		JsonResponse demoUser = userService.checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if (userPhoto.getPhotos() == null || userPhoto.getPhotos().size() < 1) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数photos不能为空！");

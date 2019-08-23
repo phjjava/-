@@ -551,7 +551,7 @@
 		</if>
 		<include refid="Base_Column_List" />
 		, (SELECT COUNT(*) FROM jp_noticeread nr
-		WHERE nr.noticeid =	jp_notice.`noticeid`) AS readCount
+		WHERE nr.noticeid =	jp_notice.`noticeid`) AS readNum
 		from jp_notice
 		<if test="_parameter != null">
 			<include refid="Example_Where_Clause" />

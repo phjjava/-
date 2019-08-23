@@ -15,6 +15,7 @@ import com.jp.dao.MomentUserStoreMapper;
 import com.jp.entity.MomentUserStore;
 import com.jp.entity.MomentUserStoreExample;
 import com.jp.service.MomentUserStoreService;
+import com.jp.service.UserService;
 import com.jp.util.UUIDUtils;
 
 @Service
@@ -22,11 +23,17 @@ public class MomentUserStoreServiceImpl implements MomentUserStoreService {
 
 	@Autowired
 	private MomentUserStoreMapper momentUserStoreMapper;
+	@Autowired
+	private UserService userService;
 
 	@Override
 	public JsonResponse storeMoment(MomentUserStore entity) {
 		Result result = null;
 		JsonResponse res = null;
+		JsonResponse demoUser = userService.checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if (StringUtils.isBlank(entity.getMomentId())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数momentId为空！");
@@ -71,6 +78,10 @@ public class MomentUserStoreServiceImpl implements MomentUserStoreService {
 	public JsonResponse cancelStore(MomentUserStore entity) {
 		Result result = null;
 		JsonResponse res = null;
+		JsonResponse demoUser = userService.checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if (StringUtils.isBlank(entity.getId())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数id不能为空！");
