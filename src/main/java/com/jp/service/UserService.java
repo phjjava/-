@@ -317,4 +317,7 @@ public interface UserService {
 	JsonResponse joinedFamily(User user);
 
 	JsonResponse changeLoginUser(User user, String loginType, String internetType, String version);
+
+	JsonResponse checkDemoUser();
+
 }

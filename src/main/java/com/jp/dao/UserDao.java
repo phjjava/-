@@ -150,8 +150,8 @@ public interface UserDao {
 	@Select("select*from jp_user where status = 0  and deleteflag = 0 and familyid is not null and phone = #{phone}")
 	List<User> selectByPhoneAndStatus(@Param("phone") String phone);
 
-	@Select("select*from jp_user where status =2 and deleteflag = 0 and familyid is not null and phone = #{phone} and familyid = #{familyid}")
-	List<User> selectByPhoneToStatus(@Param("phone") String phone, @Param("familyid") String familyid);
+	@Select("select count(1) from jp_user where status =2 and deleteflag = 0 and familyid is not null and phone = #{phone} and familyid = #{familyid}")
+	Integer selectByPhoneToStatus(@Param("phone") String phone, @Param("familyid") String familyid);
 
 	int countBranch(Map<String, String> totalparams);
 
@@ -189,5 +189,20 @@ public interface UserDao {
 	 * @return
 	 */
 	User selectByPrimaryKey1(String userid);
+
+	/**
+	 * 演示账号
+	 * @return
+	 */
+	@Select("select userid from jp_user where status =0 and deleteflag = 0 and phone = '18647740001' ")
+	List<String> selectDemoUserid();
+
+	/**
+	 * 当前登录人的手机号
+	 * @param userid
+	 * @return
+	 */
+	@Select("select phone from jp_user where userid = #{userid}")
+	String selectUserPhone(@Param("userid") String userid);
 
 }

@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.jp.common.ConstantUtils;
@@ -16,8 +15,8 @@ import com.jp.dao.MomentUserFilterMapper;
 import com.jp.dao.UserDao;
 import com.jp.entity.MomentUserFilter;
 import com.jp.service.MomentUserFilterService;
+import com.jp.service.UserService;
 import com.jp.util.UUIDUtils;
-import com.jp.util.WebUtil;
 
 @Service
 public class MomentUserFilterServiceImpl implements MomentUserFilterService {
@@ -26,18 +25,18 @@ public class MomentUserFilterServiceImpl implements MomentUserFilterService {
 	private MomentUserFilterMapper filterMapper;
 	@Resource
 	private UserDao userMapper;
+	@Resource
+	private UserService userService;
 
 	@Override
 	public JsonResponse updateUserFilter(MomentUserFilter entity) {
 		Result result = null;
 		JsonResponse res = null;
-		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
-		if (StringUtils.isBlank(userid)) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("请重新登录！");
-			res = new JsonResponse(result);
-			return res;
+		JsonResponse demoUser = userService.checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
 		}
+		String userid = demoUser.getData().toString();
 
 		if ("ME".equals(entity.getFilterType()) || "HE".equals(entity.getFilterType())) {
 			List<MomentUserFilter> list = entity.getFilterUsers();
