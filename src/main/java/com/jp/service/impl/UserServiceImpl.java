@@ -1513,7 +1513,7 @@ public class UserServiceImpl implements UserService {
 							for (int k = 0; k < userAleardyList.size(); k++) {
 
 								User u = userAleardyList.get(k);
-								if (u.getGenlevel() == Integer.parseInt(genlevel)
+								if (u.getGenlevel() != null && u.getGenlevel() == Integer.parseInt(genlevel)
 										&& u.getUsername().equals(husbandname)) {
 									n++;
 									if (n > 1) {
