@@ -110,7 +110,8 @@
        	 	<mvc:exclude-mapping path="/system/intemplateDetail/apiFindOne"/>	<!-- 章节详情 -->
        	 	<mvc:exclude-mapping path="/system/intemplateDetail/apiFindList"/>	<!-- 章节目录 -->
        	 	<mvc:exclude-mapping path="/system/intemplate/apilist"/>	<!-- 模板书列表 -->
-       	 	
+       	 	<mvc:exclude-mapping path="/system/famousperson/apilist"/>	<!-- 名人家谱列表 -->
+       	 	<mvc:exclude-mapping path="/system/famousperson/get"/>	<!-- 名人家谱回显 -->
        	 	
        	 	<mvc:exclude-mapping path="/user/loginB"/>	<!-- H5登录 -->
        	 	<mvc:exclude-mapping path="/platform/getPlatform"/>	<!-- 获取版本号 -->
