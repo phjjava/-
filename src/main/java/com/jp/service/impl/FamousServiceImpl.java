@@ -92,8 +92,7 @@ public class FamousServiceImpl implements FamousService {
 		}
 		try {
 			//获取当前登录人的id
-			//		String currentUserId = CurrentUserContext.getCurrentUserId();
-			String currentUserId = "04a27de4d43a44849b24d2427eb25c69";
+			String currentUserId = CurrentUserContext.getCurrentUserId();
 			Usercontent searchUTResult = usercontentDao.selectByPrimaryKey(userid);
 			usercontent.setUpdateid(currentUserId);
 			usercontent.setUpdatetime(new Date());
