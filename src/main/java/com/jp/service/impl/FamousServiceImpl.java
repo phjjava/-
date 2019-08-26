@@ -92,7 +92,8 @@ public class FamousServiceImpl implements FamousService {
 		}
 		try {
 			//获取当前登录人的id
-			String currentUserId = CurrentUserContext.getCurrentUserId();
+			//		String currentUserId = CurrentUserContext.getCurrentUserId();
+			String currentUserId = "04a27de4d43a44849b24d2427eb25c69";
 			Usercontent searchUTResult = usercontentDao.selectByPrimaryKey(userid);
 			usercontent.setUpdateid(currentUserId);
 			usercontent.setUpdatetime(new Date());
@@ -111,7 +112,6 @@ public class FamousServiceImpl implements FamousService {
 					count = usercontentDao.updateByPrimaryKeySelective(usercontent);
 				}
 			} else {//没有名人录记录，直接新增
-				usercontent.setUserid(id);
 				usercontent.setCreateid(currentUserId);
 				usercontent.setCreatetime(new Date());
 				usercontent.setIssee(ConstantUtils.ISSEE_DEFAULT);
