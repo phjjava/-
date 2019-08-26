@@ -111,7 +111,6 @@ public class FamousServiceImpl implements FamousService {
 					count = usercontentDao.updateByPrimaryKeySelective(usercontent);
 				}
 			} else {//没有名人录记录，直接新增
-				usercontent.setUserid(id);
 				usercontent.setCreateid(currentUserId);
 				usercontent.setCreatetime(new Date());
 				usercontent.setIssee(ConstantUtils.ISSEE_DEFAULT);
