@@ -113,7 +113,6 @@
        	 	<mvc:exclude-mapping path="/system/famousperson/apilist"/>	<!-- 名人家谱列表 -->
        	 	<mvc:exclude-mapping path="/system/famousperson/get"/>	<!-- 名人家谱回显 -->
        	 	
-       	 	
        	 	<mvc:exclude-mapping path="/user/loginB"/>	<!-- H5登录 -->
        	 	<mvc:exclude-mapping path="/platform/getPlatform"/>	<!-- 获取版本号 -->
        	 	<mvc:exclude-mapping path="/family/merge"/>	<!-- 注册家族 -->
