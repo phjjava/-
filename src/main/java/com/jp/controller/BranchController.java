@@ -70,8 +70,8 @@ public class BranchController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/initBranch", method = RequestMethod.POST)
-	public JsonResponse selectBranch(Branch branch) {
-		return branchService.initBranch(branch);
+	public JsonResponse selectBranch(PageModel<Branch> pageModel, Branch branch) {
+		return branchService.initBranch(pageModel, branch);
 	}
 
 	/**

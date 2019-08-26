@@ -25,6 +25,7 @@ import com.jp.entity.MomentCommentTimeline;
 import com.jp.entity.MomentCommentTimelineExample;
 import com.jp.entity.User;
 import com.jp.service.MomentCommentService;
+import com.jp.service.UserService;
 import com.jp.util.UUIDUtils;
 
 @Service
@@ -40,12 +41,18 @@ public class MomentCommentServiceImpl implements MomentCommentService {
 	private MomentCommentTimelineMapper momentCommentTimelineMapper;
 	@Resource
 	private UserDao userMapper;
+	@Resource
+	private UserService userService;
 
 	@Override
 	public JsonResponse createMomentComment(MomentComment entity) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		try {
+			JsonResponse demoUser = userService.checkDemoUser();
+			if (demoUser.getCode() == 1) {
+				return demoUser;
+			}
 			if (StringUtils.isBlank(entity.getMomentId())) {
 				result.setMsg("参数momentId为空！");
 				res = new JsonResponse(result);
@@ -118,6 +125,10 @@ public class MomentCommentServiceImpl implements MomentCommentService {
 	public JsonResponse delMomentComment(MomentComment entity) {
 		Result result = null;
 		JsonResponse res = null;
+		JsonResponse demoUser = userService.checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if (StringUtils.isBlank(entity.getId())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数id不能为空！");

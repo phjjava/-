@@ -43,6 +43,7 @@ import com.jp.entity.NoticetopQuery;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
 import com.jp.service.NoticeService;
+import com.jp.service.UserService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 import com.jp.util.WebUtil;
@@ -61,6 +62,8 @@ public class NoticeServiceImpl implements NoticeService {
 	private NoticereadDao noticeReadMapper;
 	@Autowired
 	private UserDao userMapper;
+	@Autowired
+	private UserService userService;
 	@Autowired
 	private BranchDao branchMapper;
 
@@ -309,6 +312,10 @@ public class NoticeServiceImpl implements NoticeService {
 	public JsonResponse sendNotice(Notice entity) {
 		Result result = null;
 		JsonResponse res = null;
+		JsonResponse demoUser = userService.checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if (entity.getNoticetitle() == null || "".equals(entity.getNoticetitle())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("缺少公告标题参数");
