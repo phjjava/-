@@ -275,16 +275,18 @@ public class BranchServiceImpl implements BranchService {
 	}
 
 	@Override
-	public JsonResponse initBranch(Branch branch) {
+	public JsonResponse initBranch(PageModel<Branch> pageModel, Branch branch) {
 		Result result = null;
 		JsonResponse res = null;
 		try {
 			branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
 			List<Branch> list = branchDao.selectBranchList(branch);
 			if (list != null) {
+				pageModel.setList(list);
+				pageModel.setPageInfo(new PageInfo<Branch>(list));
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);
-				res.setData(list);
+				res.setData(pageModel);
 				return res;
 			}
 		} catch (Exception e) {

@@ -407,6 +407,12 @@ public class FamilyServiceImpl implements FamilyService {
 				res = new JsonResponse(result);
 				return res;
 			}
+			if ("18647740001".equals(user.getPhone())) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("不可编辑！");
+				res = new JsonResponse(result);
+				return res;
+			}
 			String username = user.getUsername();
 			Branch branch = user.getBranch();
 			if (family.getFamilyid() != null && !family.getFamilyid().equals("")) {
@@ -613,6 +619,12 @@ public class FamilyServiceImpl implements FamilyService {
 		if (user.getPhone() == null || "".equals(user.getPhone())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数phone不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if ("18647740001".equals(user.getPhone())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("不可编辑！");
 			res = new JsonResponse(result);
 			return res;
 		}

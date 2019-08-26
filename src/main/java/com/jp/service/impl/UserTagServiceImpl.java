@@ -16,6 +16,7 @@ import com.jp.dao.UserTagMapper;
 import com.jp.dao.UserTagUserMapper;
 import com.jp.entity.UserTag;
 import com.jp.entity.UserTagUser;
+import com.jp.service.UserService;
 import com.jp.service.UserTagService;
 import com.jp.util.UUIDUtils;
 import com.jp.util.WebUtil;
@@ -33,11 +34,17 @@ public class UserTagServiceImpl implements UserTagService {
 	private UserTagMapper userTagMapper;
 	@Resource
 	private UserTagUserMapper userTagUserMapper;
+	@Resource
+	private UserService userService;
 
 	@Override
 	public JsonResponse createUserTag(UserTag entity) {
 		Result result = null;
 		JsonResponse res = null;
+		JsonResponse demoUser = userService.checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if (StringUtils.isBlank(entity.getUserid())) {
 			result = new Result(MsgConstants.USERID_IS_NULL);
 			res = new JsonResponse(result);
@@ -80,6 +87,10 @@ public class UserTagServiceImpl implements UserTagService {
 	public JsonResponse removeUserTag(UserTag entity) {
 		Result result = null;
 		JsonResponse res = null;
+		JsonResponse demoUser = userService.checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if (StringUtils.isBlank(entity.getId())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数标签信息id不能为空！");
@@ -97,6 +108,10 @@ public class UserTagServiceImpl implements UserTagService {
 	public JsonResponse editUserTag(UserTag entity) {
 		Result result = null;
 		JsonResponse res = null;
+		JsonResponse demoUser = userService.checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if (StringUtils.isBlank(entity.getId())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数标签id不能为空！");
