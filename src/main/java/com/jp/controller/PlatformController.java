@@ -92,6 +92,7 @@ public class PlatformController {
 	@RequestMapping(value = "/platform/getCurrentTime", method = RequestMethod.GET)
 	@ResponseBody
 	public JsonResponse getCurrentTime() {
+		
 		return platformService.getCurrentTime();
 	}
 

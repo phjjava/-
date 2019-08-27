@@ -460,7 +460,7 @@
 	</insert>
 	<select id="countByExample"
 		parameterType="com.jp.entity.UserQuery" resultType="java.lang.Integer">
-		select count(*) from jp_user
+		select count(1) from jp_user
 		<if test="_parameter != null">
 			<include refid="Example_Where_Clause" />
 		</if>
