@@ -571,9 +571,10 @@ on user.userid = manager.userid
     <if test="user.sex != null" >
        and user.sex = #{user.sex,jdbcType=INTEGER}
     </if>
-<!--     <foreach collection="list" item="item" index="index" open="and user.branchid in (" separator="," close=")">
+    and user.branchid in
+    <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
 		#{item}
-	</foreach>   -->
+	</foreach>   
 	<if test="user.branchid != null and user.branchid != ''" >
        order by -user.genlevel desc
     </if>
