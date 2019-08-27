@@ -24,7 +24,9 @@ public interface UserService {
 
 	int insert(User user) throws Exception;
 
-	PageModel pageQuery(PageModel pageModel, User user) throws Exception;
+	void updateByPrimaryKeySelective(User user);
+
+	PageModel<User> pageQuery(PageModel<User> pageModel, User user) throws Exception;
 
 	void deleteAndAll(User user) throws Exception;
 

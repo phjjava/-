@@ -182,7 +182,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public PageModel pageQuery(PageModel pageModel, User user) throws Exception {
+	public PageModel<User> pageQuery(PageModel<User> pageModel, User user) throws Exception {
 
 		return null;
 	}
@@ -2414,7 +2414,6 @@ public class UserServiceImpl implements UserService {
 					String fixplace = eutil.getCellContent(sheet.getRow(i).getCell(19)).trim();
 					// birthplace = replacePlace(fixplace);
 					String remark = eutil.getCellContent(sheet.getRow(i).getCell(20)).trim();
-					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 					String userId = UUIDUtils.getUUID();
 					user = new User();
 					user.setUserid(userId);
@@ -5340,5 +5339,15 @@ public class UserServiceImpl implements UserService {
 		res = new JsonResponse(result);
 		res.setData(userid);
 		return res;
+	}
+
+	@Override
+	public void updateByPrimaryKeySelective(User user) {
+		try {
+			userDao.updateByPrimaryKeySelective(user);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[记录登录时间---异常:]", e);
+		}
 	}
 }

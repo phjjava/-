@@ -52,10 +52,8 @@ import com.jp.entity.Userphoto;
 import com.jp.entity.UserphotoKey;
 import com.jp.entity.Userworkexp;
 import com.jp.service.BranchService;
-import com.jp.service.FunctionService;
 import com.jp.service.UserEduService;
 import com.jp.service.UserInfoService;
-import com.jp.service.UserManagerService;
 import com.jp.service.UserService;
 import com.jp.service.UserWorkService;
 import com.jp.service.UseralbumService;
@@ -90,10 +88,6 @@ public class UserController {
 	private BranchDao branchDao;
 	@Autowired
 	private SysVersionPrivilegeMapper sysVersionPrivilegeMapper;
-	@Autowired
-	private UserManagerService userManagerService;
-	@Autowired
-	private FunctionService functionService;
 
 	/**
 	 * 
@@ -370,20 +364,21 @@ public class UserController {
 		JsonResponse res = null;
 		try {
 			String userid = CurrentUserContext.getCurrentUserId();
+			String familyId = CurrentUserContext.getCurrentFamilyId();
 			UserbranchQuery ex = new UserbranchQuery();
 			ex.or().andUseridEqualTo(userid);
 			List<Userbranch> list = userBranchDao.selectByExample(ex);
 			Branch bran = new Branch();
 			for (Userbranch b : list) {
 				bran.setBranchid(b.getBranchid());
-				bran.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				bran.setFamilyid(familyId);
 				bran = branchDao.selectByPrimaryKey(bran);
 				if (bran.getBranchid() != null && !"".equals(bran.getBranchid()))
 					user.setBranchid(b.getBranchid());
 
 			}
 
-			user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			user.setFamilyid(familyId);
 			List<String> branchList = CurrentUserContext.getCurrentBranchIds();
 
 			userService.selectUserList(pageModel, user, branchList);
@@ -628,7 +623,7 @@ public class UserController {
 			userService.selecUserListToReview(pageModel, user);
 			if (pageModel.getList() != null) {
 				if (pageModel.getList().size() == 0) {
-					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
+					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo() + "")) {
 						pageModel.setPageNo(pageModel.getPageNo() - 1);
 						userService.selecUserListToReview(pageModel, user);
 					}
@@ -816,15 +811,9 @@ public class UserController {
 		Result result = null;
 		JsonResponse res = null;
 		try {
-			String returnTable = "";
 			String userid = request.getParameter("userid");
 			String albumid = request.getParameter("albumid");
 			String type = request.getParameter("type");
-			if (type.equals("0")) {
-				returnTable = "photo";
-			} else {
-				returnTable = "work";
-			}
 			Useralbum userAlbum = null;
 			if (StringTools.trimNotEmpty(albumid)) {
 				UseralbumKey key = new UseralbumKey();
@@ -837,17 +826,12 @@ public class UserController {
 			res.setData(userAlbum);
 			res.setEntity(type);
 			res.setData1(userid);
-			/*
-			 * modelMap.put("userid", userid); modelMap.put("useralbum", userAlbum);
-			 * modelMap.put("type", type); modelMap.put("returnTable", returnTable);
-			 */
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-		// return "user/useralbum";
 		return res;
 	}
 
@@ -866,31 +850,20 @@ public class UserController {
 		Result result = null;
 		JsonResponse res = null;
 		try {
-			String returnTable = "";
 			String userid = request.getParameter("userid");
 			String albumid = request.getParameter("albumid");
 			String type = request.getParameter("type");
-			if (type.equals("0")) {
-				returnTable = "photo";
-			} else {
-				returnTable = "work";
-			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(albumid);
 			res.setData1(userid);
 			res.setEntity(type);
-			/*
-			 * modelMap.put("userid", userid); modelMap.put("albumid", albumid);
-			 * modelMap.put("type", type); modelMap.put("returnTable", returnTable);
-			 */
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-		// return "user/uploadphoto";
 		return res;
 	}
 
@@ -1055,16 +1028,9 @@ public class UserController {
 		Result result = null;
 		JsonResponse res = null;
 		try {
-			String returnTable = "";
 			String userid = request.getParameter("userid");
 			String albumid = request.getParameter("albumid");
-			String type = request.getParameter("type");
 			String imgid = request.getParameter("imgid");
-			if (type.equals("0")) {
-				returnTable = "photo";
-			} else {
-				returnTable = "work";
-			}
 			UserphotoKey key = new UserphotoKey();
 			key.setImgid(imgid);
 			key.setAlbumid(albumid);
@@ -1073,18 +1039,12 @@ public class UserController {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(userPhoto);
-			/*
-			 * modelMap.put("userid", userid); modelMap.put("type", type);
-			 * modelMap.put("returnTable", returnTable); modelMap.put("userPhoto",
-			 * userPhoto);
-			 */
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-		// return "user/userphotoedit";
 		return res;
 	}
 
@@ -1315,7 +1275,7 @@ public class UserController {
 			userService.selectUserList(pageModel, user, branchList);
 			if (pageModel.getList() != null) {
 				if (pageModel.getList().size() == 0) {
-					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
+					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo() + "")) {
 						pageModel.setPageNo(pageModel.getPageNo() - 1);
 						userService.selectUserList(pageModel, user, branchList);
 					}
