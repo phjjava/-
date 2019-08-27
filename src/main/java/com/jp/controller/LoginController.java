@@ -143,12 +143,12 @@ public class LoginController {
 								// 重置sessionid到数据库
 								user.setSessionid(UUIDUtils.getUUID());
 							}
+							user.setUserManager(managers.get(0));
 							// 记录登陆时间
 							user.setLogintime(new Date());
 							userService.updateByPrimaryKeySelective(user);
 							// 保存session作用域
 							request.getSession().setAttribute("userContext", userContext);
-							user.setUserManager(managers.get(0));
 							result = new Result(MsgConstants.RESUL_SUCCESS);
 							res = new JsonResponse(result);
 							res.setData(user);
@@ -296,6 +296,7 @@ public class LoginController {
 				// 重置sessionid到数据库
 				user.setSessionid(UUIDUtils.getUUID());
 			}
+			user.setUserManager(managers.get(0));
 			// 记录登陆时间
 			user.setLogintime(new Date());
 			userService.updateByPrimaryKeySelective(user);
