@@ -1,7 +1,5 @@
 package com.jp.controller;
 
-import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.jp.common.ConstantUtils;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
@@ -24,7 +20,6 @@ import com.jp.dao.UsercontentDao;
 import com.jp.entity.User;
 import com.jp.entity.Usercontent;
 import com.jp.service.FamousService;
-import com.jp.util.StringTools;
 
 @Controller
 @RequestMapping("famous")
@@ -118,50 +113,15 @@ public class FamousController {
 	}
 
 	/**
-	 * 
-	 * @描述 名人录saveORupdate
-	 * @作者 jinlizhi
-	 * @时间 2017年5月23日下午5:17:02
-	 * @参数 @param usercontent
-	 * @参数 @return
-	 * @return String
+	 * 新增或修改名人录
+	 * @param usercontent
+	 * @param id
+	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public JsonResponse save(Usercontent usercontent) {
-		Result result = new Result(MsgConstants.RESUL_FAIL);
-		JsonResponse res = null;
-		Integer count = 0;
-		try {
-			if (StringTools.notEmpty(usercontent.getUserid())) {
-				Usercontent searchUTResult = usercontentDao.selectByPrimaryKey(usercontent.getUserid());
-				if (StringTools.notEmpty(searchUTResult)) {
-					// 有记录存在为编辑修改
-					usercontent.setUpdatetime(new Date());
-					usercontent.setUpdateid(CurrentUserContext.getCurrentUserId());
-					count = famousService.update(usercontent);
-				} else {
-					// 无记录存在为新增
-					usercontent.setCreateid(CurrentUserContext.getCurrentUserId());
-					usercontent.setUpdateid(CurrentUserContext.getCurrentUserId());
-					usercontent.setUpdatetime(new Date());
-					usercontent.setCreatetime(new Date());
-					usercontent.setIssee(ConstantUtils.ISSEE_DEFAULT);
-					count = famousService.insert(usercontent);
-				}
-				if (count > 0) {
-					result = new Result(MsgConstants.RESUL_SUCCESS);
-				}
-			} else {
-				// 用户userid为空
-				result = new Result(MsgConstants.FAMOUS_NO_USERID);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		res = new JsonResponse(result);
-		return res;
+	public JsonResponse editOrAdd(Usercontent usercontent, String id) {
+		return famousService.editOrAdd(usercontent, id);
 	}
 
 	@ResponseBody

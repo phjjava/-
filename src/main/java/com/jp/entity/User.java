@@ -199,6 +199,7 @@ public class User implements Serializable {
 	 * 关联类型
 	 */
 	private Set<JpMember> member = new HashSet<JpMember>();
+
 	public Set<JpMember> getMember() {
 		return member;
 	}
@@ -231,6 +232,8 @@ public class User implements Serializable {
 	private List<User> mateList;
 	// 分支信息
 	private Branch branch;
+	// 管理员信息
+	private UserManager userManager;
 
 	// 家族信息
 	private List<SysFamily> familys;
@@ -258,8 +261,7 @@ public class User implements Serializable {
 	private Long count;
 	private String cityname;
 	private String citycode;
-	
-	
+
 	public Long getStart() {
 		return start;
 	}
@@ -382,6 +384,14 @@ public class User implements Serializable {
 
 	public Userinfo getUserInfo() {
 		return userInfo;
+	}
+
+	public UserManager getUserManager() {
+		return userManager;
+	}
+
+	public void setUserManager(UserManager userManager) {
+		this.userManager = userManager;
 	}
 
 	public void setUserInfo(Userinfo userInfo) {
