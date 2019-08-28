@@ -1152,7 +1152,7 @@
 
 	<select id="getAddressByUserid" resultType="java.lang.String"
 		parameterType="java.lang.String">
-		select	concat_ws('',z.area,z.cityname,z.xname,ifNULL(z.address,' ')) as address
+		select	concat_ws('_',z.area,z.cityname,z.xname,ifNULL(z.address,' ')) as address
 		from jp_user user
 		left join jp_userinfo userInfo 
 		on user.userid = userInfo.userid 

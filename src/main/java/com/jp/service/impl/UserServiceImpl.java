@@ -456,10 +456,19 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public PageModel<User> selectUserList(PageModel<User> pageModel, User user, List<String> branchList)
 			throws Exception {
+		List<User> userList = new ArrayList<>();
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-
+		List<UserManager> userManager = CurrentUserContext.getCurrentUserManager();
+		for (UserManager um : userManager) {
+			if (um.getEbtype() == 1) {
+				userList = userInfoDao.selecAllUserList(user);
+				break;
+			} else {
+				userList = userInfoDao.selecUserList(user, branchList);
+				break;
+			}
+		}
 		// CurrentUserContext.getUserContext().getRole().getIsmanager();
-		List<User> userList = userInfoDao.selecUserList(user, branchList);
 		pageModel.setList(userList);
 		pageModel.setPageInfo(new PageInfo<User>(userList));
 		return pageModel;
@@ -5349,5 +5358,17 @@ public class UserServiceImpl implements UserService {
 			e.printStackTrace();
 			log_.error("[记录登录时间---异常:]", e);
 		}
+	}
+
+	@Override
+	public String getAllAddressByUserid(String userid) {
+		String address = "";
+		try {
+			address = userDao.getAddressByUserid(userid);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[获取地址信息---异常:]", e);
+		}
+		return address;
 	}
 }
