@@ -461,7 +461,7 @@
 		u.username,u.userid,u.genlevel,uc.imgurl,uc.content,uc.updatetime,uc.readcount
 		from jp_usercontent uc join jp_user u on uc.userid=u.userid
 		WHERE
-		u.`status`=0 and u.deleteflag=0 and u.isdirect=1 and uc.issee=0 and
+		u.`status`=0 and u.deleteflag=0 and u.isdirect=1 and
 		uc.familyid=#{familyid,jdbcType=VARCHAR}
 		<if test="username!=null">
 		and u.username like
