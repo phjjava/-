@@ -1288,7 +1288,7 @@ public class UserController {
 				User userAddrss = (User) obj;
 				String address = userService.getAllAddressByUserid(userAddrss.getUserid());
 				userAddrss.setAddress(address);
-				userAddrss.setBranchname(address + "_" + userAddrss.getBranchname());
+				userAddrss.setBranchAllName(address + "_" + userAddrss.getBranchname());
 				userList.add(userAddrss);
 			}
 			pageModel.setList(userList);
