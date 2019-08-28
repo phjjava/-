@@ -87,6 +87,7 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 				} else {
 					criteria.andBranchidIn(branchList);
 					list = badao.selectBranchAlbumMangeList(example);
+					break;
 				}
 			}
 			// if (branchList!=null&&branchList.size()>0) {

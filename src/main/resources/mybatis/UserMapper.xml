@@ -1041,7 +1041,7 @@
 		on userInfo.userid = user.userid
 		where
 		user.familyid = #{familyid,jdbcType=VARCHAR}
-		and status != 0
+		and status in (1,2)
 		<if test="status != null and status != ''">
 			and user.status = #{status,jdbcType=INTEGER}
 		</if>

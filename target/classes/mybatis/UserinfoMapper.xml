@@ -543,7 +543,7 @@ select user.*,IFNULL(manager.ismanager,0) ismanager ,IFNULL(manager.ebtype,0) eb
     where uu.deleteflag=0 and  uu.familyid = #{user.familyid}) user LEFT OUTER JOIN 
 (select r.userid,r.ismanager,r.ebtype from jp_user_manager r  where r.ebtype=1 and r.ismanager=1 and r.familyid=#{user.familyid}) manager
 on user.userid = manager.userid
-	where 1=1
+	where status in (0,3)
     <if test="user.username != null and user.username != ''" >
        and user.username like   CONCAT('%',#{user.username,jdbcType=VARCHAR},'%')
     </if>
