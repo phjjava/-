@@ -455,6 +455,27 @@
 			offset ${start}
 		</if>
 	</select>
+	<select id="searchtUserContentNew" parameterType="map"
+		resultType="com.jp.entity.UserContentVO">
+		select
+		u.username,u.userid,u.genlevel,uc.imgurl,uc.content,uc.updatetime,uc.readcount
+		from jp_usercontent uc join jp_user u on uc.userid=u.userid
+		WHERE
+		u.`status`=0 and u.deleteflag=0 and u.isdirect=1 and uc.issee=0 and
+		uc.familyid=#{familyid,jdbcType=VARCHAR}
+		<if test="username!=null">
+		and u.username like
+		CONCAT("%",#{username,jdbcType=VARCHAR},"%")
+		</if>
+		order by uc.sort asc
+		,u.genlevel asc,uc.updatetime desc
+		<if test="count != null">
+			limit ${count}
+		</if>
+		<if test="start != null">
+			offset ${start}
+		</if>
+	</select>
 	<!-- 自写方法 -->
 
 	<select id="selectUserContentList" parameterType="map"
