@@ -101,20 +101,23 @@ public class NoticeServiceImpl implements NoticeService {
 			UserManager manager = managers.get(0);
 
 			List<String> currentBranchIds = CurrentUserContext.getCurrentBranchIds();
-			if (manager.getEbtype() == 1) {// 验证是否是总编委会主任
-				currentBranchIds.add("0");
-			}
-			if (currentBranchIds != null && currentBranchIds.size() > 0) {
-				criteria.andBranchidIn(currentBranchIds);
-			} else {
+			if (StringTools.trimIsEmpty(currentBranchIds)) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("您的账号当前没有分支");
 				res = new JsonResponse(result);
 				return res;
 			}
-			nq.setOrderByClause("createtime DESC");
 			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-			List<NoticeVO> list = noticeMapper.selectNoticeMangeList(nq);
+			List<NoticeVO> list = new ArrayList<>();
+			if (manager.getEbtype() == 1) {// 验证是否是总编委会主任
+				//	currentBranchIds.add("0");
+				nq.setOrderByClause("createtime DESC");
+				list = noticeMapper.selectNoticeMangeList(nq);
+			} else {
+				criteria.andBranchidIn(currentBranchIds);
+				nq.setOrderByClause("createtime DESC");
+				list = noticeMapper.selectNoticeMangeList(nq);
+			}
 			if (list != null) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);

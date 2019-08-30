@@ -1569,19 +1569,46 @@
 		</if>
 		group by branchid ) t
 	</select>
+	<select id="countBranch2" resultType="java.lang.Integer">
+		select count(*) as count from (
+		select branchid from jp_user
+		where
+		familyid=#{familyid,jdbcType=VARCHAR} and branchid is not null
+		and livestatus != 0 and livestatus != 1
+		group by branchid ) t
+	</select>
 	<select id="selectUserByAreaCode"
 		resultType="com.jp.entity.User" parameterType="Map">
-		select m.* from jp_user m,jp_branch n
-		where m.branchid=n.branchid
-		and m.deleteflag = 0
+		select t1.* from jp_user t1
+		LEFT JOIN jp_branch t2
+		ON t1.branchid = t2.branchid
+		where t1.deleteflag = 0 and t1.status = 0 
 		<if test="areacode != null">
-			and n.areacode = #{areacode,jdbcType=VARCHAR}
+			and areacode = #{areacode,jdbcType=VARCHAR}
 		</if>
 		<if test="citycode != null">
-			and n.citycode = #{citycode,jdbcType=VARCHAR}
+			and citycode = #{citycode,jdbcType=VARCHAR}
 		</if>
 		<if test="familyid != null">
-			and m.familyid = #{familyid,jdbcType=VARCHAR}
+			and t1.familyid = #{familyid,jdbcType=VARCHAR}
+		</if>
+	</select>
+	<select id="selectCountByAreaCode" resultType="java.lang.Integer" parameterType="Map">
+		SELECT count(1) FROM jp_branch WHERE `status` = 0
+		<if test="areacode != null">
+			and areacode = #{areacode,jdbcType=VARCHAR}
+		</if>
+		<if test="area != null">
+			and area = #{area,jdbcType=VARCHAR}
+		</if>
+		<if test="citycode != null">
+			and citycode = #{citycode,jdbcType=VARCHAR}
+		</if>
+		<if test="cityname != null">
+			and cityname = #{cityname,jdbcType=VARCHAR}
+		</if>
+		<if test="familyid != null">
+			and familyid = #{familyid,jdbcType=VARCHAR}
 		</if>
 	</select>
 	<select id="selectByUserids" resultType="com.jp.entity.User">
