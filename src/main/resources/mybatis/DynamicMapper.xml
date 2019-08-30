@@ -467,7 +467,8 @@
      <if test="dynamic.type != null" >
         and dy.type = #{dynamic.type,jdbcType=VARCHAR}
      </if>
-    <foreach collection="list" item="item" index="index" open="and dy.branchid in (" separator="," close=")">
+     and dy.branchid in 
+    <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
 		#{item}
 	</foreach>
   </select>

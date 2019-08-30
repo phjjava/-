@@ -363,32 +363,18 @@
 	union all
 	select null applycount , null usercount, max(`user`.genlevel) shicount,null branchcount, null rolecount from jp_user `user` where `user`.familyid = #{familyid,jdbcType=VARCHAR}
 	union all
-	select null applycount , null usercount,null shicount,count(*) branchcount, null rolecount from (
-select
-		DISTINCT a.*,(SELECT
-		count(*)
-		FROM
-		jp_user
-		WHERE
-		branchid =
-		a.branchid
-		AND familyid = #{familyid,jdbcType=VARCHAR} 
-		AND
-		deleteflag = 0
-		AND `status` = 0) usercount
-		from
-		jp_branch a right
-		join jp_user b on a.branchid=b.branchid where
-		a.familyid = #{familyid,jdbcType=VARCHAR} 
-		and a.status=0) c
+	select null applycount , null usercount,null shicount,count(*) branchcount, null rolecount from jp_branch  WHERE `status` = 0 AND familyid = #{familyid,jdbcType=VARCHAR}
 	union all
 	select 
 	count(*) applycount, null usercount,null shicount,null branchcount, null rolecount
 	from jp_user `user` where `user`.`status` <> 0 and `user`.deleteflag = 0 and `user`.familyid = #{familyid,jdbcType=VARCHAR} 
 	 ]]>
-	 <foreach collection="list" item="item" index="index" open="and `user`.branchid in (" separator="," close=")">
+	 <if test="list != null">
+	 and `user`.branchid in 
+	 <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
 	   #{item}
      </foreach>
+     </if>
 	<!-- UNION all
 	select null applycount , null usercount,null shicount,null branchcount, count(*) rolecount from jp_userrole  -->
 	) temp

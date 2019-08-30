@@ -21,6 +21,7 @@ public class PersonBranch {
 	private Person alive;// 在世的人数
 
 	private Person depart;// 离世人数
+	private Person unalive;// 未知是否在世人数
 
 	// 分页参数
 	private Integer start;
@@ -112,6 +113,14 @@ public class PersonBranch {
 
 	public void setDepart(Person depart) {
 		this.depart = depart;
+	}
+
+	public Person getUnalive() {
+		return unalive;
+	}
+
+	public void setUnalive(Person unalive) {
+		this.unalive = unalive;
 	}
 
 	public String getName() {
