@@ -85,9 +85,11 @@ public class FunctionServiceImpl implements FunctionService {
 			//总编委会主任查询所有的菜单
 			if (manager.getIsmanager() == 1 && manager.getEbtype() == 1) {
 				rtnlist = functionDao.selectFunctionListByRoleid(familyid, null);
-				return rtnlist;
+				break;
+			} else {
+				rtnlist = functionDao.selectFunctionByUserid(familyid, userid);
+				break;
 			}
-			rtnlist = functionDao.selectFunctionByUserid(familyid, userid);
 		}
 
 		return rtnlist;

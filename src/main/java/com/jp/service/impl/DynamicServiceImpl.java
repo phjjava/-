@@ -95,6 +95,12 @@ public class DynamicServiceImpl implements DynamicService {
 		}
 		try {
 			List<String> branchList = CurrentUserContext.getCurrentBranchIds();
+			if (StringTools.trimIsEmpty(branchList)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("您的账号当前没有分支");
+				res = new JsonResponse(result);
+				return res;
+			}
 			String familyid = CurrentUserContext.getCurrentFamilyId();
 			String userid = CurrentUserContext.getCurrentUserId();
 
