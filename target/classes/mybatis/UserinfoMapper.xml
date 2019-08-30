@@ -543,7 +543,7 @@ select user.*,IFNULL(manager.ismanager,0) ismanager ,IFNULL(manager.ebtype,0) eb
     where uu.deleteflag=0 and  uu.familyid = #{user.familyid}) user LEFT OUTER JOIN 
 (select r.userid,r.ismanager,r.ebtype from jp_user_manager r  where r.ebtype=1 and r.ismanager=1 and r.familyid=#{user.familyid}) manager
 on user.userid = manager.userid
-	where 1=1
+	where status in (0,3)
     <if test="user.username != null and user.username != ''" >
        and user.username like   CONCAT('%',#{user.username,jdbcType=VARCHAR},'%')
     </if>
@@ -578,7 +578,50 @@ on user.userid = manager.userid
 	<if test="user.branchid != null and user.branchid != ''" >
        order by -user.genlevel desc
     </if>
+  </select>
+  
+  <select id="selecAllUserList" resultType="com.jp.entity.User">
 	
+select user.*,IFNULL(manager.ismanager,0) ismanager ,IFNULL(manager.ebtype,0) ebtype from (select
+      uu.userid as userid,uu.username as username,uu.sex as sex,uu.isdirect,userInfo.birthday as searchBirthday
+      ,uu.brotherpos as brotherpos,uu.genlevel as genlevel,uu.branchname as branchname,uu.status as status,uu.ismarry,uu.branchid
+      ,uu.familyid,uu.phone
+     from jp_user uu left join jp_userinfo userInfo
+    on userInfo.userid = uu.userid
+    where uu.deleteflag=0 and  uu.familyid = #{user.familyid}) user LEFT OUTER JOIN 
+(select r.userid,r.ismanager,r.ebtype from jp_user_manager r  where r.ebtype=1 and r.ismanager=1 and r.familyid=#{user.familyid}) manager
+on user.userid = manager.userid
+	where status in (0,3)
+    <if test="user.username != null and user.username != ''" >
+       and user.username like   CONCAT('%',#{user.username,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="user.genlevel != null" >
+       and user.genlevel = #{user.genlevel,jdbcType=INTEGER}
+    </if>
+    <if test="user.branchid != null and user.branchid != ''" >
+       and user.branchid = #{user.branchid,jdbcType=INTEGER}
+    </if>
+    <if test="user.searchBirthplace != null and user.searchBirthplace != ''" >
+       and userInfo.birthplace like   CONCAT('%',#{user.searchBirthplace,jdbcType=VARCHAR},'%') 
+    </if>
+     <if test="user.status != null " >
+       and user.status = #{user.status,jdbcType=INTEGER}
+    </if>
+     <if test="user.isMarry != null" >
+       and user.ismarry = #{user.isMarry,jdbcType=INTEGER}
+    </if>
+    <if test="user.isdirect != null" >
+       and user.isdirect = #{user.isdirect,jdbcType=INTEGER}
+    </if>
+    <if test="user.livestatus != null" >
+       and user.livestatus = #{user.livestatus,jdbcType=INTEGER}
+    </if>
+    <if test="user.sex != null" >
+       and user.sex = #{user.sex,jdbcType=INTEGER}
+    </if>
+	<if test="user.branchid != null and user.branchid != ''" >
+       order by -user.genlevel desc
+    </if>
 	
   </select>
   <insert id="importUser">

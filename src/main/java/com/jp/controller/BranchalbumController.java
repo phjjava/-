@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +22,6 @@ import com.jp.service.BranchalbumService;
 public class BranchalbumController {
 	@Autowired
 	private BranchalbumService baservice;
-	private final Logger log_ = LogManager.getLogger(BranchalbumController.class);
 
 	/**
 	 * @描述 分支相册 去新增编辑界面（回显）
