@@ -23,6 +23,7 @@ import com.jp.entity.MomentLikeTimeline;
 import com.jp.entity.MomentLikeTimelineExample;
 import com.jp.entity.User;
 import com.jp.service.MomentLikeService;
+import com.jp.service.UserService;
 import com.jp.util.UUIDUtils;
 import com.jp.util.WebUtil;
 
@@ -35,9 +36,10 @@ public class MomentLikeServiceImpl implements MomentLikeService {
 	private MomentLikeTimelineMapper momentLikeTimelineMapper;
 	@Resource
 	private MomentMapper momentMapper;
-
 	@Resource
 	private UserDao userMapper;
+	@Resource
+	private UserService userService;
 
 	/**
 	 * 点赞
@@ -46,6 +48,10 @@ public class MomentLikeServiceImpl implements MomentLikeService {
 	public JsonResponse createMomentLike(MomentLike entity) {
 		Result result = null;
 		JsonResponse res = null;
+		JsonResponse demoUser = userService.checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if (StringUtils.isBlank(entity.getMomentId())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数momentId为空！");
@@ -98,7 +104,7 @@ public class MomentLikeServiceImpl implements MomentLikeService {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			result.setMsg("点赞成功！");
 			res = new JsonResponse(result);
-			System.out.println("点赞res="+res);
+			System.out.println("点赞res=" + res);
 			return res;
 		}
 		result = new Result(MsgConstants.RESUL_FAIL);
@@ -114,6 +120,10 @@ public class MomentLikeServiceImpl implements MomentLikeService {
 	public JsonResponse cancelMomentLike(MomentLike entity) {
 		Result result = null;
 		JsonResponse res = null;
+		JsonResponse demoUser = userService.checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if (StringUtils.isBlank(entity.getMomentId())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数momentId为空！");

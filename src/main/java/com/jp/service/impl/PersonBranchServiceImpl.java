@@ -53,7 +53,7 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 		PersonBranch personBranch = new PersonBranch();
 		// private Integer totalPerson;//总人数
 		UserQuery userExample = new UserQuery();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andStatusEqualTo(0);
 		int totalPerson = userMapper.countByExample(userExample);
 		List<BranchEditorBoard> allBranchs = branchMapper.selectCityByFamilyid(familyid);
 		// 统计分支总数
@@ -68,41 +68,43 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 		// private Integer direct;//直系人数
 		//
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andIsdirectEqualTo(1);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andIsdirectEqualTo(1).andStatusEqualTo(0);
 		int direct = userMapper.countByExample(userExample);
 		personBranch.setDirect(direct);
 		// private Integer nonDirect;//非直系人数
 		//
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andIsdirectEqualTo(0);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andIsdirectEqualTo(0).andStatusEqualTo(0);
 		int nonDirect = userMapper.countByExample(userExample);
 		personBranch.setNonDirect(nonDirect);
 		//未知系人数
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andIsdirectIsNull();
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andIsdirectIsNull().andStatusEqualTo(0);
 		int unDirect = userMapper.countByExample(userExample);
 		personBranch.setUnDirect(unDirect);
 
 		// private Integer man;//男性成员
 		//
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andSexEqualTo(1);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andSexEqualTo(1).andStatusEqualTo(0);
 		int man = userMapper.countByExample(userExample);
 		personBranch.setMan(man);
 		// private Integer women;//女性成员
 		//
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andSexEqualTo(0);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andSexEqualTo(0).andStatusEqualTo(0);
 		int woman = userMapper.countByExample(userExample);
 		personBranch.setWoman(woman);
 		// private Person alive;//在世的人数
 		//
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0)
+				.andStatusEqualTo(0);
 		int alive = userMapper.countByExample(userExample);
 		// private Person depart;//离世人数
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1)
+				.andStatusEqualTo(0);
 		int depart = userMapper.countByExample(userExample);
 
 		Person alivePerson = new Person();// 在世
@@ -115,30 +117,32 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 		// 在世的直系
 		userExample.clear();
 		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0)
-				.andIsdirectEqualTo(1);
+				.andIsdirectEqualTo(1).andStatusEqualTo(0);
 		int direct1 = userMapper.countByExample(userExample);
 		alivePerson.setDirect(direct1);
 		// 在世的非直系
 		userExample.clear();
 		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0)
-				.andIsdirectEqualTo(0);
+				.andIsdirectEqualTo(0).andStatusEqualTo(0);
 		int nonDirect1 = userMapper.countByExample(userExample);
 		alivePerson.setNonDirect(nonDirect1);
 		// 在世的未知系
 		userExample.clear();
 		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0)
-				.andIsdirectIsNull();
+				.andIsdirectIsNull().andStatusEqualTo(0);
 		int unDirect1 = userMapper.countByExample(userExample);
 		alivePerson.setUnDirect(unDirect1);
 		;
 		// 在世的男性
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0).andSexEqualTo(1);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0).andSexEqualTo(1)
+				.andStatusEqualTo(0);
 		int man1 = userMapper.countByExample(userExample);
 		alivePerson.setMan(man1);
 		// 在世的女性
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0).andSexEqualTo(0);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0).andSexEqualTo(0)
+				.andStatusEqualTo(0);
 		int woman1 = userMapper.countByExample(userExample);
 		alivePerson.setWoman(woman1);
 		personBranch.setAlive(alivePerson);
@@ -151,29 +155,31 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 		// 离世的直系
 		userExample.clear();
 		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1)
-				.andIsdirectEqualTo(1);
+				.andIsdirectEqualTo(1).andStatusEqualTo(0);
 		int direct2 = userMapper.countByExample(userExample);
 		departPerson.setDirect(direct2);
 		// 离世的非直系
 		userExample.clear();
 		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1)
-				.andIsdirectEqualTo(0);
+				.andIsdirectEqualTo(0).andStatusEqualTo(0);
 		int nonDirect2 = userMapper.countByExample(userExample);
 		departPerson.setNonDirect(nonDirect2);
 		// 离世的未知系
 		userExample.clear();
 		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1)
-				.andIsdirectIsNull();
+				.andIsdirectIsNull().andStatusEqualTo(0);
 		int unDirect2 = userMapper.countByExample(userExample);
 		departPerson.setUnDirect(unDirect2);
 		// 离世的男性
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1).andSexEqualTo(1);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1).andSexEqualTo(1)
+				.andStatusEqualTo(0);
 		int man2 = userMapper.countByExample(userExample);
 		departPerson.setMan(man2);
 		// 离世的女性
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1).andSexEqualTo(0);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1).andSexEqualTo(0)
+				.andStatusEqualTo(0);
 		int woman2 = userMapper.countByExample(userExample);
 		departPerson.setWoman(woman2);
 		personBranch.setDepart(departPerson);
@@ -499,7 +505,7 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			pb = new PersonBranch();
 			pb.setName(branch.getBranchname());
 			userexample.clear();
-			userexample.or().andBranchidEqualTo(branch.getBranchid()).andDeleteflagEqualTo(0);
+			userexample.or().andBranchidEqualTo(branch.getBranchid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
 			List<User> users = userMapper.selectByExample(userexample);
 			// 统计
 			for (User user : users) {

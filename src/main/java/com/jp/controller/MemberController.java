@@ -2,8 +2,6 @@ package com.jp.controller;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.UUID;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
@@ -73,7 +71,7 @@ public class MemberController {
 		try {
 			//更改历史充值记录状态
 			count=memberService.updateterecord(user.getUserid());
-			//添加充值记录(只查记录状态为0的记录为最新充值记录)
+			//添加充值记录(状态为0的记录为最新充值记录)
 			JpMemberRecord record=new JpMemberRecord();
 			record.setId(UUIDUtils.getUUID());
 			record.setRecordid(user.getUserid());

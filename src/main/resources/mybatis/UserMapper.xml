@@ -460,7 +460,7 @@
 	</insert>
 	<select id="countByExample"
 		parameterType="com.jp.entity.UserQuery" resultType="java.lang.Integer">
-		select count(*) from jp_user
+		select count(1) from jp_user
 		<if test="_parameter != null">
 			<include refid="Example_Where_Clause" />
 		</if>
@@ -779,9 +779,7 @@
 				livestatus = #{livestatus,jdbcType=TINYINT},
 			</if>
 				phone = #{phone,jdbcType=VARCHAR},
-			<if test="usedname != null">
 				usedname = #{usedname,jdbcType=VARCHAR},
-			</if>
 			<if test="createtime != null">
 				createtime = #{createtime,jdbcType=TIMESTAMP},
 			</if>
@@ -794,9 +792,7 @@
 			<if test="updateid != null">
 				updateid = #{updateid,jdbcType=VARCHAR},
 			</if>
-			<if test="remarkelse != null">
 				remarkelse = #{remarkelse,jdbcType=VARCHAR},
-			</if>
 			<if test="branchid != null">
 				branchid = #{branchid,jdbcType=VARCHAR},
 			</if>
@@ -830,18 +826,14 @@
 			<if test="username != null">
 				username = #{username,jdbcType=VARCHAR},
 			</if>
-			<if test="idcard != null">
 				idcard = #{idcard,jdbcType=CHAR},
-			</if>
 			<if test="isborn != null">
 				isborn = #{isborn,jdbcType=TINYINT},
 			</if>
 			<if test="dietime != null">
 				dietime = #{dietime,jdbcType=VARCHAR},
 			</if>
-			<if test="fixplace != null">
 				fixplace = #{fixplace,jdbcType=VARCHAR},
-			</if>
 			<if test="isdirect != null">
 				isdirect = #{isdirect,jdbcType=TINYINT},
 			</if>
@@ -1049,7 +1041,7 @@
 		on userInfo.userid = user.userid
 		where
 		user.familyid = #{familyid,jdbcType=VARCHAR}
-		and status != 0
+		and status in (1,2)
 		<if test="status != null and status != ''">
 			and user.status = #{status,jdbcType=INTEGER}
 		</if>
@@ -1160,7 +1152,7 @@
 
 	<select id="getAddressByUserid" resultType="java.lang.String"
 		parameterType="java.lang.String">
-		select	concat_ws('',z.area,z.cityname,z.xname,ifNULL(z.address,' ')) as address
+		select	concat_ws('_',z.area,z.cityname,z.xname,ifNULL(z.address,' ')) as address
 		from jp_user user
 		left join jp_userinfo userInfo 
 		on user.userid = userInfo.userid 
@@ -1558,7 +1550,7 @@
 		and
 		u.branchid=#{branchid,jdbcType=VARCHAR} order by u.pinyinfirst
 	</select>
-	<select id="selectFamilycode" resultMap="BaseResultMap">
+	<select id="selectFamilycode" resultType="map">
 		select t1.familyname,t1.familyid,t1.status,t2.familycode,t2.status familystatus
 		from jp_user t1
 		LEFT JOIN jp_sys_family t2 
@@ -1677,7 +1669,7 @@
 			g.userid = f.userid 
 			AND g.familyid = #{familyid} 
 			AND g.genlevel = #{genlevel} 
-			AND g.username LIKE #{familyname} 
+			AND g.isdirect = 1
 			) m
 			LEFT JOIN (
 		SELECT

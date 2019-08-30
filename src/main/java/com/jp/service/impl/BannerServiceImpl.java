@@ -116,7 +116,7 @@ public class BannerServiceImpl implements BannerService {
 	public JsonResponse get(String bannerid) {
 		Result result = null;
 		JsonResponse res = null;
-		if (StringUtils.isNotBlank(bannerid)) {
+		if (StringUtils.isBlank(bannerid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerid不能为空！");
 			res = new JsonResponse(result);
@@ -144,13 +144,13 @@ public class BannerServiceImpl implements BannerService {
 	public JsonResponse changeStatus(Banner banner) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
-		if (StringUtils.isNotBlank(banner.getBannerid())) {
+		if (StringUtils.isBlank(banner.getBannerid())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerid不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringUtils.isNotBlank(banner.getDeleteflag() + "")) {
+		if (banner.getDeleteflag() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数deleteflag不能为空！");
 			res = new JsonResponse(result);
@@ -180,37 +180,37 @@ public class BannerServiceImpl implements BannerService {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		Integer count = 0;
-		if (StringUtils.isNotBlank(banner.getBannername())) {
+		if (StringUtils.isBlank(banner.getBannername())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannername不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringUtils.isNotBlank(banner.getBannerdesc())) {
+		if (StringUtils.isBlank(banner.getBannerdesc())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerdesc不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringUtils.isNotBlank(banner.getBannerphoneurl())) {
+		if (StringUtils.isBlank(banner.getBannerphoneurl())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerphoneurl不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringUtils.isNotBlank(banner.getBannerweburl())) {
+		if (StringUtils.isBlank(banner.getBannerweburl())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerweburl不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringUtils.isNotBlank(banner.getGotype() + "")) {
+		if (StringUtils.isBlank(banner.getGotype() + "")) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数gotype不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringUtils.isNotBlank(banner.getBannerurl())) {
+		if (StringUtils.isBlank(banner.getBannerurl())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerurl不能为空！");
 			res = new JsonResponse(result);
@@ -261,7 +261,7 @@ public class BannerServiceImpl implements BannerService {
 	public JsonResponse batchDelete(String bannerids) {
 		Result result = null;
 		JsonResponse res = null;
-		if (StringUtils.isNotBlank(bannerids)) {
+		if (StringUtils.isBlank(bannerids)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerids不能为空！");
 			res = new JsonResponse(result);
@@ -309,7 +309,7 @@ public class BannerServiceImpl implements BannerService {
 				//				}
 				//			}
 				List<Dynamic> dynamicList = null;
-				if (!branchIds.equals("")) {
+				if (branchIds.size() > 0) {
 					if (type == 1) {
 						DynamicExample ex = new DynamicExample();
 						ex.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
@@ -376,10 +376,13 @@ public class BannerServiceImpl implements BannerService {
 				List<Introduce> list = itdao.selectByExample(iq);
 				if (list != null) {
 					for (int i = 0; i < list.size(); i++) {
-						goTypeResult = new GoTypeResult();
-						goTypeResult.setId(list.get(i).getIntroduceid());
-						goTypeResult.setName(list.get(i).getIntroducetitle());
-						goTypeResultList.add(goTypeResult);
+						String introducetitle = list.get(i).getIntroducetitle();
+						if (StringTools.notEmpty(introducetitle)) {
+							goTypeResult = new GoTypeResult();
+							goTypeResult.setId(list.get(i).getIntroduceid());
+							goTypeResult.setName(introducetitle);
+							goTypeResultList.add(goTypeResult);
+						}
 					}
 				}
 			} else if (goType.equals("6")) {
@@ -403,7 +406,7 @@ public class BannerServiceImpl implements BannerService {
 						for (int i = 0; i < list.size(); i++) {
 							goTypeResult = new GoTypeResult();
 							goTypeResult.setId(list.get(i).getNoticeid());
-							goTypeResult.setName(list.get(i).getNoticecontent());
+							goTypeResult.setName(list.get(i).getNoticetitle());
 							goTypeResultList.add(goTypeResult);
 						}
 					}

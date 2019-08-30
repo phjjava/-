@@ -23,6 +23,7 @@ import com.jp.common.Result;
 import com.jp.entity.Banner;
 import com.jp.entity.Introduce;
 import com.jp.entity.IntroudceTemplate;
+import com.jp.entity.SysMation;
 import com.jp.service.IntroudceTemplateService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
@@ -166,5 +167,12 @@ public class IntroudceTemplateController {
 		res = new JsonResponse(result);
 		return res;
 	}
-
+	/**
+	 * api模板书列表
+	 */
+	@RequestMapping(value = "/apilist", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse namelist(PageModel<IntroudceTemplate> pageModel,  IntroudceTemplate intemplate) {
+		return inService.pageQueryApi(pageModel, intemplate);
+	}
 }

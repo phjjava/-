@@ -97,13 +97,8 @@ public class SysBannerServiceImpl implements SysBannerService{
 		//SysMation goTypeResult = null;
 		//List<SysGoTypeResult> goTypeResultList = new ArrayList<SysGoTypeResult>();
 		//动态
-		 if(goType.equals("1")){
 			 //MationExample example = new MationExample();
-			 return badao.selectByExample();
-		 }else {
-			 return null;
-		 }
-		
+			 return badao.selectByExample();	
 	}
 
 	@Override

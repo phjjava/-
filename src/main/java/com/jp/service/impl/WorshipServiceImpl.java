@@ -32,6 +32,7 @@ import com.jp.entity.WorshipOblationType;
 import com.jp.entity.WorshipOblationTypeExample;
 import com.jp.entity.WorshipOblationVO;
 import com.jp.entity.WorshipVO;
+import com.jp.service.UserService;
 import com.jp.service.WorshipService;
 import com.jp.util.UUIDUtils;
 import com.jp.util.WebUtil;
@@ -51,12 +52,18 @@ public class WorshipServiceImpl implements WorshipService {
 	private WorshipAnnexMapper annexMapper;
 	@Resource
 	private UserDao userDao;
+	@Resource
+	private UserService userService;
 
 	@Override
 	public JsonResponse worship(Worship entity) {
 		Result result = null;
 		JsonResponse res = null;
 		try {
+			JsonResponse demoUser = userService.checkDemoUser();
+			if (demoUser.getCode() == 1) {
+				return demoUser;
+			}
 			if (entity.getWorshipid() == null || "".equals(entity.getWorshipid())) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数worishipid不能为空！");
@@ -246,6 +253,10 @@ public class WorshipServiceImpl implements WorshipService {
 		Result result = null;
 		JsonResponse res = null;
 		try {
+			JsonResponse demoUser = userService.checkDemoUser();
+			if (demoUser.getCode() == 1) {
+				return demoUser;
+			}
 			if (entity.getWorshipid() == null || "".equals(entity.getWorshipid())) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数worshipid不能为空！");

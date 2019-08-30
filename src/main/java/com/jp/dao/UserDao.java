@@ -142,7 +142,7 @@ public interface UserDao {
 
 	List<User> selectBranchByTitle(Map<String, String> map);
 
-	List<User> selectFamilycode(@Param("phone") String phone, @Param("status") Integer status);
+	List<Map<String, Object>> selectFamilycode(@Param("phone") String phone, @Param("status") Integer status);
 
 	@Select("select*from jp_user where status in (0,1)  and deleteflag = 0 and familyid is not null and phone = #{phone}")
 	List<User> selectByPhoneInStatus(@Param("phone") String phone);
@@ -150,8 +150,8 @@ public interface UserDao {
 	@Select("select*from jp_user where status = 0  and deleteflag = 0 and familyid is not null and phone = #{phone}")
 	List<User> selectByPhoneAndStatus(@Param("phone") String phone);
 
-	@Select("select*from jp_user where status =2 and deleteflag = 0 and familyid is not null and phone = #{phone} and familyid = #{familyid}")
-	List<User> selectByPhoneToStatus(@Param("phone") String phone, @Param("familyid") String familyid);
+	@Select("select count(1) from jp_user where status =2 and deleteflag = 0 and familyid is not null and phone = #{phone} and familyid = #{familyid}")
+	Integer selectByPhoneToStatus(@Param("phone") String phone, @Param("familyid") String familyid);
 
 	int countBranch(Map<String, String> totalparams);
 
@@ -168,8 +168,8 @@ public interface UserDao {
 	List<User> selectByNoUserids(@Param("array") List<String> strs, @Param("familyid") String familyid);
 
 	//根据用户家族id查询该家族的分支数
-	@Select("select max(genlevel) as genlevel from jp_user where familyid =#{familyid}")
-	int getUserFamilyid(@Param("familyid") String familyid);
+	@Select("select IFNULL(max(genlevel),0) as genlevel from jp_user where familyid =#{familyid}")
+	Integer getUserFamilyid(@Param("familyid") String familyid);
 
 	/**
 	* 根据家族id 家族名 世系代数 查找用户
@@ -181,8 +181,7 @@ public interface UserDao {
 	List<GenUserOtherVO> getUserByAncestor(@Param("familyid") String familyid, @Param("familyname") String familyname,
 			@Param("genlevel") Integer genlevel);
 
-	int getUserByAncestorCount(@Param("familyid") String familyid, @Param("familyname") String familyname,
-			@Param("genlevel") Integer genlevel);
+	Integer getUserByAncestorCount(@Param("familyid") String familyid, @Param("genlevel") Integer genlevel);
 
 	/**
 	 * 得到某用户的会员级别，member是null或者1为默认的普通会员
@@ -191,5 +190,19 @@ public interface UserDao {
 	 */
 	User selectByPrimaryKey1(String userid);
 
-	Integer getUserByAncestorCount(String familyid, Integer genlevel);
+	/**
+	 * 演示账号
+	 * @return
+	 */
+	@Select("select userid from jp_user where status =0 and deleteflag = 0 and phone = '18647740001' ")
+	List<String> selectDemoUserid();
+
+	/**
+	 * 当前登录人的手机号
+	 * @param userid
+	 * @return
+	 */
+	@Select("select phone from jp_user where userid = #{userid}")
+	String selectUserPhone(@Param("userid") String userid);
+
 }

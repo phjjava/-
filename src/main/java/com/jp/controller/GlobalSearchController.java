@@ -77,7 +77,17 @@ public class GlobalSearchController {
     public JsonResponse searchMoreUserContentVOs(GlobalSearch entity,HttpServletRequest request) {
         return globalService.searchMoreUserContentVOs(entity,request);
     }
-
+	
+	/**
+	 * 人物志更多+姓名搜索(api人物志更多使用)
+	 * @throws IOException
+	 * 
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/searchMoreUserContentVOsNew", method = RequestMethod.GET)
+	public JsonResponse searchMoreUserContentVOsNew(GlobalSearch entity,HttpServletRequest request,String username) {
+		return globalService.searchMoreUserContentVOsNew(entity,request,username);
+	}
 
     /**
      * 相册更多

@@ -270,7 +270,9 @@ public class SysBannerController {
 		JsonResponse res = null;
     	List<SysMation> gotypeList = null;
     	try {
-    		gotypeList = bpservice.selectByGoType(goType);
+    		if(goType.equals("1")) {
+    			gotypeList = bpservice.selectByGoType(goType);
+    		}
     		if(gotypeList==null) {
     			result = new Result(MsgConstants.JUMP_MESSAGE);
         		res = new JsonResponse(result);

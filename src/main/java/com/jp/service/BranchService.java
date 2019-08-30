@@ -16,7 +16,7 @@ public interface BranchService {
 
 	JsonResponse changeStatus(Branch branch);
 
-	JsonResponse initBranch(Branch branch);
+	JsonResponse initBranch(PageModel<Branch> pageModel, Branch branch);
 
 	/**
 	 * @描述 根据家族id userid 查询权限 无userid查询当前家族所有分支

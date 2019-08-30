@@ -79,7 +79,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, xname, createid, createtime, updateid, updatetime, sort, deleteflag,rcount
+    id, xname,intro, createid, createtime, updateid, updatetime, sort, deleteflag,rcount
   </sql>
   <!-- <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.JpXingExample" >
     select
@@ -114,7 +114,7 @@
   </select> -->
   <!-- 更改 -->
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jp.entity.JpXingExample" >
-    select x.id, x.xname, x.createid, x.createtime, x.updateid, x.updatetime, x.sort, x.deleteflag,x.rcount,c.* from jp_xing x left join jp_xing_content c on x.id=c.xingid
+    select x.id, x.xname,x.intro, x.createid, x.createtime, x.updateid, x.updatetime, x.sort, x.deleteflag,x.rcount,c.* from jp_xing x left join jp_xing_content c on x.id=c.xingid
     <!-- <if test="distinct" >
       distinct
     </if>
@@ -130,7 +130,7 @@
   </select>
   <!-- 更改 API接口sql-->
   <select id="selectByExampleNew" resultMap="BaseResultMap" parameterType="com.jp.entity.JpXingExample" >
-    select x.id, x.xname,c.xingid,c.content,di.name diccode from jp_xing x left join jp_xing_content c on x.id=c.xingid
+    select x.id, x.xname,x.createtime,x.updatetime,x.sort,c.xingid,c.content,di.name diccode from jp_xing x left join jp_xing_content c on x.id=c.xingid
 LEFT JOIN jp_xing_dic di on c.diccode =di.code 
     <if test="distinct" >
       distinct
@@ -146,13 +146,13 @@ LEFT JOIN jp_xing_dic di on c.diccode =di.code
     order by x.sort desc
   </select>
   <select id="selectByExample1" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select x.id, x.xname,c.xingid,c.content,di.name diccode from jp_xing x left join 
+    select x.id, x.xname,x.intro,x.sort,x.createtime,x.updatetime,c.xingid,c.content,di.name diccode from jp_xing x left join 
     jp_xing_content c on x.id=c.xingid LEFT JOIN jp_xing_dic di on c.diccode =di.code where xname like concat("%",#{xname},"%")
     
   </select>
   <!-- 更改 -->
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select x.id, x.xname,c.xingid,c.content,di.name diccode from jp_xing x left join 
+    select x.id, x.xname,x.intro,x.sort,x.createtime,c.xingid,c.content,di.name diccode from jp_xing x left join 
     jp_xing_content c on x.id=c.xingid LEFT JOIN jp_xing_dic di on c.diccode =di.code
     where x.id = #{id,jdbcType=VARCHAR}
   </select>
@@ -365,7 +365,7 @@ LEFT JOIN jp_xing_dic di on c.diccode =di.code
   </update>
   
   <select id="hotlist" resultMap="BaseResultMap">
-  		select x.id, x.xname,c.xingid,c.content,di.name diccode from jp_xing x left join jp_xing_content c on x.id=c.xingid
+  		select x.id, x.xname,x.intro,c.xingid,c.content,di.name diccode from jp_xing x left join jp_xing_content c on x.id=c.xingid
 LEFT JOIN jp_xing_dic di on c.diccode =di.code  order by rcount desc limit 5
   </select>
 </mapper>

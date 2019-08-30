@@ -22,14 +22,12 @@ import com.jp.common.JsonResponse;
 import com.jp.common.LoginUserInfo;
 import com.jp.common.MsgConstants;
 import com.jp.common.Result;
-import com.jp.dao.UserDao;
 import com.jp.entity.Branch;
 import com.jp.entity.Function;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
 import com.jp.service.BranchService;
 import com.jp.service.FunctionService;
-import com.jp.service.RoleService;
 import com.jp.service.UserManagerService;
 import com.jp.service.UserService;
 import com.jp.util.MD5Util;
@@ -45,15 +43,11 @@ public class LoginController {
 	@Autowired
 	private UserService userService;
 	@Autowired
-	private RoleService roleService;
-	@Autowired
 	private FunctionService functionService;
 	@Autowired
 	private BranchService branchService;
 	@Autowired
 	private UserManagerService userManagerService;
-	@Autowired
-	private UserDao userMapper;
 
 	/**
 	 * @描述 登录
@@ -149,12 +143,12 @@ public class LoginController {
 								// 重置sessionid到数据库
 								user.setSessionid(UUIDUtils.getUUID());
 							}
+							user.setUserManager(managers.get(0));
 							// 记录登陆时间
 							user.setLogintime(new Date());
-							userMapper.updateByPrimaryKeySelective(user);
+							userService.updateByPrimaryKeySelective(user);
 							// 保存session作用域
 							request.getSession().setAttribute("userContext", userContext);
-
 							result = new Result(MsgConstants.RESUL_SUCCESS);
 							res = new JsonResponse(result);
 							res.setData(user);
@@ -302,9 +296,10 @@ public class LoginController {
 				// 重置sessionid到数据库
 				user.setSessionid(UUIDUtils.getUUID());
 			}
+			user.setUserManager(managers.get(0));
 			// 记录登陆时间
 			user.setLogintime(new Date());
-			userMapper.updateByPrimaryKeySelective(user);
+			userService.updateByPrimaryKeySelective(user);
 			// 保存session作用域
 			session.setAttribute("userContext", userContext);
 			result = new Result(MsgConstants.RESUL_SUCCESS);

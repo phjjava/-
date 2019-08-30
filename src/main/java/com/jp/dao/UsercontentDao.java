@@ -46,4 +46,6 @@ public interface UsercontentDao {
 
 	List<UserContentVO> selectUserContentList(Map<String, String> map);
 
+	List<UserContentVO> searchtUserContentNew(Map<String, Object> map);
+
 }
