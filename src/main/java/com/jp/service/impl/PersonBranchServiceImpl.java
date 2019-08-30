@@ -112,6 +112,7 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 		totalparams.put("familyid", familyid);
 		totalparams.put("livestatus", "0");
 		int totalBranch = userMapper.countBranch(totalparams);
+		
 		alivePerson.setTotalPerson(alive);
 		alivePerson.setTotalBranch(totalBranch);
 		// 在世的直系

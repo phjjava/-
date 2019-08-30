@@ -279,7 +279,17 @@ public class BranchServiceImpl implements BranchService {
 		JsonResponse res = null;
 		try {
 			branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-			List<Branch> list = branchDao.selectBranchList(branch);
+			List<UserManager> userManager = CurrentUserContext.getCurrentUserManager();
+			List<String> branchIds = CurrentUserContext.getCurrentBranchIds();
+			List<Branch> list = new ArrayList<>();
+			for (UserManager um : userManager) {
+				if (um.getEbtype() == 1) {
+					list = branchDao.selectBranchList(branch, null);
+					break;
+				} else {
+					list = branchDao.selectBranchList(branch, branchIds);
+				}
+			}
 			if (list != null) {
 				pageModel.setList(list);
 				pageModel.setPageInfo(new PageInfo<Branch>(list));
