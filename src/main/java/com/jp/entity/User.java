@@ -189,6 +189,10 @@ public class User implements Serializable {
 	 */
 	private String branchname;
 	/**
+	 * 地址全称分支名称
+	 */
+	private String branchAllName;
+	/**
 	 * 已婚未婚
 	 */
 	private Integer isMarry;
@@ -308,6 +312,14 @@ public class User implements Serializable {
 
 	public void setUserAppLimit(UserAppLimit userAppLimit) {
 		this.userAppLimit = userAppLimit;
+	}
+
+	public String getBranchAllName() {
+		return branchAllName;
+	}
+
+	public void setBranchAllName(String branchAllName) {
+		this.branchAllName = branchAllName;
 	}
 
 	public String getOpenid() {

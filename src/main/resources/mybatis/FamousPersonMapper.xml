@@ -160,6 +160,10 @@
       <if test="sort != null" >
         sort,
       </if>
+      <if test="imgurl != null" >
+        imgurl,
+      </if>
+      
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="famousid != null" >
@@ -188,6 +192,9 @@
       </if>
       <if test="sort != null" >
         #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="imgurl != null" >
+        #{imgurl,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -273,6 +280,9 @@
       </if>
       <if test="sort != null" >
         sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="imgurl != null" >
+        imgurl = #{imgurl,jdbcType=VARCHAR},
       </if>
     </set>
     where famousid = #{famousid,jdbcType=VARCHAR}

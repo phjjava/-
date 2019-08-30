@@ -1286,7 +1286,9 @@ public class UserController {
 			// 增加address字段
 			for (Object obj : pageModel.getList()) {
 				User userAddrss = (User) obj;
-				userAddrss.setAddress(userDao.getAddressByUserid(userAddrss.getUserid()));
+				String address = userService.getAllAddressByUserid(userAddrss.getUserid());
+				userAddrss.setAddress(address);
+				userAddrss.setBranchAllName(address + "_" + userAddrss.getBranchname());
 				userList.add(userAddrss);
 			}
 			pageModel.setList(userList);

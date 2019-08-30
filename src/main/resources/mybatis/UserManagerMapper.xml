@@ -409,6 +409,6 @@
 		<if test="id != null">
 			and um.id &lt;&gt; #{id,jdbcType=VARCHAR}
 		</if>
-		order by -eb.sort desc,-p.sort desc,-um.sort desc
+		order by um.sort desc, -eb.sort desc,-p.sort desc
 	</select>
 </mapper>

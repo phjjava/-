@@ -322,4 +322,6 @@ public interface UserService {
 
 	JsonResponse checkDemoUser();
 
+	String getAllAddressByUserid(String userid);
+
 }

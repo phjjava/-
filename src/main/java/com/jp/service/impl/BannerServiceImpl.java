@@ -309,7 +309,7 @@ public class BannerServiceImpl implements BannerService {
 				//				}
 				//			}
 				List<Dynamic> dynamicList = null;
-				if (!branchIds.equals("")) {
+				if (branchIds.size() > 0) {
 					if (type == 1) {
 						DynamicExample ex = new DynamicExample();
 						ex.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
@@ -376,10 +376,13 @@ public class BannerServiceImpl implements BannerService {
 				List<Introduce> list = itdao.selectByExample(iq);
 				if (list != null) {
 					for (int i = 0; i < list.size(); i++) {
-						goTypeResult = new GoTypeResult();
-						goTypeResult.setId(list.get(i).getIntroduceid());
-						goTypeResult.setName(list.get(i).getIntroducetitle());
-						goTypeResultList.add(goTypeResult);
+						String introducetitle = list.get(i).getIntroducetitle();
+						if (StringTools.notEmpty(introducetitle)) {
+							goTypeResult = new GoTypeResult();
+							goTypeResult.setId(list.get(i).getIntroduceid());
+							goTypeResult.setName(introducetitle);
+							goTypeResultList.add(goTypeResult);
+						}
 					}
 				}
 			} else if (goType.equals("6")) {
@@ -403,7 +406,7 @@ public class BannerServiceImpl implements BannerService {
 						for (int i = 0; i < list.size(); i++) {
 							goTypeResult = new GoTypeResult();
 							goTypeResult.setId(list.get(i).getNoticeid());
-							goTypeResult.setName(list.get(i).getNoticecontent());
+							goTypeResult.setName(list.get(i).getNoticetitle());
 							goTypeResultList.add(goTypeResult);
 						}
 					}

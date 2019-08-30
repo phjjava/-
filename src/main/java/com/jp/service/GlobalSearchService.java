@@ -18,5 +18,7 @@ public interface GlobalSearchService {
 	JsonResponse searchMoreUserContentVOs(GlobalSearch entity,HttpServletRequest request);
 
 	JsonResponse searchMoreBranchAlbums(GlobalSearch entity,HttpServletRequest request);
+
+	JsonResponse searchMoreUserContentVOsNew(GlobalSearch entity, HttpServletRequest request, String username);
 	
 }
