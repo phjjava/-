@@ -34,7 +34,7 @@ public interface BranchDao {
 
 	int updateByPrimaryKey(Branch record);
 
-	List<Branch> selectBranchList(Branch record);
+	List<Branch> selectBranchList(@Param("branch") Branch branch, @Param("list") List<String> branchids);
 
 	List<Branch> selectBranchListByFamilyAndUserid(@Param("familyid") String familyid, @Param("userid") String userid,
 			@Param("branchname") String branchname);
