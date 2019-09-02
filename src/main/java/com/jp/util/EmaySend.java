@@ -19,7 +19,7 @@ public class EmaySend {
 		String[] phsStrings = { mobile };
 		int flag = -1;
 		try {
-            flag = SingletonClient.getClient().sendSMS(phsStrings, "【家谱】" + smsContent, "", 3);// 带扩展码
+            flag = SingletonClient.getClient().sendSMS(phsStrings, "【互联网家谱】" + smsContent, "", 3);// 带扩展码
 			System.out.println("testSendSMS=====" + flag);
 		} catch (Exception e) {
 			e.printStackTrace();
