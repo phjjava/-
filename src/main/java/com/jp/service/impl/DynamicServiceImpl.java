@@ -94,13 +94,7 @@ public class DynamicServiceImpl implements DynamicService {
 			return res;
 		}
 		try {
-			List<String> branchList = CurrentUserContext.getCurrentBranchIds();
-			if (StringTools.trimIsEmpty(branchList)) {
-				result = new Result(MsgConstants.RESUL_FAIL);
-				result.setMsg("您的账号当前没有分支");
-				res = new JsonResponse(result);
-				return res;
-			}
+			List<String> branchIds = CurrentUserContext.getCurrentBranchIds();
 			String familyid = CurrentUserContext.getCurrentFamilyId();
 			String userid = CurrentUserContext.getCurrentUserId();
 
@@ -120,7 +114,13 @@ public class DynamicServiceImpl implements DynamicService {
 				dynamic.setFamilyid(familyid);
 				list = dydao.selectReadOfManager(dynamic);
 			} else {
-				list = dydao.selectdyread(dynamic, branchList);
+				if (branchIds.size() < 1) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("您的账号当前没有分支");
+					res = new JsonResponse(result);
+					return res;
+				}
+				list = dydao.selectdyread(dynamic, branchIds);
 			}
 			if (list != null) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
