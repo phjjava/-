@@ -406,7 +406,7 @@ public class BannerServiceImpl implements BannerService {
 				if (StringTools.trimNotEmpty(notice.getDeleteflag())) {
 					criteria.andDeleteflagEqualTo(notice.getDeleteflag());
 				}
-				if (branchIds != null && branchIds.size() > 0) {
+				if (branchIds.size() > 0) {
 					criteria.andBranchidIn(branchIds);
 					List<NoticeVO> list = noticedao.selectNoticeMangeList(nq);
 					if (list != null) {
@@ -422,25 +422,25 @@ public class BannerServiceImpl implements BannerService {
 					}
 				}
 			} else if (goType.equals("7")) {
-				if (StringTools.trimNotEmpty(branchIds)) {
-					List<Branchphoto> list = new ArrayList<>();
-					if (type == 1) {
-						list = branchphotoDao.selectByFamilyid(familyid);
-					} else {
+				List<Branchphoto> list = new ArrayList<>();
+				if (type == 1) {
+					list = branchphotoDao.selectByFamilyid(familyid);
+				} else {
+					if (branchIds.size() > 0) {
 						list = branchphotoDao.selectByBranch(branchIds);
 					}
+				}
 
-					if (list != null) {
-						for (int i = 0; i < list.size(); i++) {
-							String description = list.get(i).getDescription();
-							if (StringTools.notEmpty(description)) {
-								goTypeResult = new GoTypeResult();
-								goTypeResult.setId(list.get(i).getImgurl());
-								goTypeResult.setName(description);
-								goTypeResult.setAlbumname(list.get(i).getAlbumname());
-								goTypeResult.setDate(DateUtils.FormatDate(list.get(i).getCreatetime(), "yyyy-MM-dd"));
-								goTypeResultList.add(goTypeResult);
-							}
+				if (list != null) {
+					for (int i = 0; i < list.size(); i++) {
+						String description = list.get(i).getDescription();
+						if (StringTools.notEmpty(description)) {
+							goTypeResult = new GoTypeResult();
+							goTypeResult.setId(list.get(i).getImgurl());
+							goTypeResult.setName(description);
+							goTypeResult.setAlbumname(list.get(i).getAlbumname());
+							goTypeResult.setDate(DateUtils.FormatDate(list.get(i).getCreatetime(), "yyyy-MM-dd"));
+							goTypeResultList.add(goTypeResult);
 						}
 					}
 				}
