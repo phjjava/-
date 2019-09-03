@@ -287,7 +287,14 @@ public class BranchServiceImpl implements BranchService {
 					list = branchDao.selectBranchList(branch, null);
 					break;
 				} else {
+					if (branchIds.size() < 1) {
+						result = new Result(MsgConstants.RESUL_FAIL);
+						result.setMsg("您的账号当前没有分支");
+						res = new JsonResponse(result);
+						return res;
+					}
 					list = branchDao.selectBranchList(branch, branchIds);
+					break;
 				}
 			}
 			if (list != null) {

@@ -66,7 +66,7 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 			// 当前登录人所管理的branchids
 			List<UserManager> managers = CurrentUserContext.getCurrentUserManager();
 			String familyid = CurrentUserContext.getCurrentFamilyId();
-			List<String> branchList = CurrentUserContext.getCurrentBranchIds();
+			List<String> branchIds = CurrentUserContext.getCurrentBranchIds();
 			List<Branchalbum> list = new ArrayList<Branchalbum>();
 			for (UserManager m : managers) {
 				BranchalbumExample example = new BranchalbumExample();
@@ -85,7 +85,13 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 					list = badao.selectByExample(example);
 					break;
 				} else {
-					criteria.andBranchidIn(branchList);
+					if (branchIds.size() < 1) {
+						result = new Result(MsgConstants.RESUL_FAIL);
+						result.setMsg("您的账号当前没有分支");
+						res = new JsonResponse(result);
+						return res;
+					}
+					criteria.andBranchidIn(branchIds);
 					list = badao.selectBranchAlbumMangeList(example);
 					break;
 				}

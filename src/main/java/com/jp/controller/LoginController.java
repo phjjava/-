@@ -79,107 +79,107 @@ public class LoginController {
 
 			Object sessionCode = request.getSession().getAttribute("code");
 			// 验证验证码是否正确
-			if (StringTools.notEmpty(inputCode) && StringTools.notEmpty(sessionCode)
-					&& inputCode.toLowerCase().equals(sessionCode.toString().toLowerCase())) {
-				// 验证用户、密码是否为空
-				if (StringTools.trimNotEmpty(phone) && StringTools.trimNotEmpty(password)) {
-					password = MD5Util.string2MD5(password);// 加密
-					List<User> userList = userService.login(phone, password);
+			/*		if (StringTools.notEmpty(inputCode) && StringTools.notEmpty(sessionCode)
+							&& inputCode.toLowerCase().equals(sessionCode.toString().toLowerCase())) {*/
+			// 验证用户、密码是否为空
+			if (StringTools.trimNotEmpty(phone) && StringTools.trimNotEmpty(password)) {
+				password = MD5Util.string2MD5(password);// 加密
+				List<User> userList = userService.login(phone, password);
 
-					// 验证用户名、密码是否正确
-					if (userList != null && userList.size() > 0) {
+				// 验证用户名、密码是否正确
+				if (userList != null && userList.size() > 0) {
 
-						if (userList.size() == 1) {
-							LoginUserInfo userContext = new LoginUserInfo();
-							// 用户信息
-							User user = userList.get(0);
-							userContext.setUser(user);
+					if (userList.size() == 1) {
+						LoginUserInfo userContext = new LoginUserInfo();
+						// 用户信息
+						User user = userList.get(0);
+						userContext.setUser(user);
 
-							// Role role = roleService.selectRoleByUserid(user.getFamilyid(),
-							// user.getUserid());
-							List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid());
-							if (managers == null || managers.size() == 0) {
-								result = new Result(MsgConstants.LOGIN_NOT_ADMIN);
-								res = new JsonResponse(result);
-								return res;
-							}
-							// userContext.setRole(role);
-							// userContext.setUsermanager(manager);
-							List<Function> functionList = functionService
-									.selectFunctionListByManagerid(user.getFamilyid(), user.getUserid());
-							List<Branch> branchList = branchService
-									.selectBranchListByFamilyAndUserid(user.getFamilyid(), user.getUserid());
-							// if(manager.getIsmanager() == 1 && manager.getEbtype() == 1 ){
-							// //获取该家族所有功能权限
-							//// functionList =
-							// functionService.selectFunctionListByRoleid(user.getFamilyid(), null);
-							//// branchList =
-							// branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(), null);
-							// functionList =
-							// functionService.selectFunctionListByManagerid(user.getFamilyid(), null);
-							// branchList =
-							// branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(), null);
-							// }else{
-							// //functionList =
-							// functionService.selectFunctionListByRoleidAndFamilyid(user.getFamilyid(),
-							// role.getRoleid());
-							// //branchList =
-							// branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(),
-							// user.getUserid());
-							// functionList =
-							// functionService.selectFunctionListByManagerid(user.getFamilyid(),
-							// user.getUserid());
-							// branchList =
-							// branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(),
-							// user.getUserid());
-							// }
-							userContext.setUsermanagers(managers);
-							userContext.setFunctionList(functionList);
-							userContext.setBranchList(branchList);
-							if (branchList == null) {
-								branchList = new ArrayList<Branch>();
-							}
-							if (user.getSessionid() == null) {
-								// 重置sessionid到数据库
-								user.setSessionid(UUIDUtils.getUUID());
-							}
-							user.setUserManager(managers.get(0));
-							// 记录登陆时间
-							user.setLogintime(new Date());
-							userService.updateByPrimaryKeySelective(user);
-							// 保存session作用域
-							request.getSession().setAttribute("userContext", userContext);
-							result = new Result(MsgConstants.RESUL_SUCCESS);
-							res = new JsonResponse(result);
-							res.setData(user);
-						} else if (userList.size() < 5) {
-
-							request.getSession().setAttribute("loginUserList", userList);
-
-							result = new Result(MsgConstants.LOGIN_USER_CHOOSEFAMILY);
-							res = new JsonResponse(result);
-							res.setData(userList);
-							return res;
-						} else {
-							result = new Result(MsgConstants.LOGIN_ABNORMAL);
+						// Role role = roleService.selectRoleByUserid(user.getFamilyid(),
+						// user.getUserid());
+						List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid());
+						if (managers == null || managers.size() == 0) {
+							result = new Result(MsgConstants.LOGIN_NOT_ADMIN);
 							res = new JsonResponse(result);
 							return res;
 						}
+						// userContext.setRole(role);
+						// userContext.setUsermanager(manager);
+						List<Function> functionList = functionService.selectFunctionListByManagerid(user.getFamilyid(),
+								user.getUserid());
+						List<Branch> branchList = branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(),
+								user.getUserid());
+						// if(manager.getIsmanager() == 1 && manager.getEbtype() == 1 ){
+						// //获取该家族所有功能权限
+						//// functionList =
+						// functionService.selectFunctionListByRoleid(user.getFamilyid(), null);
+						//// branchList =
+						// branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(), null);
+						// functionList =
+						// functionService.selectFunctionListByManagerid(user.getFamilyid(), null);
+						// branchList =
+						// branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(), null);
+						// }else{
+						// //functionList =
+						// functionService.selectFunctionListByRoleidAndFamilyid(user.getFamilyid(),
+						// role.getRoleid());
+						// //branchList =
+						// branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(),
+						// user.getUserid());
+						// functionList =
+						// functionService.selectFunctionListByManagerid(user.getFamilyid(),
+						// user.getUserid());
+						// branchList =
+						// branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(),
+						// user.getUserid());
+						// }
+						userContext.setUsermanagers(managers);
+						userContext.setFunctionList(functionList);
+						userContext.setBranchList(branchList);
+						if (branchList == null) {
+							branchList = new ArrayList<Branch>();
+						}
+						if (user.getSessionid() == null) {
+							// 重置sessionid到数据库
+							user.setSessionid(UUIDUtils.getUUID());
+						}
+						user.setUserManager(managers.get(0));
+						// 记录登陆时间
+						user.setLogintime(new Date());
+						userService.updateByPrimaryKeySelective(user);
+						// 保存session作用域
+						request.getSession().setAttribute("userContext", userContext);
+						result = new Result(MsgConstants.RESUL_SUCCESS);
+						res = new JsonResponse(result);
+						res.setData(user);
+					} else if (userList.size() < 5) {
+
+						request.getSession().setAttribute("loginUserList", userList);
+
+						result = new Result(MsgConstants.LOGIN_USER_CHOOSEFAMILY);
+						res = new JsonResponse(result);
+						res.setData(userList);
+						return res;
 					} else {
-						result = new Result(MsgConstants.LOGIN_USER_WRONG);
+						result = new Result(MsgConstants.LOGIN_ABNORMAL);
 						res = new JsonResponse(result);
 						return res;
 					}
 				} else {
-					result = new Result(MsgConstants.LOGIN_USER_NULL);
+					result = new Result(MsgConstants.LOGIN_USER_WRONG);
 					res = new JsonResponse(result);
 					return res;
 				}
 			} else {
-				result = new Result(MsgConstants.LOGIN_ICODE_WRONG);
+				result = new Result(MsgConstants.LOGIN_USER_NULL);
 				res = new JsonResponse(result);
 				return res;
 			}
+			/*} else {
+				result = new Result(MsgConstants.LOGIN_ICODE_WRONG);
+				res = new JsonResponse(result);
+				return res;
+			}*/
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[HNFZ_ERROR登录系统失败:]", e);

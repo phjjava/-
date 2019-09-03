@@ -290,9 +290,9 @@ public class BannerServiceImpl implements BannerService {
 		try {
 			Integer type = CurrentUserContext.getUserContext().getUsermanagers().get(0).getEbtype();
 			String familyid = CurrentUserContext.getCurrentFamilyId();
+			List<String> branchIds = CurrentUserContext.getCurrentBranchIds();
 			//动态
 			if (goType.equals("1")) {
-				List<String> branchIds = CurrentUserContext.getCurrentBranchIds();
 
 				//			if(type == 1){
 				//				branchIds.clear();//验证是否是总编委会
@@ -306,15 +306,14 @@ public class BannerServiceImpl implements BannerService {
 				//				}
 				//			}
 				List<Dynamic> dynamicList = null;
-				if (branchIds.size() > 0) {
-					if (type == 1) {
-						DynamicExample ex = new DynamicExample();
-						ex.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
-						dynamicList = dynamicDao.selectByExample(ex);
-					} else {
+				if (type == 1) {
+					DynamicExample ex = new DynamicExample();
+					ex.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
+					dynamicList = dynamicDao.selectByExample(ex);
+				} else {
+					if (branchIds.size() > 0) {
 						dynamicList = dynamicDao.selectGoType(branchIds);
 					}
-
 				}
 				if (dynamicList != null) {
 					for (int j = 0; j < dynamicList.size(); j++) {
@@ -407,9 +406,8 @@ public class BannerServiceImpl implements BannerService {
 				if (StringTools.trimNotEmpty(notice.getDeleteflag())) {
 					criteria.andDeleteflagEqualTo(notice.getDeleteflag());
 				}
-				List<String> currentBranchIds = CurrentUserContext.getCurrentBranchIds();
-				if (currentBranchIds != null && currentBranchIds.size() > 0) {
-					criteria.andBranchidIn(CurrentUserContext.getCurrentBranchIds());
+				if (branchIds != null && branchIds.size() > 0) {
+					criteria.andBranchidIn(branchIds);
 					List<NoticeVO> list = noticedao.selectNoticeMangeList(nq);
 					if (list != null) {
 						for (int i = 0; i < list.size(); i++) {
@@ -424,13 +422,12 @@ public class BannerServiceImpl implements BannerService {
 					}
 				}
 			} else if (goType.equals("7")) {
-				List<String> branchids = CurrentUserContext.getCurrentBranchIds();
-				if (StringTools.trimNotEmpty(branchids)) {
+				if (StringTools.trimNotEmpty(branchIds)) {
 					List<Branchphoto> list = new ArrayList<>();
 					if (type == 1) {
 						list = branchphotoDao.selectByFamilyid(familyid);
 					} else {
-						list = branchphotoDao.selectByBranch(branchids);
+						list = branchphotoDao.selectByBranch(branchIds);
 					}
 
 					if (list != null) {

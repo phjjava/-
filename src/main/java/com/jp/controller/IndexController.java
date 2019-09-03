@@ -82,7 +82,9 @@ public class IndexController {
 					countIndex = familyService.countIndex(familyid, null);
 					break;
 				} else {
-					countIndex = familyService.countIndex(familyid, branchids);
+					if (branchids.size() > 0) {
+						countIndex = familyService.countIndex(familyid, branchids);
+					}
 					break;
 				}
 

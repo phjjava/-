@@ -464,7 +464,9 @@ public class UserServiceImpl implements UserService {
 				userList = userInfoDao.selecAllUserList(user);
 				break;
 			} else {
-				userList = userInfoDao.selecUserList(user, branchList);
+				if (branchList.size() > 0) {
+					userList = userInfoDao.selecUserList(user, branchList);
+				}
 				break;
 			}
 		}
