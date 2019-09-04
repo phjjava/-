@@ -100,13 +100,7 @@ public class NoticeServiceImpl implements NoticeService {
 			List<UserManager> managers = CurrentUserContext.getCurrentUserManager();
 			UserManager manager = managers.get(0);
 
-			List<String> currentBranchIds = CurrentUserContext.getCurrentBranchIds();
-			if (StringTools.trimIsEmpty(currentBranchIds)) {
-				result = new Result(MsgConstants.RESUL_FAIL);
-				result.setMsg("您的账号当前没有分支");
-				res = new JsonResponse(result);
-				return res;
-			}
+			List<String> branchIds = CurrentUserContext.getCurrentBranchIds();
 			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 			List<NoticeVO> list = new ArrayList<>();
 			if (manager.getEbtype() == 1) {// 验证是否是总编委会主任
@@ -114,7 +108,13 @@ public class NoticeServiceImpl implements NoticeService {
 				nq.setOrderByClause("createtime DESC");
 				list = noticeMapper.selectNoticeMangeList(nq);
 			} else {
-				criteria.andBranchidIn(currentBranchIds);
+				if (branchIds.size() < 1) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("您的账号当前没有分支");
+					res = new JsonResponse(result);
+					return res;
+				}
+				criteria.andBranchidIn(branchIds);
 				nq.setOrderByClause("createtime DESC");
 				list = noticeMapper.selectNoticeMangeList(nq);
 			}
@@ -173,9 +173,11 @@ public class NoticeServiceImpl implements NoticeService {
 		JsonResponse res = null;
 		int status = 0;
 		try {
+			String userId = CurrentUserContext.getCurrentUserId();
+			String familyId = CurrentUserContext.getCurrentFamilyId();
 			if (StringTools.trimNotEmpty(notice.getNoticeid())) {
-				notice.setUpdateid(CurrentUserContext.getCurrentUserId());
-				notice.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				notice.setUpdateid(userId);
+				notice.setFamilyid(familyId);
 				if (notice.getNoticetype() == 0) {
 					notice.setBranchid("0");
 				}
@@ -191,11 +193,10 @@ public class NoticeServiceImpl implements NoticeService {
 				}
 			} else {
 				String noticeid = UUIDUtils.getUUID();
-				notice.setType(1);
 				notice.setNoticeid(noticeid);
-				notice.setCreateid(CurrentUserContext.getCurrentUserId());
+				notice.setCreateid(userId);
 				notice.setCreatename(CurrentUserContext.getCurrentUserName());
-				notice.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				notice.setFamilyid(familyId);
 				if (notice.getNoticetype() == 0) {
 					notice.setBranchid("0");
 				}

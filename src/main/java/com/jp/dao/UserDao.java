@@ -48,7 +48,7 @@ public interface UserDao {
 
 	int updateAleardyUser(@Param("list") List<User> userList);
 
-	List<User> selecUserListToReview(User user);
+	List<User> selecUserListToReview(@Param("user") User user, @Param("list") List<String> branchids);
 
 	List<Usercontent> selectUserContentList(Usercontent usercontent);
 

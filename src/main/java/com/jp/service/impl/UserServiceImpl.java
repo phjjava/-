@@ -385,62 +385,62 @@ public class UserServiceImpl implements UserService {
 					if (checkPid.getCode() == 1) {
 						return checkPid;
 					}
-					// 校验方法 返回 true为有重复，false 没重复
-					boolean sameFlag = checkSameUser(user);
-					if (sameFlag) {
-						// 校验有重复什么也不做哦
-						// result = "500";
-						result = new Result(MsgConstants.USER_SAVE_HAVEREPEAT);
-					} else {
-						// 保存用户信息
-						userDao.insertSelective(user);
-						String birthplaceP = userinfo.getBirthplaceP() == null ? "" : userinfo.getBirthplaceP();
-						String birthplaceC = userinfo.getBirthplaceC() == null ? "" : userinfo.getBirthplaceC();
-						String birthplaceX = userinfo.getBirthplaceX() == null ? "" : userinfo.getBirthplaceX();
-						String birthDetail = userinfo.getBirthDetail() == null ? "" : userinfo.getBirthDetail();
-						// 出生地
-						userinfo.setBirthplace(
-								birthplaceP + "@@" + birthplaceC + "@@" + birthplaceX + "@@" + birthDetail);
-						String homeplaceP = userinfo.getHomeplaceP() == null ? "" : userinfo.getHomeplaceP();
-						String homeplaceC = userinfo.getHomeplaceC() == null ? "" : userinfo.getHomeplaceC();
-						String homeplaceX = userinfo.getHomeplaceX() == null ? "" : userinfo.getHomeplaceX();
-						String homeDetail = userinfo.getHomeDetail() == null ? "" : userinfo.getHomeDetail();
-						// 常住地
-						userinfo.setHomeplace(homeplaceP + "@@" + homeplaceC + "@@" + homeplaceX + "@@" + homeDetail);
-						String birthday = userinfo.getBirthday();
-						if (StringUtils.isNotBlank(birthday)) {
-							//(农历日期范围19000101~20491229)
-							int parseInt = Integer.parseInt(birthday.replace("-", ""));
-							if (parseInt > 19000130 && parseInt < 20500101) {
-								String solarToLunar = CalendarUtil.solarToLunar(birthday);
-								userinfo.setLunarbirthday(solarToLunar);
-							}
+					if (StringTools.trimNotEmpty(user.getGenlevel())) {
+						// 校验方法 返回 true为有重复，false 没重复
+						if (checkSameUser(user)) {
+							// 校验有重复什么也不做哦
+							// result = "500";
+							result = new Result(MsgConstants.USER_SAVE_HAVEREPEAT);
+							return result;
 						}
-						// 保存用户详细信息
-						userInfoDao.insertSelective(userinfo);
-
-						// 循环保存教育经历
-						List<Useredu> eduList = user.getUserEdu();
-						for (Useredu useredu2 : eduList) {
-							useredu2.setUserid(userId);
-							useredu2.setEduid(UUIDUtils.getUUID());
-						}
-						if (eduList.size() > 0) {
-							userEduDao.insertEduExp(eduList);
-						}
-
-						// 循环保存工作经历
-						List<Userworkexp> workList = user.getUserWorkexp();
-						for (Userworkexp userwork : workList) {
-							userwork.setUserid(userId);
-							userwork.setWorkid(UUIDUtils.getUUID());
-						}
-						if (workList.size() > 0) {
-							userworkDao.insertEduExp(workList);
-						}
-
-						result = new Result(MsgConstants.RESUL_SUCCESS);
 					}
+					// 保存用户信息
+					userDao.insertSelective(user);
+					String birthplaceP = userinfo.getBirthplaceP() == null ? "" : userinfo.getBirthplaceP();
+					String birthplaceC = userinfo.getBirthplaceC() == null ? "" : userinfo.getBirthplaceC();
+					String birthplaceX = userinfo.getBirthplaceX() == null ? "" : userinfo.getBirthplaceX();
+					String birthDetail = userinfo.getBirthDetail() == null ? "" : userinfo.getBirthDetail();
+					// 出生地
+					userinfo.setBirthplace(birthplaceP + "@@" + birthplaceC + "@@" + birthplaceX + "@@" + birthDetail);
+					String homeplaceP = userinfo.getHomeplaceP() == null ? "" : userinfo.getHomeplaceP();
+					String homeplaceC = userinfo.getHomeplaceC() == null ? "" : userinfo.getHomeplaceC();
+					String homeplaceX = userinfo.getHomeplaceX() == null ? "" : userinfo.getHomeplaceX();
+					String homeDetail = userinfo.getHomeDetail() == null ? "" : userinfo.getHomeDetail();
+					// 常住地
+					userinfo.setHomeplace(homeplaceP + "@@" + homeplaceC + "@@" + homeplaceX + "@@" + homeDetail);
+					String birthday = userinfo.getBirthday();
+					if (StringUtils.isNotBlank(birthday)) {
+						//(农历日期范围19000101~20491229)
+						int parseInt = Integer.parseInt(birthday.replace("-", ""));
+						if (parseInt > 19000130 && parseInt < 20500101) {
+							String solarToLunar = CalendarUtil.solarToLunar(birthday);
+							userinfo.setLunarbirthday(solarToLunar);
+						}
+					}
+					// 保存用户详细信息
+					userInfoDao.insertSelective(userinfo);
+
+					// 循环保存教育经历
+					List<Useredu> eduList = user.getUserEdu();
+					for (Useredu useredu2 : eduList) {
+						useredu2.setUserid(userId);
+						useredu2.setEduid(UUIDUtils.getUUID());
+					}
+					if (eduList.size() > 0) {
+						userEduDao.insertEduExp(eduList);
+					}
+
+					// 循环保存工作经历
+					List<Userworkexp> workList = user.getUserWorkexp();
+					for (Userworkexp userwork : workList) {
+						userwork.setUserid(userId);
+						userwork.setWorkid(UUIDUtils.getUUID());
+					}
+					if (workList.size() > 0) {
+						userworkDao.insertEduExp(workList);
+					}
+
+					result = new Result(MsgConstants.RESUL_SUCCESS);
 				} else {
 					result = new Result(MsgConstants.USER_SAVE_OUTMAX);
 				}
@@ -464,7 +464,9 @@ public class UserServiceImpl implements UserService {
 				userList = userInfoDao.selecAllUserList(user);
 				break;
 			} else {
-				userList = userInfoDao.selecUserList(user, branchList);
+				if (branchList.size() > 0) {
+					userList = userInfoDao.selecUserList(user, branchList);
+				}
 				break;
 			}
 		}
@@ -1036,8 +1038,8 @@ public class UserServiceImpl implements UserService {
 		// 离世 不需要判断手机号 使用用户名和父亲名字判断及手机号码判断
 		List<User> searchRt = userDao.selectUserByFamilyId(user.getFamilyid());
 		for (User userf : searchRt) {
-			if (StringUtil.isNotEmpty(userf.getUsername()) && userf.getUsername().equals(user.getUsername())
-					&& userf.getGenlevel().equals(user.getGenlevel())) {
+			if (StringUtil.isNotEmpty(userf.getUsername()) && user.getUsername().equals(userf.getUsername())
+					&& user.getGenlevel().equals(userf.getGenlevel())) {
 				if (userf.getPhone() != null && userf.getPhone().equals(user.getPhone())) {
 					if (StringUtil.isNotEmpty(userf.getPname())) {
 						if (StringUtil.isNotEmpty(user.getPname()) && userf.getPname().equals(user.getPname())) {
@@ -1753,8 +1755,18 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public PageModel<User> selecUserListToReview(PageModel<User> pageModel, User user) throws Exception {
+		List<UserManager> managers = CurrentUserContext.getCurrentUserManager();
+		UserManager manager = managers.get(0);
+		List<String> branchids = CurrentUserContext.getCurrentBranchIds();
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		List<User> userList = userDao.selecUserListToReview(user);
+		List<User> userList = new ArrayList<>();
+		if (manager.getEbtype() == 1) {
+			userList = userDao.selecUserListToReview(user, null);
+		} else {
+			if (branchids.size() > 0) {
+				userList = userDao.selecUserListToReview(user, branchids);
+			}
+		}
 		pageModel.setList(userList);
 		pageModel.setPageInfo(new PageInfo<User>(userList));
 		return pageModel;
@@ -1791,6 +1803,7 @@ public class UserServiceImpl implements UserService {
 					userMmateUpdate.setIsMarry(1);
 					userMmateUpdate.setPid(user1.getPid());
 					userMmateUpdate.setPname(user1.getPname());
+					System.out.println(userMmateUpdate.getBranchname());
 					if (StringTools.trimNotEmpty(phone)) {
 						userMmateUpdate.setPassword(MD5Util.string2MD5(phone.substring(phone.length() - 6)));
 					}
@@ -1884,6 +1897,7 @@ public class UserServiceImpl implements UserService {
 				}
 			} else {// 配偶做为记录
 				// 修改配偶保存逻辑，配偶信息作为主用户存到user表里，jp_usermates单独的用户配偶表弃用
+				
 				User userMates = new User();
 				userMates.setUserid(userid);
 				userMates.setMateid(user.getUserid());
@@ -1916,9 +1930,10 @@ public class UserServiceImpl implements UserService {
 				} else {
 					// userMatesDao.insertSelective(userMates);
 					userDao.insertSelective(userMates);
-
 					userInfo.setUserid(userid);
 					userInfoDao.insertSelective(userInfo);
+					//修改配偶信息
+					userDao.updateByPrimaryKeySelective(user);
 					result = new Result(MsgConstants.RESUL_SUCCESS);
 				}
 			}
