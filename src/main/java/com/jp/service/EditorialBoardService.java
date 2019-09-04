@@ -28,28 +28,6 @@ public interface EditorialBoardService {
 	 */
 	EditorialBoard getEditorialBoard(String id) throws Exception;
 
-	/**
-	 * @描述 修改编委会
-	 * @作者 chenxiaobing
-	 * @时间 2018年8月27日下午4:21:48
-	 * @参数 @param eb
-	 * @参数 @return
-	 * @参数 @throws Exception
-	 * @return int
-	 */
-	Integer update(EditorialBoard eb) throws Exception;
-
-	/**
-	 * @描述 新增编委会
-	 * @作者 chenxiaobing
-	 * @时间 2018年8月27日下午5:00:56
-	 * @参数 @param eb
-	 * @参数 @return
-	 * @参数 @throws Exception
-	 * @return List<Role>
-	 */
-	Integer insert(EditorialBoard eb) throws Exception;
-
 	int del(String id);
 
 	JsonResponse selecteditorialBoardList(String userid);

@@ -18,8 +18,6 @@ import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.entity.EditorialBoard;
 import com.jp.service.EditorialBoardService;
-import com.jp.util.StringTools;
-import com.jp.util.UUIDUtils;
 
 @Controller
 @RequestMapping("editorial")
@@ -34,38 +32,6 @@ public class EditorialControll {
 	@ResponseBody
 	public JsonResponse save(EditorialBoard eb) {
 		return editorialBoardService.save(eb);
-	}
-
-	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	@ResponseBody
-	public JsonResponse save1(EditorialBoard eb) {
-		Result result = null;
-		JsonResponse res = null;
-		Integer status = null;
-		try {
-			if (StringTools.notEmpty(eb.getId())) {// 修改
-				status = editorialBoardService.update(eb);
-			} else {// 新增
-				eb.setId(UUIDUtils.getUUID());
-				eb.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-				eb.setType(0);
-				status = editorialBoardService.insert(eb);
-			}
-			if (status > 0) {
-				result = new Result(MsgConstants.RESUL_SUCCESS);
-				res = new JsonResponse(result);
-				return res;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_FAIL);
-		res = new JsonResponse(result);
-		return res;
 	}
 
 	@RequestMapping(value = "/list", method = RequestMethod.POST)

@@ -62,19 +62,6 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 	}
 
 	@Override
-	public Integer insert(EditorialBoard entity) throws Exception {
-		return editorialBoardMapper.insertSelective(entity);
-
-	}
-
-	@Override
-	public Integer update(EditorialBoard entity) throws Exception {
-
-		return editorialBoardMapper.updateByPrimaryKeySelective(entity);
-
-	}
-
-	@Override
 	public int del(String id) {
 		return editorialBoardMapper.deleteByPrimaryKey(id);
 	}
