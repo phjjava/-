@@ -1777,6 +1777,7 @@ public class UserServiceImpl implements UserService {
 					userMmateUpdate.setIsMarry(1);
 					userMmateUpdate.setPid(user1.getPid());
 					userMmateUpdate.setPname(user1.getPname());
+					System.out.println(userMmateUpdate.getBranchname());
 					if (StringTools.trimNotEmpty(phone)) {
 						userMmateUpdate.setPassword(MD5Util.string2MD5(phone.substring(phone.length() - 6)));
 					}
@@ -1870,6 +1871,7 @@ public class UserServiceImpl implements UserService {
 				}
 			} else {// 配偶做为记录
 				// 修改配偶保存逻辑，配偶信息作为主用户存到user表里，jp_usermates单独的用户配偶表弃用
+				
 				User userMates = new User();
 				userMates.setUserid(userid);
 				userMates.setMateid(user.getUserid());
@@ -1902,9 +1904,10 @@ public class UserServiceImpl implements UserService {
 				} else {
 					// userMatesDao.insertSelective(userMates);
 					userDao.insertSelective(userMates);
-
 					userInfo.setUserid(userid);
 					userInfoDao.insertSelective(userInfo);
+					//修改配偶信息
+					userDao.updateByPrimaryKeySelective(user);
 					result = new Result(MsgConstants.RESUL_SUCCESS);
 				}
 			}
