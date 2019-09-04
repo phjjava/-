@@ -32,7 +32,13 @@ public class EditorialControll {
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse save(HttpServletRequest request, EditorialBoard eb) {
+	public JsonResponse save(EditorialBoard eb) {
+		return editorialBoardService.save(eb);
+	}
+
+	@RequestMapping(value = "/save", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse save1(EditorialBoard eb) {
 		Result result = null;
 		JsonResponse res = null;
 		Integer status = null;

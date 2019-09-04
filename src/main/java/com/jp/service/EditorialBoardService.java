@@ -54,4 +54,6 @@ public interface EditorialBoardService {
 
 	JsonResponse selecteditorialBoardList(String userid);
 
+	JsonResponse save(EditorialBoard eb);
+
 }
