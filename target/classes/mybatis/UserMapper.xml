@@ -1030,25 +1030,25 @@
 	<select id="selecUserListToReview"
 		resultType="com.jp.entity.User" parameterType="com.jp.entity.User">
 		select
-		user.userid as userid,user.username as username,user.sex as
-		sex,userInfo.birthday
-		as searchBirthday
-		,user.brotherpos as
-		brotherpos,user.genlevel as genlevel,user.branchname as
-		branchname,user.status as status
-		from jp_user user left join
-		jp_userinfo userInfo
-		on userInfo.userid = user.userid
+		user.userid ,user.username ,user.sex ,userInfo.birthday	as searchBirthday
+		,user.brotherpos ,user.genlevel ,user.branchname ,user.status 
+		from jp_user user 
+		left join jp_userinfo userInfo on userInfo.userid = user.userid
 		where
-		user.familyid = #{familyid,jdbcType=VARCHAR}
+		user.familyid = #{user.familyid,jdbcType=VARCHAR}
 		and status in (1,2)
-		<if test="status != null and status != ''">
-			and user.status = #{status,jdbcType=INTEGER}
+		<if test="user.status != null and user.status != ''">
+			and user.status = #{user.status,jdbcType=INTEGER}
 		</if>
-		<if test="username != null and username != ''">
-			and user.username like CONCAT('%', CONCAT(#{username}),
-			'%')
+		<if test="user.username != null and user.username != ''">
+			and user.username like CONCAT('%', CONCAT(#{user.username}),'%')
 		</if>
+		<if test="list != null">
+			and a.branchid in 
+			<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+		    </foreach>
+     	</if>
 	</select>
 
 	<select id="selectUserContentList"

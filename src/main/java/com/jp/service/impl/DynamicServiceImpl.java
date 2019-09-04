@@ -107,10 +107,6 @@ public class DynamicServiceImpl implements DynamicService {
 			List<UserManager> managers = userManagerMapper.selectByExample(example);
 			UserManager manager = managers.get(0);
 			if (manager.getEbtype() == 1) {// 验证是否是总编委会
-				DynamicExample example1 = new DynamicExample();
-				example1.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
-
-				// list = dydao.selectByExample(example1);
 				dynamic.setFamilyid(familyid);
 				list = dydao.selectReadOfManager(dynamic);
 			} else {
@@ -251,17 +247,13 @@ public class DynamicServiceImpl implements DynamicService {
 		JsonResponse res = null;
 		int status = 0;
 		try {
+			String userid = CurrentUserContext.getCurrentUserId();
 			// 编辑
 			if (StringTools.trimNotEmpty(dynamic.getDyid())) {
-				/*
-				 * if(dynamic.getCreatetimeStr() != null){ SimpleDateFormat formatter = new
-				 * SimpleDateFormat("yyyy-MM-dd");
-				 * dynamic.setUpdatetime(formatter.parse(dynamic.getCreatetimeStr())); }
-				 */
 				if (dynamic.getDytype() == 0) {
 					dynamic.setBranchid("0");
 				}
-				dynamic.setUpdateid(CurrentUserContext.getCurrentUserId());
+				dynamic.setUpdateid(userid);
 				dynamic.setUpdatetime(new Date());
 				status = dydao.updateByPrimaryKeySelective(dynamic);
 				// 先删除，原有的附件
@@ -289,9 +281,8 @@ public class DynamicServiceImpl implements DynamicService {
 				}
 				// 新增
 				String dyid = UUIDUtils.getUUID();
-				dynamic.setType(0);
 				dynamic.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-				dynamic.setCreateid(CurrentUserContext.getCurrentUserId());
+				dynamic.setCreateid(userid);
 				dynamic.setCreatename(CurrentUserContext.getCurrentUserName());
 				dynamic.setDyid(dyid);
 				dynamic.setDeleteflag(0);

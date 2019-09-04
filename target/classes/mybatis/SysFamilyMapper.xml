@@ -365,9 +365,8 @@
 	union all
 	select null applycount , null usercount,null shicount,count(*) branchcount, null rolecount from jp_branch  WHERE `status` = 0 AND familyid = #{familyid,jdbcType=VARCHAR}
 	union all
-	select 
-	count(*) applycount, null usercount,null shicount,null branchcount, null rolecount
-	from jp_user `user` where `user`.`status` <> 0 and `user`.deleteflag = 0 and `user`.familyid = #{familyid,jdbcType=VARCHAR} 
+	select count(*) applycount, null usercount,null shicount,null branchcount, null rolecount
+	from jp_user `user` where `user`.`status` = 1 and `user`.deleteflag = 0 and `user`.familyid = #{familyid,jdbcType=VARCHAR} 
 	 ]]>
 	 <if test="list != null">
 	 and `user`.branchid in 
