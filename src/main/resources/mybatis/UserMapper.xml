@@ -62,16 +62,18 @@
 		<result column="branchname" property="branchname"
 			jdbcType="VARCHAR" />
 		<result column="ismarry" property="isMarry" jdbcType="TINYINT" />
-		<collection property="member" resultMap="memberMap"/>
+		<collection property="member" resultMap="memberMap" />
 	</resultMap>
 	<resultMap id="memberMap" type="com.jp.entity.JpMember">
-    <id column="mid" jdbcType="VARCHAR" property="mid" />
-    <result column="mname" jdbcType="VARCHAR" property="mname" />
-    <result column="mimgurl" jdbcType="VARCHAR" property="mimgurl" />
-    <result column="member" jdbcType="INTEGER" property="member" />
-    <result column="starttime" jdbcType="TIMESTAMP" property="starttime" />
-    <result column="sort" jdbcType="INTEGER" property="sort" />
-    <result column="memberStatus" jdbcType="INTEGER" property="memberstatus" />
+		<id column="mid" jdbcType="VARCHAR" property="mid" />
+		<result column="mname" jdbcType="VARCHAR" property="mname" />
+		<result column="mimgurl" jdbcType="VARCHAR" property="mimgurl" />
+		<result column="member" jdbcType="INTEGER" property="member" />
+		<result column="starttime" jdbcType="TIMESTAMP"
+			property="starttime" />
+		<result column="sort" jdbcType="INTEGER" property="sort" />
+		<result column="memberStatus" jdbcType="INTEGER"
+			property="memberstatus" />
 	</resultMap>
 	<sql id="Example_Where_Clause">
 		<where>
@@ -778,8 +780,8 @@
 			<if test="livestatus != null">
 				livestatus = #{livestatus,jdbcType=TINYINT},
 			</if>
-				phone = #{phone,jdbcType=VARCHAR},
-				usedname = #{usedname,jdbcType=VARCHAR},
+			phone = #{phone,jdbcType=VARCHAR},
+			usedname = #{usedname,jdbcType=VARCHAR},
 			<if test="createtime != null">
 				createtime = #{createtime,jdbcType=TIMESTAMP},
 			</if>
@@ -792,7 +794,7 @@
 			<if test="updateid != null">
 				updateid = #{updateid,jdbcType=VARCHAR},
 			</if>
-				remarkelse = #{remarkelse,jdbcType=VARCHAR},
+			remarkelse = #{remarkelse,jdbcType=VARCHAR},
 			<if test="branchid != null">
 				branchid = #{branchid,jdbcType=VARCHAR},
 			</if>
@@ -826,14 +828,14 @@
 			<if test="username != null">
 				username = #{username,jdbcType=VARCHAR},
 			</if>
-				idcard = #{idcard,jdbcType=CHAR},
+			idcard = #{idcard,jdbcType=CHAR},
 			<if test="isborn != null">
 				isborn = #{isborn,jdbcType=TINYINT},
 			</if>
 			<if test="dietime != null">
 				dietime = #{dietime,jdbcType=VARCHAR},
 			</if>
-				fixplace = #{fixplace,jdbcType=VARCHAR},
+			fixplace = #{fixplace,jdbcType=VARCHAR},
 			<if test="isdirect != null">
 				isdirect = #{isdirect,jdbcType=TINYINT},
 			</if>
@@ -976,7 +978,7 @@
 	</select>
 
 	<update id="changeStatus" parameterType="com.jp.entity.User">
-		update jp_user 
+		update jp_user
 		<set>
 			<if test="status != null">
 				status = #{status,jdbcType=TINYINT},
@@ -1030,9 +1032,11 @@
 	<select id="selecUserListToReview"
 		resultType="com.jp.entity.User" parameterType="com.jp.entity.User">
 		select
-		user.userid ,user.username ,user.sex ,userInfo.birthday	as searchBirthday
-		,user.brotherpos ,user.genlevel ,user.branchname ,user.status 
-		from jp_user user 
+		user.userid ,user.username ,user.sex ,userInfo.birthday as
+		searchBirthday
+		,user.brotherpos ,user.genlevel ,user.branchname
+		,user.status
+		from jp_user user
 		left join jp_userinfo userInfo on userInfo.userid = user.userid
 		where
 		user.familyid = #{user.familyid,jdbcType=VARCHAR}
@@ -1041,29 +1045,36 @@
 			and user.status = #{user.status,jdbcType=INTEGER}
 		</if>
 		<if test="user.username != null and user.username != ''">
-			and user.username like CONCAT('%', CONCAT(#{user.username}),'%')
+			and user.username like CONCAT('%',
+			CONCAT(#{user.username}),'%')
 		</if>
 		<if test="list != null">
-			and a.branchid in 
-			<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+			and a.branchid in
+			<foreach collection="list" item="item" index="index" open="("
+				separator="," close=")">
 				#{item}
-		    </foreach>
-     	</if>
+			</foreach>
+		</if>
 	</select>
 
 	<select id="selectUserContentList"
 		resultType="com.jp.entity.Usercontent"
 		parameterType="java.lang.String">
-		select distinct u.genlevel,u.username, uc.* from jp_user u LEFT OUTER
-		JOIN jp_usercontent uc on u.userid=uc.userid
-		where uc.userid is not null and uc.familyid= #{familyid,jdbcType=VARCHAR}
+		select distinct u.genlevel,u.username,
+		uc.userid,uc.content,uc.createid,uc.updateid,uc.createtime,uc.updatetime,uc.imgurl,uc.issee
+		,uc.sort, uc.familyid,
+		IFNULL(uc.readcount ,0) readcount from jp_user u LEFT OUTER
+		JOIN jp_usercontent uc on
+		u.userid=uc.userid
+		where uc.userid is not null and uc.familyid=
+		#{familyid,jdbcType=VARCHAR}
 		<if test="username != null and username != ''">
 			and u.username like CONCAT('%', CONCAT(#{username}), '%')
 		</if>
 		<if test="issee != null">
 			and uc.issee like CONCAT('%', CONCAT(#{issee}), '%')
 		</if>
-		order by -uc.sort desc,u.genlevel  asc
+		order by -uc.sort desc,u.genlevel asc
 	</select>
 	<!-- 登录 -->
 	<select id="login" resultType="com.jp.entity.User">
@@ -1072,10 +1083,11 @@
 		select u.*,f.`status` familystatus
 		from jp_user u join jp_sys_family f
 		on u.familyid=f.familyid
-		where 1=1 and u.phone =	#{phone,jdbcType=VARCHAR} 
-		and u.password = #{password,jdbcType=VARCHAR} 
-		and u.deleteflag=0 and u.`status`=0 
-		and	u.livestatus=0 
+		where 1=1 and u.phone =
+		#{phone,jdbcType=VARCHAR}
+		and u.password = #{password,jdbcType=VARCHAR}
+		and u.deleteflag=0 and u.`status`=0
+		and u.livestatus=0
 	</select>
 
 	<select id="validatePhone" resultType="com.jp.entity.User">
@@ -1083,12 +1095,13 @@
 		updatetime, createid, updateid,
 		remarkelse, branchid, pid, brotherpos,
 		password, logintime, sessionid, familyid,
-		status,	deleteflag, imgurl,
+		status, deleteflag, imgurl,
 		username,idcard, isborn, dietime, fixplace, isdirect,
-		genlevel,familyname, pinyinFirst, pinyinFull, pname, 
+		genlevel,familyname, pinyinFirst, pinyinFull, pname,
 		mateid, matename,branchname
 		from jp_user
-		where 1=1 and 'status'=0 and deleteflag=0
+		where 1=1 and 'status'=0 and
+		deleteflag=0
 		<if test="familyid != null">
 		<![CDATA[ and familyid <> #{familyid} ]]>
 		</if>
@@ -1110,7 +1123,8 @@
 	</select>
 	<update id="addmateid">
 		update jp_user
-		set mateid = #{mateid,jdbcType=VARCHAR},
+		set mateid =
+		#{mateid,jdbcType=VARCHAR},
 		matename = #{matename,jdbcType=VARCHAR}
 		where userid = #{userid,jdbcType=VARCHAR}
 	</update>
@@ -1152,12 +1166,15 @@
 
 	<select id="getAddressByUserid" resultType="java.lang.String"
 		parameterType="java.lang.String">
-		select	concat_ws('_',z.area,z.cityname,z.xname,ifNULL(z.address,' ')) as address
+		select
+		concat_ws('_',z.area,z.cityname,z.xname,ifNULL(z.address,' ')) as
+		address
 		from jp_user user
-		left join jp_userinfo userInfo 
-		on user.userid = userInfo.userid 
+		left join jp_userinfo userInfo
+		on user.userid = userInfo.userid
 		left join jp_branch z on user.branchid=z.branchid
-		where user.status = 0 and user.deleteflag = 0
+		where user.status = 0 and
+		user.deleteflag = 0
 		and user.userid = #{userid,jdbcType=VARCHAR}
 	</select>
 
@@ -1349,10 +1366,12 @@
 		jp_user u,
 		jp_sys_family f
 		where u.familyid=f.familyid
-		AND u.deleteflag = 0
+		AND
+		u.deleteflag = 0
 		AND u.`status` = 0
 		AND u.livestatus = 0
-		AND	u.familyid is not null
+		AND u.familyid
+		is not null
 
 		<if test="familyid != null">
 			and u.familyid=#{familyid,jdbcType=VARCHAR}
@@ -1375,7 +1394,8 @@
 		parameterType="com.jp.entity.SearchComplex"
 		resultType="com.jp.entity.User">
 		SELECT
-		u.*,ur.birthday,year(CURRENT_DATE)-substring_index(ur.birthday,'-',1) age 
+		u.*,ur.birthday,year(CURRENT_DATE)-substring_index(ur.birthday,'-',1)
+		age
 		FROM `jp_user` u, jp_branch b,jp_userinfo ur
 		where 1=1 and u.deleteflag=0
 		and u.branchid = b.branchid
@@ -1435,7 +1455,8 @@
 		SELECT count(*) as count FROM `jp_user` u, jp_branch b,jp_userinfo ur
 		where 1=1 and u.deleteflag=0
 		and u.branchid = b.branchid
-		and u.userid = ur.userid
+		and u.userid =
+		ur.userid
 		<if test="areacode != null and areacode != ''">
 			and b.areacode = #{areacode}
 		</if>
@@ -1551,11 +1572,14 @@
 		u.branchid=#{branchid,jdbcType=VARCHAR} order by u.pinyinfirst
 	</select>
 	<select id="selectFamilycode" resultType="map">
-		select t1.familyname,t1.familyid,t1.status,t2.familycode,t2.status familystatus
+		select
+		t1.familyname,t1.familyid,t1.status,t2.familycode,t2.status
+		familystatus
 		from jp_user t1
-		LEFT JOIN jp_sys_family t2 
-		ON	t1.familyid = t2.familyid
-		where phone = #{phone} and t1.status=#{status}
+		LEFT JOIN jp_sys_family t2
+		ON t1.familyid = t2.familyid
+		where phone = #{phone} and
+		t1.status=#{status}
 		and deleteflag = 0 and t1.familyid is not null
 	</select>
 	<select id="countBranch" resultType="java.lang.Integer"
@@ -1570,19 +1594,22 @@
 		group by branchid ) t
 	</select>
 	<select id="countBranch2" resultType="java.lang.Integer">
-		select count(*) as count from (
+		select count(*) as count
+		from (
 		select branchid from jp_user
 		where
 		familyid=#{familyid,jdbcType=VARCHAR} and branchid is not null
-		and livestatus != 0 and livestatus != 1
+		and
+		livestatus != 0 and livestatus != 1
 		group by branchid ) t
 	</select>
 	<select id="selectUserByAreaCode"
 		resultType="com.jp.entity.User" parameterType="Map">
 		select t1.* from jp_user t1
 		LEFT JOIN jp_branch t2
-		ON t1.branchid = t2.branchid
-		where t1.deleteflag = 0 and t1.status = 0 
+		ON t1.branchid =
+		t2.branchid
+		where t1.deleteflag = 0 and t1.status = 0
 		<if test="areacode != null">
 			and areacode = #{areacode,jdbcType=VARCHAR}
 		</if>
@@ -1593,7 +1620,8 @@
 			and t1.familyid = #{familyid,jdbcType=VARCHAR}
 		</if>
 	</select>
-	<select id="selectCountByAreaCode" resultType="java.lang.Integer" parameterType="Map">
+	<select id="selectCountByAreaCode"
+		resultType="java.lang.Integer" parameterType="Map">
 		SELECT count(1) FROM jp_branch WHERE `status` = 0
 		<if test="areacode != null">
 			and areacode = #{areacode,jdbcType=VARCHAR}
@@ -1617,7 +1645,8 @@
 		deleteflag = 0
 		and
 		status = 0
-		and familyid = #{familyid}
+		and familyid =
+		#{familyid}
 		and userid in
 		<foreach collection="array" item="item" index="index" open="("
 			separator="," close=")">
@@ -1630,7 +1659,8 @@
 		where
 		deleteflag = 0
 		and status = 0
-		and familyid = #{familyid}
+		and familyid =
+		#{familyid}
 		and branchid not
 		in
 		<foreach collection="array" item="item" index="index" open="("
@@ -1638,13 +1668,15 @@
 			#{item}
 		</foreach>
 	</select>
-	 <select id="selectUserByNoTag" resultType="com.jp.entity.User">
+	<select id="selectUserByNoTag" resultType="com.jp.entity.User">
 		select u.* from jp_user_tag t left join jp_user_tag_user tu on t.id =
 		tu.tag_id left join jp_user u on tu.userid = u.userid
-		where t.deleteflag = 0
+		where
+		t.deleteflag = 0
 		and tu.deleteflag = 0
 		and u.deleteflag = 0
-		and u.status = 0
+		and u.status
+		= 0
 		and u.familyid = #{familyid}
 		and t.id not in
 		<foreach collection="array" item="item" index="index" open="("
@@ -1652,8 +1684,8 @@
 			#{item}
 		</foreach>
 	</select>
-		<select id="selectByNoUserids" resultType="com.jp.entity.User">
-		select * from jp_user 
+	<select id="selectByNoUserids" resultType="com.jp.entity.User">
+		select * from jp_user
 		where
 		deleteflag = 0
 		and
@@ -1664,73 +1696,77 @@
 			separator="," close=")">
 			#{item}
 		</foreach>
- 	</select>
-	<select id="getUserByAncestor" resultType="com.jp.entity.GenUserOtherVO"
-		parameterType="java.lang.Object">
-		
-		SELECT
-			m.*,
-			n.username AS mateusername,
-			n.livestatus AS matelivestatus,
-			n.sex AS matesex,
-			n.imgurl AS mateimgurl,
-			n.genlevel AS mategenlevel,
-			n.dietime AS matedietime,
-			n.birthday AS matebirthday 
-		FROM
-			(
-		SELECT
-			g.userid AS userid,
-			g.username AS username,
-			g.livestatus AS livestatus,
-			g.sex AS sex,
-			g.imgurl AS imgurl,
-			g.genlevel AS genlevel,
-			g.dietime AS dietime,
-			g.mateid AS mateuserid,
-			f.birthday AS birthday 
-		FROM
-			jp_user g,
-			jp_userinfo f 
-		WHERE
-			g.userid = f.userid 
-			AND g.familyid = #{familyid} 
-			AND g.genlevel = #{genlevel} 
-			AND g.isdirect = 1
-			) m
-			LEFT JOIN (
-		SELECT
-			g.userid AS userid,
-			g.username AS username,
-			g.livestatus AS livestatus,
-			g.sex AS sex,
-			g.imgurl AS imgurl,
-			g.genlevel AS genlevel,
-			g.dietime AS dietime,
-			g.mateid AS mateuserid,
-			f.birthday AS birthday 
-		FROM
-			jp_user g,
-			jp_userinfo f 
-		WHERE
-			g.userid = f.userid 
-			) n ON m.mateuserid = n.userid
-			
 	</select>
-	<select id="getUserByAncestorCount" resultType="java.lang.Integer"
+	<select id="getUserByAncestor"
+		resultType="com.jp.entity.GenUserOtherVO"
 		parameterType="java.lang.Object">
+
 		SELECT
-			count(*) 
+		m.*,
+		n.username AS mateusername,
+		n.livestatus AS matelivestatus,
+		n.sex AS matesex,
+		n.imgurl AS mateimgurl,
+		n.genlevel AS mategenlevel,
+		n.dietime AS matedietime,
+		n.birthday AS matebirthday
 		FROM
-			jp_user 
+		(
+		SELECT
+		g.userid AS userid,
+		g.username AS username,
+		g.livestatus AS livestatus,
+		g.sex AS sex,
+		g.imgurl AS imgurl,
+		g.genlevel AS genlevel,
+		g.dietime AS dietime,
+		g.mateid AS mateuserid,
+		f.birthday AS birthday
+		FROM
+		jp_user g,
+		jp_userinfo f
 		WHERE
-			familyid = #{familyid} 
-			AND genlevel = #{genlevel} 
-			AND livestatus = 1 
-			
+		g.userid = f.userid
+		AND g.familyid = #{familyid}
+		AND g.genlevel = #{genlevel}
+		AND g.isdirect = 1
+		) m
+		LEFT JOIN (
+		SELECT
+		g.userid AS userid,
+		g.username AS username,
+		g.livestatus AS livestatus,
+		g.sex AS sex,
+		g.imgurl AS imgurl,
+		g.genlevel AS genlevel,
+		g.dietime AS dietime,
+		g.mateid AS mateuserid,
+		f.birthday AS birthday
+		FROM
+		jp_user g,
+		jp_userinfo f
+		WHERE
+		g.userid = f.userid
+		) n ON m.mateuserid = n.userid
+
 	</select>
-	
-	<select id="selectByPrimaryKey1" parameterType="java.lang.String" resultMap="BaseResultMap">
-		select * from jp_user u left join jp_member m on u.userid=m.mid where u.userid= #{userid,jdbcType=VARCHAR}
+	<select id="getUserByAncestorCount"
+		resultType="java.lang.Integer" parameterType="java.lang.Object">
+		SELECT
+		count(*)
+		FROM
+		jp_user
+		WHERE
+		familyid = #{familyid}
+		AND genlevel = #{genlevel}
+		AND livestatus = 1
+
+	</select>
+
+	<select id="selectByPrimaryKey1"
+		parameterType="java.lang.String" resultMap="BaseResultMap">
+		select * from jp_user u
+		left join jp_member m on u.userid=m.mid where u.userid=
+		#{userid,jdbcType=VARCHAR}
 	</select>
 </mapper>
