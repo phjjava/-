@@ -1867,6 +1867,7 @@ public class UserServiceImpl implements UserService {
 							userDao.updateByPrimaryKeySelective(user1);
 							// userinfo 表
 							userInfo.setUserid(userid);
+							
 							/*
 							 * if (!userInfo.getBirthdayStr().equals("")) { // SimpleDateFormat sdfd = new
 							 * SimpleDateFormat("yyy-MM-dd"); //
