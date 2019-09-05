@@ -14,7 +14,7 @@ public class NoticeVO extends Notice {
 	/**
 	 * 公告浏览量
 	 */
-	private String readCount;
+	private Integer readNum;
 
 	private Notice notice;
 
@@ -54,12 +54,12 @@ public class NoticeVO extends Notice {
 		this.tobranchid = tobranchid;
 	}
 
-	public String getReadCount() {
-		return readCount;
+	public Integer getReadNum() {
+		return readNum;
 	}
 
-	public void setReadCount(String readCount) {
-		this.readCount = readCount;
+	public void setReadNum(Integer readNum) {
+		this.readNum = readNum;
 	}
 
 }

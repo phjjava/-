@@ -43,6 +43,7 @@ import com.jp.entity.NoticetopQuery;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
 import com.jp.service.NoticeService;
+import com.jp.service.UserService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 import com.jp.util.WebUtil;
@@ -61,6 +62,8 @@ public class NoticeServiceImpl implements NoticeService {
 	private NoticereadDao noticeReadMapper;
 	@Autowired
 	private UserDao userMapper;
+	@Autowired
+	private UserService userService;
 	@Autowired
 	private BranchDao branchMapper;
 
@@ -97,21 +100,24 @@ public class NoticeServiceImpl implements NoticeService {
 			List<UserManager> managers = CurrentUserContext.getCurrentUserManager();
 			UserManager manager = managers.get(0);
 
-			List<String> currentBranchIds = CurrentUserContext.getCurrentBranchIds();
-			if (manager.getEbtype() == 1) {// 验证是否是总编委会主任
-				currentBranchIds.add("0");
-			}
-			if (currentBranchIds != null && currentBranchIds.size() > 0) {
-				criteria.andBranchidIn(currentBranchIds);
-			} else {
-				result = new Result(MsgConstants.RESUL_FAIL);
-				result.setMsg("您的账号当前没有分支");
-				res = new JsonResponse(result);
-				return res;
-			}
-			nq.setOrderByClause("createtime DESC");
+			List<String> branchIds = CurrentUserContext.getCurrentBranchIds();
 			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-			List<NoticeVO> list = noticeMapper.selectNoticeMangeList(nq);
+			List<NoticeVO> list = new ArrayList<>();
+			if (manager.getEbtype() == 1) {// 验证是否是总编委会主任
+				//	currentBranchIds.add("0");
+				nq.setOrderByClause("createtime DESC");
+				list = noticeMapper.selectNoticeMangeList(nq);
+			} else {
+				if (branchIds.size() < 1) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("您的账号当前没有分支");
+					res = new JsonResponse(result);
+					return res;
+				}
+				criteria.andBranchidIn(branchIds);
+				nq.setOrderByClause("createtime DESC");
+				list = noticeMapper.selectNoticeMangeList(nq);
+			}
 			if (list != null) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);
@@ -167,9 +173,11 @@ public class NoticeServiceImpl implements NoticeService {
 		JsonResponse res = null;
 		int status = 0;
 		try {
+			String userId = CurrentUserContext.getCurrentUserId();
+			String familyId = CurrentUserContext.getCurrentFamilyId();
 			if (StringTools.trimNotEmpty(notice.getNoticeid())) {
-				notice.setUpdateid(CurrentUserContext.getCurrentUserId());
-				notice.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				notice.setUpdateid(userId);
+				notice.setFamilyid(familyId);
 				if (notice.getNoticetype() == 0) {
 					notice.setBranchid("0");
 				}
@@ -185,11 +193,10 @@ public class NoticeServiceImpl implements NoticeService {
 				}
 			} else {
 				String noticeid = UUIDUtils.getUUID();
-				notice.setType(1);
 				notice.setNoticeid(noticeid);
-				notice.setCreateid(CurrentUserContext.getCurrentUserId());
+				notice.setCreateid(userId);
 				notice.setCreatename(CurrentUserContext.getCurrentUserName());
-				notice.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				notice.setFamilyid(familyId);
 				if (notice.getNoticetype() == 0) {
 					notice.setBranchid("0");
 				}
@@ -309,6 +316,10 @@ public class NoticeServiceImpl implements NoticeService {
 	public JsonResponse sendNotice(Notice entity) {
 		Result result = null;
 		JsonResponse res = null;
+		JsonResponse demoUser = userService.checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if (entity.getNoticetitle() == null || "".equals(entity.getNoticetitle())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("缺少公告标题参数");

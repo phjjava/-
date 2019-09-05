@@ -53,7 +53,7 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 		PersonBranch personBranch = new PersonBranch();
 		// private Integer totalPerson;//总人数
 		UserQuery userExample = new UserQuery();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andStatusEqualTo(0);
 		int totalPerson = userMapper.countByExample(userExample);
 		List<BranchEditorBoard> allBranchs = branchMapper.selectCityByFamilyid(familyid);
 		// 统计分支总数
@@ -68,43 +68,45 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 		// private Integer direct;//直系人数
 		//
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andIsdirectEqualTo(1);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andIsdirectEqualTo(1).andStatusEqualTo(0);
 		int direct = userMapper.countByExample(userExample);
 		personBranch.setDirect(direct);
 		// private Integer nonDirect;//非直系人数
 		//
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andIsdirectEqualTo(0);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andIsdirectEqualTo(0).andStatusEqualTo(0);
 		int nonDirect = userMapper.countByExample(userExample);
 		personBranch.setNonDirect(nonDirect);
 		//未知系人数
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andIsdirectIsNull();
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andIsdirectNotEqualTo(0)
+				.andIsdirectNotEqualTo(1).andStatusEqualTo(0);
 		int unDirect = userMapper.countByExample(userExample);
 		personBranch.setUnDirect(unDirect);
 
 		// private Integer man;//男性成员
 		//
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andSexEqualTo(1);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andSexEqualTo(1).andStatusEqualTo(0);
 		int man = userMapper.countByExample(userExample);
 		personBranch.setMan(man);
 		// private Integer women;//女性成员
 		//
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andSexEqualTo(0);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andSexEqualTo(0).andStatusEqualTo(0);
 		int woman = userMapper.countByExample(userExample);
 		personBranch.setWoman(woman);
 		// private Person alive;//在世的人数
 		//
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0)
+				.andStatusEqualTo(0);
 		int alive = userMapper.countByExample(userExample);
 		// private Person depart;//离世人数
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1)
+				.andStatusEqualTo(0);
 		int depart = userMapper.countByExample(userExample);
-
 		Person alivePerson = new Person();// 在世
 		Map<String, String> totalparams = new HashMap<String, String>();
 		totalparams.put("familyid", familyid);
@@ -115,30 +117,32 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 		// 在世的直系
 		userExample.clear();
 		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0)
-				.andIsdirectEqualTo(1);
+				.andIsdirectEqualTo(1).andStatusEqualTo(0);
 		int direct1 = userMapper.countByExample(userExample);
 		alivePerson.setDirect(direct1);
 		// 在世的非直系
 		userExample.clear();
 		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0)
-				.andIsdirectEqualTo(0);
+				.andIsdirectEqualTo(0).andStatusEqualTo(0);
 		int nonDirect1 = userMapper.countByExample(userExample);
 		alivePerson.setNonDirect(nonDirect1);
 		// 在世的未知系
 		userExample.clear();
 		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0)
-				.andIsdirectIsNull();
+				.andIsdirectNotEqualTo(0).andIsdirectNotEqualTo(1).andStatusEqualTo(0);
 		int unDirect1 = userMapper.countByExample(userExample);
 		alivePerson.setUnDirect(unDirect1);
 		;
 		// 在世的男性
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0).andSexEqualTo(1);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0).andSexEqualTo(1)
+				.andStatusEqualTo(0);
 		int man1 = userMapper.countByExample(userExample);
 		alivePerson.setMan(man1);
 		// 在世的女性
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0).andSexEqualTo(0);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(0).andSexEqualTo(0)
+				.andStatusEqualTo(0);
 		int woman1 = userMapper.countByExample(userExample);
 		alivePerson.setWoman(woman1);
 		personBranch.setAlive(alivePerson);
@@ -151,32 +155,70 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 		// 离世的直系
 		userExample.clear();
 		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1)
-				.andIsdirectEqualTo(1);
+				.andIsdirectEqualTo(1).andStatusEqualTo(0);
 		int direct2 = userMapper.countByExample(userExample);
 		departPerson.setDirect(direct2);
 		// 离世的非直系
 		userExample.clear();
 		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1)
-				.andIsdirectEqualTo(0);
+				.andIsdirectEqualTo(0).andStatusEqualTo(0);
 		int nonDirect2 = userMapper.countByExample(userExample);
 		departPerson.setNonDirect(nonDirect2);
 		// 离世的未知系
 		userExample.clear();
 		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1)
-				.andIsdirectIsNull();
+				.andIsdirectNotEqualTo(0).andIsdirectNotEqualTo(1).andStatusEqualTo(0);
 		int unDirect2 = userMapper.countByExample(userExample);
 		departPerson.setUnDirect(unDirect2);
 		// 离世的男性
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1).andSexEqualTo(1);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1).andSexEqualTo(1)
+				.andStatusEqualTo(0);
 		int man2 = userMapper.countByExample(userExample);
 		departPerson.setMan(man2);
 		// 离世的女性
 		userExample.clear();
-		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1).andSexEqualTo(0);
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusEqualTo(1).andSexEqualTo(0)
+				.andStatusEqualTo(0);
 		int woman2 = userMapper.countByExample(userExample);
 		departPerson.setWoman(woman2);
 		personBranch.setDepart(departPerson);
+
+		Person unalivePerson = new Person();// 未知是否在世
+		unalivePerson.setTotalPerson(totalPerson - alive - depart);
+		totalBranch = userMapper.countBranch2(familyid);
+		unalivePerson.setTotalBranch(totalBranch);
+		// 未知是否在世的直系
+		userExample.clear();
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusNotEqualTo(0)
+				.andLivestatusNotEqualTo(1).andIsdirectEqualTo(1).andStatusEqualTo(0);
+		int direct3 = userMapper.countByExample(userExample);
+		unalivePerson.setDirect(direct3);
+		// 未知是否在世的非直系
+		userExample.clear();
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusNotEqualTo(0)
+				.andLivestatusNotEqualTo(1).andIsdirectEqualTo(0).andStatusEqualTo(0);
+		int nonDirect3 = userMapper.countByExample(userExample);
+		unalivePerson.setNonDirect(nonDirect3);
+		// 未知是否在世的未知系
+		userExample.clear();
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusNotEqualTo(0)
+				.andLivestatusNotEqualTo(1).andIsdirectNotEqualTo(0).andIsdirectNotEqualTo(1).andStatusEqualTo(0);
+		int unDirect3 = userMapper.countByExample(userExample);
+		unalivePerson.setUnDirect(unDirect3);
+		// 未知是否在世的男性
+		userExample.clear();
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusNotEqualTo(0)
+				.andLivestatusNotEqualTo(1).andSexEqualTo(1).andStatusEqualTo(0);
+		int man3 = userMapper.countByExample(userExample);
+		unalivePerson.setMan(man3);
+		// 离世的女性
+		userExample.clear();
+		userExample.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(0).andLivestatusNotEqualTo(0)
+				.andLivestatusNotEqualTo(1).andSexEqualTo(0).andStatusEqualTo(0);
+		int woman3 = userMapper.countByExample(userExample);
+		unalivePerson.setWoman(woman3);
+		personBranch.setUnalive(unalivePerson);
 		rtnMap.put("total", personBranch);
 
 		// 查询地区
@@ -194,6 +236,7 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 		// 遍历地区
 		List<User> alives = null;// 在世的
 		List<User> departs = null;// 离世的
+		List<User> unAlives = null;// 未知是否在世的
 		List<String> branchs = null;
 		for (Branch branch : areas) {
 			totalPerson = 0;
@@ -204,14 +247,16 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			woman = 0;
 			alives = new ArrayList<User>();
 			departs = new ArrayList<User>();
-			branchs = new ArrayList<String>();
+			unAlives = new ArrayList<User>();
 			province = new PersonBranch();
 			province.setName(branch.getArea());
 			// 根据地区获取用户信息
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("areacode", branch.getAreacode());
+			params.put("area", branch.getArea());
 			params.put("familyid", familyid);
 			List<User> users = userMapper.selectUserByAreaCode(params);
+			Integer branchCount = userMapper.selectCountByAreaCode(params);
 			for (User user : users) {
 				if (user.getIsdirect() != null) {
 					if (user.getIsdirect() == 1) {
@@ -229,11 +274,10 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 				}
 				if (user.getLivestatus() == 0) {
 					alives.add(user);
-				} else {
+				} else if (user.getLivestatus() == 1) {
 					departs.add(user);
-				}
-				if (!branchs.contains(user.getBranchid())) {
-					branchs.add(user.getBranchid());
+				} else {
+					unAlives.add(user);
 				}
 			}
 			province.setTotalPerson(users.size());
@@ -242,7 +286,7 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			province.setUnDirect(unDirect);
 			province.setMan(man);
 			province.setWoman(woman);
-			province.setTotalBranch(branchs.size());
+			province.setTotalBranch(branchCount);
 			// 重置
 			direct = 0;
 			nonDirect = 0;
@@ -318,6 +362,43 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			departPerson1.setMan(man);
 			departPerson1.setWoman(woman);
 			province.setDepart(departPerson1);
+			// 重置
+			direct = 0;
+			nonDirect = 0;
+			unDirect = 0;
+			man = 0;
+			woman = 0;
+			branchs = new ArrayList<String>();
+			if (unAlives.size() > 0) {
+				for (User u : unAlives) {
+					if (u.getIsdirect() != null) {
+						if (u.getIsdirect() == 1) {
+							direct++;
+						} else {
+							nonDirect++;
+						}
+					} else {
+						unDirect++;
+					}
+					if (u.getSex() == 1) {
+						man++;
+					} else {
+						woman++;
+					}
+					if (!branchs.contains(u.getBranchid())) {
+						branchs.add(u.getBranchid());
+					}
+				}
+			}
+			Person unAlivesPerson1 = new Person();
+			unAlivesPerson1.setTotalPerson(unAlives.size());
+			unAlivesPerson1.setTotalBranch(branchs.size());
+			unAlivesPerson1.setDirect(direct);
+			unAlivesPerson1.setNonDirect(nonDirect);
+			unAlivesPerson1.setUnDirect(unDirect);
+			unAlivesPerson1.setMan(man);
+			unAlivesPerson1.setWoman(woman);
+			province.setUnalive(unAlivesPerson1);
 			provinceList.add(province);
 		}
 
@@ -332,14 +413,16 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			woman = 0;
 			alives = new ArrayList<User>();
 			departs = new ArrayList<User>();
-			branchs = new ArrayList<String>();
+			unAlives = new ArrayList<User>();
 			city = new PersonBranch();
 			city.setName(branch.getCityname());
 			// 根据城市获取用户信息
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("citycode", branch.getCitycode());
+			params.put("cityname", branch.getCityname());
 			params.put("familyid", familyid);
 			List<User> users = userMapper.selectUserByAreaCode(params);
+			Integer branchCount = userMapper.selectCountByAreaCode(params);
 			for (User user : users) {
 				if (user.getIsdirect() != null) {
 					if (user.getIsdirect() != null) {
@@ -359,11 +442,10 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 				}
 				if (user.getLivestatus() == 0) {
 					alives.add(user);
-				} else {
+				} else if (user.getLivestatus() == 1) {
 					departs.add(user);
-				}
-				if (!branchs.contains(user.getBranchid())) {
-					branchs.add(user.getBranchid());
+				} else {
+					unAlives.add(user);
 				}
 			}
 			city.setTotalPerson(users.size());
@@ -372,7 +454,7 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			city.setUnDirect(unDirect);
 			city.setMan(man);
 			city.setWoman(woman);
-			city.setTotalBranch(branchs.size());
+			city.setTotalBranch(branchCount);
 			// 重置
 			direct = 0;
 			nonDirect = 0;
@@ -448,6 +530,43 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			departPerson1.setMan(man);
 			departPerson1.setWoman(woman);
 			city.setDepart(departPerson1);
+			// 重置
+			direct = 0;
+			nonDirect = 0;
+			unDirect = 0;
+			man = 0;
+			woman = 0;
+			branchs = new ArrayList<String>();
+			if (unAlives.size() > 0) {
+				for (User u : unAlives) {
+					if (u.getIsdirect() != null) {
+						if (u.getIsdirect() == 1) {
+							direct++;
+						} else {
+							nonDirect++;
+						}
+					} else {
+						unDirect++;
+					}
+					if (u.getSex() == 1) {
+						man++;
+					} else {
+						woman++;
+					}
+					if (!branchs.contains(u.getBranchid())) {
+						branchs.add(u.getBranchid());
+					}
+				}
+			}
+			Person unAlivesPerson1 = new Person();
+			unAlivesPerson1.setTotalPerson(unAlives.size());
+			unAlivesPerson1.setTotalBranch(branchs.size());
+			unAlivesPerson1.setDirect(direct);
+			unAlivesPerson1.setNonDirect(nonDirect);
+			unAlivesPerson1.setUnDirect(unDirect);
+			unAlivesPerson1.setMan(man);
+			unAlivesPerson1.setWoman(woman);
+			city.setUnalive(unAlivesPerson1);
 			cityList.add(city);
 		}
 		rtnMap.put("totalCity", cityList);
@@ -499,7 +618,7 @@ public class PersonBranchServiceImpl implements PersonBranchService {
 			pb = new PersonBranch();
 			pb.setName(branch.getBranchname());
 			userexample.clear();
-			userexample.or().andBranchidEqualTo(branch.getBranchid()).andDeleteflagEqualTo(0);
+			userexample.or().andBranchidEqualTo(branch.getBranchid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
 			List<User> users = userMapper.selectByExample(userexample);
 			// 统计
 			for (User user : users) {

@@ -19,6 +19,7 @@ import com.jp.entity.MomentUserSpot;
 import com.jp.entity.MomentUserSpotExample;
 import com.jp.entity.User;
 import com.jp.service.MomentUserSpotService;
+import com.jp.service.UserService;
 import com.jp.util.UUIDUtils;
 
 @Service
@@ -28,11 +29,17 @@ public class MomentUserSpotServiceImpl implements MomentUserSpotService {
 	private MomentUserSpotMapper momentUserSpotMapper;
 	@Autowired
 	private UserDao userMapper;
+	@Autowired
+	private UserService userService;
 
 	@Override
 	public JsonResponse createUserSpot(MomentUserSpot entity) {
 		Result result = null;
 		JsonResponse res = null;
+		JsonResponse demoUser = userService.checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if (StringUtils.isBlank(entity.getUserid())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数userid为空！");
@@ -65,6 +72,10 @@ public class MomentUserSpotServiceImpl implements MomentUserSpotService {
 	public JsonResponse cancelUserSpot(MomentUserSpot entity) {
 		Result result = null;
 		JsonResponse res = null;
+		JsonResponse demoUser = userService.checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if (StringUtils.isBlank(entity.getUserid())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数userid不能为空！");

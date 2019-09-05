@@ -108,33 +108,32 @@ public class BranchServiceImpl implements BranchService {
 		JsonResponse res = null;
 		try {
 			String userid = CurrentUserContext.getCurrentUserId();
+			String familyId = CurrentUserContext.getCurrentFamilyId();
 			UserbranchQuery userbranchQuery = new UserbranchQuery();
 			userbranchQuery.or().andUseridEqualTo(userid);
 			List<Userbranch> userbranchList = userBranchDao.selectByExample(userbranchQuery);
 			BranchKey key = new BranchKey();
 			for (Userbranch b : userbranchList) {
 				key.setBranchid(b.getBranchid());
-				key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				key.setFamilyid(familyId);
 				Branch bran = branchDao.selectByPrimaryKey(key);
 				if (bran.getBranchid() != null && !"".equals(bran.getBranchid()))
 					branch.setBranchid(b.getBranchid());
 			}
-			branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			branch.setFamilyid(familyId);
 
 			UserManagerExample example = new UserManagerExample();
-			example.or().andUseridEqualTo(CurrentUserContext.getCurrentUserId());
+			example.or().andUseridEqualTo(userid);
 			example.setOrderByClause("ebtype desc,ismanager desc");
 			List<UserManager> managers = userManagerMapper.selectByExample(example);
 			List<Branch> branchList = new ArrayList<>();
 			for (UserManager manager : managers) {
 				PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 				if (manager.getEbtype() == 1) {
-					branchList = branchDao.selectBranchListByFamilyAndUserid(CurrentUserContext.getCurrentFamilyId(),
-							null, branch.getBranchname());
+					branchList = branchDao.selectBranchListByFamilyAndUserid(familyId, null, branch.getBranchname());
 					break;
 				} else {
-					branchList = branchDao.getBranchsByFamilyAndUserid(CurrentUserContext.getCurrentFamilyId(),
-							CurrentUserContext.getCurrentUserId(), branch.getBranchname());
+					branchList = branchDao.getBranchsByFamilyAndUserid(familyId, userid, branch.getBranchname());
 					break;
 				}
 			}
@@ -275,16 +274,35 @@ public class BranchServiceImpl implements BranchService {
 	}
 
 	@Override
-	public JsonResponse initBranch(Branch branch) {
+	public JsonResponse initBranch(PageModel<Branch> pageModel, Branch branch) {
 		Result result = null;
 		JsonResponse res = null;
 		try {
 			branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-			List<Branch> list = branchDao.selectBranchList(branch);
+			List<UserManager> userManager = CurrentUserContext.getCurrentUserManager();
+			List<String> branchIds = CurrentUserContext.getCurrentBranchIds();
+			List<Branch> list = new ArrayList<>();
+			for (UserManager um : userManager) {
+				if (um.getEbtype() == 1) {
+					list = branchDao.selectBranchList(branch, null);
+					break;
+				} else {
+					if (branchIds.size() < 1) {
+						result = new Result(MsgConstants.RESUL_FAIL);
+						result.setMsg("您的账号当前没有分支");
+						res = new JsonResponse(result);
+						return res;
+					}
+					list = branchDao.selectBranchList(branch, branchIds);
+					break;
+				}
+			}
 			if (list != null) {
+				pageModel.setList(list);
+				pageModel.setPageInfo(new PageInfo<Branch>(list));
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);
-				res.setData(list);
+				res.setData(pageModel);
 				return res;
 			}
 		} catch (Exception e) {

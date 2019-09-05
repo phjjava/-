@@ -18,7 +18,6 @@ import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.dao.BannerDao;
-import com.jp.dao.BranchDao;
 import com.jp.dao.BranchalbumMapper;
 import com.jp.dao.BranchphotoMapper;
 import com.jp.dao.DynamicMapper;
@@ -53,8 +52,6 @@ public class BannerServiceImpl implements BannerService {
 	private BannerDao bdao;
 	@Autowired
 	private DynamicMapper dynamicDao;
-	@Autowired
-	private BranchDao branchDao;
 	@Autowired
 	private BranchalbumMapper badao;
 	@Autowired
@@ -293,9 +290,9 @@ public class BannerServiceImpl implements BannerService {
 		try {
 			Integer type = CurrentUserContext.getUserContext().getUsermanagers().get(0).getEbtype();
 			String familyid = CurrentUserContext.getCurrentFamilyId();
+			List<String> branchIds = CurrentUserContext.getCurrentBranchIds();
 			//动态
 			if (goType.equals("1")) {
-				List<String> branchIds = CurrentUserContext.getCurrentBranchIds();
 
 				//			if(type == 1){
 				//				branchIds.clear();//验证是否是总编委会
@@ -309,22 +306,24 @@ public class BannerServiceImpl implements BannerService {
 				//				}
 				//			}
 				List<Dynamic> dynamicList = null;
-				if (!branchIds.equals("")) {
-					if (type == 1) {
-						DynamicExample ex = new DynamicExample();
-						ex.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
-						dynamicList = dynamicDao.selectByExample(ex);
-					} else {
+				if (type == 1) {
+					DynamicExample ex = new DynamicExample();
+					ex.or().andFamilyidEqualTo(familyid).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
+					dynamicList = dynamicDao.selectByExample(ex);
+				} else {
+					if (branchIds.size() > 0) {
 						dynamicList = dynamicDao.selectGoType(branchIds);
 					}
-
 				}
 				if (dynamicList != null) {
 					for (int j = 0; j < dynamicList.size(); j++) {
-						goTypeResult = new GoTypeResult();
-						goTypeResult.setId(dynamicList.get(j).getDyid());
-						goTypeResult.setName(dynamicList.get(j).getDytitle());
-						goTypeResultList.add(goTypeResult);
+						String dytitle = dynamicList.get(j).getDytitle();
+						if (StringTools.notEmpty(dytitle)) {
+							goTypeResult = new GoTypeResult();
+							goTypeResult.setId(dynamicList.get(j).getDyid());
+							goTypeResult.setName(dytitle);
+							goTypeResultList.add(goTypeResult);
+						}
 					}
 				}
 			} else if (goType.equals("2")) {
@@ -333,10 +332,13 @@ public class BannerServiceImpl implements BannerService {
 				List<Branchalbum> list = badao.selectBranchAlbumMangeList(example);
 				if (list != null) {
 					for (int i = 0; i < list.size(); i++) {
-						goTypeResult = new GoTypeResult();
-						goTypeResult.setId(list.get(i).getAlbumid());
-						goTypeResult.setName(list.get(i).getAlbumname());
-						goTypeResultList.add(goTypeResult);
+						String albumname = list.get(i).getAlbumname();
+						if (StringTools.notEmpty(albumname)) {
+							goTypeResult = new GoTypeResult();
+							goTypeResult.setId(list.get(i).getAlbumid());
+							goTypeResult.setName(albumname);
+							goTypeResultList.add(goTypeResult);
+						}
 					}
 				}
 			} else if (goType.equals("3")) {
@@ -345,10 +347,13 @@ public class BannerServiceImpl implements BannerService {
 				List<Event> list = edao.selecteventread(event);
 				if (list != null) {
 					for (int i = 0; i < list.size(); i++) {
-						goTypeResult = new GoTypeResult();
-						goTypeResult.setId(list.get(i).getEventid());
-						goTypeResult.setName(list.get(i).getEventtitle());
-						goTypeResultList.add(goTypeResult);
+						String eventtitle = list.get(i).getEventtitle();
+						if (StringTools.notEmpty(eventtitle)) {
+							goTypeResult = new GoTypeResult();
+							goTypeResult.setId(list.get(i).getEventid());
+							goTypeResult.setName(eventtitle);
+							goTypeResultList.add(goTypeResult);
+						}
 					}
 				}
 			} else if (goType.equals("4")) {
@@ -357,10 +362,13 @@ public class BannerServiceImpl implements BannerService {
 				List<Usercontent> list = userDao.selectUserContentList(usercontent);
 				if (list != null) {
 					for (int i = 0; i < list.size(); i++) {
-						goTypeResult = new GoTypeResult();
-						goTypeResult.setId(list.get(i).getUserid());
-						goTypeResult.setName(list.get(i).getUsername());
-						goTypeResultList.add(goTypeResult);
+						String username = list.get(i).getUsername();
+						if (StringTools.notEmpty(username)) {
+							goTypeResult = new GoTypeResult();
+							goTypeResult.setId(list.get(i).getUserid());
+							goTypeResult.setName(username);
+							goTypeResultList.add(goTypeResult);
+						}
 					}
 				}
 			} else if (goType.equals("5")) {
@@ -376,10 +384,13 @@ public class BannerServiceImpl implements BannerService {
 				List<Introduce> list = itdao.selectByExample(iq);
 				if (list != null) {
 					for (int i = 0; i < list.size(); i++) {
-						goTypeResult = new GoTypeResult();
-						goTypeResult.setId(list.get(i).getIntroduceid());
-						goTypeResult.setName(list.get(i).getIntroducetitle());
-						goTypeResultList.add(goTypeResult);
+						String introducetitle = list.get(i).getIntroducetitle();
+						if (StringTools.notEmpty(introducetitle)) {
+							goTypeResult = new GoTypeResult();
+							goTypeResult.setId(list.get(i).getIntroduceid());
+							goTypeResult.setName(introducetitle);
+							goTypeResultList.add(goTypeResult);
+						}
 					}
 				}
 			} else if (goType.equals("6")) {
@@ -395,34 +406,38 @@ public class BannerServiceImpl implements BannerService {
 				if (StringTools.trimNotEmpty(notice.getDeleteflag())) {
 					criteria.andDeleteflagEqualTo(notice.getDeleteflag());
 				}
-				List<String> currentBranchIds = CurrentUserContext.getCurrentBranchIds();
-				if (currentBranchIds != null && currentBranchIds.size() > 0) {
-					criteria.andBranchidIn(CurrentUserContext.getCurrentBranchIds());
+				if (branchIds.size() > 0) {
+					criteria.andBranchidIn(branchIds);
 					List<NoticeVO> list = noticedao.selectNoticeMangeList(nq);
 					if (list != null) {
 						for (int i = 0; i < list.size(); i++) {
-							goTypeResult = new GoTypeResult();
-							goTypeResult.setId(list.get(i).getNoticeid());
-							goTypeResult.setName(list.get(i).getNoticecontent());
-							goTypeResultList.add(goTypeResult);
+							String noticetitle = list.get(i).getNoticetitle();
+							if (StringTools.notEmpty(noticetitle)) {
+								goTypeResult = new GoTypeResult();
+								goTypeResult.setId(list.get(i).getNoticeid());
+								goTypeResult.setName(noticetitle);
+								goTypeResultList.add(goTypeResult);
+							}
 						}
 					}
 				}
 			} else if (goType.equals("7")) {
-				List<String> branchids = CurrentUserContext.getCurrentBranchIds();
-				if (StringTools.trimNotEmpty(branchids)) {
-					List<Branchphoto> list = new ArrayList<>();
-					if (type == 1) {
-						list = branchphotoDao.selectByFamilyid(familyid);
-					} else {
-						list = branchphotoDao.selectByBranch(branchids);
+				List<Branchphoto> list = new ArrayList<>();
+				if (type == 1) {
+					list = branchphotoDao.selectByFamilyid(familyid);
+				} else {
+					if (branchIds.size() > 0) {
+						list = branchphotoDao.selectByBranch(branchIds);
 					}
+				}
 
-					if (list != null) {
-						for (int i = 0; i < list.size(); i++) {
+				if (list != null) {
+					for (int i = 0; i < list.size(); i++) {
+						String description = list.get(i).getDescription();
+						if (StringTools.notEmpty(description)) {
 							goTypeResult = new GoTypeResult();
 							goTypeResult.setId(list.get(i).getImgurl());
-							goTypeResult.setName(list.get(i).getDescription());
+							goTypeResult.setName(description);
 							goTypeResult.setAlbumname(list.get(i).getAlbumname());
 							goTypeResult.setDate(DateUtils.FormatDate(list.get(i).getCreatetime(), "yyyy-MM-dd"));
 							goTypeResultList.add(goTypeResult);

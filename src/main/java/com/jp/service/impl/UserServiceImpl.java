@@ -28,7 +28,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -89,6 +88,7 @@ import com.jp.entity.UserClildInfo;
 import com.jp.entity.UserDetail;
 import com.jp.entity.UserImportExample;
 import com.jp.entity.UserLimitVO;
+import com.jp.entity.UserManager;
 import com.jp.entity.UserManagerExample;
 import com.jp.entity.UserQuery;
 import com.jp.entity.UserVO;
@@ -112,6 +112,7 @@ import com.jp.util.DateUtils;
 import com.jp.util.EmaySend;
 import com.jp.util.ExcelUtil;
 import com.jp.util.GsonUtil;
+import com.jp.util.JedisUtil;
 import com.jp.util.MD5Util;
 import com.jp.util.PinyinUtil;
 //import com.jp.util.Result;
@@ -120,8 +121,6 @@ import com.jp.util.UUIDUtils;
 import com.jp.util.ValidatorUtil;
 import com.jp.util.WebUtil;
 import com.jp.util.ZodiacUtil;
-
-import redis.clients.jedis.Jedis;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -170,12 +169,6 @@ public class UserServiceImpl implements UserService {
 	private BranchphotoMapper branchPhotoMapper;
 	@Autowired
 	private UserManagerMapper userManagerMapper;
-	@Value("${redis.ip}")
-	private String redisIp;
-	@Value("${redis.port}")
-	private Integer redisPort;
-	@Value("${redis.password}")
-	private String redisPassword;
 
 	// 导入用户时重复的用户
 	private ArrayList<String> userStringList;
@@ -189,7 +182,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public PageModel pageQuery(PageModel pageModel, User user) throws Exception {
+	public PageModel<User> pageQuery(PageModel<User> pageModel, User user) throws Exception {
 
 		return null;
 	}
@@ -249,7 +242,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Result merge(User user) throws Exception {
 		Result result = null;
-
+		if (!StringTools.trimNotEmpty(user.getUsername())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("姓名不能为空！");
+			return result;
+		}
 		try {
 			// 点击编辑后保存
 			if (StringTools.trimNotEmpty(user.getUserid())) {
@@ -288,6 +285,14 @@ public class UserServiceImpl implements UserService {
 				user.setUpdateid(CurrentUserContext.getCurrentUserId());
 				user.setUpdatetime(new Date());
 				userDao.updateByPrimaryKeySelectivePhone(user);
+				UserManagerExample ume = new UserManagerExample();
+				ume.or().andUseridEqualTo(user.getUserid());
+				List<UserManager> mnangers = userManagerMapper.selectMnangers(user.getUserid());
+				if (mnangers.size() > 0) {
+					UserManager userManager = new UserManager();
+					userManager.setUsername(user.getUsername());
+					userManagerMapper.updateByExampleSelective(userManager, ume);
+				}
 				String birthplaceP = userinfo.getBirthplaceP() == null ? "" : userinfo.getBirthplaceP();
 				String birthplaceC = userinfo.getBirthplaceC() == null ? "" : userinfo.getBirthplaceC();
 				String birthplaceX = userinfo.getBirthplaceX() == null ? "" : userinfo.getBirthplaceX();
@@ -380,62 +385,62 @@ public class UserServiceImpl implements UserService {
 					if (checkPid.getCode() == 1) {
 						return checkPid;
 					}
-					// 校验方法 返回 true为有重复，false 没重复
-					boolean sameFlag = checkSameUser(user);
-					if (sameFlag) {
-						// 校验有重复什么也不做哦
-						// result = "500";
-						result = new Result(MsgConstants.USER_SAVE_HAVEREPEAT);
-					} else {
-						// 保存用户信息
-						userDao.insertSelective(user);
-						String birthplaceP = userinfo.getBirthplaceP() == null ? "" : userinfo.getBirthplaceP();
-						String birthplaceC = userinfo.getBirthplaceC() == null ? "" : userinfo.getBirthplaceC();
-						String birthplaceX = userinfo.getBirthplaceX() == null ? "" : userinfo.getBirthplaceX();
-						String birthDetail = userinfo.getBirthDetail() == null ? "" : userinfo.getBirthDetail();
-						// 出生地
-						userinfo.setBirthplace(
-								birthplaceP + "@@" + birthplaceC + "@@" + birthplaceX + "@@" + birthDetail);
-						String homeplaceP = userinfo.getHomeplaceP() == null ? "" : userinfo.getHomeplaceP();
-						String homeplaceC = userinfo.getHomeplaceC() == null ? "" : userinfo.getHomeplaceC();
-						String homeplaceX = userinfo.getHomeplaceX() == null ? "" : userinfo.getHomeplaceX();
-						String homeDetail = userinfo.getHomeDetail() == null ? "" : userinfo.getHomeDetail();
-						// 常住地
-						userinfo.setHomeplace(homeplaceP + "@@" + homeplaceC + "@@" + homeplaceX + "@@" + homeDetail);
-						String birthday = userinfo.getBirthday();
-						if (StringUtils.isNotBlank(birthday)) {
-							//(农历日期范围19000101~20491229)
-							int parseInt = Integer.parseInt(birthday.replace("-", ""));
-							if (parseInt > 19000130 && parseInt < 20500101) {
-								String solarToLunar = CalendarUtil.solarToLunar(birthday);
-								userinfo.setLunarbirthday(solarToLunar);
-							}
+					if (StringTools.trimNotEmpty(user.getGenlevel())) {
+						// 校验方法 返回 true为有重复，false 没重复
+						if (checkSameUser(user)) {
+							// 校验有重复什么也不做哦
+							// result = "500";
+							result = new Result(MsgConstants.USER_SAVE_HAVEREPEAT);
+							return result;
 						}
-						// 保存用户详细信息
-						userInfoDao.insertSelective(userinfo);
-
-						// 循环保存教育经历
-						List<Useredu> eduList = user.getUserEdu();
-						for (Useredu useredu2 : eduList) {
-							useredu2.setUserid(userId);
-							useredu2.setEduid(UUIDUtils.getUUID());
-						}
-						if (eduList.size() > 0) {
-							userEduDao.insertEduExp(eduList);
-						}
-
-						// 循环保存工作经历
-						List<Userworkexp> workList = user.getUserWorkexp();
-						for (Userworkexp userwork : workList) {
-							userwork.setUserid(userId);
-							userwork.setWorkid(UUIDUtils.getUUID());
-						}
-						if (workList.size() > 0) {
-							userworkDao.insertEduExp(workList);
-						}
-
-						result = new Result(MsgConstants.RESUL_SUCCESS);
 					}
+					// 保存用户信息
+					userDao.insertSelective(user);
+					String birthplaceP = userinfo.getBirthplaceP() == null ? "" : userinfo.getBirthplaceP();
+					String birthplaceC = userinfo.getBirthplaceC() == null ? "" : userinfo.getBirthplaceC();
+					String birthplaceX = userinfo.getBirthplaceX() == null ? "" : userinfo.getBirthplaceX();
+					String birthDetail = userinfo.getBirthDetail() == null ? "" : userinfo.getBirthDetail();
+					// 出生地
+					userinfo.setBirthplace(birthplaceP + "@@" + birthplaceC + "@@" + birthplaceX + "@@" + birthDetail);
+					String homeplaceP = userinfo.getHomeplaceP() == null ? "" : userinfo.getHomeplaceP();
+					String homeplaceC = userinfo.getHomeplaceC() == null ? "" : userinfo.getHomeplaceC();
+					String homeplaceX = userinfo.getHomeplaceX() == null ? "" : userinfo.getHomeplaceX();
+					String homeDetail = userinfo.getHomeDetail() == null ? "" : userinfo.getHomeDetail();
+					// 常住地
+					userinfo.setHomeplace(homeplaceP + "@@" + homeplaceC + "@@" + homeplaceX + "@@" + homeDetail);
+					String birthday = userinfo.getBirthday();
+					if (StringUtils.isNotBlank(birthday)) {
+						//(农历日期范围19000101~20491229)
+						int parseInt = Integer.parseInt(birthday.replace("-", ""));
+						if (parseInt > 19000130 && parseInt < 20500101) {
+							String solarToLunar = CalendarUtil.solarToLunar(birthday);
+							userinfo.setLunarbirthday(solarToLunar);
+						}
+					}
+					// 保存用户详细信息
+					userInfoDao.insertSelective(userinfo);
+
+					// 循环保存教育经历
+					List<Useredu> eduList = user.getUserEdu();
+					for (Useredu useredu2 : eduList) {
+						useredu2.setUserid(userId);
+						useredu2.setEduid(UUIDUtils.getUUID());
+					}
+					if (eduList.size() > 0) {
+						userEduDao.insertEduExp(eduList);
+					}
+
+					// 循环保存工作经历
+					List<Userworkexp> workList = user.getUserWorkexp();
+					for (Userworkexp userwork : workList) {
+						userwork.setUserid(userId);
+						userwork.setWorkid(UUIDUtils.getUUID());
+					}
+					if (workList.size() > 0) {
+						userworkDao.insertEduExp(workList);
+					}
+
+					result = new Result(MsgConstants.RESUL_SUCCESS);
 				} else {
 					result = new Result(MsgConstants.USER_SAVE_OUTMAX);
 				}
@@ -451,10 +456,21 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public PageModel<User> selectUserList(PageModel<User> pageModel, User user, List<String> branchList)
 			throws Exception {
+		List<User> userList = new ArrayList<>();
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-
+		List<UserManager> userManager = CurrentUserContext.getCurrentUserManager();
+		for (UserManager um : userManager) {
+			if (um.getEbtype() == 1) {
+				userList = userInfoDao.selecAllUserList(user);
+				break;
+			} else {
+				if (branchList.size() > 0) {
+					userList = userInfoDao.selecUserList(user, branchList);
+				}
+				break;
+			}
+		}
 		// CurrentUserContext.getUserContext().getRole().getIsmanager();
-		List<User> userList = userInfoDao.selecUserList(user, branchList);
 		pageModel.setList(userList);
 		pageModel.setPageInfo(new PageInfo<User>(userList));
 		return pageModel;
@@ -1022,8 +1038,8 @@ public class UserServiceImpl implements UserService {
 		// 离世 不需要判断手机号 使用用户名和父亲名字判断及手机号码判断
 		List<User> searchRt = userDao.selectUserByFamilyId(user.getFamilyid());
 		for (User userf : searchRt) {
-			if (StringUtil.isNotEmpty(userf.getUsername()) && userf.getUsername().equals(user.getUsername())
-					&& userf.getGenlevel().equals(user.getGenlevel())) {
+			if (StringUtil.isNotEmpty(userf.getUsername()) && user.getUsername().equals(userf.getUsername())
+					&& user.getGenlevel().equals(userf.getGenlevel())) {
 				if (userf.getPhone() != null && userf.getPhone().equals(user.getPhone())) {
 					if (StringUtil.isNotEmpty(userf.getPname())) {
 						if (StringUtil.isNotEmpty(user.getPname()) && userf.getPname().equals(user.getPname())) {
@@ -1521,7 +1537,7 @@ public class UserServiceImpl implements UserService {
 							for (int k = 0; k < userAleardyList.size(); k++) {
 
 								User u = userAleardyList.get(k);
-								if (u.getGenlevel() == Integer.parseInt(genlevel)
+								if (u.getGenlevel() != null && u.getGenlevel() == Integer.parseInt(genlevel)
 										&& u.getUsername().equals(husbandname)) {
 									n++;
 									if (n > 1) {
@@ -1739,8 +1755,18 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public PageModel<User> selecUserListToReview(PageModel<User> pageModel, User user) throws Exception {
+		List<UserManager> managers = CurrentUserContext.getCurrentUserManager();
+		UserManager manager = managers.get(0);
+		List<String> branchids = CurrentUserContext.getCurrentBranchIds();
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		List<User> userList = userDao.selecUserListToReview(user);
+		List<User> userList = new ArrayList<>();
+		if (manager.getEbtype() == 1) {
+			userList = userDao.selecUserListToReview(user, null);
+		} else {
+			if (branchids.size() > 0) {
+				userList = userDao.selecUserListToReview(user, branchids);
+			}
+		}
 		pageModel.setList(userList);
 		pageModel.setPageInfo(new PageInfo<User>(userList));
 		return pageModel;
@@ -2413,7 +2439,6 @@ public class UserServiceImpl implements UserService {
 					String fixplace = eutil.getCellContent(sheet.getRow(i).getCell(19)).trim();
 					// birthplace = replacePlace(fixplace);
 					String remark = eutil.getCellContent(sheet.getRow(i).getCell(20)).trim();
-					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 					String userId = UUIDUtils.getUUID();
 					user = new User();
 					user.setUserid(userId);
@@ -2912,21 +2937,7 @@ public class UserServiceImpl implements UserService {
 			return res;
 		}
 		String token = UUIDUtils.getUUID();
-		Jedis jedis = new Jedis(redisIp, redisPort);
-		try {
-			//账号验证
-			if (StringTools.notEmpty(redisPassword)) {
-				jedis.auth(redisPassword);
-			}
-			jedis.select(3);
-			//保存到Redis List类型,统一 定时插入mysql 
-			//	jedis.lpush(key, dataJson.toString());
-			jedis.set(entity.getPhone(), token);
-		} finally {
-			if (jedis != null) {
-				jedis.close();
-			}
-		}
+		JedisUtil.saveString(entity.getPhone(), token);
 		Map<String, String> tokenMap = new HashMap<>();
 		tokenMap.put("token", token);
 		result = new Result(MsgConstants.RESUL_SUCCESS);
@@ -3248,7 +3259,12 @@ public class UserServiceImpl implements UserService {
 			return res;
 		}
 		String phone = entity.getPhone();
-
+		if ("18647740001".equals(phone)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("不可编辑！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		UserQuery userExample = new UserQuery();
 		userExample.or().andPhoneEqualTo(phone);
 		// userExample.setOrderByClause("createtime desc");
@@ -3324,6 +3340,12 @@ public class UserServiceImpl implements UserService {
 		if (entity.getPhone() == null || "".equals(entity.getPhone())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("请填写手机号");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if ("18647740001".equals(entity.getPhone())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("不可编辑！");
 			res = new JsonResponse(result);
 			return res;
 		}
@@ -3525,6 +3547,10 @@ public class UserServiceImpl implements UserService {
 	public JsonResponse bindingWithThirdParty(User entity, String smscode, Integer loginstatus) {
 		Result result = null;
 		JsonResponse res = null;
+		JsonResponse demoUser = checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if (StringUtils.isBlank(entity.getOpenid())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数openid为空");
@@ -3612,12 +3638,9 @@ public class UserServiceImpl implements UserService {
 	public JsonResponse relieveWithThirdParty(User entity) {
 		Result result = null;
 		JsonResponse res = null;
-		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
-		if (userid == null || "".equals(userid)) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("请求失败，header的userid为空！");
-			res = new JsonResponse(result);
-			return res;
+		JsonResponse demoUser = checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
 		}
 		if (entity.getOpenid() == null || "".equals(entity.getOpenid())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
@@ -3625,7 +3648,7 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		User user = userDao.selectByPrimaryKey(userid);
+		User user = userDao.selectByPrimaryKey(demoUser.getData().toString());
 		List<User> users = userDao.selectByPhone(user.getPhone());
 		if (users.size() > 0) {
 			for (User u : users) {
@@ -3888,6 +3911,12 @@ public class UserServiceImpl implements UserService {
 		if ("".equals(entity.getPhone()) || entity.getPhone() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("没有获取到手机号！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if ("18647740001".equals(entity.getPhone())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("不可编辑！");
 			res = new JsonResponse(result);
 			return res;
 		}
@@ -4306,6 +4335,10 @@ public class UserServiceImpl implements UserService {
 	public JsonResponse changeImgurl(User entity) {
 		Result result = null;
 		JsonResponse res = null;
+		JsonResponse demoUser = checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if ("".equals(entity.getImgurl()) || entity.getImgurl() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("用户imgurl不存在！");
@@ -4336,6 +4369,10 @@ public class UserServiceImpl implements UserService {
 		Result result = null;
 		JsonResponse res = null;
 		int status = 0;
+		JsonResponse demoUser = checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if (entity.getUserid() == null || "".equals(entity.getUserid())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("用户ID不存在！");
@@ -4818,6 +4855,10 @@ public class UserServiceImpl implements UserService {
 		Result result = null;
 		JsonResponse res = null;
 		int icount = 0;
+		JsonResponse demoUser = checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if (userChildInfo.getPid() == null || "".equals(userChildInfo.getPid())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("缺少父亲ID信息！");
@@ -5050,6 +5091,10 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		JsonResponse demoUser = checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		UserworkexpQuery userWorkexpExample = new UserworkexpQuery();
 		userWorkexpExample.or().andWorkidEqualTo(entity.getUpdateid());
 		int status = userworkDao.deleteByExample(userWorkexpExample);
@@ -5069,6 +5114,10 @@ public class UserServiceImpl implements UserService {
 	public JsonResponse deleteUserEduExp(User entity) {
 		Result result = null;
 		JsonResponse res = null;
+		JsonResponse demoUser = checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if ("".equals(entity.getUpdateid()) || entity.getUpdateid() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("教育经历id不存在！");
@@ -5111,6 +5160,12 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		if ("18647740001".equals(entity.getPhone())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("不可编辑！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		if (StringUtils.isBlank(entity.getUsername())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("用户姓名不能为空，请重设后再试");
@@ -5142,7 +5197,7 @@ public class UserServiceImpl implements UserService {
 			return res;
 		}
 		//	List<User> byPhone = userDao.selectByPhone(entity.getPhone());
-		int status;
+		int status = 0;
 		try {
 			List<User> byPhoneAndStatus = userDao.selectByPhoneInStatus(entity.getPhone());
 			if (byPhoneAndStatus.size() >= 2) {
@@ -5157,13 +5212,12 @@ public class UserServiceImpl implements UserService {
 					return res;
 				}
 			}
-			List<User> byPhoneToStatus = userDao.selectByPhoneToStatus(entity.getPhone(), entity.getFamilyid());
-			if (byPhoneToStatus.size() >= 1) {
+			Integer count = userDao.selectByPhoneToStatus(entity.getPhone(), entity.getFamilyid());
+			if (count >= 1) {
 				result = new Result(MsgConstants.FAMILYID_REPULSE);
 				res = new JsonResponse(result);
 				return res;
 			}
-			status = 0;
 			// 创建用户
 			String userid = UUIDUtils.getUUID();
 			entity.setUserid(userid);
@@ -5285,5 +5339,52 @@ public class UserServiceImpl implements UserService {
 			onlineUsers.add(onLineUser);
 		}
 		return singleCorpLoginOrMultiCorpGetList(dbuserList, entity.getSessionid());
+	}
+
+	@Override
+	public JsonResponse checkDemoUser() {
+		Result result = null;
+		JsonResponse res = null;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringUtils.isBlank(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		String phone = userDao.selectUserPhone(userid);
+		if ("18647740001".equals(phone)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("不可编辑！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(userid);
+		return res;
+	}
+
+	@Override
+	public void updateByPrimaryKeySelective(User user) {
+		try {
+			userDao.updateByPrimaryKeySelective(user);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[记录登录时间---异常:]", e);
+		}
+	}
+
+	@Override
+	public String getAllAddressByUserid(String userid) {
+		String address = "";
+		try {
+			address = userDao.getAddressByUserid(userid);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log_.error("[获取地址信息---异常:]", e);
+		}
+		return address;
 	}
 }

@@ -1,15 +1,12 @@
 package com.jp.controller;
 
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -24,15 +21,17 @@ import com.jp.common.MsgConstants;
 import com.jp.common.Result;
 import com.jp.entity.Function;
 import com.jp.entity.Indexcount;
+import com.jp.entity.UserManager;
 import com.jp.service.FamilyService;
 
 @Controller
 @RequestMapping("index")
 public class IndexController {
-    
+
 	private final Logger log_ = LogManager.getLogger(IndexController.class);
 	@Autowired
 	private FamilyService familyService;
+
 	/**
 	 * 初始化菜单与场馆
 	 * @param request
@@ -49,7 +48,7 @@ public class IndexController {
 		/*List<Function> parentFunctions = new ArrayList<Function>();//父节点
 		List<Function> childFunctions = null;//子节点
 		Map<String, List<Function>> childFunctionsMap = new HashMap<String, List<Function>>();*///key 父节点id value 子节点list
-		
+
 		try {
 			LoginUserInfo userInfo = (LoginUserInfo) request.getSession().getAttribute("userContext");
 			if (userInfo != null) {
@@ -71,12 +70,25 @@ public class IndexController {
 				}*/
 			}
 			List<String> branchids = CurrentUserContext.getCurrentBranchIds();
-//			Integer type = CurrentUserContext.getUserContext().getRole().getIsmanager();
-//			if(type == 1){
-//				branchids.clear();
-//			}
+			List<UserManager> userManager = CurrentUserContext.getCurrentUserManager();
+			//			Integer type = CurrentUserContext.getUserContext().getRole().getIsmanager();
+			//			if(type == 1){
+			//				branchids.clear();
+			//			}
 			String familyid = CurrentUserContext.getCurrentFamilyId();
-			Indexcount countIndex = familyService.countIndex(familyid, branchids);
+			Indexcount countIndex = new Indexcount();
+			for (UserManager um : userManager) {
+				if (um.getEbtype() == 1) {
+					countIndex = familyService.countIndex(familyid, null);
+					break;
+				} else {
+					if (branchids.size() > 0) {
+						countIndex = familyService.countIndex(familyid, branchids);
+					}
+					break;
+				}
+
+			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(menuFunctions);
@@ -88,18 +100,18 @@ public class IndexController {
 		}
 		return res;
 	}
-	
+
 	public List<Function> list2Tree(List<Function> functionList) {
 		List<Function> parentList = new ArrayList<>();
 		for (Function function : functionList) {
-			if("00000".equals(function.getParentid())) {
+			if ("00000".equals(function.getParentid())) {
 				parentList.add(function);
 			}
 		}
 		for (Function parent : parentList) {
 			List<Function> childList = new ArrayList<>();
-			for (Function  function: functionList) {
-				if(function.getParentid().equals(parent.getFunctionid())) {
+			for (Function function : functionList) {
+				if (function.getParentid().equals(parent.getFunctionid())) {
 					childList.add(function);
 				}
 			}
@@ -107,5 +119,5 @@ public class IndexController {
 		}
 		return parentList;
 	}
-	
+
 }
