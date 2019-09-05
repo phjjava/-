@@ -1916,7 +1916,7 @@ public class UserServiceImpl implements UserService {
 				userMates.setMatename(user1.getUsername());
 				userMates.setSex(user.getSex());
 				userMates.setDeleteflag(0);
-				userMates.setIsMarry(1);
+				userMates.setIsMarry(0);
 				userMates.setPid(user1.getPid());
 				userMates.setPname(user1.getPname());
 				userMates.setPinyinfirst(PinyinUtil.getPinYinFirstChar(user.getMatename()));
@@ -1932,7 +1932,8 @@ public class UserServiceImpl implements UserService {
 					userDao.insertSelective(userMates);
 					userInfo.setUserid(userid);
 					userInfoDao.insertSelective(userInfo);
-					//修改配偶信息
+					//修改配偶信息及婚配状态
+					user.setIsMarry(0);
 					userDao.updateByPrimaryKeySelective(user);
 					result = new Result(MsgConstants.RESUL_SUCCESS);
 				}
