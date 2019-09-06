@@ -1159,9 +1159,10 @@ public class BranchServiceImpl implements BranchService {
 	public void getUserListFromGenUser(GenUserVO entity, int genlevel) {
 		// 查询孩子列表
 		String userid = entity.getUser().getUserid();
-		UserQuery userExample = new UserQuery();
+		/*UserQuery userExample = new UserQuery();
 		userExample.or().andPidEqualTo(userid).andDeleteflagEqualTo(0).andStatusEqualTo(0);
-		List<User> users = userDao.selectByExample(userExample);
+		List<User> users = userDao.selectByExample(userExample);*/
+		List<User> users = userDao.selectChildren(userid);
 		List<GenUserVO> genUserVOs = new ArrayList<GenUserVO>();
 		for (User user : users) {
 			// 获取孩子配偶实例
@@ -1205,9 +1206,10 @@ public class BranchServiceImpl implements BranchService {
 	public void getUserListOnlyFromGenUser(GenUserOther entity, int genlevel, List<GenUserOther> genUserOthers) {
 		// 查询孩子列表
 		String userid = entity.getUserid();
-		UserQuery userExample = new UserQuery();
+		/*UserQuery userExample = new UserQuery();
 		userExample.or().andPidEqualTo(userid).andDeleteflagEqualTo(0).andStatusEqualTo(0);
-		List<User> users = userDao.selectByExample(userExample);
+		List<User> users = userDao.selectByExample(userExample);*/
+		List<User> users = userDao.selectChildren(userid);
 		for (User user : users) {
 			// 获取孩子配偶实例
 			User mateuser = new User();
