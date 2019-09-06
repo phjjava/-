@@ -1041,13 +1041,13 @@
 		t1.familyid = #{user.familyid,jdbcType=VARCHAR}
 		and t1.status in (1,2)
 		<if test="user.status != null and user.status != ''">
-			and user.status = #{user.status,jdbcType=INTEGER}
+			and t1.status = #{user.status,jdbcType=INTEGER}
 		</if>
 		<if test="user.username != null and user.username != ''">
-			and user.username like CONCAT('%',CONCAT(#{user.username}),'%')
+			and t1.username like CONCAT('%',CONCAT(#{user.username}),'%')
 		</if>
 		<if test="list != null and list.size() > 0 ">
-			and a.branchid in
+			and t1.branchid in
 			<foreach collection="list" item="item" index="index" open="("
 				separator="," close=")">
 				#{item}
