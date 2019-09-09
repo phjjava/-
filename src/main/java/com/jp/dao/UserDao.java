@@ -26,6 +26,8 @@ public interface UserDao {
 
 	List<User> selectByExample(UserQuery example);
 
+	List<User> selectChildren(@Param("pid") String pid);
+
 	User selectByPrimaryKey(String userid);
 
 	int updateByExampleSelective(@Param("record") User record, @Param("example") UserQuery example);
@@ -48,7 +50,7 @@ public interface UserDao {
 
 	int updateAleardyUser(@Param("list") List<User> userList);
 
-	List<User> selecUserListToReview(User user);
+	List<User> selecUserListToReview(@Param("user") User user, @Param("list") List<String> branchids);
 
 	List<Usercontent> selectUserContentList(Usercontent usercontent);
 
