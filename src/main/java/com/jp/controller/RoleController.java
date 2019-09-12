@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.jp.common.CurrentUserContext;
+import com.jp.common.ConstantUtils;
 import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.Function;
@@ -26,6 +26,7 @@ import com.jp.util.GsonUtil;
 import com.jp.util.Result;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
+import com.jp.util.WebUtil;
 
 @Controller
 @RequestMapping("role")
@@ -41,12 +42,14 @@ public class RoleController {
 
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String save(HttpServletRequest request, Role role, ModelMap model) {
+	public String save(HttpServletRequest request, Role role) {
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
 		Integer result = null;
 		try {
 			String functionids[] = request.getParameterValues("functionids[]");
 			String roleType = request.getParameter("roleType");
-			role.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			role.setFamilyid(familyid);
 			switch (Integer.valueOf(roleType)) {
 			case 1:
 				role.setIsmanager(0);
@@ -83,7 +86,9 @@ public class RoleController {
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	public String list(PageModel<Role> pageModel, Role role, ModelMap model) {
 		try {
-			role.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			//当前登录人 familyid
+			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+			role.setFamilyid(familyid);
 			roleService.pageQuery(pageModel, role);
 			if (pageModel.getList() != null) {
 				if (pageModel.getList().size() == 0) {
@@ -123,8 +128,8 @@ public class RoleController {
 		try {
 
 			String roleid = request.getParameter("roleid");
-			String familyid = CurrentUserContext.getCurrentFamilyId();
-
+			//当前登录人 familyid
+			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
 			List<Function> functionList = functionService.selectFunctionListByRoleid(familyid, roleid);
 			List<Function> plist = null;
 			List<Function> clist = null;
@@ -170,7 +175,9 @@ public class RoleController {
 	public String selectRoleList() {
 		String gsonStr = null;
 		try {
-			List<Role> roleList = roleService.selectRoleList(CurrentUserContext.getCurrentFamilyId());
+			//当前登录人 familyid
+			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+			List<Role> roleList = roleService.selectRoleList(familyid);
 			gsonStr = GsonUtil.GsonString(roleList);
 		} catch (Exception e) {
 			e.printStackTrace();

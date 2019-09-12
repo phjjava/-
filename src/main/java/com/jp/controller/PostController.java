@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.jp.common.CurrentUserContext;
+import com.jp.common.ConstantUtils;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
@@ -22,6 +22,7 @@ import com.jp.entity.Post;
 import com.jp.service.PostService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
+import com.jp.util.WebUtil;
 
 @Controller
 @RequestMapping("post")
@@ -38,11 +39,10 @@ public class PostController {
 		Result result = null;
 		JsonResponse res = null;
 		try {
-			// entity.setUserid(CurrentUserContext.getCurrentUserId());
 			postService.pageQuery(pageModel, entity);
 			if (pageModel.getList() != null) {
 				if (pageModel.getList().size() == 0) {
-					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
+					if (pageModel.getPageNo() != null && 1 != pageModel.getPageNo()) {
 						pageModel.setPageNo(pageModel.getPageNo() - 1);
 						postService.pageQuery(pageModel, entity);
 					}
@@ -97,13 +97,21 @@ public class PostController {
 		Result result = null;
 		JsonResponse res = null;
 		Integer status = null;
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			if (StringTools.notEmpty(post.getId())) {// 修改
 
 				status = postService.update(post);
 			} else {// 新增
 				post.setId(UUIDUtils.getUUID());
-				post.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				post.setFamilyid(familyid);
 				post.setCreatetime(new Date());
 				status = postService.insert(post);
 			}
