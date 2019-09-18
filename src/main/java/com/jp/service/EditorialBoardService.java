@@ -30,7 +30,7 @@ public interface EditorialBoardService {
 
 	int del(String id);
 
-	JsonResponse selecteditorialBoardList(String userid);
+	JsonResponse selecteditorialBoardList();
 
 	JsonResponse save(EditorialBoard eb);
 

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.jp.common.CurrentUserContext;
+import com.jp.common.ConstantUtils;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
@@ -90,6 +90,8 @@ public class NoticeController {
 	 * @return void
 	 */
 	private void initNoticeTop(String noticeid, Notice notice) {
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
 		NoticetopQuery example = new NoticetopQuery();
 		example.or().andNoticeidEqualTo(noticeid);
 		List<Noticetop> noticetopList = noticetopDao.selectByExample(example);
@@ -99,7 +101,7 @@ public class NoticeController {
 			for (Noticetop noticetop : noticetopList) {
 				BranchKey key = new BranchKey();
 				key.setBranchid(noticetop.getBranchid());
-				key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				key.setFamilyid(familyid);
 				Branch branch = branchDao.selectByPrimaryKey(key);
 				if (branch != null) {
 					noticetop.setTobranchName(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname()

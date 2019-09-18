@@ -12,7 +12,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jp.common.ConstantUtils;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
@@ -42,9 +41,11 @@ import com.jp.entity.NoticeExample;
 import com.jp.entity.NoticeVO;
 import com.jp.entity.Usercontent;
 import com.jp.service.BannerService;
+import com.jp.service.UserContextService;
 import com.jp.util.DateUtils;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
+import com.jp.util.WebUtil;
 
 @Service
 public class BannerServiceImpl implements BannerService {
@@ -63,7 +64,9 @@ public class BannerServiceImpl implements BannerService {
 	@Autowired
 	private NoticeMapper noticedao;
 	@Autowired
-	BranchphotoMapper branchphotoDao;
+	private BranchphotoMapper branchphotoDao;
+	@Autowired
+	private UserContextService userContextService;
 
 	@Override
 	public JsonResponse pageQuery(PageModel<Banner> pageModel, Banner banner) {
@@ -81,13 +84,21 @@ public class BannerServiceImpl implements BannerService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			BannerQuery bq = new BannerQuery();
 			Criteria createCriteria = bq.createCriteria();
 			if (banner.getDeleteflag() != null) {
 				createCriteria.andDeleteflagEqualTo(banner.getDeleteflag());
 			}
-			createCriteria.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+			createCriteria.andFamilyidEqualTo(familyid);
 			bq.setOrderByClause("createtime DESC");
 			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 			List<Banner> list = bdao.selectByExample(bq);
@@ -213,11 +224,27 @@ public class BannerServiceImpl implements BannerService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			if (StringTools.notEmpty(banner.getBannerid())) {
 				// 修改
 				banner.setUpdatetime(new Date());
-				banner.setUpdateid(CurrentUserContext.getCurrentUserId());
+				banner.setUpdateid(userid);
 				if (bannerurlId != null) {
 					banner.setBannerurl(bannerurlId);
 				}
@@ -225,11 +252,11 @@ public class BannerServiceImpl implements BannerService {
 			} else {
 				// 新增
 				if (!StringTools.trimNotEmpty(banner.getFamilyid())) {
-					banner.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+					banner.setFamilyid(familyid);
 				}
 				banner.setDeleteflag(ConstantUtils.DELETE_FALSE);
-				banner.setCreateid(CurrentUserContext.getCurrentUserId());
-				banner.setUpdateid(CurrentUserContext.getCurrentUserId());
+				banner.setCreateid(userid);
+				banner.setUpdateid(userid);
 				banner.setBannerid(UUIDUtils.getUUID());
 				banner.setUpdatetime(new Date());
 				banner.setCreatetime(new Date());
@@ -285,19 +312,34 @@ public class BannerServiceImpl implements BannerService {
 	public JsonResponse selectByGoType(String goType) {
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		GoTypeResult goTypeResult = null;
 		List<GoTypeResult> goTypeResultList = new ArrayList<GoTypeResult>();
 		try {
-			Integer type = CurrentUserContext.getUserContext().getUsermanagers().get(0).getEbtype();
-			String familyid = CurrentUserContext.getCurrentFamilyId();
-			List<String> branchIds = CurrentUserContext.getCurrentBranchIds();
+			Integer type = userContextService.getUserManagers(userid).get(0).getEbtype();
+			List<String> branchIds = userContextService.getBranchIds(familyid, userid);
 			//动态
 			if (goType.equals("1")) {
 
 				//			if(type == 1){
 				//				branchIds.clear();//验证是否是总编委会
 				//				Branch branch = new Branch();
-				//				branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				//				branch.setFamilyid(familyid);
 				//				List<Branch> branchList = branchDao.selectBranchList(branch);
 				//				if(branchList != null && branchList.size() > 0){
 				//					for (int i = 0; i < branchList.size(); i++) {
@@ -375,7 +417,7 @@ public class BannerServiceImpl implements BannerService {
 				Introduce introduce = new Introduce();
 				IntroduceQuery iq = new IntroduceQuery();
 				com.jp.entity.IntroduceQuery.Criteria criteria = iq.createCriteria();
-				criteria.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+				criteria.andFamilyidEqualTo(familyid);
 				introduce.setDeleteflag(0);
 				if (StringTools.trimNotEmpty(introduce.getDeleteflag())) {
 					criteria.andDeleteflagEqualTo(introduce.getDeleteflag());

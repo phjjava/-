@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.jp.common.ConstantUtils;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
@@ -52,6 +51,7 @@ import com.jp.entity.Userphoto;
 import com.jp.entity.UserphotoKey;
 import com.jp.entity.Userworkexp;
 import com.jp.service.BranchService;
+import com.jp.service.UserContextService;
 import com.jp.service.UserEduService;
 import com.jp.service.UserInfoService;
 import com.jp.service.UserService;
@@ -63,6 +63,7 @@ import com.jp.util.RSAUtils;
 //import com.jp.util.Result;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
+import com.jp.util.WebUtil;
 
 @Controller
 @RequestMapping("user")
@@ -88,6 +89,8 @@ public class UserController {
 	private BranchDao branchDao;
 	@Autowired
 	private SysVersionPrivilegeMapper sysVersionPrivilegeMapper;
+	@Autowired
+	private UserContextService userContextService;
 
 	/**
 	 * 
@@ -359,34 +362,48 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse list(PageModel<User> pageModel, User user, ModelMap model) {
+	public JsonResponse list(PageModel<User> pageModel, User user) {
 		Result result = null;
 		JsonResponse res = null;
 		try {
-			String userid = CurrentUserContext.getCurrentUserId();
-			String familyId = CurrentUserContext.getCurrentFamilyId();
+			//当前登录人 userid
+			String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+			if (StringTools.isEmpty(userid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("用户非法！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			//当前登录人 familyid
+			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+			if (StringTools.isEmpty(familyid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("header中参数familyid为空!");
+				res = new JsonResponse(result);
+				return res;
+			}
 			UserbranchQuery ex = new UserbranchQuery();
 			ex.or().andUseridEqualTo(userid);
 			List<Userbranch> list = userBranchDao.selectByExample(ex);
 			Branch bran = new Branch();
 			for (Userbranch b : list) {
 				bran.setBranchid(b.getBranchid());
-				bran.setFamilyid(familyId);
+				bran.setFamilyid(familyid);
 				bran = branchDao.selectByPrimaryKey(bran);
 				if (bran.getBranchid() != null && !"".equals(bran.getBranchid()))
 					user.setBranchid(b.getBranchid());
 
 			}
 
-			user.setFamilyid(familyId);
-			List<String> branchList = CurrentUserContext.getCurrentBranchIds();
+			user.setFamilyid(familyid);
+			List<String> branchids = userContextService.getBranchIds(familyid, userid);
 
-			userService.selectUserList(pageModel, user, branchList);
+			userService.selectUserList(pageModel, user, branchids);
 			if (pageModel.getList() != null) {
 				if (pageModel.getList().size() == 0) {
 					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo().toString())) {
 						pageModel.setPageNo(pageModel.getPageNo() - 1);
-						userService.selectUserList(pageModel, user, branchList);
+						userService.selectUserList(pageModel, user, branchids);
 					}
 				}
 			}
@@ -416,9 +433,17 @@ public class UserController {
 	public JsonResponse selectUserItem(HttpServletRequest request, User user, ModelMap model) {
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		// String gsonStr = null;
 		try {
-			user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			user.setFamilyid(familyid);
 			List<User> userList = userService.selectUserItem(user);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
@@ -447,8 +472,16 @@ public class UserController {
 		// String gsonStr = null;
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
-			user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			user.setFamilyid(familyid);
 			List<User> userList = userService.selectAllUser(user);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
@@ -477,8 +510,16 @@ public class UserController {
 		// String gsonStr = null;
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
-			user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			user.setFamilyid(familyid);
 			List<User> userList = userService.selectUserItemLive(user);
 			// gsonStr = GsonUtil.GsonString(userList);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
@@ -583,13 +624,23 @@ public class UserController {
 		// String gsonStr = null;
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
-			List<String> branchList = CurrentUserContext.getCurrentBranchIds();
-			// Integer type = CurrentUserContext.getUserContext().getRole().getIsmanager();
-			// if (type == 1) {// 验证是否是总编委会主任
-			// branchList.clear();
-			// }
-			List<User> userList = userService.selectPnameAndMate(CurrentUserContext.getCurrentFamilyId(), branchList);
+			List<String> branchList = userContextService.getBranchIds(familyid, userid);
+			List<User> userList = userService.selectPnameAndMate(familyid, branchList);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(userList);
@@ -618,8 +669,16 @@ public class UserController {
 	public JsonResponse listToReview(PageModel<User> pageModel, User user) {
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
-			user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			user.setFamilyid(familyid);
 			userService.selecUserListToReview(pageModel, user);
 			if (pageModel.getList() != null) {
 				if (pageModel.getList().size() == 0) {
@@ -979,14 +1038,22 @@ public class UserController {
 	public JsonResponse validatePhone(User user) {
 		Result result = new Result(MsgConstants.RESUL_SUCCESS); // 默认通过验证
 		JsonResponse res = null;
-		if (!StringTools.trimNotEmpty(user.getPhone())) {
+		if (StringTools.trimIsEmpty(user.getPhone())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数phone不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
-			user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			user.setFamilyid(familyid);
 			List<User> userList = userService.validatePhone(user);
 			String userid = "";
 			if (StringTools.trimNotEmpty(user.getUserid())) {
@@ -1062,8 +1129,16 @@ public class UserController {
 		// String result = "";
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
-			userPhoto.setUpdateid(CurrentUserContext.getCurrentUserId());
+			userPhoto.setUpdateid(userid);
 			userPhoto.setUpdatetime(new Date());
 			useralbumService.updateByPrimaryKeySelective(userPhoto);
 			// result = "1";
@@ -1093,13 +1168,20 @@ public class UserController {
 	public JsonResponse checkOldPwd(String oldpassword) {
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			// 解密
 			byte[] byteStr = Base64.decodeBase64(oldpassword.getBytes("UTF-8"));
 			oldpassword = new String(byteStr);
 			UserQuery example = new UserQuery();
-			example.or().andPasswordEqualTo(MD5Util.string2MD5(oldpassword))
-					.andUseridEqualTo(CurrentUserContext.getCurrentUserId());
+			example.or().andPasswordEqualTo(MD5Util.string2MD5(oldpassword)).andUseridEqualTo(userid);
 			List<User> selectRt = userDao.selectByExample(example);
 			if (selectRt != null && selectRt.size() == 1) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
@@ -1133,6 +1215,22 @@ public class UserController {
 		// Result result = new Result();
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			// 解密
 			byte[] byteStr = Base64.decodeBase64(oldpassword.getBytes("UTF-8"));
@@ -1141,8 +1239,7 @@ public class UserController {
 			password = new String(byteStr2);
 			// 查询校验
 			UserQuery example = new UserQuery();
-			example.or().andPasswordEqualTo(MD5Util.string2MD5(oldpassword))
-					.andUseridEqualTo(CurrentUserContext.getCurrentUserId());
+			example.or().andPasswordEqualTo(MD5Util.string2MD5(oldpassword)).andUseridEqualTo(userid);
 			List<User> selectRt = userDao.selectByExample(example);
 			if (selectRt != null && selectRt.size() == 1) {
 				result = userService.editPwd(MD5Util.string2MD5(password));
@@ -1214,10 +1311,18 @@ public class UserController {
 		Integer priValue = 0; // 最多容纳家族人数
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		// 获取该用户所在家族使用的版本特权信息
 		try {
-			SysVersionPrivilege versionP = sysVersionPrivilegeMapper
-					.selectByVersionAndCode(CurrentUserContext.getCurrentFamilyId(), ConstantUtils.VERSION_USERCOUNT);
+			SysVersionPrivilege versionP = sysVersionPrivilegeMapper.selectByVersionAndCode(familyid,
+					ConstantUtils.VERSION_USERCOUNT);
 			if (versionP != null && versionP.getPrivilegevalue() != null) {
 				if (versionP.getPrivilegevalue().equals(ConstantUtils.VERSION_UNLIMITED)) {
 					// checkResult = "0";
@@ -1229,7 +1334,7 @@ public class UserController {
 			}
 			// 获取该用户所在家族已有的人数
 			UserQuery userExample = new UserQuery();
-			userExample.or().andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+			userExample.or().andFamilyidEqualTo(familyid);
 			int haveUserCount = userDao.countByExample(userExample); // 家族已有人数
 			if (priValue > 0 && priValue > haveUserCount) {
 				// checkResult = "0"; //家族人数未超出版本限制最大人数
@@ -1256,22 +1361,37 @@ public class UserController {
 	public JsonResponse searchUser(PageModel<User> pageModel, User user, ModelMap model) throws IOException {
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
-			String userid = CurrentUserContext.getCurrentUserId();
 			UserbranchQuery ex = new UserbranchQuery();
 			ex.or().andUseridEqualTo(userid);
 			List<Userbranch> list = userBranchDao.selectByExample(ex);
 			Branch bran = new Branch();
 			for (Userbranch b : list) {
 				bran.setBranchid(b.getBranchid());
-				bran.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				bran.setFamilyid(familyid);
 				bran = branchDao.selectByPrimaryKey(bran);
 				if (bran.getBranchid() != null && !"".equals(bran.getBranchid()))
 					user.setBranchid(b.getBranchid());
 			}
-			user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			user.setFamilyid(familyid);
 			user.setStatus(0); // 用户状态默认启用
-			List<String> branchList = CurrentUserContext.getCurrentBranchIds();
+			List<String> branchList = userContextService.getBranchIds(familyid, userid);
 			userService.selectUserList(pageModel, user, branchList);
 			if (pageModel.getList() != null) {
 				if (pageModel.getList().size() == 0) {
