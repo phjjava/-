@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.jp.common.CurrentUserContext;
+import com.jp.common.ConstantUtils;
 import com.jp.common.PageModel;
 import com.jp.dao.InstructionDao;
 import com.jp.entity.Instruction;
 import com.jp.entity.InstructionQuery;
-import com.jp.entity.Introduce;
 import com.jp.service.InstructionService;
 import com.jp.util.Result;
+import com.jp.util.WebUtil;
 
 @Controller
 @RequestMapping("instruction")
@@ -84,6 +84,7 @@ public class InstructionController {
 		}
 		return result;
 	}
+
 	/**
 	 * 
 	 * @描述 跳转到家族(家训)封面页面前获取当前家族封面信息
@@ -97,14 +98,16 @@ public class InstructionController {
 	@RequestMapping(value = "/preEditCover")
 	public String preEditCover(HttpServletRequest request, ModelMap model) {
 		try {
-			InstructionQuery example=new InstructionQuery();
+			//当前登录人 familyid
+			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+			InstructionQuery example = new InstructionQuery();
 			example.setOrderByClause("createtime desc");
-			example.or().andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+			example.or().andFamilyidEqualTo(familyid);
 			//获取当前家训信息
 			List<Instruction> selectRt = instructionDao.selectByExample(example);
-			if(selectRt!=null&&selectRt.size()>0){
+			if (selectRt != null && selectRt.size() > 0) {
 				//查询有结果则返回
-				Instruction instruction=selectRt.get(0);
+				Instruction instruction = selectRt.get(0);
 				model.put("instruction", instruction);
 			}
 		} catch (Exception e) {
@@ -113,7 +116,7 @@ public class InstructionController {
 		}
 		return "genealogy/frontList";
 	}
-	
+
 	/**
 	 * 
 	 * @描述  保存家训封面
@@ -127,9 +130,9 @@ public class InstructionController {
 	@ResponseBody
 	@RequestMapping(value = "/saveCover")
 	public Result saveCover(HttpServletRequest request, Instruction instruction) {
-		Result result=new Result();
+		Result result = new Result();
 		try {
-			result=itsservice.saveCover(instruction);
+			result = itsservice.saveCover(instruction);
 		} catch (Exception e) {
 			result.setStatus(0);
 			e.printStackTrace();
@@ -137,6 +140,7 @@ public class InstructionController {
 		}
 		return result;
 	}
+
 	/**
 	 * 
 	 * @描述 跳转到家族(家训)页面前获取当前家族封面信息
@@ -150,14 +154,16 @@ public class InstructionController {
 	@RequestMapping(value = "/preEditInstruction")
 	public String preEditInstruction(HttpServletRequest request, ModelMap model) {
 		try {
-			InstructionQuery example=new InstructionQuery();
+			//当前登录人 familyid
+			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+			InstructionQuery example = new InstructionQuery();
 			example.setOrderByClause("createtime desc");
-			example.or().andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+			example.or().andFamilyidEqualTo(familyid);
 			//获取当前家训信息
 			List<Instruction> selectRt = instructionDao.selectByExample(example);
-			if(selectRt!=null&&selectRt.size()>0){
+			if (selectRt != null && selectRt.size() > 0) {
 				//查询有结果则返回
-				Instruction instruction=selectRt.get(0);
+				Instruction instruction = selectRt.get(0);
 				model.put("instruction", instruction);
 			}
 		} catch (Exception e) {

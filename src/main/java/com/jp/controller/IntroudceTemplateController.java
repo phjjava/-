@@ -15,15 +15,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentSystemUserContext;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
-import com.jp.entity.Banner;
-import com.jp.entity.Introduce;
 import com.jp.entity.IntroudceTemplate;
-import com.jp.entity.SysMation;
 import com.jp.service.IntroudceTemplateService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
@@ -85,7 +81,7 @@ public class IntroudceTemplateController {
 		res.setCount(pageModel.getPageInfo().getTotal());
 		return res;
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
 	public JsonResponse changeStatus(IntroudceTemplate intemplate) {
@@ -94,7 +90,7 @@ public class IntroudceTemplateController {
 		Integer count = 0;
 		try {
 			count = inService.changeStatus(intemplate);
-			if(count > 0) {
+			if (count > 0) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 			}
 		} catch (Exception e) {
@@ -107,7 +103,7 @@ public class IntroudceTemplateController {
 
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public JsonResponse save(IntroudceTemplate intemplate, ModelMap model,String Id) {
+	public JsonResponse save(IntroudceTemplate intemplate, ModelMap model, String Id) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		Integer count = 0;
@@ -119,7 +115,7 @@ public class IntroudceTemplateController {
 				count = inService.update(intemplate);
 			} else {
 				// 新增
-				
+
 				intemplate.setDeleteflag(ConstantUtils.DELETE_FALSE);
 				intemplate.setCreateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
 				intemplate.setUpdateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
@@ -128,7 +124,7 @@ public class IntroudceTemplateController {
 				intemplate.setCreatetime(new Date());
 				count = inService.insert(intemplate);
 			}
-			if(count > 0) {
+			if (count > 0) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 			}
 		} catch (Exception e) {
@@ -138,7 +134,7 @@ public class IntroudceTemplateController {
 		res = new JsonResponse(result);
 		return res;
 	}
-	
+
 	/**
 	 * 
 	 * @描述 批量删除
@@ -167,12 +163,13 @@ public class IntroudceTemplateController {
 		res = new JsonResponse(result);
 		return res;
 	}
+
 	/**
 	 * api模板书列表
 	 */
 	@RequestMapping(value = "/apilist", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse namelist(PageModel<IntroudceTemplate> pageModel,  IntroudceTemplate intemplate) {
+	public JsonResponse namelist(PageModel<IntroudceTemplate> pageModel, IntroudceTemplate intemplate) {
 		return inService.pageQueryApi(pageModel, intemplate);
 	}
 }

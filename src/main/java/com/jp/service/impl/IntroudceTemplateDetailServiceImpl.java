@@ -18,10 +18,13 @@ import com.jp.service.IntroudceTemplateDetailService;
 import com.jp.util.StringTools;
 
 @Service
-public class IntroudceTemplateDetailServiceImpl implements IntroudceTemplateDetailService{
-	@Autowired IntroudceTemplateDetailDao inDetailDao;
-	
-	@Autowired IntroudceTemplateDao inDao;
+public class IntroudceTemplateDetailServiceImpl implements IntroudceTemplateDetailService {
+	@Autowired
+	IntroudceTemplateDetailDao inDetailDao;
+
+	@Autowired
+	IntroudceTemplateDao inDao;
+
 	@Override
 	public IntroudceTemplateDetail get(String id) {
 		// TODO Auto-generated method stub
@@ -30,19 +33,18 @@ public class IntroudceTemplateDetailServiceImpl implements IntroudceTemplateDeta
 
 	@Override
 	public PageModel<IntroudceTemplateDetail> pageQuery(PageModel<IntroudceTemplateDetail> pageModel,
-			IntroudceTemplateDetail intemplateDetail,String title,String templatename,Integer deleteflag) throws Exception {
+			IntroudceTemplateDetail intemplateDetail, String title, String templatename, Integer deleteflag)
+			throws Exception {
 		// TODO Auto-generated method stub
 		InstructionTemplateQuery iq = new InstructionTemplateQuery();
 		Criteria criteria = iq.createCriteria();
-		//criteria.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
-		// criteria.andFamilyidEqualTo(introduce.getFamilyid());
 		intemplateDetail.setDeleteflag(0);
 		if (StringTools.trimNotEmpty(intemplateDetail.getDeleteflag())) {
 			criteria.andDeleteflagEqualTo(intemplateDetail.getDeleteflag());
 		}
 		iq.setOrderByClause("sort");
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		List<IntroudceTemplateDetail> list = inDetailDao.selectByExample1(iq,title,templatename,deleteflag);
+		List<IntroudceTemplateDetail> list = inDetailDao.selectByExample1(iq, title, templatename, deleteflag);
 		pageModel.setList(list);
 		return pageModel;
 	}
@@ -62,12 +64,12 @@ public class IntroudceTemplateDetailServiceImpl implements IntroudceTemplateDeta
 	@Override
 	public Integer changeStatus(IntroudceTemplateDetail intemplateDetail) {
 		// TODO Auto-generated method stub
-		int count=inDetailDao.updateByPrimaryKeySelective(intemplateDetail);
-		if(count==1){
-		  return count;
-		}else{
-		  TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); 
-		  return 0;
+		int count = inDetailDao.updateByPrimaryKeySelective(intemplateDetail);
+		if (count == 1) {
+			return count;
+		} else {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			return 0;
 		}
 	}
 
@@ -101,5 +103,4 @@ public class IntroudceTemplateDetailServiceImpl implements IntroudceTemplateDeta
 		return inDetailDao.selectByPrimaryKeyOne(id);
 	}
 
-	
 }
