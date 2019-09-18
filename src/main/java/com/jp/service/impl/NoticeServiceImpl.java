@@ -16,7 +16,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jp.common.ConstantUtils;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
@@ -43,6 +42,7 @@ import com.jp.entity.NoticetopQuery;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
 import com.jp.service.NoticeService;
+import com.jp.service.UserContextService;
 import com.jp.service.UserService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
@@ -66,6 +66,8 @@ public class NoticeServiceImpl implements NoticeService {
 	private UserService userService;
 	@Autowired
 	private BranchDao branchMapper;
+	@Autowired
+	private UserContextService userContextService;
 
 	@Override
 	public JsonResponse pageQuery(PageModel<NoticeVO> pageModel, Notice notice) {
@@ -83,11 +85,26 @@ public class NoticeServiceImpl implements NoticeService {
 			res = new JsonResponse(result);
 			return res;
 		}
-
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			NoticeExample nq = new NoticeExample();
 			Criteria criteria = nq.or();
-			criteria.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+			criteria.andFamilyidEqualTo(familyid);
 			if (StringTools.trimNotEmpty(notice.getType())) {
 				criteria.andTypeEqualTo(notice.getType());
 			}
@@ -97,16 +114,10 @@ public class NoticeServiceImpl implements NoticeService {
 			if (StringTools.trimNotEmpty(notice.getDeleteflag())) {
 				criteria.andDeleteflagEqualTo(notice.getDeleteflag());
 			}
-			List<UserManager> managers = CurrentUserContext.getCurrentUserManager();
+			List<UserManager> managers = userContextService.getUserManagers(userid);
 			UserManager manager = managers.get(0);
 
-			List<String> currentBranchIds = CurrentUserContext.getCurrentBranchIds();
-			if (StringTools.trimIsEmpty(currentBranchIds)) {
-				result = new Result(MsgConstants.RESUL_FAIL);
-				result.setMsg("您的账号当前没有分支");
-				res = new JsonResponse(result);
-				return res;
-			}
+			List<String> branchIds = userContextService.getBranchIds(familyid, userid);
 			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 			List<NoticeVO> list = new ArrayList<>();
 			if (manager.getEbtype() == 1) {// 验证是否是总编委会主任
@@ -114,7 +125,13 @@ public class NoticeServiceImpl implements NoticeService {
 				nq.setOrderByClause("createtime DESC");
 				list = noticeMapper.selectNoticeMangeList(nq);
 			} else {
-				criteria.andBranchidIn(currentBranchIds);
+				if (branchIds.size() < 1) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("您的账号当前没有分支");
+					res = new JsonResponse(result);
+					return res;
+				}
+				criteria.andBranchidIn(branchIds);
 				nq.setOrderByClause("createtime DESC");
 				list = noticeMapper.selectNoticeMangeList(nq);
 			}
@@ -138,12 +155,14 @@ public class NoticeServiceImpl implements NoticeService {
 
 	@Override
 	public Notice get(String noticeid) throws Exception {
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		Notice notice = noticeMapper.selectByPrimaryKey(noticeid);
 		if (notice != null) {
 			BranchKey key = new BranchKey();
 			key.setBranchid(notice.getBranchid());
-			key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			key.setFamilyid(familyid);
 			Branch branch = branchMapper.selectByPrimaryKey(key);
 			if (branch != null) {
 				notice.setBranchnamePlus(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname() + "_"
@@ -173,9 +192,25 @@ public class NoticeServiceImpl implements NoticeService {
 		JsonResponse res = null;
 		int status = 0;
 		try {
+			//当前登录人 userid
+			String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+			if (StringTools.isEmpty(userid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("用户非法！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			//当前登录人 familyid
+			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+			if (StringTools.isEmpty(familyid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("header中参数familyid为空!");
+				res = new JsonResponse(result);
+				return res;
+			}
 			if (StringTools.trimNotEmpty(notice.getNoticeid())) {
-				notice.setUpdateid(CurrentUserContext.getCurrentUserId());
-				notice.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				notice.setUpdateid(userid);
+				notice.setFamilyid(familyid);
 				if (notice.getNoticetype() == 0) {
 					notice.setBranchid("0");
 				}
@@ -190,18 +225,18 @@ public class NoticeServiceImpl implements NoticeService {
 					status = saveNoticetop(notice, notice.getNoticeid());
 				}
 			} else {
+				User user = userMapper.selectByPrimaryKey(userid);
 				String noticeid = UUIDUtils.getUUID();
-				notice.setType(1);
 				notice.setNoticeid(noticeid);
-				notice.setCreateid(CurrentUserContext.getCurrentUserId());
-				notice.setCreatename(CurrentUserContext.getCurrentUserName());
-				notice.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				notice.setCreateid(userid);
+				notice.setCreatename(user.getUsername());
+				notice.setFamilyid(familyid);
 				if (notice.getNoticetype() == 0) {
 					notice.setBranchid("0");
 				}
 				Date insertDate = new Date();
 				notice.setCreatetime(insertDate);
-				notice.setUpdateid(CurrentUserContext.getCurrentUserId());
+				notice.setUpdateid(userid);
 				notice.setUpdatetime(insertDate);
 				notice.setDeleteflag(ConstantUtils.DELETE_FALSE);
 				if (notice.getCreatetimeStr() != null) {

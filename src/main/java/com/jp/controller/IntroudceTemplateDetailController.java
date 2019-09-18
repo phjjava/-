@@ -16,18 +16,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jp.common.ConstantUtils;
 import com.jp.common.CurrentSystemUserContext;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
-import com.jp.entity.Banner;
-import com.jp.entity.Introduce;
 import com.jp.entity.IntroudceTemplate;
 import com.jp.entity.IntroudceTemplateDetail;
-import com.jp.entity.MationType;
 import com.jp.service.IntroudceTemplateDetailService;
-import com.jp.service.IntroudceTemplateService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 
@@ -62,16 +57,17 @@ public class IntroudceTemplateDetailController {
 
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse list(PageModel<IntroudceTemplateDetail> pageModel, IntroudceTemplateDetail intemplateDetail,String title,String templatename,Integer deleteflag) {
+	public JsonResponse list(PageModel<IntroudceTemplateDetail> pageModel, IntroudceTemplateDetail intemplateDetail,
+			String title, String templatename, Integer deleteflag) {
 		Result result = null;
 		JsonResponse res = null;
 		try {
-			inService.pageQuery(pageModel, intemplateDetail,title,templatename,deleteflag);
+			inService.pageQuery(pageModel, intemplateDetail, title, templatename, deleteflag);
 			if (pageModel.getList() != null) {
 				if (pageModel.getPageSize() == 0) {
 					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
 						pageModel.setPageNo(pageModel.getPageNo() - 1);
-						inService.pageQuery(pageModel, intemplateDetail,title,templatename,deleteflag);
+						inService.pageQuery(pageModel, intemplateDetail, title, templatename, deleteflag);
 					}
 				}
 			}
@@ -88,7 +84,7 @@ public class IntroudceTemplateDetailController {
 		res.setCount(inService.selectCount());
 		return res;
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
 	public JsonResponse changeStatus(IntroudceTemplateDetail intemplateDetail) {
@@ -97,7 +93,7 @@ public class IntroudceTemplateDetailController {
 		Integer count = 0;
 		try {
 			count = inService.changeStatus(intemplateDetail);
-			if(count > 0) {
+			if (count > 0) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 			}
 		} catch (Exception e) {
@@ -110,7 +106,7 @@ public class IntroudceTemplateDetailController {
 
 	@ResponseBody
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public JsonResponse save(IntroudceTemplateDetail intemplateDetail, ModelMap model,String Id) {
+	public JsonResponse save(IntroudceTemplateDetail intemplateDetail, ModelMap model, String Id) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		Integer count = 0;
@@ -122,7 +118,7 @@ public class IntroudceTemplateDetailController {
 				count = inService.update(intemplateDetail);
 			} else {
 				// 新增
-				
+
 				intemplateDetail.setDeleteflag(ConstantUtils.DELETE_FALSE);
 				intemplateDetail.setCreateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
 				intemplateDetail.setUpdateid(CurrentSystemUserContext.getSystemUserContext().getUserid());
@@ -131,7 +127,7 @@ public class IntroudceTemplateDetailController {
 				intemplateDetail.setCreatetime(new Date());
 				count = inService.insert(intemplateDetail);
 			}
-			if(count > 0) {
+			if (count > 0) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 			}
 		} catch (Exception e) {
@@ -141,7 +137,7 @@ public class IntroudceTemplateDetailController {
 		res = new JsonResponse(result);
 		return res;
 	}
-	
+
 	/**
 	 * 
 	 * @描述 批量删除
@@ -170,30 +166,31 @@ public class IntroudceTemplateDetailController {
 		res = new JsonResponse(result);
 		return res;
 	}
-	
+
 	/**
 	 * 调取下拉框类型值（增加修改时调取使用）
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/selecttypelist", method = RequestMethod.POST)
-    public JsonResponse selecttypelist()  {
+	public JsonResponse selecttypelist() {
 		Result result = null;
 		JsonResponse res = null;
-    	List<IntroudceTemplate> gotypeList = null;
-    	try {
-    		gotypeList = inService.selecttypelist();
-    			result = new Result(MsgConstants.RESUL_SUCCESS);
-        		res = new JsonResponse(result);
-        		res.setData(gotypeList);
+		List<IntroudceTemplate> gotypeList = null;
+		try {
+			gotypeList = inService.selecttypelist();
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(gotypeList);
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			res = new JsonResponse(result);
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
 		}
-    	return res;
-    }
+		return res;
+	}
+
 	/**
 	 * api模板书章节目录
 	 */
@@ -202,10 +199,10 @@ public class IntroudceTemplateDetailController {
 	public JsonResponse apiFindList(String id) {
 		Result result = null;
 		JsonResponse res = null;
-		List<IntroudceTemplateDetail> detail=null;
+		List<IntroudceTemplateDetail> detail = null;
 		try {
-			detail=inService.apiFindList(id);
-			
+			detail = inService.apiFindList(id);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
@@ -219,6 +216,7 @@ public class IntroudceTemplateDetailController {
 		res.setData(detail);
 		return res;
 	}
+
 	/**
 	 * api详情模板书章节详情
 	 */
@@ -227,10 +225,10 @@ public class IntroudceTemplateDetailController {
 	public JsonResponse apiFindOne(String id) {
 		Result result = null;
 		JsonResponse res = null;
-		IntroudceTemplateDetail detail=null;
+		IntroudceTemplateDetail detail = null;
 		try {
-			detail=inService.apiFindOne(id);
-			
+			detail = inService.apiFindOne(id);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);

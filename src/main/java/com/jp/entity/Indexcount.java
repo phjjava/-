@@ -53,4 +53,10 @@ public class Indexcount implements Serializable {
 		this.rolecount = rolecount;
 	}
 
+	@Override
+	public String toString() {
+		return "Indexcount [applycount=" + applycount + ", usercount=" + usercount + ", shicount=" + shicount
+				+ ", branchcount=" + branchcount + ", rolecount=" + rolecount + "]";
+	}
+
 }

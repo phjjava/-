@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jp.common.CurrentUserContext;
+import com.jp.common.ConstantUtils;
 import com.jp.common.PageModel;
 import com.jp.dao.PostMapper;
 import com.jp.dao.UserManagerMapper;
@@ -17,6 +17,7 @@ import com.jp.entity.PostExample;
 import com.jp.entity.UserManager;
 import com.jp.entity.UserManagerExample;
 import com.jp.service.PostService;
+import com.jp.util.WebUtil;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -28,10 +29,12 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public PageModel<Post> pageQuery(PageModel<Post> pageModel, Post entity) {
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		PostExample example = new PostExample();
 		example.setOrderByClause("ismanager desc,type desc");
-		example.or().andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+		example.or().andFamilyidEqualTo(familyid);
 		List<Post> rtnlist = postMapper.selectByExample(example);
 		pageModel.setList(rtnlist);
 		pageModel.setPageInfo(new PageInfo<Post>(rtnlist));
@@ -71,10 +74,11 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public List<Post> selectPostList(Post post) {
-
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
 		PostExample example = new PostExample();
 		// 分编委
-		example.or().andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId()).andTypeEqualTo(post.getType());
+		example.or().andFamilyidEqualTo(familyid).andTypeEqualTo(post.getType());
 
 		return postMapper.selectByExample(example);
 	}
