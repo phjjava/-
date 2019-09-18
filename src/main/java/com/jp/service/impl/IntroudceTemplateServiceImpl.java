@@ -1,30 +1,30 @@
 package com.jp.service.impl;
 
-
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.dao.IntroudceTemplateDao;
 import com.jp.entity.BannerQuery;
+import com.jp.entity.BannerQuery.Criteria;
 import com.jp.entity.InstructionTemplateQuery;
 import com.jp.entity.IntroudceTemplate;
 import com.jp.entity.SysMation;
-import com.jp.entity.BannerQuery.Criteria;
 import com.jp.service.IntroudceTemplateService;
 import com.jp.util.StringTools;
 
 @Service
-public class IntroudceTemplateServiceImpl implements IntroudceTemplateService{
-	@Autowired IntroudceTemplateDao inDao;
+public class IntroudceTemplateServiceImpl implements IntroudceTemplateService {
+	@Autowired
+	IntroudceTemplateDao inDao;
 
 	@Override
 	public IntroudceTemplate get(String id) {
@@ -36,8 +36,6 @@ public class IntroudceTemplateServiceImpl implements IntroudceTemplateService{
 			throws Exception {
 		InstructionTemplateQuery iq = new InstructionTemplateQuery();
 		com.jp.entity.InstructionTemplateQuery.Criteria criteria = iq.createCriteria();
-		//criteria.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
-		// criteria.andFamilyidEqualTo(introduce.getFamilyid());
 		intemplate.setDeleteflag(0);
 		if (StringTools.trimNotEmpty(intemplate.getDeleteflag())) {
 			criteria.andDeleteflagEqualTo(intemplate.getDeleteflag());
@@ -65,12 +63,12 @@ public class IntroudceTemplateServiceImpl implements IntroudceTemplateService{
 	@Override
 	public Integer changeStatus(IntroudceTemplate intemplate) {
 		// TODO Auto-generated method stub
-		int count=inDao.updateByPrimaryKeySelective(intemplate);
-		if(count==1){
-		  return count;
-		}else{
-		  TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); 
-		  return 0;
+		int count = inDao.updateByPrimaryKeySelective(intemplate);
+		if (count == 1) {
+			return count;
+		} else {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			return 0;
 		}
 	}
 
@@ -87,16 +85,16 @@ public class IntroudceTemplateServiceImpl implements IntroudceTemplateService{
 		Result result = null;
 		BannerQuery bq = new BannerQuery();
 		Criteria createCriteria = bq.createCriteria();
-		if(intemplate.getDeleteflag() != null){
+		if (intemplate.getDeleteflag() != null) {
 			createCriteria.andDeleteflagEqualTo(intemplate.getDeleteflag());
 		}
 		bq.setOrderByClause("createtime DESC");
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-			List<SysMation> list = inDao.selectByExampleNew(bq);
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
-			res.setData(list);
-			return res;
+		List<SysMation> list = inDao.selectByExampleNew(bq);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(list);
+		return res;
 	}
 
 }

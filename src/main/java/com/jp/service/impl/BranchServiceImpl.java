@@ -15,9 +15,7 @@ import org.springframework.stereotype.Service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jp.common.ConstantUtils;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
-import com.jp.common.LoginUserInfo;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
@@ -45,8 +43,10 @@ import com.jp.entity.UserQuery;
 import com.jp.entity.Userbranch;
 import com.jp.entity.UserbranchQuery;
 import com.jp.service.BranchService;
+import com.jp.service.UserContextService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
+import com.jp.util.WebUtil;
 
 @Service
 public class BranchServiceImpl implements BranchService {
@@ -65,6 +65,8 @@ public class BranchServiceImpl implements BranchService {
 	private SysVersionPrivilegeMapper sysVersionPrivilegeMapper;
 	@Autowired
 	private UserbranchDao userBranchDao;
+	@Autowired
+	private UserContextService userContextService;
 
 	/**
 	 * 从起始人按父子关系，递归更新分支用户（包括配偶）的分支属性
@@ -107,20 +109,34 @@ public class BranchServiceImpl implements BranchService {
 		Result result = null;
 		JsonResponse res = null;
 		try {
-			String userid = CurrentUserContext.getCurrentUserId();
-			String familyId = CurrentUserContext.getCurrentFamilyId();
+			//当前登录人 userid
+			String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+			if (StringTools.isEmpty(userid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("用户非法！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			//当前登录人 familyid
+			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+			if (StringTools.isEmpty(familyid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("header中参数familyid为空!");
+				res = new JsonResponse(result);
+				return res;
+			}
 			UserbranchQuery userbranchQuery = new UserbranchQuery();
 			userbranchQuery.or().andUseridEqualTo(userid);
 			List<Userbranch> userbranchList = userBranchDao.selectByExample(userbranchQuery);
 			BranchKey key = new BranchKey();
 			for (Userbranch b : userbranchList) {
 				key.setBranchid(b.getBranchid());
-				key.setFamilyid(familyId);
+				key.setFamilyid(familyid);
 				Branch bran = branchDao.selectByPrimaryKey(key);
 				if (bran.getBranchid() != null && !"".equals(bran.getBranchid()))
 					branch.setBranchid(b.getBranchid());
 			}
-			branch.setFamilyid(familyId);
+			branch.setFamilyid(familyid);
 
 			UserManagerExample example = new UserManagerExample();
 			example.or().andUseridEqualTo(userid);
@@ -130,10 +146,10 @@ public class BranchServiceImpl implements BranchService {
 			for (UserManager manager : managers) {
 				PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 				if (manager.getEbtype() == 1) {
-					branchList = branchDao.selectBranchListByFamilyAndUserid(familyId, null, branch.getBranchname());
+					branchList = branchDao.selectBranchListByFamilyAndUserid(familyid, null, branch.getBranchname());
 					break;
 				} else {
-					branchList = branchDao.getBranchsByFamilyAndUserid(familyId, userid, branch.getBranchname());
+					branchList = branchDao.getBranchsByFamilyAndUserid(familyid, userid, branch.getBranchname());
 					break;
 				}
 			}
@@ -168,31 +184,40 @@ public class BranchServiceImpl implements BranchService {
 		Result result = null;
 		JsonResponse res = null;
 		Integer count = 0;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
-			String userId = CurrentUserContext.getCurrentUserId();
 			if (StringTools.notEmpty(branch.getBranchid())) {// 修改
-				branch.setUpdateid(userId);
+				branch.setUpdateid(userid);
 				branch.setUpdatetime(new Date());
 				count = branchDao.updateByPrimaryKeySelective(branch);
 				if (count > 0) {
 					updateUserBranch(branch.getBeginuserid(), branch.getBranchid(), branch.getBranchname());
 				}
 			} else {// 新增
-				boolean flag = checkFamilyBranchNumber(1);
+				boolean flag = checkFamilyBranchNumber(1, familyid);
 				if (flag) {
 					branch.setStatus(0);// 使用中
 					branch.setBranchid(UUIDUtils.getUUID());
-					branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-					branch.setCreateid(userId);
+					branch.setFamilyid(familyid);
+					branch.setCreateid(userid);
 					count = branchDao.insertSelective(branch);
 					if (count > 0) {
 						updateUserBranch(branch.getBeginuserid(), branch.getBranchid(), branch.getBranchname());
-						// 更新session中的分支信息
-						LoginUserInfo userContext = CurrentUserContext.getUserContext();
-						User user = userContext.getUser();
-						List<Branch> branchList = selectBranchListByFamilyAndUserid(user.getFamilyid(),
-								user.getUserid());
-						userContext.setBranchList(branchList);
 					}
 				} else {
 					result = new Result(MsgConstants.BRANCH_SAVE_OUTMAX);
@@ -222,11 +247,10 @@ public class BranchServiceImpl implements BranchService {
 	 * @param count
 	 * @return
 	 */
-	public boolean checkFamilyBranchNumber(int count) {
+	public boolean checkFamilyBranchNumber(int count, String familyid) {
 		Integer branchCount = 0; // 最多容纳家族分支数量
-		String familyId = CurrentUserContext.getCurrentFamilyId();
 		// 查询家族，获取家族使用的版本
-		SysFamily sysFamily = sysFamilyDao.selectByPrimaryKey(familyId);
+		SysFamily sysFamily = sysFamilyDao.selectByPrimaryKey(familyid);
 		// 查询家族版本特权，获取家族可创建的分支数量
 		SysVersionPrivilege sysVersionPrivilege = sysVersionPrivilegeMapper.selectVersionValue(sysFamily.getVersion(),
 				ConstantUtils.VERSION_BRANCH);
@@ -238,7 +262,7 @@ public class BranchServiceImpl implements BranchService {
 			branchCount = Integer.valueOf(sysVersionPrivilege.getPrivilegevalue());
 		}
 		// 查询家族现在已创建的分支数量
-		int haveBranchCount = branchDao.selectByFamilyid(familyId);
+		int haveBranchCount = branchDao.selectByFamilyid(familyid);
 		if (branchCount - haveBranchCount - count >= 0) {
 			return true;
 		}
@@ -249,10 +273,18 @@ public class BranchServiceImpl implements BranchService {
 	public JsonResponse get(String branchid) {
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			BranchKey key = new BranchKey();
 			key.setBranchid(branchid);
-			key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			key.setFamilyid(familyid);
 			Branch branch = branchDao.selectByPrimaryKey(key);
 			// 根据beginuserid获取世系信息
 			User user = userDao.selectByPrimaryKey(branch.getBeginuserid());
@@ -277,17 +309,40 @@ public class BranchServiceImpl implements BranchService {
 	public JsonResponse initBranch(PageModel<Branch> pageModel, Branch branch) {
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
-			branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-			List<UserManager> userManager = CurrentUserContext.getCurrentUserManager();
-			List<String> branchIds = CurrentUserContext.getCurrentBranchIds();
+			branch.setFamilyid(familyid);
+			List<UserManager> userManager = userContextService.getUserManagers(userid);
+			List<String> branchIds = userContextService.getBranchIds(familyid, userid);
 			List<Branch> list = new ArrayList<>();
 			for (UserManager um : userManager) {
 				if (um.getEbtype() == 1) {
 					list = branchDao.selectBranchList(branch, null);
 					break;
 				} else {
+					if (branchIds.size() < 1) {
+						result = new Result(MsgConstants.RESUL_FAIL);
+						result.setMsg("您的账号当前没有分支");
+						res = new JsonResponse(result);
+						return res;
+					}
 					list = branchDao.selectBranchList(branch, branchIds);
+					break;
 				}
 			}
 			if (list != null) {
@@ -310,7 +365,7 @@ public class BranchServiceImpl implements BranchService {
 	}
 
 	@Override
-	public List<Branch> selectBranchListByFamilyAndUserid(String familyid, String userid) throws Exception {
+	public List<Branch> selectBranchListByFamilyAndUserid(String familyid, String userid) {
 		// List<Branch> branchs =null;
 		List<Branch> rtnlist = new ArrayList<Branch>();
 		UserManagerExample example = new UserManagerExample();
@@ -360,10 +415,18 @@ public class BranchServiceImpl implements BranchService {
 	public JsonResponse validateBranchname(String branchname) {
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		String branchName = StringTools.trimNotEmpty(branchname) ? branchname.trim() : null;
 		try {
 			BranchQuery example = new BranchQuery();
-			example.or().andBranchnameEqualTo(branchName).andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+			example.or().andBranchnameEqualTo(branchName).andFamilyidEqualTo(familyid);
 			List<Branch> selectRt = branchDao.selectByExample(example);
 			if (selectRt != null && selectRt.size() > 0) {
 				result = new Result(MsgConstants.BRANCH_VALIDATA_NAME);
@@ -1152,9 +1215,10 @@ public class BranchServiceImpl implements BranchService {
 	public void getUserListFromGenUser(GenUserVO entity, int genlevel) {
 		// 查询孩子列表
 		String userid = entity.getUser().getUserid();
-		UserQuery userExample = new UserQuery();
+		/*UserQuery userExample = new UserQuery();
 		userExample.or().andPidEqualTo(userid).andDeleteflagEqualTo(0).andStatusEqualTo(0);
-		List<User> users = userDao.selectByExample(userExample);
+		List<User> users = userDao.selectByExample(userExample);*/
+		List<User> users = userDao.selectChildren(userid);
 		List<GenUserVO> genUserVOs = new ArrayList<GenUserVO>();
 		for (User user : users) {
 			// 获取孩子配偶实例
@@ -1198,9 +1262,10 @@ public class BranchServiceImpl implements BranchService {
 	public void getUserListOnlyFromGenUser(GenUserOther entity, int genlevel, List<GenUserOther> genUserOthers) {
 		// 查询孩子列表
 		String userid = entity.getUserid();
-		UserQuery userExample = new UserQuery();
+		/*UserQuery userExample = new UserQuery();
 		userExample.or().andPidEqualTo(userid).andDeleteflagEqualTo(0).andStatusEqualTo(0);
-		List<User> users = userDao.selectByExample(userExample);
+		List<User> users = userDao.selectByExample(userExample);*/
+		List<User> users = userDao.selectChildren(userid);
 		for (User user : users) {
 			// 获取孩子配偶实例
 			User mateuser = new User();

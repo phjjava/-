@@ -629,7 +629,7 @@
 		branch.cityname, branch.xcode, branch.xname,branch.address
 		from jp_branch branch
 		left join jp_userbranch userbranch on branch.branchid =	userbranch.branchid
-		where 1=1 and 'status'=0
+		where 1=1 and `status`=0
 		<if test="familyid != null">
 			and branch.familyid = #{familyid,jdbcType=VARCHAR}
 		</if>

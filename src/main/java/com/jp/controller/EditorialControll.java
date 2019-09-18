@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.jp.common.CurrentUserContext;
+import com.jp.common.ConstantUtils;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
@@ -19,7 +19,7 @@ import com.jp.common.Result;
 import com.jp.entity.EditorialBoard;
 import com.jp.service.EditorialBoardService;
 import com.jp.util.StringTools;
-import com.jp.util.UUIDUtils;
+import com.jp.util.WebUtil;
 
 @Controller
 @RequestMapping("editorial")
@@ -32,34 +32,8 @@ public class EditorialControll {
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse save(HttpServletRequest request, EditorialBoard eb) {
-		Result result = null;
-		JsonResponse res = null;
-		Integer status = null;
-		try {
-			if (StringTools.notEmpty(eb.getId())) {// 修改
-				status = editorialBoardService.update(eb);
-			} else {// 新增
-				eb.setId(UUIDUtils.getUUID());
-				eb.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-				eb.setType(0);
-				status = editorialBoardService.insert(eb);
-			}
-			if (status > 0) {
-				result = new Result(MsgConstants.RESUL_SUCCESS);
-				res = new JsonResponse(result);
-				return res;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_FAIL);
-		res = new JsonResponse(result);
-		return res;
+	public JsonResponse save(EditorialBoard eb) {
+		return editorialBoardService.save(eb);
 	}
 
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
@@ -68,11 +42,18 @@ public class EditorialControll {
 		Result result = null;
 		JsonResponse res = null;
 		try {
-			entity.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+			if (StringTools.isEmpty(familyid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("header中参数familyid为空!");
+				res = new JsonResponse(result);
+				return res;
+			}
+			entity.setFamilyid(familyid);
 			editorialBoardService.pageQuery(pageModel, entity);
 			if (pageModel.getList() != null) {
 				if (pageModel.getList().size() == 0) {
-					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
+					if (pageModel.getPageNo() != null && 1 != pageModel.getPageNo()) {
 						pageModel.setPageNo(pageModel.getPageNo() - 1);
 						editorialBoardService.pageQuery(pageModel, entity);
 					}
@@ -153,7 +134,7 @@ public class EditorialControll {
 	@RequestMapping(value = "/selecteditorialBoardList", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse selectRoleList() {
-		return editorialBoardService.selecteditorialBoardList(CurrentUserContext.getCurrentUserId());
+		return editorialBoardService.selecteditorialBoardList();
 	}
 
 }

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.jp.common.CurrentUserContext;
+import com.jp.common.ConstantUtils;
 import com.jp.common.PageModel;
 import com.jp.entity.User;
 import com.jp.entity.Userbranch;
@@ -23,6 +23,7 @@ import com.jp.service.UserService;
 import com.jp.service.UserroleService;
 import com.jp.util.Result;
 import com.jp.util.StringTools;
+import com.jp.util.WebUtil;
 
 @Controller
 @RequestMapping("userrole")
@@ -51,20 +52,22 @@ public class UserroleController {
 	}
 
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
-	public String list(PageModel<User> pageModel, Userrole userrole, ModelMap model) {
+	public String list(PageModel<User> pageModel, Userrole userrole) {
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
 		try {
-			userrole.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			userrole.setFamilyid(familyid);
 			urservice.pageQuery(pageModel, userrole);
 			if (pageModel.getList() != null) {
 				if (pageModel.getPageSize() == 0) {
-					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo())) {
+					if (pageModel.getPageNo() != null && 1 != pageModel.getPageNo()) {
 						pageModel.setPageNo(pageModel.getPageNo() - 1);
 						urservice.pageQuery(pageModel, userrole);
 					}
 				}
 			}
-			model.put("pageModel", pageModel);
-			model.put("userrole", userrole);
+			//		model.put("pageModel", pageModel);
+			//		model.put("userrole", userrole);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
@@ -85,8 +88,10 @@ public class UserroleController {
 	@RequestMapping(value = "/mergeManagent", method = RequestMethod.POST)
 	public String mergeManagent(Userrole userrole, Userbranch userBranch) {
 		String result = null;
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
 		try {
-			userrole.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			userrole.setFamilyid(familyid);
 			urservice.mergeUserRoleBranch(userrole, userBranch);
 			result = "1";
 		} catch (Exception e) {

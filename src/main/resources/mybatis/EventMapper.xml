@@ -391,7 +391,7 @@
   </update>
   <select id="selecteventread" parameterType="com.jp.entity.Event" resultType="com.jp.entity.Event">
 	SELECT
-		eread.readNum,
+		IFNULL(eread.readNum,0) readNum ,
 		e.eventid, e.eventtitle, e.deleteflag, e.createid, e.createtime, e.updateid, e.updatetime, 
 		e.createname, e.imgurl, e.type, e.familyid, e.eventcontent
 	FROM

@@ -76,12 +76,15 @@ public class HomeStateServiceImpl extends ServiceImpl<HomeStateMapper, HomeState
 	public JsonResponse editHomeState(HomeState homeState) {
 		Result result = null;
 		JsonResponse res = null;
-		JsonResponse demoUser = userService.checkDemoUser();
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
 		// 参数校验
-		if (demoUser.getCode() == 1) {
-			return demoUser;
+		if (StringUtils.isBlank(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("非法登录！");
+			res = new JsonResponse(result);
+			return res;
 		}
-		homeState.setUserid(demoUser.getData().toString());
+		homeState.setUserid(userid);
 		try {
 			int count = homeStateMapper.updateByUseridSelective(homeState);
 			if (count > 0) {
