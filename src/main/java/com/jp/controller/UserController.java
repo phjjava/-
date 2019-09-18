@@ -362,7 +362,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse list(PageModel<User> pageModel, User user, ModelMap model) {
+	public JsonResponse list(PageModel<User> pageModel, User user) {
 		Result result = null;
 		JsonResponse res = null;
 		try {

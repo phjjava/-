@@ -474,8 +474,8 @@ public class UserServiceImpl implements UserService {
 		//当前登录人 userid
 		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
 		List<User> userList = new ArrayList<>();
-		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		List<UserManager> userManager = userContextService.getUserManagers(userid);
+		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		for (UserManager um : userManager) {
 			if (um.getEbtype() == 1) {
 				userList = userInfoDao.selecAllUserList(user);
