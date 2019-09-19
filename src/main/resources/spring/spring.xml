@@ -55,11 +55,6 @@
 		</mvc:message-converters>
      </mvc:annotation-driven>
 	
-	
-	
-	<!-- 工作流开始 -->
-	
-    <!-- 工作流结束 -->
 
 	<!-- 配置静态资源(js、image等)， 直接映射到对应的文件夹，不被DispatcherServlet处理-->
 	<mvc:resources location="/amaze/" mapping="/amaze/**"/>
