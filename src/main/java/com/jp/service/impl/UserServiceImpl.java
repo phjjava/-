@@ -372,7 +372,7 @@ public class UserServiceImpl implements UserService {
 					user.setDeleteflag(0);
 					user.setFamilyid(familyid);
 					user.setStatus(0);
-					// user.setIsdirect(1);
+					user.setIsdirect(1);
 					user.setFamilyname(user2.getFamilyname());
 					user.setCreatetime(new Date());
 					user.setUpdatetime(new Date());
@@ -1850,6 +1850,15 @@ public class UserServiceImpl implements UserService {
 					userDao.updateByPrimaryKeySelective(userMmateUpdate);
 					// 更新 userinfo
 					userInfo.setUserid(user.getMateid());
+					String birthday = userInfo.getBirthday();
+					if (StringUtils.isNotBlank(birthday)) {
+						//(农历日期范围19000101~20491229)
+						int parseInt = Integer.parseInt(birthday.replace("-", ""));
+						if (parseInt > 19000130 && parseInt < 20500101) {
+							String solarToLunar = CalendarUtil.solarToLunar(birthday);
+							userInfo.setLunarbirthday(solarToLunar);
+						}
+					}
 					/*
 					 * if (!userInfo.getBirthdayStr().equals("")) { // SimpleDateFormat sdfd = new
 					 * SimpleDateFormat("yyyy-MM-dd"); //
@@ -1916,6 +1925,15 @@ public class UserServiceImpl implements UserService {
 							userDao.updateByPrimaryKeySelective(user1);
 							// userinfo 表
 							userInfo.setUserid(userid);
+							String birthday = userInfo.getBirthday();
+							if (StringUtils.isNotBlank(birthday)) {
+								//(农历日期范围19000101~20491229)
+								int parseInt = Integer.parseInt(birthday.replace("-", ""));
+								if (parseInt > 19000130 && parseInt < 20500101) {
+									String solarToLunar = CalendarUtil.solarToLunar(birthday);
+									userInfo.setLunarbirthday(solarToLunar);
+								}
+							}
 							/*
 							 * if (!userInfo.getBirthdayStr().equals("")) { // SimpleDateFormat sdfd = new
 							 * SimpleDateFormat("yyy-MM-dd"); //
@@ -1967,6 +1985,15 @@ public class UserServiceImpl implements UserService {
 					// userMatesDao.insertSelective(userMates);
 					userDao.insertSelective(userMates);
 					userInfo.setUserid(userid);
+					String birthday = userInfo.getBirthday();
+					if (StringUtils.isNotBlank(birthday)) {
+						//(农历日期范围19000101~20491229)
+						int parseInt = Integer.parseInt(birthday.replace("-", ""));
+						if (parseInt > 19000130 && parseInt < 20500101) {
+							String solarToLunar = CalendarUtil.solarToLunar(birthday);
+							userInfo.setLunarbirthday(solarToLunar);
+						}
+					}
 					userInfoDao.insertSelective(userInfo);
 					//修改配偶信息及婚配状态
 					user.setIsMarry(0);
