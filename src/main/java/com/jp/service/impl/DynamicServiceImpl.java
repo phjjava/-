@@ -122,9 +122,9 @@ public class DynamicServiceImpl implements DynamicService {
 			UserManagerExample example = new UserManagerExample();
 			example.or().andUseridEqualTo(userid);
 			example.setOrderByClause("ebtype desc,ismanager desc");
-			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 			List<UserManager> managers = userManagerMapper.selectByExample(example);
 			UserManager manager = managers.get(0);
+			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 			if (manager.getEbtype() == 1) {// 验证是否是总编委会
 				dynamic.setFamilyid(familyid);
 				list = dydao.selectReadOfManager(dynamic);
