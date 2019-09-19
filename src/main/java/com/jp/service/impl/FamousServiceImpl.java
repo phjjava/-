@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jp.common.ConstantUtils;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
@@ -21,6 +20,7 @@ import com.jp.dao.UsercontentDao;
 import com.jp.entity.Usercontent;
 import com.jp.service.FamousService;
 import com.jp.util.StringTools;
+import com.jp.util.WebUtil;
 
 @Service
 public class FamousServiceImpl implements FamousService {
@@ -35,7 +35,9 @@ public class FamousServiceImpl implements FamousService {
 	@Override
 	public PageModel<Usercontent> selectContentList(PageModel<Usercontent> pageModel, Usercontent usercontent) {
 		try {
-			usercontent.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			//当前登录人 familyid
+			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+			usercontent.setFamilyid(familyid);
 			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 			List<Usercontent> list = userDao.selectUserContentList(usercontent);
 			pageModel.setList(list);
@@ -91,8 +93,14 @@ public class FamousServiceImpl implements FamousService {
 			return res;
 		}
 		try {
-			//获取当前登录人的id
-			String currentUserId = CurrentUserContext.getCurrentUserId();
+			//当前登录人 userid
+			String currentUserId = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+			if (StringTools.isEmpty(currentUserId)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("用户非法！");
+				res = new JsonResponse(result);
+				return res;
+			}
 			Usercontent searchUTResult = usercontentDao.selectByPrimaryKey(userid);
 			usercontent.setUpdateid(currentUserId);
 			usercontent.setUpdatetime(new Date());

@@ -18,7 +18,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jp.common.ConstantUtils;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
@@ -30,6 +29,7 @@ import com.jp.dao.DynamicfileDao;
 import com.jp.dao.DypriseDao;
 import com.jp.dao.DyreadDao;
 import com.jp.dao.DytopDao;
+import com.jp.dao.UserDao;
 import com.jp.dao.UserManagerMapper;
 import com.jp.entity.Branch;
 import com.jp.entity.BranchKey;
@@ -48,12 +48,15 @@ import com.jp.entity.Dyread;
 import com.jp.entity.DyreadQuery;
 import com.jp.entity.Dytop;
 import com.jp.entity.DytopQuery;
+import com.jp.entity.User;
 import com.jp.entity.UserManager;
 import com.jp.entity.UserManagerExample;
 import com.jp.service.DynamicService;
+import com.jp.service.UserContextService;
 import com.jp.util.HTMLUtil;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
+import com.jp.util.WebUtil;
 
 @Service
 public class DynamicServiceImpl implements DynamicService {
@@ -73,9 +76,13 @@ public class DynamicServiceImpl implements DynamicService {
 	@Resource
 	private DytopDao dytopDao;
 	@Resource
+	private UserDao userDao;
+	@Resource
 	private BranchDao branchDao;
 	@Resource
 	private UserManagerMapper userManagerMapper;
+	@Resource
+	private UserContextService userContextService;
 
 	@Override
 	public JsonResponse pageQuery(PageModel<Dynamic> pageModel, Dynamic dynamic) {
@@ -93,13 +100,25 @@ public class DynamicServiceImpl implements DynamicService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
-			List<String> branchIds = CurrentUserContext.getCurrentBranchIds();
-			String familyid = CurrentUserContext.getCurrentFamilyId();
-			String userid = CurrentUserContext.getCurrentUserId();
-
+			List<String> branchIds = userContextService.getBranchIds(familyid, userid);
 			List<Dynamic> list = new ArrayList<Dynamic>();
-
 			UserManagerExample example = new UserManagerExample();
 			example.or().andUseridEqualTo(userid);
 			example.setOrderByClause("ebtype desc,ismanager desc");
@@ -140,13 +159,21 @@ public class DynamicServiceImpl implements DynamicService {
 	public JsonResponse get(String dyid) {
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 			Dynamic dynamic = dydao.selectByPrimaryKey(dyid);
 			if (dynamic != null) {
 				BranchKey key = new BranchKey();
 				key.setBranchid(dynamic.getBranchid());
-				key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				key.setFamilyid(familyid);
 				Branch branch = branchDao.selectByPrimaryKey(key);
 				if (branch != null) {
 					dynamic.setBranchnamePlus(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname()
@@ -155,7 +182,7 @@ public class DynamicServiceImpl implements DynamicService {
 				dynamic.setCreatetimeStr(formatter.format(dynamic.getCreatetime()));
 			}
 			// 获取置顶top信息
-			initDyTop(dyid, dynamic);
+			initDyTop(dyid, dynamic, familyid);
 			DynamicfileQuery dfq = new DynamicfileQuery();
 			Criteria criteria = dfq.createCriteria();
 			if (StringTools.trimNotEmpty(dynamic.getDyid())) {
@@ -185,7 +212,7 @@ public class DynamicServiceImpl implements DynamicService {
 	 * @参数 @param dynamic
 	 * @return void
 	 */
-	private void initDyTop(String dyid, Dynamic dynamic) {
+	private void initDyTop(String dyid, Dynamic dynamic, String familyid) {
 		DytopQuery example = new DytopQuery();
 		example.or().andDyidEqualTo(dyid);
 		List<Dytop> dytopList = dytopDao.selectByExample(example);
@@ -196,7 +223,7 @@ public class DynamicServiceImpl implements DynamicService {
 			for (Dytop dytop : dytopList) {
 				BranchKey key = new BranchKey();
 				key.setBranchid(dytop.getBranchid());
-				key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				key.setFamilyid(familyid);
 				Branch branch = branchDao.selectByPrimaryKey(key);
 				if (branch != null) {
 					dytop.setTobranchName(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname() + "_"
@@ -247,7 +274,22 @@ public class DynamicServiceImpl implements DynamicService {
 		JsonResponse res = null;
 		int status = 0;
 		try {
-			String userid = CurrentUserContext.getCurrentUserId();
+			//当前登录人 userid
+			String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+			if (StringTools.isEmpty(userid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("用户非法！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			//当前登录人 familyid
+			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+			if (StringTools.isEmpty(familyid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("header中参数familyid为空!");
+				res = new JsonResponse(result);
+				return res;
+			}
 			// 编辑
 			if (StringTools.trimNotEmpty(dynamic.getDyid())) {
 				if (dynamic.getDytype() == 0) {
@@ -280,10 +322,11 @@ public class DynamicServiceImpl implements DynamicService {
 					dynamic.setBranchid("0");
 				}
 				// 新增
+				User user = userDao.selectByPrimaryKey(userid);
 				String dyid = UUIDUtils.getUUID();
-				dynamic.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				dynamic.setFamilyid(familyid);
 				dynamic.setCreateid(userid);
-				dynamic.setCreatename(CurrentUserContext.getCurrentUserName());
+				dynamic.setCreatename(user.getUsername());
 				dynamic.setDyid(dyid);
 				dynamic.setDeleteflag(0);
 				Date insertDate = new Date();

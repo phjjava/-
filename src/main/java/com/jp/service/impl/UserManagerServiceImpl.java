@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.druid.util.StringUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jp.common.CurrentUserContext;
+import com.jp.common.ConstantUtils;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
@@ -30,6 +30,7 @@ import com.jp.entity.UserManagerExample;
 import com.jp.service.UserManagerService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
+import com.jp.util.WebUtil;
 
 @Service
 public class UserManagerServiceImpl implements UserManagerService {
@@ -146,9 +147,17 @@ public class UserManagerServiceImpl implements UserManagerService {
 	}
 
 	@Override
-	public JsonResponse getPost(int type, String familyid) {
+	public JsonResponse getPost(int type) {
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		List<Post> allPost = null;
 		PostExample example = new PostExample();
 		if (type == 1) {
@@ -211,8 +220,16 @@ public class UserManagerServiceImpl implements UserManagerService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
-			entity.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			entity.setFamilyid(familyid);
 			FunctionRoleExample example = new FunctionRoleExample();
 			example.or().andUseridEqualTo(entity.getUserid()).andEbidEqualTo(entity.getEbid())
 					.andPostidEqualTo(entity.getPostid());
