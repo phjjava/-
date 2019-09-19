@@ -4941,7 +4941,7 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (userChildInfo.getSex() == null || "".equals(userChildInfo.getSex())) {
+		if (userChildInfo.getSex() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("需要填写用户性别！");
 			res = new JsonResponse(result);
@@ -4982,18 +4982,15 @@ public class UserServiceImpl implements UserService {
 		user.setSex(userChildInfo.getSex());
 		user.setBrotherpos(userChildInfo.getBrotherpos());
 		// 是否在世： 不填写，默认为在世
-		user.setLivestatus((userChildInfo.getLivestatus() == null || "".equals(userChildInfo.getLivestatus() + "")) ? 0
-				: userChildInfo.getLivestatus());
+		user.setLivestatus((userChildInfo.getLivestatus() == null) ? 0 : userChildInfo.getLivestatus());
 		// 是否直系： 不填写，默认为直系
-		if (userChildInfo.getIsdirect() == null || "".equals(userChildInfo.getIsdirect() + "")) {
-			user.setIsdirect(
-					(pUser.getIsdirect() == null || "".equals(pUser.getIsdirect() + "")) ? 0 : pUser.getIsdirect());
+		if (userChildInfo.getIsdirect() == null) {
+			user.setIsdirect((pUser.getIsdirect() == null) ? 0 : pUser.getIsdirect());
 		} else {
 			user.setIsdirect(userChildInfo.getIsdirect());
 		}
 		// 是否亲生： 不填写，默认为亲生
-		user.setIsborn((userChildInfo.getIsborn() == null || "".equals(userChildInfo.getIsborn() + "")) ? 0
-				: userChildInfo.getIsborn());
+		user.setIsborn((userChildInfo.getIsborn() == null) ? 0 : userChildInfo.getIsborn());
 		// 状态为待审核
 		user.setStatus(1);
 		user.setDeleteflag(0);
@@ -5002,7 +4999,9 @@ public class UserServiceImpl implements UserService {
 		user.setUsername(userChildInfo.getUsername());
 		user.setUsedname(userChildInfo.getUsedname());
 		user.setIdcard(userChildInfo.getIdcard());
-		user.setGenlevel(pUser.getGenlevel() + 1);
+		if (pUser.getGenlevel() != null) {
+			user.setGenlevel(pUser.getGenlevel() + 1);
+		}
 		user.setPhone(userChildInfo.getPhone());
 		user.setPid(pUser.getUserid());
 		user.setPname(pUser.getUsername());
@@ -5057,21 +5056,16 @@ public class UserServiceImpl implements UserService {
 		userInfo.setHomeplace(homeplaceP + "@@" + homeplaceC + "@@" + homeplaceX + "@@" + homeDetail);
 
 		userInfo.setMail(userChildInfo.getMail());
-		userInfo.setMailsee((userChildInfo.getMailsee() == null || "".equals(userChildInfo.getMailsee())) ? 0
-				: userChildInfo.getMailsee());
+		userInfo.setMailsee((userChildInfo.getMailsee() == null) ? 0 : userChildInfo.getMailsee());
 		userInfo.setWeixin(userChildInfo.getWeixin());
-		userInfo.setWxsee((userChildInfo.getWxsee() == null || "".equals(userChildInfo.getWxsee())) ? 0
-				: userChildInfo.getWxsee());
+		userInfo.setWxsee((userChildInfo.getWxsee() == null) ? 0 : userChildInfo.getWxsee());
 		userInfo.setQq(userChildInfo.getQQ());
-		userInfo.setQqsee((userChildInfo.getQqsee() == null || "".equals(userChildInfo.getQqsee())) ? 0
-				: userChildInfo.getQqsee());
+		userInfo.setQqsee((userChildInfo.getQqsee() == null) ? 0 : userChildInfo.getQqsee());
 		userInfo.setTel(userChildInfo.getTel());
-		userInfo.setTelsee((userChildInfo.getTelsee() == null || "".equals(userChildInfo.getTelsee())) ? 0
-				: userChildInfo.getTelsee());
+		userInfo.setTelsee((userChildInfo.getTelsee() == null) ? 0 : userChildInfo.getTelsee());
 		userInfoDao.insertSelective(userInfo);
 		userInfo.setRemark(userChildInfo.getRemark());
-		userInfo.setRemarksee((userChildInfo.getRemarksee() == null || "".equals(userChildInfo.getRemarksee())) ? 0
-				: userChildInfo.getRemarksee());
+		userInfo.setRemarksee((userChildInfo.getRemarksee() == null) ? 0 : userChildInfo.getRemarksee());
 
 		if (icount > 0) {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
