@@ -719,6 +719,7 @@ public class FamilyServiceImpl implements FamilyService {
 			user.setSex(1);
 			user.setStatus(0);
 			user.setIsdirect(1);
+			user.setGenlevel(1);//默认为1世
 			user.setDeleteflag(0);
 			user.setLivestatus(0);
 			user.setCreatetime(new Date());
