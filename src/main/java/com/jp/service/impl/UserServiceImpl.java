@@ -18,6 +18,7 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -71,6 +72,8 @@ import com.jp.entity.BranchphotoExample;
 import com.jp.entity.Dynamic;
 import com.jp.entity.DynamicVO;
 import com.jp.entity.EditorialBoard;
+import com.jp.entity.GenUser;
+import com.jp.entity.GenUserVO;
 import com.jp.entity.LoginThird;
 import com.jp.entity.LoginThirdExample;
 import com.jp.entity.Notice;
@@ -5472,5 +5475,138 @@ public class UserServiceImpl implements UserService {
 			log_.error("[获取地址信息---异常:]", e);
 		}
 		return address;
+	}
+
+	@Override
+	public JsonResponse getUserThreeGen(String userid) {
+		Result result = null;
+		JsonResponse res = null;
+		if (StringUtils.isBlank(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数userid不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		User user = userDao.selectByPrimaryKey(userid);
+		User mateUser =  userDao.selectByPrimaryKey(user.getMateid());
+		GenUser genU = new GenUser();
+		genU.setUsername(user.getUsername());
+		genU.setUserid(user.getUserid());
+		genU.setSex(user.getSex());
+		genU.setLivestatus(user.getLivestatus());
+		genU.setImgurl(user.getImgurl());
+		genU.setGenlevel(user.getGenlevel());
+		
+		GenUser genM = new GenUser();
+		genM.setUsername(mateUser.getUsername());
+		genM.setUserid(mateUser.getUserid());
+		genM.setSex(mateUser.getSex());
+		genM.setLivestatus(mateUser.getLivestatus());
+		genM.setImgurl(mateUser.getImgurl());
+		genM.setGenlevel(mateUser.getGenlevel());
+		
+		GenUserVO genUser = new GenUserVO();
+		genUser.setUser(genU);
+		genUser.setMateuser(genM);
+		
+		
+		
+		User puser = userDao.selectByPrimaryKey(user.getPid());
+		User pMateUser = userDao.selectByPrimaryKey(puser.getMateid());
+		
+		GenUser genpU = new GenUser();
+		genpU.setUsername(user.getUsername());
+		genpU.setUserid(user.getUserid());
+		genpU.setSex(user.getSex());
+		genpU.setLivestatus(user.getLivestatus());
+		genpU.setImgurl(user.getImgurl());
+		genpU.setGenlevel(user.getGenlevel());
+		
+		GenUser genpM = new GenUser();
+		genpM.setUsername(mateUser.getUsername());
+		genpM.setUserid(mateUser.getUserid());
+		genpM.setSex(mateUser.getSex());
+		genpM.setLivestatus(mateUser.getLivestatus());
+		genpM.setImgurl(mateUser.getImgurl());
+		genpM.setGenlevel(mateUser.getGenlevel());
+		
+		GenUserVO pGenUser = new GenUserVO();
+		pGenUser.setUser(genpU);
+		pGenUser.setMateuser(genpM);
+		
+		List<GenUserVO> bsVos = new ArrayList<GenUserVO>();
+		List<User> bsList = userDao.selectChildren(user.getPid());
+		if(bsList != null && bsList.size()>0) {
+			for(User bsu : bsList) {
+				User mateBsu = userDao.selectByPrimaryKey(bsu.getMateid());
+				
+				
+				GenUser genBs = new GenUser();
+				if(mateBsu!=null) {
+					genBs.setUsername(bsu.getUsername());
+					genBs.setUserid(bsu.getUserid());
+					genBs.setSex(bsu.getSex());
+					genBs.setLivestatus(bsu.getLivestatus());
+					genBs.setImgurl(bsu.getImgurl());
+					genBs.setGenlevel(bsu.getGenlevel());
+				}
+				
+				GenUser genBsM = new GenUser();
+				if(mateBsu!=null) {
+					genBsM.setUsername(mateBsu.getUsername());
+					genBsM.setUserid(mateBsu.getUserid());
+					genBsM.setSex(mateBsu.getSex());
+					genBsM.setLivestatus(mateBsu.getLivestatus());
+					genBsM.setImgurl(mateBsu.getImgurl());
+					genBsM.setGenlevel(mateBsu.getGenlevel());
+				}
+				
+				
+				GenUserVO bsGenUser = new GenUserVO();
+				bsGenUser.setUser(genBs);
+				bsGenUser.setMateuser(genBsM);
+				
+				bsVos.add(bsGenUser);
+			}
+		}
+		
+		List<GenUserVO> chlVos = new ArrayList<GenUserVO>();
+		List<User> childrenList = userDao.selectChildren(userid);
+		if(childrenList != null && childrenList.size()>0) {
+			for(User u : childrenList) {
+				User chlM = userDao.selectByPrimaryKey(u.getMateid());
+			
+				GenUser genChl = new GenUser();
+				genChl.setUsername(u.getUsername());
+				genChl.setUserid(u.getUserid());
+				genChl.setSex(u.getSex());
+				genChl.setLivestatus(u.getLivestatus());
+				genChl.setImgurl(u.getImgurl());
+				genChl.setGenlevel(u.getGenlevel());
+				
+				GenUser genBsM = new GenUser();
+				genBsM.setUsername(chlM.getUsername());
+				genBsM.setUserid(chlM.getUserid());
+				genBsM.setSex(chlM.getSex());
+				genBsM.setLivestatus(chlM.getLivestatus());
+				genBsM.setImgurl(chlM.getImgurl());
+				genBsM.setGenlevel(chlM.getGenlevel());
+				
+				GenUserVO chlGenUser = new GenUserVO();
+				chlGenUser.setUser(genChl);
+				chlGenUser.setMateuser(genBsM);
+				
+				chlVos.add(chlGenUser);
+			}
+		}
+		Map<String,Object> rtnMap = new HashMap<String,Object>();
+		rtnMap.put("genUser", genUser);
+		rtnMap.put("pGenUser", pGenUser);
+		rtnMap.put("bsGenUserList", bsList);
+		rtnMap.put("childrenList", childrenList);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(rtnMap);
+		return res;
 	}
 }
