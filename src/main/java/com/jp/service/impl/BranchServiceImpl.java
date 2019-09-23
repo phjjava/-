@@ -130,6 +130,7 @@ public class BranchServiceImpl implements BranchService {
 			List<Userbranch> userbranchList = userBranchDao.selectByExample(userbranchQuery);
 			BranchKey key = new BranchKey();
 			for (Userbranch b : userbranchList) {
+				
 				key.setBranchid(b.getBranchid());
 				key.setFamilyid(familyid);
 				Branch bran = branchDao.selectByPrimaryKey(key);

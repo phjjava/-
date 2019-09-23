@@ -1944,5 +1944,22 @@ public class UserController {
 		user.setSessionid(sessionid);
 		return userService.changeLoginUser(user, loginType, internetType, version);
 	}
+	
+	/**
+	 * 切换家族登录（已登录得情况下）
+	 * @param user
+	 * @param loginType
+	 * @param internetType
+	 * @param version
+	 * @return
+	 */
+	@RequestMapping(value = "/getUserThreeGen", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse getUserThreeGen(String userid) {
+	
+		return userService.getUserThreeGen(userid);
+	}
+	
+	
 
 }
