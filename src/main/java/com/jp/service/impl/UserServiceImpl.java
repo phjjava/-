@@ -18,6 +18,7 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -71,6 +72,8 @@ import com.jp.entity.BranchphotoExample;
 import com.jp.entity.Dynamic;
 import com.jp.entity.DynamicVO;
 import com.jp.entity.EditorialBoard;
+import com.jp.entity.GenUser;
+import com.jp.entity.GenUserVO;
 import com.jp.entity.LoginThird;
 import com.jp.entity.LoginThirdExample;
 import com.jp.entity.Notice;
@@ -5472,5 +5475,162 @@ public class UserServiceImpl implements UserService {
 			log_.error("[获取地址信息---异常:]", e);
 		}
 		return address;
+	}
+
+	@Override
+	public JsonResponse getUserThreeGen(String userid) {
+		Result result = null;
+		JsonResponse res = null;
+		if (StringUtils.isBlank(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数userid不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		
+		//获取当前用户信息
+		User user = userDao.selectByPrimaryKey(userid);
+		//当前用户配偶信息
+		User mateUser =  userDao.selectByPrimaryKey(user.getMateid());
+		//构造返回当前用户信息
+		GenUser genU = new GenUser();
+		if(user != null) {
+			genU.setUsername(user.getUsername());
+			genU.setUserid(user.getUserid());
+			genU.setSex(user.getSex());
+			genU.setLivestatus(user.getLivestatus());
+			genU.setImgurl(user.getImgurl());
+			genU.setGenlevel(user.getGenlevel());
+			genU.setBrotherpos(user.getBrotherpos());
+		}
+		//构造当前用户配偶信息
+		GenUser genM = new GenUser();
+		if(mateUser != null) {
+			genM.setUsername(mateUser.getUsername());
+			genM.setUserid(mateUser.getUserid());
+			genM.setSex(mateUser.getSex());
+			genM.setLivestatus(mateUser.getLivestatus());
+			genM.setImgurl(mateUser.getImgurl());
+			genM.setGenlevel(mateUser.getGenlevel());
+			genM.setBrotherpos(mateUser.getBrotherpos());
+		}
+		//构造当前用户和配偶信息
+		GenUserVO genUser = new GenUserVO();
+		genUser.setUser(genU);
+		genUser.setMateuser(genM);
+		
+		
+		//当前用户父亲信息
+		User puser = userDao.selectByPrimaryKey(user.getPid());
+		//当前用户母亲信息
+		User pMateUser = userDao.selectByPrimaryKey(puser.getMateid());
+		//构造父亲
+		GenUser genpU = new GenUser();
+		if(puser != null) {
+			genpU.setUsername(puser.getUsername());
+			genpU.setUserid(puser.getUserid());
+			genpU.setSex(puser.getSex());
+			genpU.setLivestatus(puser.getLivestatus());
+			genpU.setImgurl(puser.getImgurl());
+			genpU.setGenlevel(puser.getGenlevel());
+			genpU.setBrotherpos(puser.getBrotherpos());
+		}
+		//构造母亲
+		GenUser genpM = new GenUser();
+		if(pMateUser != null) {
+			genpM.setUsername(pMateUser.getUsername());
+			genpM.setUserid(pMateUser.getUserid());
+			genpM.setSex(pMateUser.getSex());
+			genpM.setLivestatus(pMateUser.getLivestatus());
+			genpM.setImgurl(pMateUser.getImgurl());
+			genpM.setGenlevel(pMateUser.getGenlevel());
+			genpM.setBrotherpos(pMateUser.getBrotherpos());
+		}
+		//父母信息
+		GenUserVO pGenUser = new GenUserVO();
+		pGenUser.setUser(genpU);
+		pGenUser.setMateuser(genpM);
+		
+		//获取兄弟姊妹
+		List<GenUserVO> bsVos = new ArrayList<GenUserVO>();
+		List<User> bsList = userDao.selectBrothers(user);
+		if(bsList != null && bsList.size()>0) {
+			for(User bsu : bsList) {
+				User mateBsu = userDao.selectByPrimaryKey(bsu.getMateid());
+				
+				
+				GenUser genBs = new GenUser();
+				if(bsu!=null) {
+					genBs.setUsername(bsu.getUsername());
+					genBs.setUserid(bsu.getUserid());
+					genBs.setSex(bsu.getSex());
+					genBs.setLivestatus(bsu.getLivestatus());
+					genBs.setImgurl(bsu.getImgurl());
+					genBs.setGenlevel(bsu.getGenlevel());
+				}
+				
+				GenUser genBsM = new GenUser();
+				if(mateBsu!=null) {
+					genBsM.setUsername(mateBsu.getUsername());
+					genBsM.setUserid(mateBsu.getUserid());
+					genBsM.setSex(mateBsu.getSex());
+					genBsM.setLivestatus(mateBsu.getLivestatus());
+					genBsM.setImgurl(mateBsu.getImgurl());
+					genBsM.setGenlevel(mateBsu.getGenlevel());
+				}
+				
+				
+				GenUserVO bsGenUser = new GenUserVO();
+				bsGenUser.setUser(genBs);
+				bsGenUser.setMateuser(genBsM);
+				
+				bsVos.add(bsGenUser);
+			}
+		}
+		
+		//获取子女
+		List<GenUserVO> chlVos = new ArrayList<GenUserVO>();
+		List<User> childrenList = userDao.selectChildren(userid);
+		if(childrenList != null && childrenList.size()>0) {
+			for(User u : childrenList) {
+				User chlM = userDao.selectByPrimaryKey(u.getMateid());
+			
+				GenUser genChl = new GenUser();
+				if(u != null) {genChl.setUsername(u.getUsername());
+					genChl.setUserid(u.getUserid());
+					genChl.setSex(u.getSex());
+					genChl.setLivestatus(u.getLivestatus());
+					genChl.setImgurl(u.getImgurl());
+					genChl.setGenlevel(u.getGenlevel());
+				}
+				
+				GenUser genBsM = new GenUser();
+				if(chlM != null) {
+					genBsM.setUsername(chlM.getUsername());
+					genBsM.setUserid(chlM.getUserid());
+					genBsM.setSex(chlM.getSex());
+					genBsM.setLivestatus(chlM.getLivestatus());
+					genBsM.setImgurl(chlM.getImgurl());
+					genBsM.setGenlevel(chlM.getGenlevel());
+				}
+				
+				
+				GenUserVO chlGenUser = new GenUserVO();
+				chlGenUser.setUser(genChl);
+				chlGenUser.setMateuser(genBsM);
+				
+				chlVos.add(chlGenUser);
+			}
+		}
+		//将数据封装到map中返回
+		Map<String,Object> rtnMap = new HashMap<String,Object>();
+		rtnMap.put("genUser", genUser);
+		rtnMap.put("pGenUser", pGenUser);
+		rtnMap.put("bsGenUserList", bsVos);
+		rtnMap.put("childrenList", chlVos);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(rtnMap);
+		return res;
 	}
 }

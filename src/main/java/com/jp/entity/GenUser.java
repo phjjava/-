@@ -7,7 +7,16 @@ public class GenUser {
     Integer sex;
     String imgurl;
     Integer genlevel;
-    Integer livestatus;
+    public String getBrotherpos() {
+		return brotherpos;
+	}
+
+	public void setBrotherpos(String brotherpos) {
+		this.brotherpos = brotherpos;
+	}
+
+	Integer livestatus;
+    String brotherpos;
 
     public Integer getLivestatus() {
 		return livestatus;
