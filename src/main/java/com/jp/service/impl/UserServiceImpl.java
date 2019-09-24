@@ -5487,62 +5487,80 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		
+		//获取当前用户信息
 		User user = userDao.selectByPrimaryKey(userid);
+		//当前用户配偶信息
 		User mateUser =  userDao.selectByPrimaryKey(user.getMateid());
+		//构造返回当前用户信息
 		GenUser genU = new GenUser();
-		genU.setUsername(user.getUsername());
-		genU.setUserid(user.getUserid());
-		genU.setSex(user.getSex());
-		genU.setLivestatus(user.getLivestatus());
-		genU.setImgurl(user.getImgurl());
-		genU.setGenlevel(user.getGenlevel());
-		
+		if(user != null) {
+			genU.setUsername(user.getUsername());
+			genU.setUserid(user.getUserid());
+			genU.setSex(user.getSex());
+			genU.setLivestatus(user.getLivestatus());
+			genU.setImgurl(user.getImgurl());
+			genU.setGenlevel(user.getGenlevel());
+			genU.setBrotherpos(user.getBrotherpos());
+		}
+		//构造当前用户配偶信息
 		GenUser genM = new GenUser();
-		genM.setUsername(mateUser.getUsername());
-		genM.setUserid(mateUser.getUserid());
-		genM.setSex(mateUser.getSex());
-		genM.setLivestatus(mateUser.getLivestatus());
-		genM.setImgurl(mateUser.getImgurl());
-		genM.setGenlevel(mateUser.getGenlevel());
-		
+		if(mateUser != null) {
+			genM.setUsername(mateUser.getUsername());
+			genM.setUserid(mateUser.getUserid());
+			genM.setSex(mateUser.getSex());
+			genM.setLivestatus(mateUser.getLivestatus());
+			genM.setImgurl(mateUser.getImgurl());
+			genM.setGenlevel(mateUser.getGenlevel());
+			genM.setBrotherpos(mateUser.getBrotherpos());
+		}
+		//构造当前用户和配偶信息
 		GenUserVO genUser = new GenUserVO();
 		genUser.setUser(genU);
 		genUser.setMateuser(genM);
 		
 		
-		
+		//当前用户父亲信息
 		User puser = userDao.selectByPrimaryKey(user.getPid());
+		//当前用户母亲信息
 		User pMateUser = userDao.selectByPrimaryKey(puser.getMateid());
-		
+		//构造父亲
 		GenUser genpU = new GenUser();
-		genpU.setUsername(user.getUsername());
-		genpU.setUserid(user.getUserid());
-		genpU.setSex(user.getSex());
-		genpU.setLivestatus(user.getLivestatus());
-		genpU.setImgurl(user.getImgurl());
-		genpU.setGenlevel(user.getGenlevel());
-		
+		if(puser != null) {
+			genpU.setUsername(puser.getUsername());
+			genpU.setUserid(puser.getUserid());
+			genpU.setSex(puser.getSex());
+			genpU.setLivestatus(puser.getLivestatus());
+			genpU.setImgurl(puser.getImgurl());
+			genpU.setGenlevel(puser.getGenlevel());
+			genpU.setBrotherpos(puser.getBrotherpos());
+		}
+		//构造母亲
 		GenUser genpM = new GenUser();
-		genpM.setUsername(mateUser.getUsername());
-		genpM.setUserid(mateUser.getUserid());
-		genpM.setSex(mateUser.getSex());
-		genpM.setLivestatus(mateUser.getLivestatus());
-		genpM.setImgurl(mateUser.getImgurl());
-		genpM.setGenlevel(mateUser.getGenlevel());
-		
+		if(pMateUser != null) {
+			genpM.setUsername(pMateUser.getUsername());
+			genpM.setUserid(pMateUser.getUserid());
+			genpM.setSex(pMateUser.getSex());
+			genpM.setLivestatus(pMateUser.getLivestatus());
+			genpM.setImgurl(pMateUser.getImgurl());
+			genpM.setGenlevel(pMateUser.getGenlevel());
+			genpM.setBrotherpos(pMateUser.getBrotherpos());
+		}
+		//父母信息
 		GenUserVO pGenUser = new GenUserVO();
 		pGenUser.setUser(genpU);
 		pGenUser.setMateuser(genpM);
 		
+		//获取兄弟姊妹
 		List<GenUserVO> bsVos = new ArrayList<GenUserVO>();
-		List<User> bsList = userDao.selectChildren(user.getPid());
+		List<User> bsList = userDao.selectBrothers(user);
 		if(bsList != null && bsList.size()>0) {
 			for(User bsu : bsList) {
 				User mateBsu = userDao.selectByPrimaryKey(bsu.getMateid());
 				
 				
 				GenUser genBs = new GenUser();
-				if(mateBsu!=null) {
+				if(bsu!=null) {
 					genBs.setUsername(bsu.getUsername());
 					genBs.setUserid(bsu.getUserid());
 					genBs.setSex(bsu.getSex());
@@ -5570,6 +5588,7 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 		
+		//获取子女
 		List<GenUserVO> chlVos = new ArrayList<GenUserVO>();
 		List<User> childrenList = userDao.selectChildren(userid);
 		if(childrenList != null && childrenList.size()>0) {
@@ -5577,20 +5596,24 @@ public class UserServiceImpl implements UserService {
 				User chlM = userDao.selectByPrimaryKey(u.getMateid());
 			
 				GenUser genChl = new GenUser();
-				genChl.setUsername(u.getUsername());
-				genChl.setUserid(u.getUserid());
-				genChl.setSex(u.getSex());
-				genChl.setLivestatus(u.getLivestatus());
-				genChl.setImgurl(u.getImgurl());
-				genChl.setGenlevel(u.getGenlevel());
+				if(u != null) {genChl.setUsername(u.getUsername());
+					genChl.setUserid(u.getUserid());
+					genChl.setSex(u.getSex());
+					genChl.setLivestatus(u.getLivestatus());
+					genChl.setImgurl(u.getImgurl());
+					genChl.setGenlevel(u.getGenlevel());
+				}
 				
 				GenUser genBsM = new GenUser();
-				genBsM.setUsername(chlM.getUsername());
-				genBsM.setUserid(chlM.getUserid());
-				genBsM.setSex(chlM.getSex());
-				genBsM.setLivestatus(chlM.getLivestatus());
-				genBsM.setImgurl(chlM.getImgurl());
-				genBsM.setGenlevel(chlM.getGenlevel());
+				if(chlM != null) {
+					genBsM.setUsername(chlM.getUsername());
+					genBsM.setUserid(chlM.getUserid());
+					genBsM.setSex(chlM.getSex());
+					genBsM.setLivestatus(chlM.getLivestatus());
+					genBsM.setImgurl(chlM.getImgurl());
+					genBsM.setGenlevel(chlM.getGenlevel());
+				}
+				
 				
 				GenUserVO chlGenUser = new GenUserVO();
 				chlGenUser.setUser(genChl);
@@ -5599,11 +5622,12 @@ public class UserServiceImpl implements UserService {
 				chlVos.add(chlGenUser);
 			}
 		}
+		//将数据封装到map中返回
 		Map<String,Object> rtnMap = new HashMap<String,Object>();
 		rtnMap.put("genUser", genUser);
 		rtnMap.put("pGenUser", pGenUser);
-		rtnMap.put("bsGenUserList", bsList);
-		rtnMap.put("childrenList", childrenList);
+		rtnMap.put("bsGenUserList", bsVos);
+		rtnMap.put("childrenList", chlVos);
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
 		res.setData(rtnMap);

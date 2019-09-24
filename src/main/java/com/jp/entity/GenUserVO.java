@@ -17,7 +17,8 @@ public class GenUserVO {
     // 孩子
     private List<GenUserVO> children;
 
-	public List<GenUserVO> getChildren() {
+
+    public List<GenUserVO> getChildren() {
         return children;
     }
 

@@ -1953,7 +1953,7 @@ public class UserController {
 	 * @param version
 	 * @return
 	 */
-	@RequestMapping(value = "/getUserThreeGen", method = RequestMethod.POST)
+	@RequestMapping(value = "/getUserThreeGen", method = RequestMethod.GET)
 	@ResponseBody
 	public JsonResponse getUserThreeGen(String userid) {
 	
