@@ -37,6 +37,9 @@ public interface FunctionDao {
 
 	List<Function> selectFunctionByUserid(@Param("familyid") String familyid, @Param("userid") String userid);
 
+	List<Function> selectFunctionByUseridAndEbid(@Param("familyid") String familyid, @Param("userid") String userid,
+			@Param("ebid") String ebid);
+
 	List<Function> selectFunctionListByEbid(@Param("familyid") String familyid, @Param("userid") String userid,
 			@Param("ebid") String ebid, @Param("postid") String postid);
 }

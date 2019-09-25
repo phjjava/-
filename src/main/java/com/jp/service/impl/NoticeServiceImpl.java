@@ -101,6 +101,14 @@ public class NoticeServiceImpl implements NoticeService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.isEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			NoticeExample nq = new NoticeExample();
 			Criteria criteria = nq.or();
@@ -114,10 +122,10 @@ public class NoticeServiceImpl implements NoticeService {
 			if (StringTools.trimNotEmpty(notice.getDeleteflag())) {
 				criteria.andDeleteflagEqualTo(notice.getDeleteflag());
 			}
-			List<UserManager> managers = userContextService.getUserManagers(userid);
+			List<UserManager> managers = userContextService.getUserManagers(userid, ebid);
 			UserManager manager = managers.get(0);
 
-			List<String> branchIds = userContextService.getBranchIds(familyid, userid);
+			List<String> branchIds = userContextService.getBranchIds(familyid, userid, ebid);
 			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 			List<NoticeVO> list = new ArrayList<>();
 			if (manager.getEbtype() == 1) {// 验证是否是总编委会主任

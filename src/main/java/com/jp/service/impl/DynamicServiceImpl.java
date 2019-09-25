@@ -88,13 +88,13 @@ public class DynamicServiceImpl implements DynamicService {
 	public JsonResponse pageQuery(PageModel<Dynamic> pageModel, Dynamic dynamic) {
 		Result result = null;
 		JsonResponse res = null;
-		if (pageModel.getPageNo() == null || "".equals(pageModel.getPageNo() + "")) {
+		if (pageModel.getPageNo() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("分页参数pageNo不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (pageModel.getPageSize() == null || "".equals(pageModel.getPageSize() + "")) {
+		if (pageModel.getPageSize() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("分页参数pageSize不能为空！");
 			res = new JsonResponse(result);
@@ -116,8 +116,16 @@ public class DynamicServiceImpl implements DynamicService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.isEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
-			List<String> branchIds = userContextService.getBranchIds(familyid, userid);
+			List<String> branchIds = userContextService.getBranchIds(familyid, userid, ebid);
 			List<Dynamic> list = new ArrayList<Dynamic>();
 			UserManagerExample example = new UserManagerExample();
 			example.or().andUseridEqualTo(userid);

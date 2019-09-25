@@ -36,15 +36,29 @@ public interface BranchDao {
 
 	List<Branch> selectBranchList(@Param("branch") Branch branch, @Param("list") List<String> branchids);
 
-	List<Branch> selectBranchListByFamilyAndUserid(@Param("familyid") String familyid, @Param("userid") String userid,
+	List<Branch> selectBranchListByFamily(@Param("familyid") String familyid);
+
+	List<Branch> selectBranchListByFamilyAndUserid(@Param("status") Integer status, @Param("familyid") String familyid,
 			@Param("branchname") String branchname);
 
 	int updateByBranchidSelective(Branch record);
 
 	int selectByFamilyid(String familyid);
 
+	/**
+	 * 修改前的分编委会分支权限
+	 * @param familyid
+	 * @param userid
+	 * @param branchname
+	 * @return
+	 */
 	List<Branch> getBranchsByFamilyAndUserid(@Param("familyid") String familyid, @Param("userid") String userid,
 			@Param("branchname") String branchname);
+
+	List<Branch> getBranchListByFamilyAndCodes(@Param("familyid") String familyid,
+			@Param("codeList") String[] codeList);
+
+	List<Branch> getBranchListByFamilyAndCode(@Param("familyid") String familyid, @Param("code") String code);
 
 	List<BranchValidArea> selectValidArea(String familyid);
 

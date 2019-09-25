@@ -382,6 +382,14 @@ public class UserController {
 				res = new JsonResponse(result);
 				return res;
 			}
+			//当前登录人所管理的编委会id
+			String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+			if (StringTools.isEmpty(ebid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("header中参数ebid为空!");
+				res = new JsonResponse(result);
+				return res;
+			}
 			UserbranchQuery ex = new UserbranchQuery();
 			ex.or().andUseridEqualTo(userid);
 			List<Userbranch> list = userBranchDao.selectByExample(ex);
@@ -396,7 +404,7 @@ public class UserController {
 			}
 
 			user.setFamilyid(familyid);
-			List<String> branchids = userContextService.getBranchIds(familyid, userid);
+			List<String> branchids = userContextService.getBranchIds(familyid, userid, ebid);
 
 			userService.selectUserList(pageModel, user, branchids);
 			if (pageModel.getList() != null) {
@@ -638,8 +646,16 @@ public class UserController {
 			res = new JsonResponse(result);
 			return res;
 		}
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.isEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
-			List<String> branchList = userContextService.getBranchIds(familyid, userid);
+			List<String> branchList = userContextService.getBranchIds(familyid, userid, ebid);
 			List<User> userList = userService.selectPnameAndMate(familyid, branchList);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
@@ -1358,7 +1374,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/searchUser", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse searchUser(PageModel<User> pageModel, User user, ModelMap model) throws IOException {
+	public JsonResponse searchUser(PageModel<User> pageModel, User user) throws IOException {
 		Result result = null;
 		JsonResponse res = null;
 		//当前登录人 userid
@@ -1377,6 +1393,14 @@ public class UserController {
 			res = new JsonResponse(result);
 			return res;
 		}
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.isEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			UserbranchQuery ex = new UserbranchQuery();
 			ex.or().andUseridEqualTo(userid);
@@ -1391,7 +1415,7 @@ public class UserController {
 			}
 			user.setFamilyid(familyid);
 			user.setStatus(0); // 用户状态默认启用
-			List<String> branchList = userContextService.getBranchIds(familyid, userid);
+			List<String> branchList = userContextService.getBranchIds(familyid, userid, ebid);
 			userService.selectUserList(pageModel, user, branchList);
 			if (pageModel.getList() != null) {
 				if (pageModel.getList().size() == 0) {

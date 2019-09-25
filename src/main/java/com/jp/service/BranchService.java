@@ -28,7 +28,7 @@ public interface BranchService {
 	 * @参数 @throws Exception
 	 * @return List<Branch>
 	 */
-	List<Branch> selectBranchListByFamilyAndUserid(String familyid, String userid);
+	List<Branch> selectBranchListByFamilyAndUserid(String familyid, String userid, String ebid);
 
 	JsonResponse validateBranchname(String branchname);
 

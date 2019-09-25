@@ -81,7 +81,8 @@ public class LoginController {
 							// 用户信息
 							User user = userList.get(0);
 							//			userContext.setUser(user);
-							List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid());
+							List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid(),
+									null);
 							if (managers == null || managers.size() == 0) {
 								result = new Result(MsgConstants.LOGIN_NOT_ADMIN);
 								res = new JsonResponse(result);
@@ -204,7 +205,7 @@ public class LoginController {
 			// return content.toString();
 			// }
 
-			List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid());
+			List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid(), null);
 			if (managers == null || managers.size() == 0) {
 				result = new Result(MsgConstants.LOGIN_NOT_ADMIN);
 				res = new JsonResponse(result);

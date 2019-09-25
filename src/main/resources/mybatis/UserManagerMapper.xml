@@ -384,6 +384,18 @@
 		where userid=#{userid,jdbcType=VARCHAR}
 		order by ebtype	desc,ismanager desc
 	</select>
+	<select id="selectManagerByUserid" parameterType="java.lang.String"
+		resultType="com.jp.entity.UserManager">
+		SELECT userid,username,t1.familyid,ebid,ebname,eddesc,ebtype,ismanager FROM jp_user_manager t1
+		LEFT JOIN jp_editorial_board t2 ON t1.ebid=t2.id
+		WHERE userid = #{userid,jdbcType=VARCHAR}
+		<if test="ebid != null and ebid != ''">
+			and ebid = #{ebid,jdbcType=INTEGER}
+		</if>
+		GROUP BY userid,username,t1.familyid,ebid,ebname,ebtype,t2.eddesc,ismanager 
+		ORDER BY ebtype desc,ismanager desc
+		
+	</select>
 	<select id="selectByEbid" parameterType="java.lang.String"
 		resultType="com.jp.entity.UserManager">
 		select u.*

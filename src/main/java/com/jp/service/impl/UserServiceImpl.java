@@ -471,10 +471,13 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public PageModel<User> selectUserList(PageModel<User> pageModel, User user, List<String> branchList)
 			throws Exception {
+
 		//当前登录人 userid
 		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
 		List<User> userList = new ArrayList<>();
-		List<UserManager> userManager = userContextService.getUserManagers(userid);
+		List<UserManager> userManager = userContextService.getUserManagers(userid, ebid);
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		for (UserManager um : userManager) {
 			if (um.getEbtype() == 1) {
@@ -1785,9 +1788,11 @@ public class UserServiceImpl implements UserService {
 		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
 		//当前登录人 familyid
 		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
-		List<UserManager> managers = userContextService.getUserManagers(userid);
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		List<UserManager> managers = userContextService.getUserManagers(userid, ebid);
 		UserManager manager = managers.get(0);
-		List<String> branchids = userContextService.getBranchIds(familyid, userid);
+		List<String> branchids = userContextService.getBranchIds(familyid, userid, ebid);
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		List<User> userList = new ArrayList<>();
 		if (manager.getEbtype() == 1) {
