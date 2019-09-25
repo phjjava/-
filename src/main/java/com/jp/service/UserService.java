@@ -324,4 +324,6 @@ public interface UserService {
 
 	String getAllAddressByUserid(String userid);
 
+	JsonResponse getUserThreeGen(String userid);
+
 }

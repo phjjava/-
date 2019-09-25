@@ -211,4 +211,6 @@ public interface UserDao {
 	@Select("select phone from jp_user where userid = #{userid}")
 	String selectUserPhone(@Param("userid") String userid);
 
+	List<User> selectBrothers(User user);
+
 }
