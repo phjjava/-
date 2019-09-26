@@ -1494,4 +1494,33 @@ public class BranchServiceImpl implements BranchService {
 		return;
 	}
 
+	@Override
+	public JsonResponse getBranchsByUserid(String userid) {
+		Result result = null;
+		JsonResponse res = null;
+		if(StringUtils.isBlank(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			return res;
+		}
+		User user = userDao.selectByPrimaryKey(userid);
+		if(user == null || user.getDeleteflag()==1 || user.getStatus() != 0) {
+			result = new Result(ConstantUtils.RESULT_FAIL,"当前用户不存在");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//查询所属编委会
+		List<UserManager> managers = userManagerMapper.selectMnangers(userid);
+		//统计管理地区的编码
+		String[] codes= {};
+		//根据地区编码查询分支
+		for(UserManager manager : managers) {
+			
+		}
+		
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		return res;
+	}
+
 }

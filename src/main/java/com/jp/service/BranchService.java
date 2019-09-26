@@ -65,4 +65,6 @@ public interface BranchService {
 	JsonResponse getGenListToTop(Branch entity);
 
 	JsonResponse getGenListOnlyExt(Branch entity);
+
+	JsonResponse getBranchsByUserid(String userid);
 }

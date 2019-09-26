@@ -270,5 +270,18 @@ public class BranchController {
 	public JsonResponse getGenListOnlyExtMod(Branch branch) {
 		return branchService.getGenListOnlyExtMod(branch);
 	}
+	
+	/**
+	 * 根据用户id获取所管理的分支列表（编委会权限）
+	 * 
+	 * @param branch
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getBranchsByUserid", method = RequestMethod.GET)
+	public JsonResponse getBranchsByUserid(String userid) {
+		return branchService.getBranchsByUserid(userid);
+	}
 
+	
 }

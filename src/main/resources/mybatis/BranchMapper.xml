@@ -764,14 +764,14 @@
 	<select id="selectBranchidsByCitycode" resultType="String">
 		select
 		branchid from jp_branch where familyid=#{familyid,jdbcType=VARCHAR}
-		and areacode=#{code,jdbcType=VARCHAR} and `status`=0
+		and citycode=#{code,jdbcType=VARCHAR} and `status`=0
 	</select>
 
 	<select id="selectBranchidsByQxcode" resultType="String">
 		select branchid
 		from jp_branch where familyid=#{familyid,jdbcType=VARCHAR}
 		and
-		areacode=#{code,jdbcType=VARCHAR} and `status`=0
+		xcode=#{code,jdbcType=VARCHAR} and `status`=0
 	</select>
 	<select id="selectCityByFamilyid"
 		resultType="com.jp.entity.BranchEditorBoard" parameterType="String">
