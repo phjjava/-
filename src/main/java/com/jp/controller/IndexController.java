@@ -3,13 +3,10 @@ package com.jp.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -47,7 +44,7 @@ public class IndexController {
 	 */
 	@RequestMapping(value = "/init", method = RequestMethod.GET)
 	@ResponseBody
-	public JsonResponse initIndex(HttpServletRequest request, ModelMap modelMap) {
+	public JsonResponse initIndex() {
 		Result result = null;
 		JsonResponse res = null;
 		//当前登录人 userid
@@ -66,23 +63,28 @@ public class IndexController {
 			res = new JsonResponse(result);
 			return res;
 		}
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.isEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		List<Function> functions = null;//所有菜单
 		List<Function> menuFunctions = null;
 
 		try {
-			functions = functionService.selectFunctionListByManagerid(familyid, userid);
+			functions = functionService.selectFunctionListByManagerid(familyid, userid, ebid);
 			menuFunctions = list2Tree(functions);
-			List<String> branchids = userContextService.getBranchIds(familyid, userid);
-			List<UserManager> userManager = userContextService.getUserManagers(userid);
+			List<String> branchids = userContextService.getBranchIds(familyid, userid, ebid);
+			List<UserManager> userManagers = userContextService.getUserManagers(userid, ebid);
+			UserManager userManager = userManagers.get(0);
 			Indexcount countIndex = new Indexcount();
-			for (UserManager um : userManager) {
-				if (um.getEbtype() == 1) {
-					countIndex = familyService.countIndex(familyid, null);
-					break;
-				} else {
-					countIndex = familyService.countIndex(familyid, branchids);
-					break;
-				}
+			if (userManager.getEbtype() == 1) {
+				countIndex = familyService.countIndex(familyid, null);
+			} else {
+				countIndex = familyService.countIndex(familyid, branchids);
 			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);

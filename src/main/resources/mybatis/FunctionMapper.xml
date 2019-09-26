@@ -325,4 +325,13 @@
     </if>
     order by f.sort desc
   </select>
+  <select id="selectFunctionByUseridAndEbid" resultType="com.jp.entity.Function">
+  	select DISTINCT f.functionid,f.functionname,f.parentid,f.functionurl,f.icon,f.sort,f.description
+  	from jp_function f
+  	inner join jp_function_role m on f.functionid = m.functionid 
+  	where f.familyid = #{familyid,jdbcType=VARCHAR}
+  	and m.userid = #{userid,jdbcType=VARCHAR}
+	and m.ebid = #{ebid,jdbcType=VARCHAR}
+ 	order by f.sort desc
+  </select>
 </mapper>

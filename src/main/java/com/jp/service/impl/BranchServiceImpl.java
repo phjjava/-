@@ -20,6 +20,7 @@ import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.dao.BranchDao;
+import com.jp.dao.EditorialBoardMapper;
 import com.jp.dao.SysFamilyDao;
 import com.jp.dao.SysVersionPrivilegeMapper;
 import com.jp.dao.UserDao;
@@ -38,10 +39,7 @@ import com.jp.entity.SysFamily;
 import com.jp.entity.SysVersionPrivilege;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
-import com.jp.entity.UserManagerExample;
 import com.jp.entity.UserQuery;
-import com.jp.entity.Userbranch;
-import com.jp.entity.UserbranchQuery;
 import com.jp.service.BranchService;
 import com.jp.service.UserContextService;
 import com.jp.util.StringTools;
@@ -67,6 +65,8 @@ public class BranchServiceImpl implements BranchService {
 	private UserbranchDao userBranchDao;
 	@Autowired
 	private UserContextService userContextService;
+	@Autowired
+	private EditorialBoardMapper editorialBoardMapper;
 
 	/**
 	 * 从起始人按父子关系，递归更新分支用户（包括配偶）的分支属性
@@ -125,33 +125,29 @@ public class BranchServiceImpl implements BranchService {
 				res = new JsonResponse(result);
 				return res;
 			}
-			UserbranchQuery userbranchQuery = new UserbranchQuery();
-			userbranchQuery.or().andUseridEqualTo(userid);
-			List<Userbranch> userbranchList = userBranchDao.selectByExample(userbranchQuery);
-			BranchKey key = new BranchKey();
-			for (Userbranch b : userbranchList) {
-				
-				key.setBranchid(b.getBranchid());
-				key.setFamilyid(familyid);
-				Branch bran = branchDao.selectByPrimaryKey(key);
-				if (bran.getBranchid() != null && !"".equals(bran.getBranchid()))
-					branch.setBranchid(b.getBranchid());
+			//当前登录人所管理的编委会id
+			String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+			if (StringTools.isEmpty(ebid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("header中参数ebid为空!");
+				res = new JsonResponse(result);
+				return res;
 			}
+			String code = editorialBoardMapper.selectCodeByEbid(ebid);
+			String[] codeList = code.split(",");
 			branch.setFamilyid(familyid);
-
-			UserManagerExample example = new UserManagerExample();
-			example.or().andUseridEqualTo(userid);
-			example.setOrderByClause("ebtype desc,ismanager desc");
-			List<UserManager> managers = userManagerMapper.selectByExample(example);
+			UserManager manager = userContextService.getUserManagers(userid, ebid).get(0);
 			List<Branch> branchList = new ArrayList<>();
-			for (UserManager manager : managers) {
-				PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-				if (manager.getEbtype() == 1) {
-					branchList = branchDao.selectBranchListByFamilyAndUserid(familyid, null, branch.getBranchname());
-					break;
+			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			if (manager.getEbtype() == 1) {
+				branchList = branchDao.selectBranchListByFamilyAndUserid(branch.getStatus(), familyid,
+						branch.getBranchname());
+			} else {
+				//branchList = branchDao.getBranchsByFamilyAndUserid(familyid, userid, branch.getBranchname());
+				if (codeList.length > 1) {
+					branchList = branchDao.getBranchListByFamilyAndCodes(familyid, codeList, branch.getBranchname());
 				} else {
-					branchList = branchDao.getBranchsByFamilyAndUserid(familyid, userid, branch.getBranchname());
-					break;
+					branchList = branchDao.getBranchListByFamilyAndCode(familyid, code, branch.getBranchname());
 				}
 			}
 			UserQuery userQuery = new UserQuery();
@@ -326,10 +322,18 @@ public class BranchServiceImpl implements BranchService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.isEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			branch.setFamilyid(familyid);
-			List<UserManager> userManager = userContextService.getUserManagers(userid);
-			List<String> branchIds = userContextService.getBranchIds(familyid, userid);
+			List<UserManager> userManager = userContextService.getUserManagers(userid, ebid);
+			List<String> branchIds = userContextService.getBranchIds(familyid, userid, ebid);
 			List<Branch> list = new ArrayList<>();
 			for (UserManager um : userManager) {
 				if (um.getEbtype() == 1) {
@@ -366,27 +370,23 @@ public class BranchServiceImpl implements BranchService {
 	}
 
 	@Override
-	public List<Branch> selectBranchListByFamilyAndUserid(String familyid, String userid) {
-		// List<Branch> branchs =null;
+	public List<Branch> selectBranchListByFamilyAndUserid(String familyid, String userid, String ebid) {
+		String code = editorialBoardMapper.selectCodeByEbid(ebid);
+		String[] codeList = code.split(",");
 		List<Branch> rtnlist = new ArrayList<Branch>();
-		UserManagerExample example = new UserManagerExample();
-		example.or().andUseridEqualTo(userid);
-		example.setOrderByClause("ebtype desc,ismanager desc");
-		List<UserManager> managers = userManagerMapper.selectByExample(example);
-		// List<String> managerids =new ArrayList<String>();
-		for (UserManager manager : managers) {
-			// branchs = new ArrayList<Branch>();
-			// 总编委会查看全部
-			if (manager.getEbtype() == 1) {
-				rtnlist = branchDao.selectBranchListByFamilyAndUserid(familyid, null, null);
-				break;
+		List<UserManager> managers = userContextService.getUserManagers(userid, ebid);
+		UserManager userManager = managers.get(0);
+		// 总编委会查看全部
+		if (userManager.getEbtype() == 1) {
+			rtnlist = branchDao.selectBranchListByFamily(familyid);
+		} else {
+			//	rtnlist = branchDao.getBranchsByFamilyAndUserid(familyid, userid, null);
+			if (codeList.length > 1) {
+				rtnlist = branchDao.getBranchListByFamilyAndCodes(familyid, codeList, null);
+			} else {
+				rtnlist = branchDao.getBranchListByFamilyAndCode(familyid, code, null);
 			}
-			rtnlist = branchDao.getBranchsByFamilyAndUserid(familyid, userid, null);
-			break;
 		}
-		// List<Branch> branchs =
-		// branchDao.selectBranchListByFamilyAndManagerids(familyid, managerids);
-		// branchDao.selectBranchListByFamilyAndUserid(familyid, userid);
 		return rtnlist;
 	}
 

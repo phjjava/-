@@ -1,30 +1,41 @@
 package com.jp.dao;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
 import com.jp.entity.EditorialBoard;
 import com.jp.entity.EditorialBoardExample;
-import java.util.List;
-import org.apache.ibatis.annotations.Param;
 
 public interface EditorialBoardMapper {
-    int countByExample(EditorialBoardExample example);
+	int countByExample(EditorialBoardExample example);
 
-    int deleteByExample(EditorialBoardExample example);
+	int deleteByExample(EditorialBoardExample example);
 
-    int deleteByPrimaryKey(String id);
+	int deleteByPrimaryKey(String id);
 
-    int insert(EditorialBoard record);
+	int insert(EditorialBoard record);
 
-    int insertSelective(EditorialBoard record);
+	int insertSelective(EditorialBoard record);
 
-    List<EditorialBoard> selectByExample(EditorialBoardExample example);
+	List<EditorialBoard> selectByExample(EditorialBoardExample example);
 
-    EditorialBoard selectByPrimaryKey(String id);
+	@Select("SELECT code FROM jp_editorial_board WHERE id = #{ebid}")
+	String selectCodeByEbid(@Param("ebid") String ebid);
 
-    int updateByExampleSelective(@Param("record") EditorialBoard record, @Param("example") EditorialBoardExample example);
+	EditorialBoard selectByPrimaryKey(String id);
 
-    int updateByExample(@Param("record") EditorialBoard record, @Param("example") EditorialBoardExample example);
+	int updateByExampleSelective(@Param("record") EditorialBoard record,
+			@Param("example") EditorialBoardExample example);
 
-    int updateByPrimaryKeySelective(EditorialBoard record);
+	int updateByExample(@Param("record") EditorialBoard record, @Param("example") EditorialBoardExample example);
 
-    int updateByPrimaryKey(EditorialBoard record);
+	int updateByPrimaryKeySelective(EditorialBoard record);
+
+	int updateByPrimaryKey(EditorialBoard record);
+
+	@Select("SELECT `code` cityCode,`level`,`name` cityName FROM `jp_city` WHERE `code` = #{code}")
+	Map<String, Object> selectCityByCode(@Param("code") String code);
 }

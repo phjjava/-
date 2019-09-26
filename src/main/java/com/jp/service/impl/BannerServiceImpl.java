@@ -285,6 +285,7 @@ public class BannerServiceImpl implements BannerService {
 	public JsonResponse batchDelete(String bannerids) {
 		Result result = null;
 		JsonResponse res = null;
+		Integer status = 0;
 		if (StringUtils.isBlank(bannerids)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerids不能为空！");
@@ -292,11 +293,13 @@ public class BannerServiceImpl implements BannerService {
 			return res;
 		}
 		try {
-			// a,b,c
-			String bannerid = bannerids.substring(0, bannerids.length());
-			String banneridArray[] = bannerid.split(",");
-			bdao.batchDelete(banneridArray);
-			result = new Result(MsgConstants.RESUL_SUCCESS);
+			String[] banneridArray = bannerids.split(",");
+			status = bdao.batchDelete(banneridArray);
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			result = new Result(MsgConstants.SYS_ERROR);
@@ -328,11 +331,19 @@ public class BannerServiceImpl implements BannerService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.isEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		GoTypeResult goTypeResult = null;
 		List<GoTypeResult> goTypeResultList = new ArrayList<GoTypeResult>();
 		try {
-			Integer type = userContextService.getUserManagers(userid).get(0).getEbtype();
-			List<String> branchIds = userContextService.getBranchIds(familyid, userid);
+			Integer type = userContextService.getUserManagers(userid, ebid).get(0).getEbtype();
+			List<String> branchIds = userContextService.getBranchIds(familyid, userid, ebid);
 			//动态
 			if (goType.equals("1")) {
 

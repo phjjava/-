@@ -8,16 +8,7 @@ import com.jp.entity.UserManager;
 
 public interface UserManagerService {
 
-	/**
-	 * @描述 分页查询管理员数据
-	 * @作者 chenxiaobing
-	 * @时间 2018年8月23日下午11:24:11
-	 * @参数 @param pageModel
-	 * @参数 @return
-	 * @参数 @throws Exception
-	 * @return PageModel<Role>
-	 */
-	PageModel<UserManager> pageQuery(PageModel<UserManager> pageModel, UserManager entity) throws Exception;
+	JsonResponse pageQuery(PageModel<UserManager> pageModel, UserManager entity);
 
 	/**
 	 * @描述 获取编委会详情
@@ -34,7 +25,7 @@ public interface UserManagerService {
 
 	JsonResponse del(String id);
 
-	List<UserManager> selectManagerByUserid(String userid);
+	List<UserManager> selectManagerByUserid(String userid, String ebid);
 
 	UserManager selectByFamilyId(String familyid);
 
