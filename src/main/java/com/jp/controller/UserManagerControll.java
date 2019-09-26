@@ -52,41 +52,16 @@ public class UserManagerControll {
 		return userManagerService.save(manager, functionids);
 	}
 
+	/**
+	 * 分页查询管理员数据
+	 * @param pageModel
+	 * @param entity
+	 * @return
+	 */
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse list(PageModel<UserManager> pageModel, UserManager entity) {
-		Result result = null;
-		JsonResponse res = null;
-		//当前登录人 userid
-		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
-		if (StringTools.isEmpty(userid)) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("用户非法！");
-			res = new JsonResponse(result);
-			return res;
-		}
-		try {
-			entity.setUserid(userid);
-			userManagerService.pageQuery(pageModel, entity);
-			if (pageModel.getList() != null) {
-				if (pageModel.getList().size() == 0) {
-					if (pageModel.getPageNo() != null && 1 != pageModel.getPageNo()) {
-						pageModel.setPageNo(pageModel.getPageNo() - 1);
-						userManagerService.pageQuery(pageModel, entity);
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(pageModel);
-		return res;
+		return userManagerService.pageQuery(pageModel, entity);
 	}
 
 	@RequestMapping(value = "/del", method = RequestMethod.POST)
@@ -234,4 +209,37 @@ public class UserManagerControll {
 	public JsonResponse getPost(int type) {
 		return userManagerService.getPost(type);
 	}
+
+	/**
+	 * 查询当前登录人管理的编委会列表(切换编委会使用)
+	 * @param type
+	 * @return
+	 */
+	@RequestMapping(value = "/getManagerList", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse getManagerByUserid(String ebid) {
+		Result result = null;
+		JsonResponse res = null;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			List<UserManager> managerList = userManagerService.selectManagerByUserid(userid, ebid);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(managerList);
+			return res;
+		} catch (Exception e) {
+			e.printStackTrace();
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+	}
+
 }

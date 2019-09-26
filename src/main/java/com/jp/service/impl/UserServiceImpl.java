@@ -18,7 +18,6 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -472,27 +471,185 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public PageModel<User> selectUserList(PageModel<User> pageModel, User user, List<String> branchList)
-			throws Exception {
+	public JsonResponse selectUserList(PageModel<User> pageModel, User user) {
+
+		Result result = null;
+		JsonResponse res = null;
+		if (pageModel.getPageNo() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageNo不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (pageModel.getPageSize() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageSize不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		//当前登录人 userid
 		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
-		List<User> userList = new ArrayList<>();
-		List<UserManager> userManager = userContextService.getUserManagers(userid);
-		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		for (UserManager um : userManager) {
-			if (um.getEbtype() == 1) {
-				userList = userInfoDao.selecAllUserList(user);
-				break;
-			} else {
-				if (branchList.size() > 0) {
-					userList = userInfoDao.selecUserList(user, branchList);
-				}
-				break;
-			}
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
 		}
-		pageModel.setList(userList);
-		pageModel.setPageInfo(new PageInfo<User>(userList));
-		return pageModel;
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.isEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			user.setFamilyid(familyid);
+			user.setStatus(0); // 用户状态默认启用
+			List<String> branchList = userContextService.getBranchIds(familyid, userid, ebid);
+			List<UserManager> userManagers = userContextService.getUserManagers(userid, ebid);
+			UserManager userManager = userManagers.get(0);
+			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			List<User> userList = new ArrayList<>();
+			if (userManager.getEbtype() == 1) {
+				userList = userInfoDao.selecAllUserList(user);
+			} else {
+				if (branchList.size() < 1) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("您的账号当前没有分支");
+					res = new JsonResponse(result);
+					return res;
+				}
+				userList = userInfoDao.selecUserList(user, branchList);
+			}
+
+			List<User> users = new ArrayList<>();
+			if (userList != null) {
+				// 增加address字段
+				for (User userAddrss : userList) {
+					String address = getAllAddressByUserid(userAddrss.getUserid());
+					userAddrss.setAddress(address);
+
+					userAddrss.setBranchAllName(address + "_" + userAddrss.getBranchname());
+					users.add(userAddrss);
+				}
+
+				pageModel.setList(users);
+				pageModel.setPageInfo(new PageInfo<User>(users));
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(pageModel);
+				return res;
+			} else {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				res = new JsonResponse(result);
+				return res;
+			}
+
+		} catch (Exception e) {
+			log_.error("[apiSearchUser方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+	}
+
+	@Override
+	public JsonResponse apiSearchUser(PageModel<User> pageModel, User user) {
+		Result result = null;
+		JsonResponse res = null;
+		if (pageModel.getPageNo() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageNo不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (pageModel.getPageSize() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageSize不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.isEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			user.setFamilyid(familyid);
+			user.setStatus(0); // 用户状态默认启用
+			List<String> branchList = userContextService.getBranchIds(familyid, userid, ebid);
+			List<UserManager> userManagers = userContextService.getUserManagers(userid, ebid);
+			UserManager userManager = userManagers.get(0);
+			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			List<User> userList = new ArrayList<>();
+			if (userManager.getEbtype() == 1) {
+				userList = userInfoDao.selecAllUserList(user);
+			} else {
+				if (branchList.size() < 1) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("您的账号当前没有分支");
+					res = new JsonResponse(result);
+					return res;
+				}
+				userList = userInfoDao.selecUserList(user, branchList);
+			}
+
+			List<User> users = new ArrayList<>();
+			if (userList != null) {
+				// 增加address字段
+				for (User userAddrss : userList) {
+					String address = getAllAddressByUserid(userAddrss.getUserid());
+					userAddrss.setAddress(address);
+
+					userAddrss.setBranchAllName(address + "_" + userAddrss.getBranchname());
+					users.add(userAddrss);
+				}
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(users);
+				res.setCount(new PageInfo<User>(users).getTotal());
+				return res;
+			} else {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				res = new JsonResponse(result);
+				return res;
+			}
+
+		} catch (Exception e) {
+			log_.error("[apiSearchUser方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+
 	}
 
 	@Override
@@ -1788,9 +1945,11 @@ public class UserServiceImpl implements UserService {
 		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
 		//当前登录人 familyid
 		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
-		List<UserManager> managers = userContextService.getUserManagers(userid);
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		List<UserManager> managers = userContextService.getUserManagers(userid, ebid);
 		UserManager manager = managers.get(0);
-		List<String> branchids = userContextService.getBranchIds(familyid, userid);
+		List<String> branchids = userContextService.getBranchIds(familyid, userid, ebid);
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		List<User> userList = new ArrayList<>();
 		if (manager.getEbtype() == 1) {
@@ -5467,14 +5626,14 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String getAllAddressByUserid(String userid) {
-		String address = "";
 		try {
-			address = userDao.getAddressByUserid(userid);
+			String address = userDao.getAddressByUserid(userid);
+			return address;
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[获取地址信息---异常:]", e);
 		}
-		return address;
+		return null;
 	}
 
 	@Override
@@ -5487,14 +5646,14 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		
+
 		//获取当前用户信息
 		User user = userDao.selectByPrimaryKey(userid);
 		//当前用户配偶信息
-		User mateUser =  userDao.selectByPrimaryKey(user.getMateid());
+		User mateUser = userDao.selectByPrimaryKey(user.getMateid());
 		//构造返回当前用户信息
 		GenUser genU = new GenUser();
-		if(user != null) {
+		if (user != null) {
 			genU.setUsername(user.getUsername());
 			genU.setUserid(user.getUserid());
 			genU.setSex(user.getSex());
@@ -5505,7 +5664,7 @@ public class UserServiceImpl implements UserService {
 		}
 		//构造当前用户配偶信息
 		GenUser genM = new GenUser();
-		if(mateUser != null) {
+		if (mateUser != null) {
 			genM.setUsername(mateUser.getUsername());
 			genM.setUserid(mateUser.getUserid());
 			genM.setSex(mateUser.getSex());
@@ -5518,15 +5677,14 @@ public class UserServiceImpl implements UserService {
 		GenUserVO genUser = new GenUserVO();
 		genUser.setUser(genU);
 		genUser.setMateuser(genM);
-		
-		
+
 		//当前用户父亲信息
 		User puser = userDao.selectByPrimaryKey(user.getPid());
 		//当前用户母亲信息
 		User pMateUser = userDao.selectByPrimaryKey(puser.getMateid());
 		//构造父亲
 		GenUser genpU = new GenUser();
-		if(puser != null) {
+		if (puser != null) {
 			genpU.setUsername(puser.getUsername());
 			genpU.setUserid(puser.getUserid());
 			genpU.setSex(puser.getSex());
@@ -5537,7 +5695,7 @@ public class UserServiceImpl implements UserService {
 		}
 		//构造母亲
 		GenUser genpM = new GenUser();
-		if(pMateUser != null) {
+		if (pMateUser != null) {
 			genpM.setUsername(pMateUser.getUsername());
 			genpM.setUserid(pMateUser.getUserid());
 			genpM.setSex(pMateUser.getSex());
@@ -5550,17 +5708,16 @@ public class UserServiceImpl implements UserService {
 		GenUserVO pGenUser = new GenUserVO();
 		pGenUser.setUser(genpU);
 		pGenUser.setMateuser(genpM);
-		
+
 		//获取兄弟姊妹
 		List<GenUserVO> bsVos = new ArrayList<GenUserVO>();
 		List<User> bsList = userDao.selectBrothers(user);
-		if(bsList != null && bsList.size()>0) {
-			for(User bsu : bsList) {
+		if (bsList != null && bsList.size() > 0) {
+			for (User bsu : bsList) {
 				User mateBsu = userDao.selectByPrimaryKey(bsu.getMateid());
-				
-				
+
 				GenUser genBs = new GenUser();
-				if(bsu!=null) {
+				if (bsu != null) {
 					genBs.setUsername(bsu.getUsername());
 					genBs.setUserid(bsu.getUserid());
 					genBs.setSex(bsu.getSex());
@@ -5568,9 +5725,9 @@ public class UserServiceImpl implements UserService {
 					genBs.setImgurl(bsu.getImgurl());
 					genBs.setGenlevel(bsu.getGenlevel());
 				}
-				
+
 				GenUser genBsM = new GenUser();
-				if(mateBsu!=null) {
+				if (mateBsu != null) {
 					genBsM.setUsername(mateBsu.getUsername());
 					genBsM.setUserid(mateBsu.getUserid());
 					genBsM.setSex(mateBsu.getSex());
@@ -5578,34 +5735,34 @@ public class UserServiceImpl implements UserService {
 					genBsM.setImgurl(mateBsu.getImgurl());
 					genBsM.setGenlevel(mateBsu.getGenlevel());
 				}
-				
-				
+
 				GenUserVO bsGenUser = new GenUserVO();
 				bsGenUser.setUser(genBs);
 				bsGenUser.setMateuser(genBsM);
-				
+
 				bsVos.add(bsGenUser);
 			}
 		}
-		
+
 		//获取子女
 		List<GenUserVO> chlVos = new ArrayList<GenUserVO>();
 		List<User> childrenList = userDao.selectChildren(userid);
-		if(childrenList != null && childrenList.size()>0) {
-			for(User u : childrenList) {
+		if (childrenList != null && childrenList.size() > 0) {
+			for (User u : childrenList) {
 				User chlM = userDao.selectByPrimaryKey(u.getMateid());
-			
+
 				GenUser genChl = new GenUser();
-				if(u != null) {genChl.setUsername(u.getUsername());
+				if (u != null) {
+					genChl.setUsername(u.getUsername());
 					genChl.setUserid(u.getUserid());
 					genChl.setSex(u.getSex());
 					genChl.setLivestatus(u.getLivestatus());
 					genChl.setImgurl(u.getImgurl());
 					genChl.setGenlevel(u.getGenlevel());
 				}
-				
+
 				GenUser genBsM = new GenUser();
-				if(chlM != null) {
+				if (chlM != null) {
 					genBsM.setUsername(chlM.getUsername());
 					genBsM.setUserid(chlM.getUserid());
 					genBsM.setSex(chlM.getSex());
@@ -5613,17 +5770,16 @@ public class UserServiceImpl implements UserService {
 					genBsM.setImgurl(chlM.getImgurl());
 					genBsM.setGenlevel(chlM.getGenlevel());
 				}
-				
-				
+
 				GenUserVO chlGenUser = new GenUserVO();
 				chlGenUser.setUser(genChl);
 				chlGenUser.setMateuser(genBsM);
-				
+
 				chlVos.add(chlGenUser);
 			}
 		}
 		//将数据封装到map中返回
-		Map<String,Object> rtnMap = new HashMap<String,Object>();
+		Map<String, Object> rtnMap = new HashMap<String, Object>();
 		rtnMap.put("genUser", genUser);
 		rtnMap.put("pGenUser", pGenUser);
 		rtnMap.put("bsGenUserList", bsVos);

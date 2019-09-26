@@ -31,32 +31,33 @@ public class UserContextServiceImpl implements UserContextService {
 	 * 获取管理员列表
 	 */
 	@Override
-	public List<UserManager> getUserManagers(String userid) {
-		return userManagerService.selectManagerByUserid(userid);
+	public List<UserManager> getUserManagers(String userid, String ebid) {
+		return userManagerService.selectManagerByUserid(userid, ebid);
 	}
 
 	/**
 	 * 获取权限列表
 	 */
 	@Override
-	public List<Function> getFunctions(String familyid, String userid) {
-		return functionService.selectFunctionListByManagerid(familyid, userid);
+	public List<Function> getFunctions(String familyid, String userid, String ebid) {
+
+		return functionService.selectFunctionListByManagerid(familyid, userid, ebid);
 	}
 
 	/**
 	 * 获取分支列表
 	 */
 	@Override
-	public List<Branch> getUserBranchs(String familyid, String userid) {
-		return branchService.selectBranchListByFamilyAndUserid(familyid, userid);
+	public List<Branch> getUserBranchs(String familyid, String userid, String ebid) {
+		return branchService.selectBranchListByFamilyAndUserid(familyid, userid, ebid);
 	}
 
 	/**
 	 * 获取分支id列表
 	 */
 	@Override
-	public List<String> getBranchIds(String familyid, String userid) {
-		List<Branch> branchList = branchService.selectBranchListByFamilyAndUserid(familyid, userid);
+	public List<String> getBranchIds(String familyid, String userid, String ebid) {
+		List<Branch> branchList = branchService.selectBranchListByFamilyAndUserid(familyid, userid, ebid);
 		List<String> branchids = new ArrayList<>();
 		for (Branch branch : branchList) {
 			branchids.add(branch.getBranchid());

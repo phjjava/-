@@ -24,13 +24,9 @@ public class BranchalbumController {
 	private BranchalbumService baservice;
 
 	/**
-	 * @描述 分支相册 去新增编辑界面（回显）
-	 * @作者 sj
-	 * @时间 2017年5月21日下午10:44:17
-	 * @参数 @param request
-	 * @参数 @param model
-	 * @参数 @return
-	 * @return String
+	 * 分支相册（回显）
+	 * @param albumid
+	 * @return
 	 */
 	@RequestMapping(value = "/get", method = RequestMethod.GET)
 	@ResponseBody

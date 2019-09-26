@@ -7,47 +7,47 @@ public class UserManager implements Serializable {
 	private String id;
 
 	/**
-	 * �û�id
+	 * 关联用户id
 	 */
 	private String userid;
 
 	/**
-	 * ����
+	 * 姓名
 	 */
 	private String username;
 
 	/**
-	 * ����id
+	 *家族id
 	 */
 	private String familyid;
 
 	/**
-	 * ְ��id
+	 * 职务id
 	 */
 	private String postid;
 
 	/**
-	 * ְ������
+	 * 职务名称
 	 */
 	private String postname;
 
 	/**
-	 * ��ί��id
+	 * 编委会id
 	 */
 	private String ebid;
 
 	/**
-	 * ��ί������
+	 * 编委会名称
 	 */
 	private String ebname;
 
 	/**
-	 * ��ί������1��0��
+	 * 编委会类型1总0分
 	 */
 	private Integer ebtype;
 
 	/**
-	 * �Ƿ�Ϊ����1��0��
+	 * 是否为主任1是0否
 	 */
 	private Integer ismanager;
 
@@ -61,9 +61,19 @@ public class UserManager implements Serializable {
 	 */
 	private String address; // 地址
 
+	private String eddesc; // 编委会简称
+
 	private Integer genlevel;// 世系
 	private String imgurl;
 	private List<Userbranch> branchs;
+
+	public String getEddesc() {
+		return eddesc;
+	}
+
+	public void setEddesc(String eddesc) {
+		this.eddesc = eddesc;
+	}
 
 	public String getImgurl() {
 		return imgurl;
@@ -192,6 +202,6 @@ public class UserManager implements Serializable {
 		return "UserManager [id=" + id + ", userid=" + userid + ", username=" + username + ", familyid=" + familyid
 				+ ", postid=" + postid + ", postname=" + postname + ", ebid=" + ebid + ", ebname=" + ebname
 				+ ", ebtype=" + ebtype + ", ismanager=" + ismanager + ", sort=" + sort + ", address=" + address
-				+ ", genlevel=" + genlevel + ", imgurl=" + imgurl + ", branchs=" + branchs + "]";
+				+ ", eddesc=" + eddesc + ", genlevel=" + genlevel + ", imgurl=" + imgurl + ", branchs=" + branchs + "]";
 	}
 }
