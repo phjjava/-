@@ -2,6 +2,7 @@ package com.jp.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,6 +16,7 @@ import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
+import com.jp.dao.BranchDao;
 import com.jp.dao.EditorialBoardMapper;
 import com.jp.dao.FunctionRoleMapper;
 import com.jp.dao.UserManagerMapper;
@@ -39,6 +41,8 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 	private UserManagerMapper userManagerMapper;
 	@Autowired
 	private FunctionRoleMapper functionRoleMapper;
+	@Autowired
+	private BranchDao branchMapper;
 
 	@Override
 	public JsonResponse pageQuery(PageModel<EditorialBoard> pageModel, EditorialBoard entity) {
@@ -93,9 +97,37 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 	public JsonResponse getEditorialBoard(String id) {
 		Result result = null;
 		JsonResponse res = null;
+		if (StringTools.trimIsEmpty(id)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数id不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		EditorialBoard eb = null;
 		try {
 			eb = editorialBoardMapper.selectByPrimaryKey(id);
+			List<Map<String, Object>> listCity = new ArrayList<>();
+			if (eb != null) {
+				String codes = eb.getCode();
+				String[] codeList = codes.split(",");
+				for (String code : codeList) {
+					if (code.length() > 6) {//分支
+						listCity.add(branchMapper.selectByBranchid(code));
+					} else {
+						listCity.add(editorialBoardMapper.selectCityByCode(code));
+					}
+				}
+				eb.setCityList(listCity);
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(eb);
+				return res;
+			} else {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("没有数据！");
+				res = new JsonResponse(result);
+				return res;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[JPSYSTEM]", e);
@@ -103,15 +135,7 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (eb == null) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			res = new JsonResponse(result);
-			return res;
-		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(eb);
-		return res;
+
 	}
 
 	@Override

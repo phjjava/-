@@ -53,13 +53,13 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	public JsonResponse pageQuery(PageModel<Branchalbum> pageModel, Branchalbum branchalbum) {
 		Result result = null;
 		JsonResponse res = null;
-		if (pageModel.getPageNo() == null || "".equals(pageModel.getPageNo() + "")) {
+		if (pageModel.getPageNo() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("分页参数pageNo不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (pageModel.getPageSize() == null || "".equals(pageModel.getPageSize() + "")) {
+		if (pageModel.getPageSize() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("分页参数pageSize不能为空！");
 			res = new JsonResponse(result);

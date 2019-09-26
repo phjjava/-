@@ -1,6 +1,7 @@
 package com.jp.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -34,4 +35,7 @@ public interface EditorialBoardMapper {
 	int updateByPrimaryKeySelective(EditorialBoard record);
 
 	int updateByPrimaryKey(EditorialBoard record);
+
+	@Select("SELECT `code` cityCode,`level`,`name` cityName FROM `jp_city` WHERE `code` = #{code}")
+	Map<String, Object> selectCityByCode(@Param("code") String code);
 }

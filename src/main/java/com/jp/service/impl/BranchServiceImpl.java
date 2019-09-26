@@ -40,8 +40,6 @@ import com.jp.entity.SysVersionPrivilege;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
 import com.jp.entity.UserQuery;
-import com.jp.entity.Userbranch;
-import com.jp.entity.UserbranchQuery;
 import com.jp.service.BranchService;
 import com.jp.service.UserContextService;
 import com.jp.util.StringTools;
@@ -135,31 +133,21 @@ public class BranchServiceImpl implements BranchService {
 				res = new JsonResponse(result);
 				return res;
 			}
-			UserbranchQuery userbranchQuery = new UserbranchQuery();
-			userbranchQuery.or().andUseridEqualTo(userid);
-			List<Userbranch> userbranchList = userBranchDao.selectByExample(userbranchQuery);
-			BranchKey key = new BranchKey();
-			for (Userbranch b : userbranchList) {
-				
-				key.setBranchid(b.getBranchid());
-				key.setFamilyid(familyid);
-				Branch bran = branchDao.selectByPrimaryKey(key);
-				if (bran.getBranchid() != null && !"".equals(bran.getBranchid()))
-					branch.setBranchid(b.getBranchid());
-			}
+			String code = editorialBoardMapper.selectCodeByEbid(ebid);
+			String[] codeList = code.split(",");
 			branch.setFamilyid(familyid);
-
-			List<UserManager> managers = userContextService.getUserManagers(userid, ebid);
+			UserManager manager = userContextService.getUserManagers(userid, ebid).get(0);
 			List<Branch> branchList = new ArrayList<>();
-			for (UserManager manager : managers) {
-				PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-				if (manager.getEbtype() == 1) {
-					branchList = branchDao.selectBranchListByFamilyAndUserid(branch.getStatus(), familyid,
-							branch.getBranchname());
-					break;
+			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			if (manager.getEbtype() == 1) {
+				branchList = branchDao.selectBranchListByFamilyAndUserid(branch.getStatus(), familyid,
+						branch.getBranchname());
+			} else {
+				//branchList = branchDao.getBranchsByFamilyAndUserid(familyid, userid, branch.getBranchname());
+				if (codeList.length > 1) {
+					branchList = branchDao.getBranchListByFamilyAndCodes(familyid, codeList, branch.getBranchname());
 				} else {
-					branchList = branchDao.getBranchsByFamilyAndUserid(familyid, userid, branch.getBranchname());
-					break;
+					branchList = branchDao.getBranchListByFamilyAndCode(familyid, code, branch.getBranchname());
 				}
 			}
 			UserQuery userQuery = new UserQuery();
@@ -394,9 +382,9 @@ public class BranchServiceImpl implements BranchService {
 		} else {
 			//	rtnlist = branchDao.getBranchsByFamilyAndUserid(familyid, userid, null);
 			if (codeList.length > 1) {
-				rtnlist = branchDao.getBranchListByFamilyAndCodes(familyid, codeList);
+				rtnlist = branchDao.getBranchListByFamilyAndCodes(familyid, codeList, null);
 			} else {
-				rtnlist = branchDao.getBranchListByFamilyAndCode(familyid, code);
+				rtnlist = branchDao.getBranchListByFamilyAndCode(familyid, code, null);
 			}
 		}
 		return rtnlist;

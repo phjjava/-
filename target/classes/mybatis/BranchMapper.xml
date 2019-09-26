@@ -527,37 +527,69 @@
 		<foreach collection="codeList" item="item" index="index" open="(" separator="," close=")">
 			#{item,jdbcType=VARCHAR}
 	    </foreach>
+		<if test="branchname != null">
+			and branchname like binary CONCAT('%',
+			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
+		</if>
 		UNION All
 		SELECT * FROM jp_branch WHERE `status` = 0 AND familyid = #{familyid,jdbcType=VARCHAR} 
 		AND citycode in 
 		<foreach collection="codeList" item="item" index="index" open="(" separator="," close=")">
 			#{item,jdbcType=VARCHAR}
 	    </foreach>
+		<if test="branchname != null">
+			and branchname like binary CONCAT('%',
+			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
+		</if>
 		UNION All
 		SELECT * FROM jp_branch WHERE `status` = 0 AND familyid = #{familyid,jdbcType=VARCHAR} 
 		AND xcode in 
 		<foreach collection="codeList" item="item" index="index" open="(" separator="," close=")">
 			#{item,jdbcType=VARCHAR}
 	    </foreach>
+		<if test="branchname != null">
+			and branchname like binary CONCAT('%',
+			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
+		</if>
 		UNION All
 		SELECT * FROM jp_branch WHERE `status` = 0 AND familyid = #{familyid,jdbcType=VARCHAR} 
 		AND branchid in 
 		<foreach collection="codeList" item="item" index="index" open="(" separator="," close=")">
 			#{item,jdbcType=VARCHAR}
 	    </foreach>
+		<if test="branchname != null">
+			and branchname like binary CONCAT('%',
+			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
+		</if>
 	</select>
 	<select id="getBranchListByFamilyAndCode" resultType="com.jp.entity.Branch">
 		SELECT * FROM jp_branch WHERE `status` = 0 AND familyid = #{familyid,jdbcType=VARCHAR} 
 		AND areacode = #{code,jdbcType=VARCHAR}
+		<if test="branchname != null">
+			and branchname like binary CONCAT('%',
+			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
+		</if>
 		UNION All
 		SELECT * FROM jp_branch WHERE `status` = 0 AND familyid = #{familyid,jdbcType=VARCHAR} 
 		AND citycode = #{code,jdbcType=VARCHAR}
+		<if test="branchname != null">
+			and branchname like binary CONCAT('%',
+			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
+		</if>
 		UNION All
 		SELECT * FROM jp_branch WHERE `status` = 0 AND familyid = #{familyid,jdbcType=VARCHAR} 
 		AND xcode = #{code,jdbcType=VARCHAR}
+		<if test="branchname != null">
+			and branchname like binary CONCAT('%',
+			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
+		</if>
 		UNION All
 		SELECT * FROM jp_branch WHERE `status` = 0 AND familyid = #{familyid,jdbcType=VARCHAR} 
 		AND branchid = #{code,jdbcType=VARCHAR}
+		<if test="branchname != null">
+			and branchname like binary CONCAT('%',
+			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
+		</if>
 	</select>
 		
 	<select id="getBranchsByFamilyAndUserid"

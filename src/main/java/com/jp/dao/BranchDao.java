@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import com.jp.entity.Branch;
 import com.jp.entity.BranchEditorBoard;
@@ -25,6 +26,9 @@ public interface BranchDao {
 	List<Branch> selectByExample(BranchQuery example);
 
 	Branch selectByPrimaryKey(BranchKey key);
+
+	@Select("SELECT branchid cityCode, 3 `level` ,branchname cityName FROM jp_branch WHERE branchid = #{branchid}")
+	Map<String, Object> selectByBranchid(@Param("branchid") String branchid);
 
 	int updateByExampleSelective(@Param("record") Branch record, @Param("example") BranchQuery example);
 
@@ -55,10 +59,11 @@ public interface BranchDao {
 	List<Branch> getBranchsByFamilyAndUserid(@Param("familyid") String familyid, @Param("userid") String userid,
 			@Param("branchname") String branchname);
 
-	List<Branch> getBranchListByFamilyAndCodes(@Param("familyid") String familyid,
-			@Param("codeList") String[] codeList);
+	List<Branch> getBranchListByFamilyAndCodes(@Param("familyid") String familyid, @Param("codeList") String[] codeList,
+			@Param("branchname") String branchname);
 
-	List<Branch> getBranchListByFamilyAndCode(@Param("familyid") String familyid, @Param("code") String code);
+	List<Branch> getBranchListByFamilyAndCode(@Param("familyid") String familyid, @Param("code") String code,
+			@Param("branchname") String branchname);
 
 	List<BranchValidArea> selectValidArea(String familyid);
 
