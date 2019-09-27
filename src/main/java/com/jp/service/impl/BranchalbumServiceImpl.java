@@ -104,7 +104,7 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 				if (StringTools.trimNotEmpty(branchalbum.getDeleteflag())) {
 					criteria.andDeleteflagEqualTo(branchalbum.getDeleteflag());
 				}
-				example.setOrderByClause("createtime DESC");
+				example.setOrderByClause("sort asc");
 				PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 				if (m.getEbtype() == 1) {
 					criteria.andFamilyidEqualTo(familyid);
@@ -122,14 +122,6 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 					break;
 				}
 			}
-			// if (branchList!=null&&branchList.size()>0) {
-			// criteria.andBranchidIn(branchList);
-			// }else{
-			// return pageModel;
-			// }
-
-			// List<Branchalbum> list = badao.selectByBranchIds(branchList);
-			// badao.selectBranchAlbumMangeList()\
 			BranchphotoExample example1 = new BranchphotoExample();
 			BranchKey key = new BranchKey();
 			for (Branchalbum al : list) {

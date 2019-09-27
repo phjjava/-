@@ -96,16 +96,7 @@ public interface UserService {
 	 */
 	JsonResponse importUsers(MultipartFile file, HttpServletRequest request) throws Exception;
 
-	/**
-	 * 
-	 * @描述 新增用户时初始化 父亲 和配偶
-	 * @作者 sj
-	 * @时间 2017年5月5日上午10:44:10
-	 * @参数 @return
-	 * @参数 @throws Exception
-	 * @return List<User>
-	 */
-	List<User> selectPnameAndMate(String familyid, List<String> branchList) throws Exception;
+	JsonResponse selectPnameAndMate(String familyid);
 
 	/**
 	 * 

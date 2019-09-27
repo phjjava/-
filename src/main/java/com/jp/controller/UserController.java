@@ -531,45 +531,7 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/selectPnameAndMate", method = RequestMethod.POST)
 	public JsonResponse selectPnameAndMate(String familyid) {
-		// String gsonStr = null;
-		Result result = null;
-		JsonResponse res = null;
-		//当前登录人 userid
-		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
-		if (StringTools.isEmpty(userid)) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("用户非法！");
-			res = new JsonResponse(result);
-			return res;
-		}
-		if (StringTools.isEmpty(familyid)) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("参数familyid为空!");
-			res = new JsonResponse(result);
-			return res;
-		}
-		//当前登录人所管理的编委会id
-		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
-		if (StringTools.isEmpty(ebid)) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("header中参数ebid为空!");
-			res = new JsonResponse(result);
-			return res;
-		}
-		try {
-			List<String> branchList = userContextService.getBranchIds(familyid, userid, ebid);
-			List<User> userList = userService.selectPnameAndMate(familyid, branchList);
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
-			res.setData(userList);
-			// gsonStr = GsonUtil.GsonString(userList);
-		} catch (Exception e) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			res = new JsonResponse(result);
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		return res;
+		return userService.selectPnameAndMate(familyid);
 	}
 
 	/**
@@ -1122,12 +1084,18 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/editPassowrd")
 	public JsonResponse editPwd(String oldpassword, String password) {
-		// Result result = new Result();
 		Result result = null;
 		JsonResponse res = null;
+		String regex = "^[A-Za-z0-9]+$";
+		if (!password.matches(regex)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("密码仅限输入数字或字母!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		//当前登录人 userid
 		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
-		if (StringTools.isEmpty(userid)) {
+		if (StringTools.trimIsEmpty(userid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("用户非法！");
 			res = new JsonResponse(result);
@@ -1135,7 +1103,7 @@ public class UserController {
 		}
 		//当前登录人 familyid
 		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
-		if (StringTools.isEmpty(familyid)) {
+		if (StringTools.trimIsEmpty(familyid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("header中参数familyid为空!");
 			res = new JsonResponse(result);

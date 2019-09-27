@@ -36,6 +36,9 @@ public interface EditorialBoardMapper {
 
 	int updateByPrimaryKey(EditorialBoard record);
 
-	@Select("SELECT `code` cityCode,`level`,`name` cityName FROM `jp_city` WHERE `code` = #{code}")
+	@Select("SELECT `code` cityCode,`level`,`name` cityName,parent_id pid FROM `jp_city` WHERE `code` = #{code}")
 	Map<String, Object> selectCityByCode(@Param("code") String code);
+
+	@Select("SELECT * FROM `jp_city` WHERE `id` = #{id}")
+	Map<String, Object> selectCityById(@Param("id") String id);
 }

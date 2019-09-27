@@ -199,10 +199,22 @@ public class NoticeServiceImpl implements NoticeService {
 		Result result = null;
 		JsonResponse res = null;
 		int status = 0;
+		if (StringTools.trimIsEmpty(notice.getNoticetitle())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数noticetitle不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringTools.trimIsEmpty(notice.getNoticetype())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数noticetype不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			//当前登录人 userid
 			String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
-			if (StringTools.isEmpty(userid)) {
+			if (StringTools.trimIsEmpty(userid)) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("用户非法！");
 				res = new JsonResponse(result);
@@ -210,13 +222,13 @@ public class NoticeServiceImpl implements NoticeService {
 			}
 			//当前登录人 familyid
 			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
-			if (StringTools.isEmpty(familyid)) {
+			if (StringTools.trimIsEmpty(familyid)) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("header中参数familyid为空!");
 				res = new JsonResponse(result);
 				return res;
 			}
-			if (StringTools.trimNotEmpty(notice.getNoticeid())) {
+			if (StringTools.trimIsEmpty(notice.getNoticeid())) {
 				notice.setUpdateid(userid);
 				notice.setFamilyid(familyid);
 				if (notice.getNoticetype() == 0) {
