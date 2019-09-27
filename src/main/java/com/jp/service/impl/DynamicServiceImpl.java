@@ -281,6 +281,24 @@ public class DynamicServiceImpl implements DynamicService {
 		Result result = null;
 		JsonResponse res = null;
 		int status = 0;
+		if (StringTools.trimIsEmpty(dynamic.getDytitle())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数dytitle不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringTools.trimIsEmpty(dynamic.getDytitle())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数dytitle不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringTools.trimIsEmpty(dynamic.getDytype())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数dytype不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			//当前登录人 userid
 			String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);

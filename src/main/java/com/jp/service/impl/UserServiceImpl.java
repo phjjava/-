@@ -1327,8 +1327,45 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<User> selectPnameAndMate(String familyid, List<String> branchList) throws Exception {
-		return userDao.selectPnameAndMate(familyid, branchList);
+	public JsonResponse selectPnameAndMate(String familyid) {
+		Result result = null;
+		JsonResponse res = null;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.isEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			List<String> branchList = userContextService.getBranchIds(familyid, userid, ebid);
+			List<User> userList = userDao.selectPnameAndMate(familyid, branchList);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(userList);
+			// gsonStr = GsonUtil.GsonString(userList);
+		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			e.printStackTrace();
+			log_.error("[JPSYSTEM]", e);
+		}
+		return res;
 	}
 
 	@Override
