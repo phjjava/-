@@ -24,6 +24,8 @@ import com.jp.dao.EditorialBoardMapper;
 import com.jp.dao.SysFamilyDao;
 import com.jp.dao.SysVersionPrivilegeMapper;
 import com.jp.dao.UserDao;
+import com.jp.dao.UserManagerMapper;
+import com.jp.dao.UserbranchDao;
 import com.jp.entity.Branch;
 import com.jp.entity.BranchAreaCity;
 import com.jp.entity.BranchCityBranch;
@@ -54,9 +56,13 @@ public class BranchServiceImpl implements BranchService {
 	@Autowired
 	private UserDao userDao;
 	@Autowired
+	private UserManagerMapper userManagerMapper;
+	@Autowired
 	private SysFamilyDao sysFamilyDao;
 	@Autowired
 	private SysVersionPrivilegeMapper sysVersionPrivilegeMapper;
+	@Autowired
+	private UserbranchDao userBranchDao;
 	@Autowired
 	private UserContextService userContextService;
 	@Autowired
