@@ -41,5 +41,17 @@ public class BranchValidArea {
 	public void setAreacode(String areacode) {
 		this.areacode = areacode;
 	}
-
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true; //自反性
+		if (obj == null || this.getClass() != obj.getClass()) {  //传递性,非空性
+			return false;
+	    }
+		BranchValidArea b = (BranchValidArea) obj;
+		if(b.getAreacode().equals(this.areacode)) {
+			return true;
+		}else {
+			return false;
+		}
+	}
 }
