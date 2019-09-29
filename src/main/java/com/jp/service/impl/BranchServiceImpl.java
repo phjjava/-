@@ -1488,4 +1488,298 @@ public class BranchServiceImpl implements BranchService {
 		return;
 	}
 
+	@Override
+	public JsonResponse getBranchsByUserid(String userid,String code,Integer pageNo,Integer pageSize) {
+		Result result = null;
+		JsonResponse res = null;
+		if(StringUtils.isBlank(userid)) {
+			result = new Result(1,"用户userid为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if(pageNo == null || pageSize == null) {
+			result = new Result(1,"分页参数为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		User user = userDao.selectByPrimaryKey(userid);
+		if(user == null || user.getDeleteflag()==1 || user.getStatus() != 0) {
+			result = new Result(ConstantUtils.RESULT_FAIL,"当前用户不存在");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//查询所属编委会
+		List<UserManager> managers = userManagerMapper.selectMnangers(userid);
+		//统计管理地区的编码
+		List<String> codeList = new ArrayList<String>();
+		
+		boolean flag = true;
+		//根据地区编码查询分支
+		for(UserManager manager : managers) {
+			flag = false ;
+			if(manager.getEbtype() == 1) {
+				///branchValidAreas = branchDao.selectValidArea(user.getFamilyid());
+				flag = true;
+				break;
+			}
+			String areacode = editorialBoardMapper.selectCodeByEbid(manager.getEbid());
+			String[] codes = areacode.split(",");
+			for(String str : codes) {
+				if(!codeList.contains(str)) {
+					codeList.add(str);
+				}
+			}
+			
+		}
+		List<Branch> branchs = new ArrayList<Branch>();
+		PageHelper.startPage(pageNo, pageSize);
+		String[] code1 = {};
+		if(code != null)
+			code1 = code.split(",");
+		if(code != null && !"".equals(code) && flag) {
+			//总编委会按照地区筛选获取
+			branchs = branchDao.getBranchListByFamilyAndCodes(user.getFamilyid(),code1,null);
+		}else if(code != null && !"".equals(code) && flag == false) {
+			//分 编委会筛选分支
+			if(codeList.contains(code)) {
+				//如果有权限管理则查询
+				branchs = branchDao.getBranchListByFamilyAndCodes(user.getFamilyid(),code1,null);
+			}else {
+				result = new Result(MsgConstants.NO_DATA);
+				res = new JsonResponse(result);
+				return res;
+			}
+		}else if(flag) {
+			branchs = branchDao.selectBranchListByFamilyAndUserid(0, user.getFamilyid(),null);
+		}else{
+			String[] strs = codeList.toArray(new String[]{});
+			branchs = branchDao.getBranchListByFamilyAndCodes(user.getFamilyid(),strs,null);
+		}
+		if (branchs != null) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(branchs);
+			res.setCount(new PageInfo<Branch>(branchs).getTotal());
+			return res;
+		}else{
+			result = new Result(MsgConstants.NO_DATA);
+			res = new JsonResponse(result);
+			return res;
+		}
+		
+	}
+
+	@Override
+	public JsonResponse getEbArea(Branch branch) {
+		Result result = null;
+		JsonResponse res = null;
+		if(StringUtils.isBlank(branch.getBeginuserid())) {
+			result = new Result(1,"用户userid为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		String userid = branch.getBeginuserid();
+		User user = userDao.selectByPrimaryKey(userid);
+		if(user == null || user.getDeleteflag()==1 || user.getStatus() != 0) {
+			result = new Result(ConstantUtils.RESULT_FAIL,"当前用户不存在");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//查询所属编委会
+		List<UserManager> managers = userManagerMapper.selectMnangers(userid);
+		if(managers == null || managers.size() < 1) {
+			result = new Result(ConstantUtils.RESULT_FAIL,"当前用户无编委会权限");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//统计管理地区的编码
+		List<String> codeList = new ArrayList<String>();
+		//地区集合
+		List<BranchValidArea> branchValidAreas  = new ArrayList<BranchValidArea>();
+		
+		//根据地区编码查询分支
+		for(UserManager manager : managers) {
+			//flag = false ;
+			if(manager.getEbtype() == 1) {
+				branchValidAreas = branchDao.selectValidArea(user.getFamilyid());
+				List<BranchAreaCity> branchAreaCities = new ArrayList<BranchAreaCity>();
+				for (BranchValidArea branchValidArea : branchValidAreas) {
+					Map<String, String> map = new HashMap<String, String>();
+					map.put("familyid", user.getFamilyid());
+					map.put("areacode", branchValidArea.getAreacode());
+					List<BranchValidArea> branchValidAreas2 = branchDao.selectValidCity(map);
+					BranchAreaCity branchAreaCity = new BranchAreaCity();
+					branchAreaCity.setAreacode(branchValidArea.getAreacode());
+					branchAreaCity.setAreaname(branchValidArea.getAreaname());
+					branchAreaCity.setCitys(branchValidAreas2);
+					branchAreaCities.add(branchAreaCity);
+				}
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(branchValidAreas);
+				return res;
+			}
+			String areacode = editorialBoardMapper.selectCodeByEbid(manager.getEbid());
+			String[] codes = areacode.split(",");
+			for(String str : codes) {
+				if(!codeList.contains(str)) {
+					codeList.add(str);
+				}
+			}
+			
+		}
+		List<Branch> branchs = new ArrayList<Branch>();
+		//if(flag == false) {
+//			branchs = branchDao.selectBranchListByFamilyAndUserid(0, user.getFamilyid(),null);
+//		}else{
+		branchs = branchDao.getBranchListByFamilyAndCodes(user.getFamilyid(), codeList.toArray(new String[]{}),null);
+		//}
+		List<BranchAreaCity> area = new ArrayList<BranchAreaCity>();
+		List<BranchValidArea> citys = new ArrayList<BranchValidArea>();
+		for(Branch bra : branchs ) {
+			BranchAreaCity a = new BranchAreaCity();
+			a.setAreacode(bra.getAreacode());
+			a.setAreaname(bra.getArea());
+			if(area.contains(a)) {
+				BranchValidArea c = new BranchAreaCity();
+				c.setAreacode(bra.getCitycode());
+				c.setAreaname(bra.getCityname());
+				for(int i=0;i<area.size();i++) {
+					if(a.equals(area.get(i))) {
+						citys = area.get(i).getCitys();
+						if(!citys.contains(c)) {
+							citys.add(c);
+						}
+						area.get(i).setCitys(citys);
+					}
+				}
+			}else {
+				area.add(a);
+				BranchValidArea b = new BranchAreaCity();
+				b.setAreacode(bra.getCitycode());
+				b.setAreaname(bra.getCityname());
+				citys.add(b);
+				a.setCitys(citys);
+			}
+		}
+		
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(area);
+		return res;
+	}
+	
+	@Override
+	public JsonResponse getXQAndBranch(Branch entity) {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			if (entity.getCitycode() == null || "".equals(entity.getCitycode())) {
+				result = new Result(MsgConstants.CITYCODE_IS_NULL);
+				res = new JsonResponse(result);
+				return res;
+			}
+			if ("".equals(entity.getFamilyid()) || entity.getFamilyid() == null) {
+				result = new Result(MsgConstants.FAMILYID_IS_NULL);
+				res = new JsonResponse(result);
+				return res;
+			}
+			//查询当前所有的县区
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("familyid", entity.getFamilyid());
+			map.put("citycode", entity.getCitycode());
+			List<BranchValidArea> branchValidAreas = branchDao.selectValidXQ(map);
+			if (branchValidAreas.size() == 0) {
+				result = new Result(MsgConstants.AREA_IS_NULL);
+				res = new JsonResponse(result);
+				return res;
+			}
+			
+			String userid = entity.getBeginuserid();
+			//User user =userDao.selectByPrimaryKey(userid);
+			List<UserManager> managers = userManagerMapper.selectMnangers(userid);
+			if(managers == null || managers.size() < 1) {
+				result = new Result(ConstantUtils.RESULT_FAIL,"当前用户无编委会权限");
+				res = new JsonResponse(result);
+				return res;
+			}
+			//地区及分支
+			List<BranchCityBranch> branchCityBranchs = new ArrayList<BranchCityBranch>();
+			//统计管理地区的编码
+			List<String> codeList = new ArrayList<String>();
+			//根据地区编码查询分支
+			for(UserManager manager : managers) {
+				//flag = false ;
+				if(manager.getEbtype() == 1) {
+					
+					for (BranchValidArea branchValidArea : branchValidAreas) {
+						Map<String, String> map2 = new HashMap<String, String>();
+						map2.put("familyid", entity.getFamilyid());
+						map2.put("xcode", branchValidArea.getAreacode());
+						List<Branch> branchs = branchDao.selectBranchByXQ(map2);
+						BranchCityBranch branchCityBranch = new BranchCityBranch();
+						branchCityBranch.setAreacode(branchValidArea.getAreacode());
+						branchCityBranch.setAreaname(branchValidArea.getAreaname());
+						branchCityBranch.setBranchs(branchs);
+						branchCityBranchs.add(branchCityBranch);
+					}
+					result = new Result(MsgConstants.RESUL_SUCCESS);
+					res = new JsonResponse(result);
+					res.setData(branchCityBranchs);
+					return res;
+				}
+				String areacode = editorialBoardMapper.selectCodeByEbid(manager.getEbid());
+				String[] codes = areacode.split(",");
+				for(String str : codes) {
+					if(!codeList.contains(str)) {
+						codeList.add(str);
+					}
+				}
+				
+			}
+			List<Branch> branchs = branchDao.getBranchListByFamilyAndCodes(entity.getFamilyid(), codeList.toArray(new String[]{}),null);
+			//查询条件
+			Map<String, String> map3 = new HashMap<String, String>();
+			map3.put("familyid", entity.getFamilyid());
+			boolean flag = false;
+			for(int i=0;i<branchValidAreas.size();i++) {
+				flag = true;
+				BranchValidArea branchValidArea = branchValidAreas.get(i);
+				for(Branch branch : branchs) {
+					//flag = false;
+					if(branchValidArea.getAreacode().equals(branch.getXcode())) {
+						flag = false;
+						break;
+					}
+				}
+				if(flag) {
+					branchValidAreas.remove(i);
+					i = i-1;
+					continue;
+				}
+				
+				map3.put("xcode", branchValidArea.getAreacode());
+				List<Branch> branchs1 = branchDao.selectBranchByXQ(map3);
+				BranchCityBranch branchCityBranch = new BranchCityBranch();
+				branchCityBranch.setAreacode(branchValidArea.getAreacode());
+				branchCityBranch.setAreaname(branchValidArea.getAreaname());
+				branchCityBranch.setBranchs(branchs1);
+				branchCityBranchs.add(branchCityBranch);
+			}
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(branchCityBranchs);
+			return res;
+			
+			//result = new Result(MsgConstants.RESUL_SUCCESS);
+			//res = new JsonResponse(result);
+			//res.setData(branchCityBranchs);
+		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			log_.error("[BranchServiceImpl---Error:]", e);
+		}
+		return res;
+	}
+
 }

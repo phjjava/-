@@ -270,5 +270,43 @@ public class BranchController {
 	public JsonResponse getGenListOnlyExtMod(Branch branch) {
 		return branchService.getGenListOnlyExtMod(branch);
 	}
+	
+	/**
+	 * 根据用户id获取所管理的分支列表（编委会权限）
+	 * 
+	 * @param branch
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getBranchsByUserid", method = RequestMethod.GET)
+	public JsonResponse getBranchsByUserid(String userid,String code,Integer pageNo,Integer pageSize) {
+		return branchService.getBranchsByUserid(userid,code,pageNo,pageSize);
+	}
 
+	/**
+	 * 获取家族管理中有效的省份信息 - 省份列表（根据编委会获取）
+	 * 
+	 * @param branch
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getEbArea", method = RequestMethod.GET)
+	public JsonResponse getEbArea(String userid) {
+		Branch branch  = new Branch();
+		branch.setBeginuserid(userid);
+		return branchService.getEbArea(branch);
+	}
+	
+	/**
+	 * 获取家族管理中有效的省份信息 - 省份列表（根据编委会获取）
+	 * 
+	 * @param branch
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getXQAndBranch", method = RequestMethod.GET)
+	public JsonResponse getXQAndBranch(Branch entity) {
+		
+		return branchService.getXQAndBranch(entity);
+	}
 }
