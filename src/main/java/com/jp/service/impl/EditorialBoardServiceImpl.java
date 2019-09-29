@@ -1,6 +1,7 @@
 package com.jp.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -111,10 +112,21 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 				String codes = eb.getCode();
 				String[] codeList = codes.split(",");
 				for (String code : codeList) {
-					if (code.length() > 6) {//分支
-						listCity.add(branchMapper.selectByBranchid(code));
-					} else {
-						listCity.add(editorialBoardMapper.selectCityByCode(code));
+					if (code.length() > 10) {//分支
+						Map<String, Object> map = branchMapper.selectByBranchid(code);
+						List<String> blist = new ArrayList<>();
+						blist.add(map.get("cityCode").toString());
+						//替换前端需要的集合类型
+						map.put("cityCode", blist);
+						listCity.add(map);
+					} else {//地区编码
+						Map<String, Object> map = editorialBoardMapper.selectCityByCode(code);
+						List<String> clist = new ArrayList<>();
+						List<String> list = getCodeList(clist, map.get("pid").toString());
+						Collections.reverse(list);//按省市区code反转排序
+						list.add(code);
+						map.put("cityCode", list);
+						listCity.add(map);
 					}
 				}
 				eb.setCityList(listCity);
@@ -135,7 +147,23 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 			res = new JsonResponse(result);
 			return res;
 		}
+	}
 
+	/**
+	 * 根据pid递归查询省市区
+	 * @param clist
+	 * @param pid
+	 * @return
+	 */
+	public List<String> getCodeList(List<String> clist, String pid) {
+		Map<String, Object> map = editorialBoardMapper.selectCityById(pid);
+		if ("0".equals(pid)) {
+			return clist;
+		} else {
+			clist.add(map.get("code").toString());
+		}
+		getCodeList(clist, map.get("parent_id").toString());
+		return clist;
 	}
 
 	@Override

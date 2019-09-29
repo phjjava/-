@@ -86,9 +86,21 @@ public class EventServiceImpl implements EventService {
 		Result result = null;
 		JsonResponse res = null;
 		int status = 0;
+		if (StringTools.trimIsEmpty(event.getEventtitle())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数eventtitle不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringTools.trimIsEmpty(event.getEventcontent())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数eventcontent不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		//当前登录人 userid
 		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
-		if (StringTools.isEmpty(userid)) {
+		if (StringTools.trimIsEmpty(userid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("用户非法！");
 			res = new JsonResponse(result);
@@ -96,7 +108,7 @@ public class EventServiceImpl implements EventService {
 		}
 		//当前登录人 familyid
 		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
-		if (StringTools.isEmpty(familyid)) {
+		if (StringTools.trimIsEmpty(familyid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("header中参数familyid为空!");
 			res = new JsonResponse(result);
