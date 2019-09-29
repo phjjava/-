@@ -27,7 +27,7 @@ public interface BranchDao {
 
 	Branch selectByPrimaryKey(BranchKey key);
 
-	@Select("SELECT branchid cityCode, 3 `level` ,branchname cityName FROM jp_branch WHERE branchid = #{branchid}")
+	@Select("SELECT branchid cityCode, 3 `level` ,CONCAT_WS('_',area,cityname,xname,address,branchname)  cityName FROM jp_branch WHERE branchid = #{branchid}")
 	Map<String, Object> selectByBranchid(@Param("branchid") String branchid);
 
 	int updateByExampleSelective(@Param("record") Branch record, @Param("example") BranchQuery example);

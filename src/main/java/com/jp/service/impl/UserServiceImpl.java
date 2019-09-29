@@ -594,19 +594,11 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		//当前登录人所管理的编委会id
-		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
-		if (StringTools.isEmpty(ebid)) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("header中参数ebid为空!");
-			res = new JsonResponse(result);
-			return res;
-		}
 		try {
 			user.setFamilyid(familyid);
 			user.setStatus(0); // 用户状态默认启用
-			List<String> branchList = userContextService.getBranchIds(familyid, userid, ebid);
-			List<UserManager> userManagers = userContextService.getUserManagers(userid, ebid);
+			List<String> branchList = userContextService.getBranchIds(familyid, userid, null);
+			List<UserManager> userManagers = userContextService.getUserManagers(userid, null);
 			UserManager userManager = userManagers.get(0);
 			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 			List<User> userList = new ArrayList<>();

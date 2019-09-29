@@ -20,7 +20,9 @@ import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.dao.BranchDao;
+import com.jp.dao.DynamicMapper;
 import com.jp.dao.EditorialBoardMapper;
+import com.jp.dao.NoticeMapper;
 import com.jp.dao.SysFamilyDao;
 import com.jp.dao.SysVersionPrivilegeMapper;
 import com.jp.dao.UserDao;
@@ -32,9 +34,13 @@ import com.jp.entity.BranchCityBranch;
 import com.jp.entity.BranchKey;
 import com.jp.entity.BranchQuery;
 import com.jp.entity.BranchValidArea;
+import com.jp.entity.Dynamic;
+import com.jp.entity.DynamicExample;
 import com.jp.entity.GenUser;
 import com.jp.entity.GenUserOther;
 import com.jp.entity.GenUserVO;
+import com.jp.entity.Notice;
+import com.jp.entity.NoticeExample;
 import com.jp.entity.SysFamily;
 import com.jp.entity.SysVersionPrivilege;
 import com.jp.entity.User;
@@ -67,6 +73,10 @@ public class BranchServiceImpl implements BranchService {
 	private UserContextService userContextService;
 	@Autowired
 	private EditorialBoardMapper editorialBoardMapper;
+	@Autowired
+	private DynamicMapper dynamicMapper;
+	@Autowired
+	private NoticeMapper noticeMapper;
 
 	/**
 	 * 从起始人按父子关系，递归更新分支用户（包括配偶）的分支属性
@@ -198,12 +208,32 @@ public class BranchServiceImpl implements BranchService {
 			return res;
 		}
 		try {
-			if (StringTools.notEmpty(branch.getBranchid())) {// 修改
+			String branchid = branch.getBranchid();
+			String branchname = branch.getBranchname();
+			if (StringTools.notEmpty(branchid)) {// 修改
 				branch.setUpdateid(userid);
 				branch.setUpdatetime(new Date());
 				count = branchDao.updateByPrimaryKeySelective(branch);
 				if (count > 0) {
-					updateUserBranch(branch.getBeginuserid(), branch.getBranchid(), branch.getBranchname());
+					updateUserBranch(branch.getBeginuserid(), branchid, branchname);
+					//同步用户分支名称
+					UserQuery uq = new UserQuery();
+					uq.or().andBranchidEqualTo(branchid);
+					User user = new User();
+					user.setBranchname(branchname);
+					userDao.updateByExampleSelective(user, uq);
+					//同步资讯分支名称
+					DynamicExample de = new DynamicExample();
+					de.or().andBranchidEqualTo(branchid);
+					Dynamic dynamic = new Dynamic();
+					dynamic.setBranchname(branchname);
+					dynamicMapper.updateByExampleSelective(dynamic, de);
+					//同步公告分支名称
+					NoticeExample ne = new NoticeExample();
+					ne.or().andBranchidEqualTo(branchid);
+					Notice notice = new Notice();
+					notice.setBranchname(branchname);
+					noticeMapper.updateByExampleSelective(notice, ne);
 				}
 			} else {// 新增
 				boolean flag = checkFamilyBranchNumber(1, familyid);
@@ -371,20 +401,42 @@ public class BranchServiceImpl implements BranchService {
 
 	@Override
 	public List<Branch> selectBranchListByFamilyAndUserid(String familyid, String userid, String ebid) {
-		String code = editorialBoardMapper.selectCodeByEbid(ebid);
-		String[] codeList = code.split(",");
-		List<Branch> rtnlist = new ArrayList<Branch>();
+		//ebid为null时可能会查询多条（一人管理多个编委会），web端需要切换编委会ebid必传（肯定是单条）
 		List<UserManager> managers = userContextService.getUserManagers(userid, ebid);
-		UserManager userManager = managers.get(0);
-		// 总编委会查看全部
-		if (userManager.getEbtype() == 1) {
-			rtnlist = branchDao.selectBranchListByFamily(familyid);
+		List<Branch> rtnlist = new ArrayList<Branch>();
+
+		if (StringTools.trimIsEmpty(ebid)) {//app端不需要切换编委会id
+			//统计管理地区的编码
+			List<String> codeList = new ArrayList<String>();
+			for (UserManager um : managers) {
+				if (um.getEbtype() == 1) {
+					rtnlist = branchDao.selectBranchListByFamily(familyid);
+					return rtnlist;
+				}
+				String areacode = editorialBoardMapper.selectCodeByEbid(um.getEbid());
+				String[] codes = areacode.split(",");
+				for (String str : codes) {
+					if (!codeList.contains(str)) {
+						codeList.add(str);
+					}
+				}
+			}
+			String[] codeArray = codeList.toArray(new String[codeList.size()]);
+			rtnlist = branchDao.getBranchListByFamilyAndCodes(familyid, codeArray, null);
 		} else {
-			//	rtnlist = branchDao.getBranchsByFamilyAndUserid(familyid, userid, null);
-			if (codeList.length > 1) {
-				rtnlist = branchDao.getBranchListByFamilyAndCodes(familyid, codeList, null);
+			UserManager userManager = managers.get(0);
+			String code = editorialBoardMapper.selectCodeByEbid(ebid);
+			String[] codeArray = code.split(",");
+			// 总编委会查看全部
+			if (userManager.getEbtype() == 1) {
+				rtnlist = branchDao.selectBranchListByFamily(familyid);
 			} else {
-				rtnlist = branchDao.getBranchListByFamilyAndCode(familyid, code, null);
+				//	rtnlist = branchDao.getBranchsByFamilyAndUserid(familyid, userid, null);
+				if (codeArray.length > 1) {
+					rtnlist = branchDao.getBranchListByFamilyAndCodes(familyid, codeArray, null);
+				} else {
+					rtnlist = branchDao.getBranchListByFamilyAndCode(familyid, code, null);
+				}
 			}
 		}
 		return rtnlist;
