@@ -5,6 +5,7 @@ public class MsgConstants {
 	public static final Result RESUL_FAIL = new Result(1, "失败");
 	public static final Result SESSION_FAIL = new Result(-400, "您的信息已过期，请重新登录！");
 	public static final Result SYS_ERROR = new Result(1000, "系统错误或异常");
+	public static final Result NO_DATA = new Result(900, "为获取到有效数据！");
 
 	// 用户登录异常码
 	public static final Result LOGIN_FAIL = new Result(1001, "登录系统失败，请稍后重试");
@@ -60,5 +61,7 @@ public class MsgConstants {
 	public static final Result FAMILYID_REPULSE = new Result(6002, "该家族已拒绝您的申请");
 	public static final Result FAMILYID_RESTRICT = new Result(6003, "一个用户最多只能关联两个家族");
 	public static final Result MOMBER_RECORD = new Result(6004, "未找到对应的充值记录");
+	
+	
 
 }
