@@ -1785,7 +1785,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/apiSearchUser", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse apiSearchUser(PageModel<User> pageModel, User user) throws IOException {
+	public JsonResponse apiSearchUser(PageModel<User> pageModel, User user) {
 		return userService.apiSearchUser(pageModel, user);
 	}
 

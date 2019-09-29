@@ -132,8 +132,8 @@ public class FamilyServiceImpl implements FamilyService {
 		}
 		SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
 		try {
-			if (StringTools.trimNotEmpty(family.getFamilyid())) {
-
+			String familyid1 = family.getFamilyid();
+			if (StringTools.trimNotEmpty(familyid1)) {
 				user.setUpdatetime(new Date());
 				// 重置密码 根据手机号来截取
 				family.setUpdatetime(sdfd.parse(sdfd.format(new Date())));
@@ -141,6 +141,12 @@ public class FamilyServiceImpl implements FamilyService {
 				//family.setFamilycode(PinyinUtil.getPinyinFull(family.getFamilyname()));
 				user.setPassword(MD5Util.string2MD5(user.getPhone().substring(user.getPhone().length() - 6)));
 				userDao.updateByPrimaryKeySelective(user);
+				//同步所有家族成员的家族名称
+				UserQuery uq = new UserQuery();
+				uq.or().andFamilyidEqualTo(familyid1);
+				User userName = new User();
+				userName.setFamilyname(family.getFamilyname());
+				userDao.updateByExampleSelective(userName, uq);
 				UserManager userManager = new UserManager();
 				userManager.setUsername(user.getUsername());
 				UserManagerExample ume = new UserManagerExample();
@@ -148,8 +154,8 @@ public class FamilyServiceImpl implements FamilyService {
 				userManagerMapper.updateByExampleSelective(userManager, ume);
 				// userInfoDao.updateByPrimaryKeySelective(userInfo);
 				sysFamilyDao.updateByPrimaryKeySelective(family);
-				sysFamilyDao.deleteFunction(family.getFamilyid());
-				sysFamilyDao.insertFunction(family.getFamilyid(), family.getVersion());
+				sysFamilyDao.deleteFunction(familyid1);
+				sysFamilyDao.insertFunction(familyid1, family.getVersion());
 
 			} else {
 				UserQuery userQuery = new UserQuery();
