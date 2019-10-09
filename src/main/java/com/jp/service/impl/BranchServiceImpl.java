@@ -213,6 +213,7 @@ public class BranchServiceImpl implements BranchService {
 			if (StringTools.notEmpty(branchid)) {// 修改
 				branch.setUpdateid(userid);
 				branch.setUpdatetime(new Date());
+				branch.setFamilyid(familyid);
 				count = branchDao.updateByPrimaryKeySelective(branch);
 				if (count > 0) {
 					updateUserBranch(branch.getBeginuserid(), branchid, branchname);
@@ -515,6 +516,7 @@ public class BranchServiceImpl implements BranchService {
 			example.or().andBeginuseridEqualTo(beginuserid);
 			List<Branch> selectRt = branchDao.selectByExample(example);
 			if (selectRt != null && selectRt.size() > 0) {
+			
 				result = new Result(MsgConstants.BRANCH_CHECK_BEGINER);
 				res = new JsonResponse(result);
 				res.setData(false);
@@ -1674,7 +1676,7 @@ public class BranchServiceImpl implements BranchService {
 				}
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);
-				res.setData(branchValidAreas);
+				res.setData(branchAreaCities);
 				return res;
 			}
 			String areacode = editorialBoardMapper.selectCodeByEbid(manager.getEbid());
