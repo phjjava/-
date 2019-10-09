@@ -298,7 +298,7 @@ public class BranchController {
 	}
 	
 	/**
-	 * 获取家族管理中有效的省份信息 - 省份列表（根据编委会获取）
+	 * 获取地区和分支信息 - 省份列表（根据编委会获取）
 	 * 
 	 * @param branch
 	 * @return
