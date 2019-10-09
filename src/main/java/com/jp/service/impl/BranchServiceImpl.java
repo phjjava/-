@@ -27,7 +27,6 @@ import com.jp.dao.SysFamilyDao;
 import com.jp.dao.SysVersionPrivilegeMapper;
 import com.jp.dao.UserDao;
 import com.jp.dao.UserManagerMapper;
-import com.jp.dao.UserbranchDao;
 import com.jp.entity.Branch;
 import com.jp.entity.BranchAreaCity;
 import com.jp.entity.BranchCityBranch;
@@ -67,8 +66,6 @@ public class BranchServiceImpl implements BranchService {
 	private SysFamilyDao sysFamilyDao;
 	@Autowired
 	private SysVersionPrivilegeMapper sysVersionPrivilegeMapper;
-	@Autowired
-	private UserbranchDao userBranchDao;
 	@Autowired
 	private UserContextService userContextService;
 	@Autowired
@@ -224,6 +221,7 @@ public class BranchServiceImpl implements BranchService {
 			if (StringTools.notEmpty(branchid)) {// 修改
 				branch.setUpdateid(userid);
 				branch.setUpdatetime(new Date());
+				branch.setFamilyid(familyid);
 				count = branchDao.updateByPrimaryKeySelective(branch);
 				if (count > 0) {
 					updateUserBranch(beginuserid, branchid, branchname);
@@ -1419,8 +1417,8 @@ public class BranchServiceImpl implements BranchService {
 	 */
 	public User getUserUpto5Mod(User entity) {
 		// 没有世系属性
-		if (entity.getGenlevel() == null || "".equals(entity.getGenlevel())
-				|| entity.getPid() == null | "".equals(entity.getPid()) || (entity.getGenlevel() - 1) % 5 == 0)
+		if (entity.getGenlevel() == null || entity.getPid() == null | "".equals(entity.getPid())
+				|| (entity.getGenlevel() - 1) % 5 == 0)
 			return entity;
 		// 世系不能被5整除
 		else {
@@ -1696,7 +1694,7 @@ public class BranchServiceImpl implements BranchService {
 				}
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);
-				res.setData(branchValidAreas);
+				res.setData(branchAreaCities);
 				return res;
 			}
 			String areacode = editorialBoardMapper.selectCodeByEbid(manager.getEbid());
