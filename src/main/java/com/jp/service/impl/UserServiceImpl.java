@@ -186,9 +186,81 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public PageModel<User> pageQuery(PageModel<User> pageModel, User user) throws Exception {
+	public JsonResponse pageQuery(PageModel<User> pageModel, User user) {
+		Result result = null;
+		JsonResponse res = null;
+		if (pageModel.getPageNo() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageNo不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (pageModel.getPageSize() == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("分页参数pageSize不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.isEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			user.setFamilyid(familyid);
+			List<String> branchList = userContextService.getBranchIds(familyid, userid, ebid);
+			List<UserManager> userManagers = userContextService.getUserManagers(userid, ebid);
+			UserManager userManager = userManagers.get(0);
+			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			List<User> userList = new ArrayList<>();
+			if (userManager.getEbtype() == 1) {
+				userList = userInfoDao.selecAllUserList(user);
+			} else {
+				if (branchList.size() < 1) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("您的账号当前没有分支");
+					res = new JsonResponse(result);
+					return res;
+				}
+				userList = userInfoDao.selecUserList(user, branchList);
+			}
+			if (userList != null) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(userList);
+				res.setCount(new PageInfo<User>(userList).getTotal());
+				return res;
+			} else {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				res = new JsonResponse(result);
+				return res;
+			}
 
-		return null;
+		} catch (Exception e) {
+			log_.error("[pageQuery方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
 	}
 
 	@Override
@@ -532,6 +604,7 @@ public class UserServiceImpl implements UserService {
 			}
 
 			List<User> users = new ArrayList<>();
+
 			if (userList != null) {
 				// 增加address字段
 				for (User userAddrss : userList) {
@@ -541,9 +614,8 @@ public class UserServiceImpl implements UserService {
 					userAddrss.setBranchAllName(address + "_" + userAddrss.getBranchname());
 					users.add(userAddrss);
 				}
-
 				pageModel.setList(users);
-				pageModel.setPageInfo(new PageInfo<User>(users));
+				pageModel.setPageInfo(new PageInfo<User>(userList));
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);
 				res.setData(pageModel);
@@ -627,7 +699,7 @@ public class UserServiceImpl implements UserService {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);
 				res.setData(users);
-				res.setCount(new PageInfo<User>(users).getTotal());
+				res.setCount(new PageInfo<User>(userList).getTotal());
 				return res;
 			} else {
 				result = new Result(MsgConstants.RESUL_FAIL);

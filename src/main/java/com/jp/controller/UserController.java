@@ -31,7 +31,6 @@ import com.jp.common.Result;
 import com.jp.dao.BranchDao;
 import com.jp.dao.SysVersionPrivilegeMapper;
 import com.jp.dao.UserDao;
-import com.jp.dao.UserbranchDao;
 import com.jp.entity.Branch;
 import com.jp.entity.BranchKey;
 import com.jp.entity.SearchComplex;
@@ -48,7 +47,6 @@ import com.jp.entity.Userphoto;
 import com.jp.entity.UserphotoKey;
 import com.jp.entity.Userworkexp;
 import com.jp.service.BranchService;
-import com.jp.service.UserContextService;
 import com.jp.service.UserEduService;
 import com.jp.service.UserInfoService;
 import com.jp.service.UserService;
@@ -81,13 +79,9 @@ public class UserController {
 	@Autowired
 	private UserDao userDao;
 	@Autowired
-	private UserbranchDao userBranchDao;
-	@Autowired
 	private BranchDao branchDao;
 	@Autowired
 	private SysVersionPrivilegeMapper sysVersionPrivilegeMapper;
-	@Autowired
-	private UserContextService userContextService;
 
 	/**
 	 * 
@@ -356,7 +350,7 @@ public class UserController {
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse list(PageModel<User> pageModel, User user) {
-		return userService.apiSearchUser(pageModel, user);
+		return userService.pageQuery(pageModel, user);
 	}
 
 	/**
