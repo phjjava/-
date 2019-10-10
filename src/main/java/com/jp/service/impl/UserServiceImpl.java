@@ -1970,6 +1970,7 @@ public class UserServiceImpl implements UserService {
 					userInfoDao.insertSelective(userInfo);
 					//修改配偶信息及婚配状态
 					user.setIsMarry(0);
+					user.setSex(user1.getSex());
 					userDao.updateByPrimaryKeySelective(user);
 					result = new Result(MsgConstants.RESUL_SUCCESS);
 				}
