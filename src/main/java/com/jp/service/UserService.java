@@ -26,7 +26,7 @@ public interface UserService {
 
 	void updateByPrimaryKeySelective(User user);
 
-	PageModel<User> pageQuery(PageModel<User> pageModel, User user) throws Exception;
+	JsonResponse pageQuery(PageModel<User> pageModel, User user);
 
 	void deleteAndAll(User user) throws Exception;
 
