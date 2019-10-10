@@ -98,12 +98,12 @@ import com.jp.entity.Usercode;
 import com.jp.entity.UsercodeQuery;
 import com.jp.entity.Useredu;
 import com.jp.entity.UsereduQuery;
+import com.jp.entity.UsereduQuery.Criteria;
 import com.jp.entity.Userinfo;
 import com.jp.entity.Usermates;
 import com.jp.entity.Userphoto;
 import com.jp.entity.Userworkexp;
 import com.jp.entity.UserworkexpQuery;
-import com.jp.entity.UsereduQuery.Criteria;
 import com.jp.service.DynamicService;
 import com.jp.service.NoticeService;
 import com.jp.service.UserContextService;
@@ -256,7 +256,7 @@ public class UserServiceImpl implements UserService {
 			}
 
 		} catch (Exception e) {
-			log_.error("[apiSearchUser方法---异常:]", e);
+			log_.error("[pageQuery方法---异常:]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
 			res = new JsonResponse(result);
 			return res;
@@ -663,14 +663,6 @@ public class UserServiceImpl implements UserService {
 		if (StringTools.isEmpty(familyid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("header中参数familyid为空!");
-			res = new JsonResponse(result);
-			return res;
-		}
-		//当前登录人所管理的编委会id
-		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
-		if (StringTools.isEmpty(ebid)) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("header中参数ebid为空!");
 			res = new JsonResponse(result);
 			return res;
 		}
