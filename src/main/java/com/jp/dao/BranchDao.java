@@ -73,4 +73,6 @@ public interface BranchDao {
 	List<Branch> selectArea(String familyid);
 
 	List<Branch> selectCity(String familyid);
+	//查询当前用户的分支
+	Branch selectbyEditor(String branchid);
 }

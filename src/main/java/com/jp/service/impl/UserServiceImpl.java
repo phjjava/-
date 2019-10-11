@@ -5388,4 +5388,17 @@ public class UserServiceImpl implements UserService {
 		}
 		return address;
 	}
+
+	@Override
+	public String selectFamilyId(String userid) {
+		// TODO Auto-generated method stub
+		
+		return userDao.selectFamilyId(userid);
+	}
+	@Override
+	public String selectBranchId(String userid) {
+		// TODO Auto-generated method stub
+		
+		return userDao.selectBranchId(userid);
+	}
 }

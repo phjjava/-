@@ -27,4 +27,10 @@ public interface EditorialBoardMapper {
     int updateByPrimaryKeySelective(EditorialBoard record);
 
     int updateByPrimaryKey(EditorialBoard record);
+    //根据分支区域  城市  县城code值查询编委会
+	EditorialBoard selectbyEditor(@Param("areacode")String areacode, @Param("citycode")String citycode, @Param("xcode")String xcode, @Param("familyId")String familyId);
+
+	EditorialBoard selectbyEditorTwo(@Param("areacode")String areacode, @Param("citycode")String citycode, @Param("xcode")String xcode,@Param("familyId")String familyId);
+
+	EditorialBoard selectbyEditorThree(@Param("areacode")String areacode, @Param("citycode")String citycode, @Param("xcode")String xcode,@Param("familyId")String familyId);
 }

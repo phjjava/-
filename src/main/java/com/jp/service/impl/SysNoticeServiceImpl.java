@@ -31,7 +31,7 @@ public class SysNoticeServiceImpl implements SysNoticeService{
 	@Autowired
 	private SysNoticeTypeDao noticetypedao;
 	@Override
-	//资讯列表
+	//公告列表
 	public List<SysNotice> selectNotice() {
 		
 		// TODO Auto-generated method stub

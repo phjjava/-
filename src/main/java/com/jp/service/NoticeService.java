@@ -1,6 +1,7 @@
 package com.jp.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -35,4 +36,12 @@ public interface NoticeService {
 	JsonResponse getMyPublishl(Notice notice);
 
 	JsonResponse getNoticelist(Notice notice);
+	//审批查询当前人待审核公告
+	JsonResponse selectExamine(PageModel<Notice> pageModel, String noticeid,Notice notice);
+	//修改taskid,存放如表中
+	void updateNoticeTask(String variable, String tiskid);
+	//修改公告审核状态
+	void updateNoticeExamin(String noticeid, String examinestatus);
+	//查询已经审核的公告列表
+	JsonResponse selectAleadyNotice(List<String> list, PageModel<Notice> pageModel, Notice notice, String familyid);
 }
