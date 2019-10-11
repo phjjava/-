@@ -324,4 +324,8 @@ public interface UserService {
 
 	String getAllAddressByUserid(String userid);
 
+	String selectFamilyId(String userid);
+	//得到分支id
+	String selectBranchId(String userid);
+
 }

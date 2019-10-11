@@ -1,178 +1,488 @@
 package com.jp.controller;
 
-
-
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.configuration.interpol.ExprLookup.Variable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.flowable.bpmn.model.BpmnModel;
+import org.flowable.bpmn.model.EndEvent;
+import org.flowable.bpmn.model.FlowElement;
+import org.flowable.bpmn.model.FlowNode;
+import org.flowable.bpmn.model.SequenceFlow;
+import org.flowable.bpmn.model.StartEvent;
+import org.flowable.bpmn.model.UserTask;
+import org.flowable.common.engine.impl.identity.Authentication;
+import org.flowable.engine.HistoryService;
 import org.flowable.engine.ProcessEngine;
 import org.flowable.engine.ProcessEngineConfiguration;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
-import org.flowable.engine.repository.Deployment;
-import org.flowable.engine.repository.ProcessDefinition;
+import org.flowable.engine.history.HistoricActivityInstance;
+import org.flowable.engine.history.HistoricProcessInstance;
+import org.flowable.engine.impl.persistence.entity.ExecutionEntity;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.engine.task.Comment;
+import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.image.ProcessDiagramGenerator;
 import org.flowable.task.api.Task;
+import org.flowable.task.api.history.HistoricTaskInstance;
+import org.flowable.variable.api.history.HistoricVariableInstance;
+import org.flowable.variable.api.history.HistoricVariableInstanceQuery;
+import org.flowable.variable.api.persistence.entity.VariableInstance;
+import org.flowable.variable.service.impl.persistence.entity.HistoricVariableInstanceEntity;
+import org.flowable.variable.service.impl.persistence.entity.VariableInstanceEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.jp.common.ConstantUtils;
+import com.jp.common.CurrentSystemUserContext;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
+import com.jp.common.PageModel;
+import com.jp.common.Result;
+import com.jp.entity.Banner;
+import com.jp.entity.HttpApprovalHistory;
+import com.jp.entity.Notice;
+import com.jp.entity.SysUser;
+import com.jp.entity.UserManager;
+import com.jp.service.FlowableService;
+import com.jp.service.NoticeService;
+import com.jp.service.UserService;
+import com.jp.util.WebUtil;
+
+import sun.jvmstat.monitor.Variability;
 
 @Controller
 @RequestMapping("expense")
-public class FlowableController{
+public class FlowableController {
+
 	@Autowired
-    private RuntimeService runtimeService;
+	private RuntimeService runtimeService;
+
 	@Autowired
-    private TaskService taskService;
+	private TaskService taskService;
+
 	@Autowired
-    private RepositoryService repositoryService;
+	private RepositoryService repositoryService;
+
 	@Autowired
-    private ProcessEngine processEngine;
-    
-	 
-	/**
-     * 添加报销流程
-     */
+	private ProcessEngine processEngine;
+
+	@Autowired
+	private HistoryService historyService;
+
+	@Autowired
+	private FlowableService flowableService;
 	
-	  @RequestMapping(value="/deploy")
-	  @ResponseBody
-	  public void deploy() {
-		//部署流程文件
-		  RepositoryService  repositoryService = processEngine.getRepositoryService(); 
-		  Deployment deployment = repositoryService.createDeployment().addClasspathResource("ExpenseProcess.bpmn20.xml") .deploy(); 
-		//获取用户已经部署好的流程
-		  ProcessDefinition processDefinition =repositoryService.createProcessDefinitionQuery().deploymentId(deployment.getId()) .singleResult();
-		  System.out.println("Found process definition : " +processDefinition.getName());
-	  }
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private NoticeService noticeService;
+	private final Logger log_ = LogManager.getLogger(FlowableController.class);
+
+	/**
+	 * 查看组中当前待审核任务
+	 */
+
+	@RequestMapping(value = "/deploy", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse deploy(PageModel<Notice> pageModel, Notice notice) {// userid为登录用户id
+		Result result = null;
+		JsonResponse res = null;
+		// 根据登录userId查询当前登录人所有待审核
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		List<Task> list = processEngine.getTaskService()//
+				.createTaskQuery()//
+				.taskCandidateUser(userid)// 指定组中的人任务查询
+				.list();
+		String noticenew = "";
+		String tiskid="";
+		// 遍历待处理任务,查询出公告信息
+		if(null!=list && list.size()!=0) {
+			for (Task task : list) {
+				tiskid = task.getId();
+				String variable = (String) runtimeService.getVariable(task.getProcessInstanceId(), "noticeid");
+				noticenew = noticenew + "," + "'" + variable + "'";
+				//将得到taskid存入对应的公告
+				noticeService.updateNoticeTask(variable,tiskid);
+			}
+			String noticeid = noticenew.substring(1);// 截取拼接字符
+			return noticeService.selectExamine(pageModel, noticeid, notice);
+		}else {
+			result = new Result(MsgConstants.TO_EXAMIN);
+			result.setMsg("无待审核！");
+			res = new JsonResponse(result);
+			return res;
+		}
+
+	}
+	
+	/**
+	 * 公告已审核列表
+	 */
+	@RequestMapping(value = "/aleady", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse aleady(PageModel<Notice> pageModel, String userid, Notice notice,String noticeid) {//String noticeid无用
+		  //调用对应方法,返回的数据为分编委会人员userid值 
+		String userIdNew=flowableService.deploynew(noticeid);
+		  //调用对应方法,返回总编委会所有成员userid 
+		String userIdNewTwo=flowableService.deploynewTwo(noticeid);
+		String over=userIdNew+userIdNewTwo; 
+		String overnew=over.substring(1);
+		  //采用逗号分隔字符放入集合 
+		String[] split = overnew.split(","); 
+		List<String> list=new ArrayList<String>(); 
+		 for (int i = 0; i < split.length; i++) {
+		  list.add(split[i]); 
+		  } 
+		 //查询当前用户所属家族
+		 String familyid=userService.selectFamilyId(userid);
+		 Integer overCount=0;
+		 for (String str : list) {
+			 if(str.equals(userid)) {
+			 	 overCount++;
+			 	 } 
+			 }
+		 if(overCount!=0) {
+			 return noticeService.selectAleadyNotice(list,pageModel,notice,familyid);
+		 }else {
+			 return null;
+		 }
+		
+	}
+	
+	
+	
+	/**
+	 * 批准
+	 *
+	 * @param taskId 任务ID
+	 */
+
+	@RequestMapping(value = "/apply",method=RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse apply(String taskId,String noticeid,String userid,String content,String title,String imgurl) {
+		Result result = null;
+		JsonResponse res = null;
+		//获取流程实例id
+		Task processInstance = processEngine.getTaskService().createTaskQuery().taskId(taskId).list().get(0);
+		String processInstanceId=processInstance.getProcessInstanceId();
+		Task tasknew = processEngine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
+		ExecutionEntity ee = (ExecutionEntity) processEngine.getRuntimeService().createExecutionQuery()
+		            .executionId(tasknew.getExecutionId()).singleResult();
+		    // 当前审批节点
+		    String crruentActivityId = ee.getActivityId();
+		    BpmnModel bpmnModel = processEngine.getRepositoryService().getBpmnModel(tasknew.getProcessDefinitionId());
+		    FlowNode flowNode = (FlowNode) bpmnModel.getFlowElement(crruentActivityId);
+		    // 输出连线
+		    List<SequenceFlow> outFlows = flowNode.getOutgoingFlows();
+		    for (SequenceFlow sequenceFlow : outFlows) {
+		            FlowElement sourceFlowElement = sequenceFlow.getSourceFlowElement();
+		            if(sourceFlowElement.getName().equals("总编委会成员")) {
+		            	//执行修改公告状态码
+		            	String examinestatus="1";
+		            	noticeService.updateNoticeExamin(noticeid,examinestatus);
+		            }
+		    }
+		
+		  Task task = taskService.createTaskQuery()
+				  .taskId(taskId)
+				  .singleResult();
+		  
+		  if(task == null) {
+			  result = new Result(MsgConstants.RESUL_FAIL);
+			  	result.setMsg("此流程不存在");
+				res = new JsonResponse(result);
+				return res;
+		}
+		// 由于流程用户上下文对象是线程独立的，所以要在需要的位置设置，要保证设置和获取操作在同一个线程中
+	        Authentication.setAuthenticatedUserId(userid);// 批注人的名称
+	        // 添加批注信息
+	        processEngine.getTaskService().addComment(taskId, processInstanceId,
+	        		"通过" + ":" + content+":"+imgurl);// comment为批注内容
+		  //通过审核
+		  HashMap<String, Object> map = new HashMap<>();
+		  map.put("outcome", "通过");
+		  taskService.complete(taskId, map);
+		  result = new Result(MsgConstants.RESUL_SUCCESS);
+		  result.setMsg("通过审批");
+		  res = new JsonResponse(result);
+		return res;
+	}
+	
+	/**
+	 * 拒绝
+	 */
+
+	@ResponseBody
+	@RequestMapping(value = "/reject",method=RequestMethod.POST)
+	public JsonResponse reject(String taskId,String noticeid,String userid,String content,String title) {
+		Result result = null;
+		JsonResponse res = null;
+		//获取流程实例id
+		Task processInstance = processEngine.getTaskService().createTaskQuery().taskId(taskId).list().get(0);
+		String processInstanceId=processInstance.getProcessInstanceId();
+		//向flowable历史记录表commit中添加数据(查看记录时查询所需数据)
+        Authentication.setAuthenticatedUserId(userid);// 批注人的名称
+        // 添加批注信息
+        processEngine.getTaskService().addComment(taskId, processInstanceId,
+        		"驳回" + ":" + content);// comment为批注内容
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("outcome", "驳回");
+		taskService.complete(taskId, map);
+		//修改当前审批公告状态
+		String examinestatus="2";
+		noticeService.updateNoticeExamin(noticeid,examinestatus);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+	    result.setMsg("驳回");
+		res = new JsonResponse(result);
+		return res;
+	}
+	
+	
+	/**
+	 * 审核详情
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/details",method=RequestMethod.POST)
+	public JsonResponse details(String noticeid,String taskId) {
+		Result result = null;
+		JsonResponse res = null;
+		/*
+		 * //查询审批公告(创建人,创建日期) List<Notice> list=flowableService.selectNotice(noticeid);
+		 * //获取当前人所在的总编委会 String nodenameover=flowableService.deploynewFour();
+		 * System.out.println("所在总编委会="+nodenameover); //获取当前人所在的分编委会 String
+		 * nodename=flowableService.deploynewFive();
+		 * System.out.println("所在分编委会="+nodename);
+		 */
+		//查询当前节点进行判断,当前节点之前的节点都是审核通过,之后包括当前节点都是待审核中
+		 Task tasknew = processEngine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
+		    ExecutionEntity ee = (ExecutionEntity) processEngine.getRuntimeService().createExecutionQuery()
+		            .executionId(tasknew.getExecutionId()).singleResult();
+		    // 当前审批节点
+		    String crruentActivityId = ee.getActivityId();
+		    BpmnModel bpmnModel = processEngine.getRepositoryService().getBpmnModel(tasknew.getProcessDefinitionId());
+		    FlowNode flowNode = (FlowNode) bpmnModel.getFlowElement(crruentActivityId);
+		    // 输出连线
+		    List<SequenceFlow> outFlows = flowNode.getOutgoingFlows();
+		    for (SequenceFlow sequenceFlow : outFlows) {
+		            FlowElement sourceFlowElement = sequenceFlow.getSourceFlowElement();
+		            if(sourceFlowElement.getName().equals("分编委会")) {
+		            	
+		            	
+		            }
+		            if(sourceFlowElement.getName().equals("总编委会成员")) {
+		            	
+		            	
+		            }
+		    }
+		   // System.out.println("list更改后="+list);
+		  Task task = taskService.createTaskQuery()
+				  .taskId(taskId)
+				  .singleResult();
+		  
+		  if(task == null) {
+			  result = new Result(MsgConstants.RESUL_FAIL);
+			  	result.setMsg("此流程不存在");
+				res = new JsonResponse(result);
+				return res;
+		}
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		//res.setData(list);
+		return res;
+	}
+	
+	/**
+     * 流程审批记录
+	 * @throws Exception 
+     */
+	@RequestMapping(value = "/listnew",method=RequestMethod.POST)
+	@ResponseBody
+	  public JsonResponse getApproveHistory(String taskId,String noticeid) throws Exception {
+		Result result = null;
+		JsonResponse res = null;
+		//查询审批公告(创建人,创建日期,标题)
+	  Notice notice=flowableService.selectNotice(noticeid);
+	  //获取当前人所在的总编委会
+	  UserManager nodenameover=flowableService.deploynewFour(notice.getCreateid());
+	  notice.setLeard(nodenameover.getEbname());//放入编委会名称
+	  List<HttpApprovalHistory> httpApprovalHistoryList = new ArrayList<HttpApprovalHistory>();
+	   List<Comment> list =getProcessComments(taskId); 
+	   for (Comment comment : list) {
+			   HttpApprovalHistory httpApprovalHistory = new HttpApprovalHistory();
+			   SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			   httpApprovalHistory.setApprovalTime(dateFormat.format(comment.getTime()));
+			   httpApprovalHistory
+			   		.setApprovalUserName(userService.selectByPrimaryKey((comment.getUserId())).getUsername());
+			   String[] str =comment.getFullMessage().split(":");//我前面添加建立的规则 
+			  String agree = str[0];
+			  String approvalOpinion=str[1];
+			  String imgUrl=str[2];
+			  //查询审批人所属编委会
+			  UserManager editorial=flowableService.deploynewFour(comment.getUserId());
+			  //String approvalOpinion = comment.getFullMessage().substring(2);
+			  httpApprovalHistory.setAgree(agree);
+			  httpApprovalHistory.setApprovalOpinion(approvalOpinion);
+			  httpApprovalHistory.setImgurl(imgUrl);
+			  httpApprovalHistory.setEditorial(editorial.getEbname());
+			  httpApprovalHistoryList.add(httpApprovalHistory); 
+			  notice.setRecord(httpApprovalHistoryList);
+		  } 
+	   result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(notice);
+		return res;
+	}
 	 
-					
-    /**
-     * 添加公告审批流程
-     */
-    @RequestMapping(value="/add")
-    @ResponseBody
-    public String addExpense(String userId ,String content, String descption) {
-    	//查询家族中有无分编委会
-    	
-    	//启动流程
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("outcome", "true");
-        map.put("taskUser", userId);
-        map.put("content", content);
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("myProcess", map);
-        return "提交成功,流程ID为：" + processInstance.getId();
 
-    	
-    }
-    
     /**
-     * 获取审批管理列表
+     * 获取历史审批记录comment
+     * 
+     * @param taskId
+     * @return
      */
-    @RequestMapping(value = "/list")
-    @ResponseBody
-    public Object list(String userId) {
-        List<Task> tasks = taskService.createTaskQuery().taskAssignee(userId).orderByTaskCreateTime().desc().list();
-        for (Task task : tasks) {
-            System.out.println(task.toString());
-        }
-        return tasks.toArray().toString();
-    }
-    
-    /**
-     * 批准
-     *
-     * @param taskId 任务ID
-     */
-    @RequestMapping(value = "/apply")
-    @ResponseBody
-    public String apply(String taskId) {
-        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
-        if (task == null) {
-            throw new RuntimeException("流程不存在");
-        }
-        //通过审核
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("outcome", "通过");
-        taskService.complete(taskId, map);
-        return "processed ok!";
-    }
-    
-    /**
-     * 拒绝
-     */
-    @ResponseBody
-    @RequestMapping(value = "/reject")
-    public String reject(String taskId) {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("outcome", "驳回");
-        taskService.complete(taskId, map);
-        return "reject";
-    }
-    
-    /**
-     * 生成流程图
-     *
-     * @param processId 任务ID
-     */
-    @RequestMapping(value = "/processDiagram")
-    public void genProcessDiagram(HttpServletResponse httpServletResponse, String processId) throws Exception {
-        ProcessInstance pi = runtimeService.createProcessInstanceQuery().processInstanceId(processId).singleResult();
-        System.out.println("显示pi值="+pi);
-        //流程走完的不显示图
-        if (pi == null) {
-            return;
-        }
-        System.out.println("进入流程图片生成");
-        Task task = taskService.createTaskQuery().processInstanceId(pi.getId()).singleResult();
-        //使用流程实例ID，查询正在执行的执行对象表，返回流程实例对象
-        String InstanceId = task.getProcessInstanceId();
-        List<Execution> executions = runtimeService
-                .createExecutionQuery()
-                .processInstanceId(InstanceId)
-                .list();
- 
-        //得到正在执行的Activity的Id
-        List<String> activityIds = new ArrayList<>();
-        List<String> flows = new ArrayList<>();
-        for (Execution exe : executions) {
-            List<String> ids = runtimeService.getActiveActivityIds(exe.getId());
-            activityIds.addAll(ids);
-        }
-        System.out.println("进入流程图片生成获得id="+activityIds);
- 
-        //获取流程图
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(pi.getProcessDefinitionId());
-        System.out.println("进入流程图片生成获得bpmnModel="+bpmnModel);
-        ProcessEngineConfiguration engconf = processEngine.getProcessEngineConfiguration();
-        ProcessDiagramGenerator diagramGenerator = engconf.getProcessDiagramGenerator();
-        InputStream in = diagramGenerator.generateDiagram(bpmnModel, "png", activityIds, flows, engconf.getActivityFontName(), engconf.getLabelFontName(), engconf.getAnnotationFontName(), engconf.getClassLoader(), 1.0, false);
-        OutputStream out = null;
-        byte[] buf = new byte[1024];
-        int legth = 0;
-        try {
-            out = httpServletResponse.getOutputStream();
-            while ((legth = in.read(buf)) != -1) {
-                out.write(buf, 0, legth);
-            }
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-            if (out != null) {
-                out.close();
+    public List<Comment> getProcessComments(String taskId) {
+        List<Comment> historyCommnets = new ArrayList<>();
+        // 1) 获取流程实例的ID
+        HistoricTaskInstance task = processEngine.getHistoryService().createHistoricTaskInstanceQuery().taskId(taskId)
+                .singleResult();
+        String processInstanceId = task.getProcessInstanceId();
+        // 2）通过流程实例查询所有的(用户任务类型)历史活动
+        List<HistoricActivityInstance> hais = processEngine.getHistoryService().createHistoricActivityInstanceQuery()
+                .processInstanceId(processInstanceId).activityType("userTask").list();
+        // 3）查询每个历史任务的批注
+        for (HistoricActivityInstance hai : hais) {
+            String historytaskId = hai.getTaskId();
+            List<org.flowable.engine.task.Comment> comments = processEngine.getTaskService().getTaskComments(historytaskId);
+            // 4）如果当前任务有批注信息，添加到集合中
+            if (comments != null && comments.size() > 0) {
+                historyCommnets.addAll(comments);
             }
         }
+        // 排序
+        Collections.sort(historyCommnets, new Comparator<Comment>() {
+            @Override
+            public int compare(Comment o1, Comment o2) {
+                return (int) -(o2.getTime().getTime() - o1.getTime().getTime());
+            }
+        });
+        // 5）返回
+        return historyCommnets;
     }
+    
+    
+ // 以下为测试代码***********************************************
 
-   
+ 	/**
+ 	 * 获取审批管理列表(个人任务)
+ 	 */
+ 	@RequestMapping(value = "/list")
+ 	@ResponseBody
+ 	public void list(String userId) {
+ 		String processDefinitionId = "myProcess:1:4";
+ 		Map<String,Object> map = new HashMap<String,Object>();
+ 		//获取bpmnModel对象
+ 		BpmnModel model1 = repositoryService.getBpmnModel(processDefinitionId);
+ 	//	BpmnModel model1 = new BpmnJsonConverter().convertToBpmnModel(modelNode);
+ 		//由于我们这里仅仅定义了一个Process 所以获取集合中的第一个就可以
+ 		//Process对象封装了全部的节点、连线、以及关口等信息。拿到这个对象就能够为所欲为了。
+ 		org.flowable.bpmn.model.Process process = model1.getProcesses().get(0);
+ 		//获取全部的FlowElement（流元素）信息
+ 		Collection<FlowElement> flowElements = process.getFlowElements();
+ 		for (FlowElement flowElement : flowElements) {
+ 			//假设是开始节点
+ 			if(flowElement instanceof StartEvent){
+ 				StartEvent startEvent = (StartEvent)flowElement;
+ 				map.put("startEvent", startEvent);
+ 			}
+ 			//假设是任务节点
+ 			if(flowElement instanceof UserTask) {
+ 				UserTask userTask = (UserTask)flowElement;
+ 				List<String> candidateUsers = userTask.getCandidateUsers();
+ 				map.put("userTask", userTask);
+ 			}
+ 			//假设是结束节点
+ 			if(flowElement instanceof EndEvent) {
+ 				EndEvent endEvent = (EndEvent)flowElement;
+ 				map.put("endEvent", endEvent);
+ 			}
+ 			//假设是连接线
+ 			if(flowElement instanceof SequenceFlow) {
+ 				SequenceFlow sequenceFlow = (SequenceFlow) flowElement;
+ 				map.put("sequenceFlow", sequenceFlow);
+ 			}
+ 		}
+ 	}
+
+
+ 	/**
+ 	 * 生成流程图
+ 	 *
+ 	 * @param processId 任务ID
+ 	 */
+ 	@RequestMapping(value = "/processDiagram")
+ 	public void genProcessDiagram(HttpServletResponse httpServletResponse, String processId) throws Exception {
+ 		ProcessInstance pi = runtimeService.createProcessInstanceQuery().processInstanceId(processId).singleResult();
+          // 流程走完的不显示图
+ 		if (pi == null) {
+ 			return;
+ 		}
+ 		Task task = taskService.createTaskQuery().processInstanceId(pi.getId()).singleResult();
+ 		// 使用流程实例ID，查询正在执行的执行对象表，返回流程实例对象
+ 		String InstanceId = task.getProcessInstanceId();
+ 		List<Execution> executions = runtimeService.createExecutionQuery().processInstanceId(InstanceId).list();
+
+ 		// 得到正在执行的Activity的Id
+ 		List<String> activityIds = new ArrayList<>();
+ 		List<String> flows = new ArrayList<>();
+ 		for (Execution exe : executions) {
+ 			List<String> ids = runtimeService.getActiveActivityIds(exe.getId());
+ 			activityIds.addAll(ids);
+ 		}
+
+ 		// 获取流程图
+ 		BpmnModel bpmnModel = repositoryService.getBpmnModel(pi.getProcessDefinitionId());
+ 		ProcessEngineConfiguration engconf = processEngine.getProcessEngineConfiguration();
+ 		ProcessDiagramGenerator diagramGenerator = engconf.getProcessDiagramGenerator();
+ 		InputStream in = diagramGenerator.generateDiagram(bpmnModel, "png", activityIds, flows,
+ 				engconf.getActivityFontName(), engconf.getLabelFontName(), engconf.getAnnotationFontName(),
+ 				engconf.getClassLoader(), 1.0, false);
+ 		OutputStream out = null;
+ 		byte[] buf = new byte[1024];
+ 		int legth = 0;
+ 		try {
+ 			out = httpServletResponse.getOutputStream();
+ 			while ((legth = in.read(buf)) != -1) {
+ 				out.write(buf, 0, legth);
+ 			}
+ 		} finally {
+ 			if (in != null) {
+ 				in.close();
+ 			}
+ 			if (out != null) {
+ 				out.close();
+ 			}
+ 		}
+ 	}
+ 	
+ 	
 }

@@ -1970,6 +1970,7 @@ public class UserServiceImpl implements UserService {
 					userInfoDao.insertSelective(userInfo);
 					//修改配偶信息及婚配状态
 					user.setIsMarry(0);
+					user.setSex(user1.getSex());
 					userDao.updateByPrimaryKeySelective(user);
 					result = new Result(MsgConstants.RESUL_SUCCESS);
 				}
@@ -5451,5 +5452,18 @@ public class UserServiceImpl implements UserService {
 			log_.error("[获取地址信息---异常:]", e);
 		}
 		return address;
+	}
+
+	@Override
+	public String selectFamilyId(String userid) {
+		// TODO Auto-generated method stub
+		
+		return userDao.selectFamilyId(userid);
+	}
+	@Override
+	public String selectBranchId(String userid) {
+		// TODO Auto-generated method stub
+		
+		return userDao.selectBranchId(userid);
 	}
 }
