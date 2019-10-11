@@ -114,6 +114,12 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 				for (String code : codeList) {
 					if (code.length() > 10) {//分支
 						Map<String, Object> map = branchMapper.selectByBranchid(code);
+						if (map == null) {
+							result = new Result(MsgConstants.RESUL_FAIL);
+							result.setMsg("没有数据！");
+							res = new JsonResponse(result);
+							return res;
+						}
 						List<String> blist = new ArrayList<>();
 						blist.add(map.get("cityCode").toString());
 						//替换前端需要的集合类型
@@ -121,6 +127,12 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 						listCity.add(map);
 					} else {//地区编码
 						Map<String, Object> map = editorialBoardMapper.selectCityByCode(code);
+						if (map == null) {
+							result = new Result(MsgConstants.RESUL_FAIL);
+							result.setMsg("没有数据！");
+							res = new JsonResponse(result);
+							return res;
+						}
 						List<String> clist = new ArrayList<>();
 						List<String> list = getCodeList(clist, map.get("pid").toString());
 						Collections.reverse(list);//按省市区code反转排序
