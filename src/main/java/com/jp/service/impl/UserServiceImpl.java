@@ -35,7 +35,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.util.StringUtil;
 import com.jp.common.ConstantUtils;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
@@ -105,6 +104,7 @@ import com.jp.entity.Userworkexp;
 import com.jp.entity.UserworkexpQuery;
 import com.jp.service.DynamicService;
 import com.jp.service.NoticeService;
+import com.jp.service.UserContextService;
 import com.jp.service.UserService;
 import com.jp.util.CalendarUtil;
 import com.jp.util.DateUtil;
@@ -169,6 +169,8 @@ public class UserServiceImpl implements UserService {
 	private BranchphotoMapper branchPhotoMapper;
 	@Autowired
 	private UserManagerMapper userManagerMapper;
+	@Autowired
+	private UserContextService userContextService;
 
 	// 导入用户时重复的用户
 	private ArrayList<String> userStringList;
@@ -242,9 +244,23 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Result merge(User user) throws Exception {
 		Result result = null;
-		if (!StringTools.trimNotEmpty(user.getUsername())) {
+		if (StringTools.trimIsEmpty(user.getUsername())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("姓名不能为空！");
+			return result;
+		}
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			return result;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
 			return result;
 		}
 		try {
@@ -262,7 +278,7 @@ public class UserServiceImpl implements UserService {
 					// 如果是存在手机号，则用之前德密码
 					UserQuery ex = new UserQuery();
 					ex.or().andPhoneEqualTo(user.getPhone()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE)
-							.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+							.andFamilyidEqualTo(familyid);
 					List<User> list = userDao.selectByExample(ex);
 					if (list != null && list.size() > 0) {
 						user.setPassword(list.get(0).getPassword());
@@ -282,7 +298,7 @@ public class UserServiceImpl implements UserService {
 						}
 					}
 				}
-				user.setUpdateid(CurrentUserContext.getCurrentUserId());
+				user.setUpdateid(userid);
 				user.setUpdatetime(new Date());
 				userDao.updateByPrimaryKeySelectivePhone(user);
 				UserManagerExample ume = new UserManagerExample();
@@ -348,20 +364,19 @@ public class UserServiceImpl implements UserService {
 
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 			} else {
-				// 新增用户信息
-				// boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), 1);
-				boolean flag = checkFamilyUserNumber(1);
+				boolean flag = checkFamilyUserNumber(1, familyid);
 				if (flag == true) {
+					User user2 = userDao.selectByPrimaryKey(userid);
 					String userId = UUIDUtils.getUUID();
 					user.setUserid(userId);
 					user.setDeleteflag(0);
-					user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+					user.setFamilyid(familyid);
 					user.setStatus(0);
 					// user.setIsdirect(1);
-					user.setFamilyname(CurrentUserContext.getCurrentFamilyName());
+					user.setFamilyname(user2.getFamilyname());
 					user.setCreatetime(new Date());
 					user.setUpdatetime(new Date());
-					user.setUpdateid(CurrentUserContext.getCurrentUserId());
+					user.setUpdateid(familyid);
 					user.setPinyinfirst(PinyinUtil.getPinYinFirstChar(user.getUsername()));
 					user.setPinyinfull(PinyinUtil.getPinyinFull(user.getUsername()));
 					/*
@@ -378,7 +393,7 @@ public class UserServiceImpl implements UserService {
 					userinfo.setUserid(userId);
 					Useredu useredu = new Useredu();
 					useredu.setUserid(userId);
-					user.setCreateid(CurrentUserContext.getCurrentUserId());
+					user.setCreateid(userid);
 					user.setCreatetime(new Date());
 					//验证pid
 					Result checkPid = checkPid(user);
@@ -456,9 +471,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public PageModel<User> selectUserList(PageModel<User> pageModel, User user, List<String> branchList)
 			throws Exception {
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
 		List<User> userList = new ArrayList<>();
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		List<UserManager> userManager = CurrentUserContext.getCurrentUserManager();
+		List<UserManager> userManager = userContextService.getUserManagers(userid);
 		for (UserManager um : userManager) {
 			if (um.getEbtype() == 1) {
 				userList = userInfoDao.selecAllUserList(user);
@@ -470,7 +487,6 @@ public class UserServiceImpl implements UserService {
 				break;
 			}
 		}
-		// CurrentUserContext.getUserContext().getRole().getIsmanager();
 		pageModel.setList(userList);
 		pageModel.setPageInfo(new PageInfo<User>(userList));
 		return pageModel;
@@ -539,11 +555,27 @@ public class UserServiceImpl implements UserService {
 	public JsonResponse importUsers(MultipartFile file, HttpServletRequest request) throws Exception {
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		User user2 = userDao.selectByPrimaryKey(userid);
 		String branchid = request.getParameter("branchid");
 		BranchKey branchkey = new BranchKey();
 		branchkey.setBranchid(branchid);
-		String familyId = CurrentUserContext.getCurrentFamilyId();
-		branchkey.setFamilyid(familyId);
+		branchkey.setFamilyid(familyid);
 		Branch branch = branchDao.selectByPrimaryKey(branchkey);
 		if (branch == null) {
 			result = new Result(MsgConstants.USER_NO_BRANCH);
@@ -583,11 +615,7 @@ public class UserServiceImpl implements UserService {
 			// continue;
 			// }
 			int totalRows = xssfSheet.getLastRowNum();
-			// String familyid =
-			// boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(),
-			// totalRows - 1);
-			// 判断家族人数是否超出当前家族容纳人数上限
-			boolean flag = checkFamilyUserNumber(totalRows - 1);
+			boolean flag = checkFamilyUserNumber(totalRows - 1, familyid);
 			if (flag == false) {
 				/*
 				 * result.setStatus(2); result.setMsg("导入用户数量超过版本最大用户限制!");
@@ -611,7 +639,7 @@ public class UserServiceImpl implements UserService {
 					String iMarryied = xssfRow.getCell(4).getStringCellValue().trim();// 是否婚配
 					String phone = xssfRow.getCell(5).getStringCellValue().trim();// 手机号
 					if (StringUtils.isNotBlank(phone)) {
-						List<User> userList1 = userDao.validatePhone(familyId, null, phone);
+						List<User> userList1 = userDao.validatePhone(familyid, null, phone);
 						if (userList1.size() > 0) {
 							result = new Result(MsgConstants.USER_PHONE_REPEAT);
 							res = new JsonResponse(result);
@@ -652,8 +680,8 @@ public class UserServiceImpl implements UserService {
 					user = new User();
 					user.setExcelid(excelid);
 					user.setUserid(userId);
-					user.setFamilyid(familyId);
-					user.setFamilyname(CurrentUserContext.getCurrentFamilyName());
+					user.setFamilyid(familyid);
+					user.setFamilyname(user2.getFamilyname());
 					user.setStatus(0);
 					user.setIsdirect(1);
 					user.setGenlevel((int) genlevel);
@@ -734,12 +762,12 @@ public class UserServiceImpl implements UserService {
 						user.setIsnormal(0);
 						user.setMsg("请核对世系或父亲名字！");
 					}
-					user.setCreateid(CurrentUserContext.getCurrentUserId());
+					user.setCreateid(userid);
 					user.setCreatetime(new Date());
-					user.setUpdateid(CurrentUserContext.getCurrentUserId());
+					user.setUpdateid(userid);
 					user.setUpdatetime(new Date());
 					user.setDeleteflag(ConstantUtils.DELETE_FALSE);
-					user.setFamilyname(CurrentUserContext.getCurrentFamilyName());
+					user.setFamilyname(user2.getFamilyname());
 					user.setPinyinfirst(PinyinUtil.getPinYinFirstChar(username));
 					user.setPinyinfull(PinyinUtil.getPinyinFull(username));
 					userInfo = new Userinfo();
@@ -793,10 +821,8 @@ public class UserServiceImpl implements UserService {
 			ExcelUtil eutil = new ExcelUtil(wb, sheet);
 			// 获取上传的所有行数
 			int lastRowNum = sheet.getLastRowNum();
-			// boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(),
-			// lastRowNum - 1);
 			// 判断家族人数是否超出当前家族容纳人数上限
-			boolean flag = checkFamilyUserNumber(lastRowNum - 1);
+			boolean flag = checkFamilyUserNumber(lastRowNum - 1, familyid);
 			if (flag == false) {
 				/*
 				 * result.setStatus(2); result.setMsg("导入用户数量超过版本最大用户限制!");
@@ -855,8 +881,8 @@ public class UserServiceImpl implements UserService {
 					user = new User();
 					user.setExcelid(excelid);
 					user.setUserid(userId);
-					user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-					user.setFamilyname(CurrentUserContext.getCurrentFamilyName());
+					user.setFamilyid(familyid);
+					user.setFamilyname(user2.getFamilyname());
 					user.setStatus(0);
 					user.setIsdirect(1);
 					user.setGenlevel(genlevel);
@@ -937,12 +963,12 @@ public class UserServiceImpl implements UserService {
 						user.setIsnormal(0);
 						user.setMsg("请核对世系或父亲名字！");
 					}
-					user.setCreateid(CurrentUserContext.getCurrentUserId());
+					user.setCreateid(userid);
 					user.setCreatetime(new Date());
-					user.setUpdateid(CurrentUserContext.getCurrentUserId());
+					user.setUpdateid(userid);
 					user.setUpdatetime(new Date());
 					user.setDeleteflag(ConstantUtils.DELETE_FALSE);
-					user.setFamilyname(CurrentUserContext.getCurrentFamilyName());
+					user.setFamilyname(user2.getFamilyname());
 					user.setPinyinfirst(PinyinUtil.getPinYinFirstChar(username));
 					user.setPinyinfull(PinyinUtil.getPinyinFull(username));
 					userInfo = new Userinfo();
@@ -1150,10 +1176,27 @@ public class UserServiceImpl implements UserService {
 		String msg = "";
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		User user2 = userDao.selectByPrimaryKey(userid);
 		String branchid = request.getParameter("branchid");
 		BranchKey branchkey = new BranchKey();
 		branchkey.setBranchid(branchid);
-		branchkey.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+		branchkey.setFamilyid(familyid);
 		Branch branch = branchDao.selectByPrimaryKey(branchkey);
 		if (branch == null) {
 			result = new Result(MsgConstants.USER_NO_BRANCH);
@@ -1166,34 +1209,21 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		Map<String, User> userPhoneMap = new HashMap<>();
 		List<User> userList = new ArrayList<User>();
 		// User user = null;
 		Usermates userMates = null;
 		List<Usermates> userMatesList = new ArrayList<Usermates>();
 		// 批量更新 已经存在的用户
 		List<User> userAleardyListUpdate = new ArrayList<User>();
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		// 查询用户列表
 		// User userAleardy = new User();
-		// userAleardy.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+		// userAleardy.setFamilyid(familyid);
 		// userAleardy.setIsdirect(1);
 		// userAleardy.setIsMarry(0);
 		// 获取文件名称
 		String name = file.getOriginalFilename();
 		NumberFormat nf = new DecimalFormat("#");
 		List<String> userStringList = new ArrayList<String>();
-		// 获取导入的分支名字
-		// String branchname = name.substring(0, name.indexOf("世系"));
-		//
-		// List<String> branchList = CurrentUserContext.getCurrentBranchIds();
-		// Integer type =
-		// CurrentUserContext.getUserContext().getUsermanagers().get(0).getEbtype();
-		// Integer manager =
-		// CurrentUserContext.getUserContext().getUsermanagers().get(0).getIsmanager();
-		// if (type != 1 && manager != 1) {
-		// branchList.clear();
-		// }
 		UserQuery userExample = new UserQuery();
 		userExample.or().andBranchidEqualTo(branch.getBranchid()).andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
 		List<User> userAleardyList = userDao.selectByExample(userExample);
@@ -1218,9 +1248,7 @@ public class UserServiceImpl implements UserService {
 					continue;
 				}
 				int totalRows = xssfSheet.getLastRowNum();
-				// boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(),
-				// totalRows - 1);
-				boolean flag = checkFamilyUserNumber(totalRows - 1);
+				boolean flag = checkFamilyUserNumber(totalRows - 1, familyid);
 				if (flag == false) {
 					result = new Result(MsgConstants.USER_SAVE_OUTMAX);
 					res = new JsonResponse(result);
@@ -1293,8 +1321,8 @@ public class UserServiceImpl implements UserService {
 								if (n == 1) {
 									User user = new User();
 									user.setUserid(userId);
-									user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-									user.setFamilyname(CurrentUserContext.getCurrentFamilyName());
+									user.setFamilyid(familyid);
+									user.setFamilyname(user2.getFamilyname());
 									user.setStatus(0);
 									user.setIsdirect(1);
 									user.setGenlevel((int) genlevel);
@@ -1359,7 +1387,7 @@ public class UserServiceImpl implements UserService {
 									user.setDeleteflag(ConstantUtils.DELETE_FALSE);
 									user.setPinyinfirst(PinyinUtil.getPinYinFirstChar(username));
 									user.setPinyinfull(PinyinUtil.getPinyinFull(username));
-									user.setCreateid(CurrentUserContext.getCurrentUserId());
+									user.setCreateid(userid);
 									user.setCreatetime(new Date());
 									userList.add(user);
 
@@ -1474,9 +1502,7 @@ public class UserServiceImpl implements UserService {
 			eutil = new ExcelUtil(wb, sheet);
 			// 获取上传的所有行数
 			int lastRowNum = sheet.getLastRowNum();
-			// boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(),
-			// lastRowNum - 1);
-			boolean flag = checkFamilyUserNumber(lastRowNum - 1);
+			boolean flag = checkFamilyUserNumber(lastRowNum - 1, familyid);
 			if (flag == false) {
 				result = new Result(MsgConstants.USER_SAVE_OUTMAX);
 				res = new JsonResponse(result);
@@ -1550,8 +1576,8 @@ public class UserServiceImpl implements UserService {
 
 							User user = new User();
 							user.setUserid(userId);
-							user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-							user.setFamilyname(CurrentUserContext.getCurrentFamilyName());
+							user.setFamilyid(familyid);
+							user.setFamilyname(user2.getFamilyname());
 							user.setStatus(0);
 							user.setIsdirect(1);
 							user.setGenlevel(Integer.parseInt(genlevel));
@@ -1614,7 +1640,7 @@ public class UserServiceImpl implements UserService {
 							user.setDeleteflag(ConstantUtils.DELETE_FALSE);
 							user.setPinyinfirst(PinyinUtil.getPinYinFirstChar(username));
 							user.setPinyinfull(PinyinUtil.getPinyinFull(username));
-							user.setCreateid(CurrentUserContext.getCurrentUserId());
+							user.setCreateid(userid);
 							user.setCreatetime(new Date());
 							// boolean sameFlag = checkSameUser(user);
 							userList.add(user);
@@ -1755,9 +1781,13 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public PageModel<User> selecUserListToReview(PageModel<User> pageModel, User user) throws Exception {
-		List<UserManager> managers = CurrentUserContext.getCurrentUserManager();
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		List<UserManager> managers = userContextService.getUserManagers(userid);
 		UserManager manager = managers.get(0);
-		List<String> branchids = CurrentUserContext.getCurrentBranchIds();
+		List<String> branchids = userContextService.getBranchIds(familyid, userid);
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		List<User> userList = new ArrayList<>();
 		if (manager.getEbtype() == 1) {
@@ -1775,6 +1805,13 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Result mergeMate(User user, Userinfo userInfo) throws Exception {
 		Result result = null;
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			return result;
+		}
 		// SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			Integer matetype = user.getMatetype();
@@ -1808,7 +1845,7 @@ public class UserServiceImpl implements UserService {
 						userMmateUpdate.setPassword(MD5Util.string2MD5(phone.substring(phone.length() - 6)));
 					}
 					userMmateUpdate.setUpdatetime(new Date());
-					userMmateUpdate.setCreateid(CurrentUserContext.getCurrentUserId());
+					userMmateUpdate.setCreateid(userid);
 					userMmateUpdate.setUsername(user.getMatename());
 					userDao.updateByPrimaryKeySelective(userMmateUpdate);
 					// 更新 userinfo
@@ -1823,8 +1860,7 @@ public class UserServiceImpl implements UserService {
 					userInfoDao.updateByPrimaryKeySelective(userInfo);
 				} else {
 					// 新增用户配偶信息,修改配偶保存逻辑，配偶信息作为主用户存到user表里，jp_usermates单独的用户配偶表弃用
-					// boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(), 1);
-					boolean flag = checkFamilyUserNumber(1);
+					boolean flag = checkFamilyUserNumber(1, familyid);
 					if (flag == true) {
 						String phone = user.getPhone();
 						User userMmate = new User();
@@ -1834,9 +1870,9 @@ public class UserServiceImpl implements UserService {
 						if (StringTools.trimNotEmpty(phone)) {
 							userMmate.setPassword(MD5Util.string2MD5(phone.substring(phone.length() - 6)));
 						}
-						userMmate.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-						userMmate.setFamilyname(CurrentUserContext.getCurrentFamilyName());
-						userMmate.setCreateid(CurrentUserContext.getCurrentUserId());
+						userMmate.setFamilyid(familyid);
+						userMmate.setFamilyname(user1.getFamilyname());
+						userMmate.setCreateid(userid);
 						userMmate.setCreatetime(new Date());
 						userMmate.setBranchid(user1.getBranchid());
 						userMmate.setBranchname(user1.getBranchname());
@@ -1897,14 +1933,14 @@ public class UserServiceImpl implements UserService {
 				}
 			} else {// 配偶做为记录
 				// 修改配偶保存逻辑，配偶信息作为主用户存到user表里，jp_usermates单独的用户配偶表弃用
-				
+
 				User userMates = new User();
 				userMates.setUserid(userid);
 				userMates.setMateid(user.getUserid());
 				userMates.setCreatetime(new Date());
-				userMates.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-				userMates.setFamilyname(CurrentUserContext.getCurrentFamilyName());
-				userMates.setCreateid(CurrentUserContext.getCurrentUserId());
+				userMates.setFamilyid(familyid);
+				userMates.setFamilyname(user1.getFamilyname());
+				userMates.setCreateid(userid);
 				userMates.setCreatetime(new Date());
 				userMates.setStatus(0);
 				userMates.setIsdirect(0);
@@ -2001,14 +2037,22 @@ public class UserServiceImpl implements UserService {
 				res = new JsonResponse(result);
 				return res;
 			}
+			//当前登录人 userid
+			String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+			if (StringTools.isEmpty(userid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("用户非法！");
+				res = new JsonResponse(result);
+				return res;
+			}
 			if (StringTools.trimNotEmpty(userAlbum.getAlbumid())) {
 				userAlbum.setUpdatetime(new Date());
-				userAlbum.setUpdateid(CurrentUserContext.getCurrentUserId());
+				userAlbum.setUpdateid(userid);
 				status = userAlbumDao.updateByPrimaryKeySelective(userAlbum);
 			} else {
 				userAlbum.setAlbumid(ablumId);
 				userAlbum.setCreatetime(new Date());
-				userAlbum.setCreateid(CurrentUserContext.getCurrentUserId());
+				userAlbum.setCreateid(userid);
 				// 0未删除
 				userAlbum.setDeleteflag(0);
 				// userAlbum.setType(b);
@@ -2070,8 +2114,16 @@ public class UserServiceImpl implements UserService {
 					res = new JsonResponse(result);
 					return res;
 				}
+				//当前登录人 userid
+				String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+				if (StringTools.isEmpty(userid)) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("用户非法！");
+					res = new JsonResponse(result);
+					return res;
+				}
 				userphoto.setCreatetime(new Date());
-				userphoto.setCreateid(CurrentUserContext.getCurrentUserId());
+				userphoto.setCreateid(userid);
 				userphoto.setDeleteflag(0);
 			}
 			int status = userPtotoDao.insertUserPhoto(userPhotoList);
@@ -2153,18 +2205,21 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Result editPwd(String string2md5) {
-		// Result result = new Result();
 		Result result = new Result(MsgConstants.RESUL_FAIL);
-		User record = new User();
-		record.setUserid(CurrentUserContext.getCurrentUserId());
-		record.setPassword(string2md5);
-		int updateRt = userDao.updateByPrimaryKeySelective(record);
-		if (updateRt != 1) {
-			// result.setStatus(0);
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result.setMsg("用户非法！");
 			return result;
 		}
-		// result.setStatus(updateRt);
-		result = new Result(MsgConstants.RESUL_SUCCESS);
+		User record = new User();
+		record.setUserid(userid);
+		record.setPassword(string2md5);
+		int updateRt = userDao.updateByPrimaryKeySelective(record);
+		if (updateRt > 0) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			return result;
+		}
 		return result;
 	}
 
@@ -2175,11 +2230,24 @@ public class UserServiceImpl implements UserService {
 		// Result result = new Result();
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		User user2 = userDao.selectByPrimaryKey(userid);
 		if (file == null) {
-			// result = "0";
-			/*
-			 * result.setStatus(0); return result;
-			 */
 			result = new Result(MsgConstants.USER_NO_FILE);
 			res = new JsonResponse(result);
 			return res;
@@ -2210,14 +2278,8 @@ public class UserServiceImpl implements UserService {
 			// continue;
 			// }
 			int totalRows = xssfSheet.getLastRowNum();
-			// String familyid =
-			// boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(),
-			// totalRows - 1);
-			boolean flag = checkFamilyUserNumber(totalRows - 1);
+			boolean flag = checkFamilyUserNumber(totalRows - 1, familyid);
 			if (flag == false) {
-				/*
-				 * result.setStatus(2); result.setMsg("导入用户数量超过版本最大用户限制!"); return result;
-				 */
 				result = new Result(MsgConstants.USER_SAVE_OUTMAX);
 				res = new JsonResponse(result);
 				return res;
@@ -2272,8 +2334,8 @@ public class UserServiceImpl implements UserService {
 					String userId = UUIDUtils.getUUID();
 					user = new User();
 					user.setUserid(userId);
-					user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-					user.setFamilyname(CurrentUserContext.getCurrentFamilyName());
+					user.setFamilyid(familyid);
+					user.setFamilyname(user2.getFamilyname());
 					user.setStatus(0);
 					if (!"".equals(isdireect) && "直系".equals(isdireect)) {
 						user.setIsdirect(1);
@@ -2321,12 +2383,12 @@ public class UserServiceImpl implements UserService {
 					// } else {
 					// userMap.put((int) genlevel + username, user);
 					// }
-					user.setCreateid(CurrentUserContext.getCurrentUserId());
+					user.setCreateid(userid);
 					user.setCreatetime(new Date());
-					user.setUpdateid(CurrentUserContext.getCurrentUserId());
+					user.setUpdateid(userid);
 					user.setUpdatetime(new Date());
 					user.setDeleteflag(ConstantUtils.DELETE_FALSE);
-					user.setFamilyname(CurrentUserContext.getCurrentFamilyName());
+					user.setFamilyname(user2.getFamilyname());
 					user.setPinyinfirst(PinyinUtil.getPinYinFirstChar(username));
 					user.setPinyinfull(PinyinUtil.getPinyinFull(username));
 					userInfo = new Userinfo();
@@ -2382,13 +2444,8 @@ public class UserServiceImpl implements UserService {
 			eutil = new ExcelUtil(wb, sheet);
 			// 获取上传的所有行数
 			int lastRowNum = sheet.getLastRowNum();
-			// boolean flag = limitUserNumber(CurrentUserContext.getCurrentFamilyId(),
-			// lastRowNum - 1);
-			boolean flag = checkFamilyUserNumber(lastRowNum - 1);
+			boolean flag = checkFamilyUserNumber(lastRowNum - 1, familyid);
 			if (flag == false) {
-				/*
-				 * result.setStatus(2); result.setMsg("导入用户数量超过版本最大用户限制!"); return result;
-				 */
 				result = new Result(MsgConstants.USER_SAVE_OUTMAX);
 				res = new JsonResponse(result);
 				return res;
@@ -2443,10 +2500,10 @@ public class UserServiceImpl implements UserService {
 					String userId = UUIDUtils.getUUID();
 					user = new User();
 					user.setUserid(userId);
-					user.setCreateid(CurrentUserContext.getCurrentUserId());
+					user.setCreateid(userid);
 					user.setCreatetime(new Date());
-					user.setFamilyid(CurrentUserContext.getCurrentFamilyId());
-					user.setFamilyname(CurrentUserContext.getCurrentFamilyName());
+					user.setFamilyid(familyid);
+					user.setFamilyname(user2.getFamilyname());
 					user.setStatus(0);
 					user.setIsdirect(1);
 					user.setGenlevel(Integer.valueOf(genlevel));
@@ -2455,7 +2512,7 @@ public class UserServiceImpl implements UserService {
 					user.setUsedname(usedname);
 					user.setIdcard(idCard);
 					user.setPhone(phone);
-					user.setUpdateid(CurrentUserContext.getCurrentUserId());
+					user.setUpdateid(userid);
 					user.setUpdatetime(new Date());
 					user.setDeleteflag(ConstantUtils.DELETE_FALSE);
 					user.setPinyinfirst(PinyinUtil.getPinYinFirstChar(username));
@@ -2605,11 +2662,11 @@ public class UserServiceImpl implements UserService {
 		return place;
 	}
 
-	public boolean checkFamilyUserNumber(int importCount) {
+	public boolean checkFamilyUserNumber(int importCount, String familyid) {
 		boolean checkResult = false;
 		Integer priValue = 0; // 最多容纳家族人数
-		SysVersionPrivilege versionP = sysVersionPrivilegeMapper
-				.selectByVersionAndCode(CurrentUserContext.getCurrentFamilyId(), ConstantUtils.VERSION_USERCOUNT);
+		SysVersionPrivilege versionP = sysVersionPrivilegeMapper.selectByVersionAndCode(familyid,
+				ConstantUtils.VERSION_USERCOUNT);
 		if (versionP != null && versionP.getPrivilegevalue() != null) {
 			if (versionP.getPrivilegevalue().equals(ConstantUtils.VERSION_UNLIMITED)) {
 				// 钻石豪华版容纳家族人数不限
@@ -2620,7 +2677,7 @@ public class UserServiceImpl implements UserService {
 		}
 		// 获取该用户所在家族已有的人数
 		UserQuery userExample = new UserQuery();
-		userExample.or().andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+		userExample.or().andFamilyidEqualTo(familyid);
 		int haveUserCount = userDao.countByExample(userExample); // 家族已有人数
 		if (priValue > 0 && (priValue - haveUserCount - importCount) >= 0) {
 			// 导入用户后不超过家族版本容纳人数限制
@@ -2638,6 +2695,14 @@ public class UserServiceImpl implements UserService {
 	public JsonResponse getAddressByUserid(User user) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			if (StringUtils.isBlank(user.getUserid())) {
 				result.setMsg("用户userid为空！");
@@ -2647,7 +2712,7 @@ public class UserServiceImpl implements UserService {
 			user = userDao.selectByPrimaryKey(user.getUserid());
 			Branch branch = new Branch();
 			branch.setBranchid(user.getBranchid());
-			branch.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			branch.setFamilyid(familyid);
 			branch = branchDao.selectByPrimaryKey(branch);
 			user.setBranch(branch);
 

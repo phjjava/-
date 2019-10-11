@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jp.common.CurrentUserContext;
+import com.jp.common.ConstantUtils;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
@@ -24,6 +24,7 @@ import com.jp.entity.UserManagerExample;
 import com.jp.service.EditorialBoardService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
+import com.jp.util.WebUtil;
 
 @Service
 public class EditorialBoardServiceImpl implements EditorialBoardService {
@@ -67,11 +68,19 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 	}
 
 	@Override
-	public JsonResponse selecteditorialBoardList(String userid) {
+	public JsonResponse selecteditorialBoardList() {
 		Result result = null;
 		JsonResponse res = null;
 		List<EditorialBoard> list = new ArrayList<>();
 		try {
+			//当前登录人 userid
+			String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+			if (StringTools.isEmpty(userid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("用户非法！");
+				res = new JsonResponse(result);
+				return res;
+			}
 			List<UserManager> managers = userManagerMapper.selectMnangers(userid);
 			EditorialBoardExample example = new EditorialBoardExample();
 			for (UserManager manager : managers) {
@@ -109,6 +118,14 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 		Result result = null;
 		JsonResponse res = null;
 		Integer status = 0;
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			if (StringTools.notEmpty(eb.getId())) {// 修改
 				status = editorialBoardMapper.updateByPrimaryKeySelective(eb);
@@ -120,7 +137,7 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 				userManagerMapper.updateByExampleSelective(um, ume);
 			} else {// 新增
 				eb.setId(UUIDUtils.getUUID());
-				eb.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				eb.setFamilyid(familyid);
 				eb.setType(0);
 				status = editorialBoardMapper.insertSelective(eb);
 			}
