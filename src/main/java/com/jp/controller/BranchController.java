@@ -216,8 +216,6 @@ public class BranchController {
 	@ResponseBody
 	@RequestMapping(value = "/getGenList", method = RequestMethod.GET)
 	public JsonResponse getGenList(Branch branch, HttpServletRequest request) {
-		String userid = request.getHeader("userid");
-		branch.setParentid(userid);
 		return branchService.getGenList(branch);
 	}
 

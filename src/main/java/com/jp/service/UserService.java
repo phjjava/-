@@ -283,6 +283,8 @@ public interface UserService {
 
 	JsonResponse changeUserinfos(User user);
 
+	JsonResponse addUserinfos(User user, int type);
+
 	JsonResponse getCityNoticeList(User user);
 
 	JsonResponse getCityNoticeListExt(User user);
@@ -318,5 +320,7 @@ public interface UserService {
 	String getAllAddressByUserid(String userid);
 
 	JsonResponse getUserThreeGen(String userid);
+
+	JsonResponse getParent(String userid);
 
 }

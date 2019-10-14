@@ -4723,6 +4723,8 @@ public class UserServiceImpl implements UserService {
 	public JsonResponse changeUserinfos(User entity) {
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 userid
+		String loginUserid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
 		int status = 0;
 		JsonResponse demoUser = checkDemoUser();
 		if (demoUser.getCode() == 1) {
@@ -4736,8 +4738,9 @@ public class UserServiceImpl implements UserService {
 		}
 		try {
 			// 用户表
-
 			entity.setPinyinfull(PinyinUtil.getPinyinFull(entity.getUsedname()));
+			entity.setUpdateid(loginUserid);
+			entity.setUpdatetime(new Date());
 			status = userDao.updateByPrimaryKeySelective(entity);
 			Userinfo userinfo = entity.getUserInfo();
 			String birthplaceP = userinfo.getBirthplaceP() == null ? "" : userinfo.getBirthplaceP();
@@ -4813,6 +4816,229 @@ public class UserServiceImpl implements UserService {
 		result = new Result(MsgConstants.RESUL_FAIL);
 		res = new JsonResponse(result);
 		return res;
+	}
+
+	/**
+	 * type 1：添加父母，2：添加兄弟姐妹、子女，3：添加配偶
+	 */
+	@Override
+	public JsonResponse addUserinfos(User user, int type) {
+		Result result = null;
+		JsonResponse res = null;
+		//当前登录人 userid
+		String loginUserid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		int status = 0;
+		JsonResponse demoUser = checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
+		if (StringTools.trimIsEmpty(user.getUsername())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数username不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringTools.trimIsEmpty(user.getSex())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数sex不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			Userinfo userInfo = user.getUserInfo();
+			String userid = UUIDUtils.getUUID();
+			if (type == 1) {//添加父母
+				//特别注意：此处的userid是孩子的（例：给张三添加父母，userid是张三的）;user对象的内容信息还是父母的
+				if (StringTools.trimIsEmpty(user.getUserid())) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("参数userid不能为空！");
+					res = new JsonResponse(result);
+					return res;
+				}
+				User childUser = userDao.selectByPrimaryKey(user.getUserid());
+				Integer genlevel = childUser.getGenlevel();
+				if (genlevel != null) {
+					if (genlevel == 1) {
+						//把父母设为1世，后代世系全部加1
+						user.setGenlevel(genlevel);
+						changeGenlevel(user.getUserid());
+					} else {
+						user.setGenlevel(genlevel - 1);
+					}
+				}
+				// 默认为亲生
+				user.setIsborn(1);
+				// 默认为直系
+				user.setIsdirect(1);
+				user.setFamilyid(childUser.getFamilyid());
+				user.setFamilyname(childUser.getFamilyname());
+				user.setBranchid(childUser.getBranchid());
+				user.setBranchname(childUser.getBranchname());
+			} else if (type == 2) {//添加兄弟姐妹、子女
+				if (StringTools.trimIsEmpty(user.getPid())) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("参数pid不能为空！");
+					res = new JsonResponse(result);
+					return res;
+				}
+				User pUser = userDao.selectByPrimaryKey(user.getPid());
+				user.setUserid(userid);
+				if (pUser.getGenlevel() != null) {
+					user.setGenlevel(pUser.getGenlevel() + 1);
+				}
+				// 默认为直系
+				user.setIsdirect(1);
+				// 默认为亲生
+				user.setIsborn(1);
+				user.setPname(pUser.getUsername());
+				user.setFamilyid(pUser.getFamilyid());
+				user.setFamilyname(pUser.getFamilyname());
+				user.setBranchid(pUser.getBranchid());
+				user.setBranchname(pUser.getBranchname());
+			} else {//添加配偶（例：给张三添加配偶时，mateid就是张三的id）
+				String mateid = user.getMateid();
+				if (StringTools.trimIsEmpty(mateid)) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("参数mateid不能为空！");
+					res = new JsonResponse(result);
+					return res;
+				}
+				User genUser = new User();
+				genUser.setUserid(user.getMateid());
+				genUser.setMateid(userid);
+				genUser.setMatename(user.getUsername());
+				//修改直系成员的配偶信息
+				userDao.updateByPrimaryKeySelective(genUser);
+				User mateUser = userDao.selectByPrimaryKey(mateid);
+				user.setGenlevel(mateUser.getGenlevel());
+				// 配偶默认为非直系
+				user.setIsdirect(0);
+				// 配偶默认为非亲生
+				user.setIsborn(0);
+				user.setMateid(mateid);
+				user.setMatename(mateUser.getUsername());
+				user.setPname(mateUser.getUsername());
+				user.setFamilyid(mateUser.getFamilyid());
+				user.setFamilyname(mateUser.getFamilyname());
+				user.setBranchid(mateUser.getBranchid());
+				user.setBranchname(mateUser.getBranchname());
+			}
+			user.setUserid(userid);
+			String phone = user.getPhone();
+			if (StringTools.trimNotEmpty(phone)) {
+				user.setPassword(MD5Util.string2MD5(phone.substring(phone.length() - 6)));
+			}
+			// 默认为在世
+			user.setLivestatus(0);
+			// 状态为待审核
+			user.setStatus(1);
+			// 默认没有删除
+			user.setDeleteflag(0);
+			user.setPinyinfirst(PinyinUtil.getPinYinFirstChar(user.getUsername()));
+			user.setPinyinfull(PinyinUtil.getPinyinFull(user.getUsername()));
+			user.setCreateid(loginUserid);
+			user.setCreatetime(new Date());
+			status = userDao.insertSelective(user);
+
+			userInfo.setUserid(userid);
+			if (status > 0) {
+				//前台传参：阳历日期：yyyy-MM-dd
+				String birthday = userInfo.getBirthday();
+				try {
+					if (StringUtils.isNotBlank(birthday)) {
+						//(农历日期范围19000101~20491229)
+						int parseInt = Integer.parseInt(birthday.replace("-", ""));
+						if (parseInt > 19000130 && parseInt < 20500101) {
+							String solarToLunar = CalendarUtil.solarToLunar(birthday);
+							userInfo.setLunarbirthday(solarToLunar);
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					result = new Result(MsgConstants.SYS_ERROR);
+					result.setMsg("月份有错!");
+					res = new JsonResponse(result);
+					return res;
+				}
+				String birthplaceP = userInfo.getBirthplaceP() == null ? "" : userInfo.getBirthplaceP();
+				String birthplaceC = userInfo.getBirthplaceC() == null ? "" : userInfo.getBirthplaceC();
+				String birthplaceX = userInfo.getBirthplaceX() == null ? "" : userInfo.getBirthplaceX();
+				String birthDetail = userInfo.getBirthDetail() == null ? "" : userInfo.getBirthDetail();
+				// 出生地
+				userInfo.setBirthplace(birthplaceP + "@@" + birthplaceC + "@@" + birthplaceX + "@@" + birthDetail);
+				String homeplaceP = userInfo.getHomeplaceP() == null ? "" : userInfo.getHomeplaceP();
+				String homeplaceC = userInfo.getHomeplaceC() == null ? "" : userInfo.getHomeplaceC();
+				String homeplaceX = userInfo.getHomeplaceX() == null ? "" : userInfo.getHomeplaceX();
+				String homeDetail = userInfo.getHomeDetail() == null ? "" : userInfo.getHomeDetail();
+				// 常住地
+				userInfo.setHomeplace(homeplaceP + "@@" + homeplaceC + "@@" + homeplaceX + "@@" + homeDetail);
+				status = userInfoDao.insertSelective(userInfo);
+				// 循环保存教育经历
+				List<Useredu> eduList = user.getUserEdu();
+				for (Useredu useredu : eduList) {
+					useredu.setUserid(userid);
+					useredu.setEduid(UUIDUtils.getUUID());
+				}
+				if (eduList.size() > 0) {
+					userEduDao.insertEduExp(eduList);
+				}
+
+				// 循环保存工作经历
+				List<Userworkexp> workList = user.getUserWorkexp();
+				for (Userworkexp userwork : workList) {
+					userwork.setUserid(userid);
+					userwork.setWorkid(UUIDUtils.getUUID());
+				}
+				if (workList.size() > 0) {
+					userworkDao.insertEduExp(workList);
+				}
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (status > 0) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
+	}
+
+	/**
+	 * 递归修改世系(一世添加父亲时，父亲变成了一世，后代子女世系全部加1)
+	 * @param SonUserid 儿子id
+	 */
+	public void changeGenlevel(String SonUserid) {
+		// 获取起始用户
+		User SonUser = userDao.selectByPrimaryKey(SonUserid);
+		SonUser.setGenlevel(SonUser.getGenlevel() + 1);
+		userDao.updateByPrimaryKey(SonUser);
+		if (StringTools.notEmpty(SonUser.getMateid())) {
+			User pUserMate = userDao.selectByPrimaryKey(SonUser.getMateid());
+			if (pUserMate != null) {
+				pUserMate.setGenlevel(SonUser.getGenlevel() + 1);//配偶为相同世系
+				userDao.updateByPrimaryKey(pUserMate);
+			}
+		}
+		// 获取孩子节点
+		UserQuery userQuery = new UserQuery();
+		userQuery.or().andPidEqualTo(SonUser.getUserid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
+		List<User> grandsonUsers = userDao.selectByExample(userQuery);
+		if (grandsonUsers.size() == 0)
+			return;
+		for (User grandson : grandsonUsers) {
+			if (grandson.getGenlevel() == null) {
+				grandson.setGenlevel(SonUser.getGenlevel() + 1);//孙子世系=儿子世系+1
+				userDao.updateByPrimaryKey(grandson);
+			}
+			changeGenlevel(grandson.getUserid());
+		}
 	}
 
 	@Override
@@ -5272,10 +5498,10 @@ public class UserServiceImpl implements UserService {
 		user.setSex(userChildInfo.getSex());
 		user.setBrotherpos(userChildInfo.getBrotherpos());
 		// 是否在世： 不填写，默认为在世
-		user.setLivestatus((userChildInfo.getLivestatus() == null) ? 0 : userChildInfo.getLivestatus());
+		user.setLivestatus(userChildInfo.getLivestatus() == null ? 0 : userChildInfo.getLivestatus());
 		// 是否直系： 不填写，默认为直系
 		if (userChildInfo.getIsdirect() == null) {
-			user.setIsdirect((pUser.getIsdirect() == null) ? 0 : pUser.getIsdirect());
+			user.setIsdirect(pUser.getIsdirect() == null ? 1 : pUser.getIsdirect());
 		} else {
 			user.setIsdirect(userChildInfo.getIsdirect());
 		}
@@ -5353,9 +5579,9 @@ public class UserServiceImpl implements UserService {
 		userInfo.setQqsee((userChildInfo.getQqsee() == null) ? 0 : userChildInfo.getQqsee());
 		userInfo.setTel(userChildInfo.getTel());
 		userInfo.setTelsee((userChildInfo.getTelsee() == null) ? 0 : userChildInfo.getTelsee());
-		userInfoDao.insertSelective(userInfo);
 		userInfo.setRemark(userChildInfo.getRemark());
 		userInfo.setRemarksee((userChildInfo.getRemarksee() == null) ? 0 : userChildInfo.getRemarksee());
+		userInfoDao.insertSelective(userInfo);
 
 		if (icount > 0) {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
@@ -5888,6 +6114,29 @@ public class UserServiceImpl implements UserService {
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
 		res.setData(rtnMap);
+		return res;
+	}
+
+	@Override
+	public JsonResponse getParent(String userid) {
+		Result result = null;
+		JsonResponse res = null;
+		User user = userDao.selectByPrimaryKey(userid);
+		if (user == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("没有当前用户！或参数userid为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		User pUser = userDao.selectByPrimaryKey(user.getPid());
+		if (pUser != null) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(pUser);
+			return res;
+		}
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
 		return res;
 	}
 }
