@@ -258,4 +258,15 @@
       eddesc = #{eddesc,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
+  
+  <!-- 根据分支code值查询查询编委会 -->
+  <select id="selectbyEditor" parameterType="java.lang.String" resultType="com.jp.entity.EditorialBoard">
+  		select e.id from jp_editorial_board e where e.code like concat('%',#{areacode},'%') and  e.familyid=#{familyId}
+  </select>
+  <select id="selectbyEditorTwo" parameterType="java.lang.String" resultType="com.jp.entity.EditorialBoard">
+  		select e.id from jp_editorial_board e where e.code like concat('%',#{citycode},'%') and  e.familyid=#{familyId}
+  </select>
+  <select id="selectbyEditorThree" parameterType="java.lang.String" resultType="com.jp.entity.EditorialBoard">
+  		select e.id from jp_editorial_board e where e.code like concat('%',#{xcode},'%') and  e.familyid=#{familyId}
+  </select>
 </mapper>

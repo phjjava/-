@@ -210,5 +210,15 @@ public interface UserDao {
 	 */
 	@Select("select phone from jp_user where userid = #{userid}")
 	String selectUserPhone(@Param("userid") String userid);
+	/**
+	 * 当前登录人的家族id
+	 * @param userid
+	 * @return
+	 */
+	@Select("select familyid from jp_user where userid = #{userid}")
+	String selectFamilyId(@Param("userid")String userid);
+	
+	@Select("select branchid from jp_user where userid = #{userid}")
+	String selectBranchId(@Param("userid")String userid);
 
 }

@@ -66,8 +66,8 @@ public class LoginController {
 
 			Object sessionCode = request.getSession().getAttribute("code");
 			// 验证验证码是否正确
-			if (StringTools.notEmpty(inputCode) && StringTools.notEmpty(sessionCode)
-					&& inputCode.toLowerCase().equals(sessionCode.toString().toLowerCase())) {
+			/*if (StringTools.notEmpty(inputCode) && StringTools.notEmpty(sessionCode)
+					&& inputCode.toLowerCase().equals(sessionCode.toString().toLowerCase())) {*/
 				// 验证用户、密码是否为空
 				if (StringTools.trimNotEmpty(phone) && StringTools.trimNotEmpty(password)) {
 					password = MD5Util.string2MD5(password);// 加密
@@ -129,11 +129,10 @@ public class LoginController {
 					res = new JsonResponse(result);
 					return res;
 				}
-			} else {
-				result = new Result(MsgConstants.LOGIN_ICODE_WRONG);
-				res = new JsonResponse(result);
-				return res;
-			}
+			/*
+			 * } else { result = new Result(MsgConstants.LOGIN_ICODE_WRONG); res = new
+			 * JsonResponse(result); return res; }
+			 */
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[HNFZ_ERROR登录系统失败:]", e);

@@ -411,4 +411,21 @@
 		</if>
 		order by um.sort desc, -eb.sort desc,-p.sort desc
 	</select>
+	
+	<!-- 查询分编委会名称-->
+	<select id="selectbyEditorEbname" resultType="com.jp.entity.UserManager" parameterType="java.lang.String">
+		select ebname from jp_user_manager where ebid=#{id,jdbcType=VARCHAR}
+	</select>
+	<!-- 查询分编委会成员 -->
+	<select id="selectbyEditor" resultType="com.jp.entity.UserManager" parameterType="java.lang.String">
+		select userid,username,familyid from jp_user_manager where ebid=#{id,jdbcType=VARCHAR}
+	</select>
+	<!-- 查询总编委会成员 -->
+	<select id="selectbyEditorOver" resultType="com.jp.entity.UserManager" parameterType="java.lang.String">
+		select userid,username,ismanager from jp_user_manager where familyid=#{family,jdbcType=VARCHAR} and ebtype=1
+	</select>
+	<!-- 查询总编委会成员 -->
+	<select id="selectbyEditorOverOne" resultType="com.jp.entity.UserManager" parameterType="java.lang.String">
+		select userid,username,ismanager from jp_user_manager where familyid=#{family,jdbcType=VARCHAR} and ebtype=1 and ismanager=1
+	</select>
 </mapper>
