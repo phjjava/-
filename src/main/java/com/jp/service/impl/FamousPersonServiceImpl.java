@@ -13,29 +13,27 @@ import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.dao.FamousPersonMapper;
 import com.jp.entity.BannerQuery;
-import com.jp.entity.FamousPerson;
 import com.jp.entity.BannerQuery.Criteria;
+import com.jp.entity.FamousPerson;
 import com.jp.service.FamousPersonService;
 
 @Service
-public class FamousPersonServiceImpl implements FamousPersonService{
+public class FamousPersonServiceImpl implements FamousPersonService {
 	@Autowired
 	private FamousPersonMapper personMapper;
 
 	@Override
 	public PageModel<FamousPerson> pageQuery(PageModel<FamousPerson> pageModel, FamousPerson famousPerson) {
-		// TODO Auto-generated method stub
 		BannerQuery bq = new BannerQuery();
 		Criteria createCriteria = bq.createCriteria();
-		if(famousPerson.getDeleteflag() != null){
+		if (famousPerson.getDeleteflag() != null) {
 			createCriteria.andDeleteflagEqualTo(famousPerson.getDeleteflag());
 		}
-		/*createCriteria.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());*/
-		
+
 		bq.setOrderByClause("sort");
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 		List<FamousPerson> list = personMapper.selectByExample(bq);
-		
+
 		pageModel.setList(list);
 		pageModel.setPageInfo(new PageInfo<FamousPerson>(list));
 		return pageModel;
@@ -74,20 +72,20 @@ public class FamousPersonServiceImpl implements FamousPersonService{
 	@Override
 	public JsonResponse pageQueryApi(PageModel<FamousPerson> pageModel, FamousPerson famousPerson) {
 		// TODO Auto-generated method stub
-				JsonResponse res = null;
-				Result result = null;
-				BannerQuery bq = new BannerQuery();
-				Criteria createCriteria = bq.createCriteria();
-				if(famousPerson.getDeleteflag() != null){
-					createCriteria.andDeleteflagEqualTo(famousPerson.getDeleteflag());
-				}
-				bq.setOrderByClause("sort");
-				PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-					List<FamousPerson> list = personMapper.selectByExampleNew(bq);
-					result = new Result(MsgConstants.RESUL_SUCCESS);
-					res = new JsonResponse(result);
-					res.setData(list);
-					return res;
+		JsonResponse res = null;
+		Result result = null;
+		BannerQuery bq = new BannerQuery();
+		Criteria createCriteria = bq.createCriteria();
+		if (famousPerson.getDeleteflag() != null) {
+			createCriteria.andDeleteflagEqualTo(famousPerson.getDeleteflag());
+		}
+		bq.setOrderByClause("sort");
+		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+		List<FamousPerson> list = personMapper.selectByExampleNew(bq);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(list);
+		return res;
 	}
 
 }

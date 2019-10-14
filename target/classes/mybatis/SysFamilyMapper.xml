@@ -352,7 +352,6 @@
 		where f.familyid = #{familyid,jdbcType=VARCHAR}
   </select>
     <select id="countIndex" resultType="com.jp.entity.Indexcount">
-    <![CDATA[ 
 	    select 
 	sum(IFNULL(temp.applycount,0)) applycount,
 	sum(IFNULL(temp.usercount,0)) usercount,
@@ -367,8 +366,7 @@
 	union all
 	select count(*) applycount, null usercount,null shicount,null branchcount, null rolecount
 	from jp_user `user` where `user`.`status` = 1 and `user`.deleteflag = 0 and `user`.familyid = #{familyid,jdbcType=VARCHAR} 
-	 ]]>
-	 <if test="list != null">
+	 <if test="list != null and list.size() > 0 ">
 	 and `user`.branchid in 
 	 <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
 	   #{item}

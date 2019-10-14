@@ -38,6 +38,6 @@ public interface UserManagerService {
 
 	UserManager selectByFamilyId(String familyid);
 
-	JsonResponse getPost(int type, String familyid);
+	JsonResponse getPost(int type);
 
 }
