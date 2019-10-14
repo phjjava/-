@@ -53,13 +53,13 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	public JsonResponse pageQuery(PageModel<Branchalbum> pageModel, Branchalbum branchalbum) {
 		Result result = null;
 		JsonResponse res = null;
-		if (pageModel.getPageNo() == null || "".equals(pageModel.getPageNo() + "")) {
+		if (pageModel.getPageNo() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("分页参数pageNo不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (pageModel.getPageSize() == null || "".equals(pageModel.getPageSize() + "")) {
+		if (pageModel.getPageSize() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("分页参数pageSize不能为空！");
 			res = new JsonResponse(result);
@@ -81,10 +81,18 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.isEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			// 当前登录人所管理的branchids
-			List<UserManager> managers = userContextService.getUserManagers(userid);
-			List<String> branchIds = userContextService.getBranchIds(familyid, userid);
+			List<UserManager> managers = userContextService.getUserManagers(userid, ebid);
+			List<String> branchIds = userContextService.getBranchIds(familyid, userid, ebid);
 			List<Branchalbum> list = new ArrayList<Branchalbum>();
 			for (UserManager m : managers) {
 				BranchalbumExample example = new BranchalbumExample();
@@ -96,7 +104,7 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 				if (StringTools.trimNotEmpty(branchalbum.getDeleteflag())) {
 					criteria.andDeleteflagEqualTo(branchalbum.getDeleteflag());
 				}
-				example.setOrderByClause("createtime DESC");
+				example.setOrderByClause("sort asc");
 				PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 				if (m.getEbtype() == 1) {
 					criteria.andFamilyidEqualTo(familyid);
@@ -114,14 +122,6 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 					break;
 				}
 			}
-			// if (branchList!=null&&branchList.size()>0) {
-			// criteria.andBranchidIn(branchList);
-			// }else{
-			// return pageModel;
-			// }
-
-			// List<Branchalbum> list = badao.selectByBranchIds(branchList);
-			// badao.selectBranchAlbumMangeList()\
 			BranchphotoExample example1 = new BranchphotoExample();
 			BranchKey key = new BranchKey();
 			for (Branchalbum al : list) {

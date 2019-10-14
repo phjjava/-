@@ -28,11 +28,11 @@ public interface BranchService {
 	 * @参数 @throws Exception
 	 * @return List<Branch>
 	 */
-	List<Branch> selectBranchListByFamilyAndUserid(String familyid, String userid);
+	List<Branch> selectBranchListByFamilyAndUserid(String familyid, String userid, String ebid);
 
-	JsonResponse validateBranchname(String branchname);
+	JsonResponse validateBranchname(Branch branch);
 
-	JsonResponse checkBeginer(String beginuserid);
+	JsonResponse checkBeginer(Branch branch);
 
 	/**
 	* 以下方法用于api
@@ -67,4 +67,11 @@ public interface BranchService {
 	JsonResponse getGenListOnlyExt(Branch entity);
 
 	Branch selectbyEditor(String userid);
+
+	JsonResponse getBranchsByUserid(String userid, String code, Integer pageNo, Integer pageSize);
+
+	JsonResponse getEbArea(Branch branch);
+
+	JsonResponse getXQAndBranch(Branch entity);
+
 }

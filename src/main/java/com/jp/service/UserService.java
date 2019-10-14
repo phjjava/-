@@ -26,7 +26,7 @@ public interface UserService {
 
 	void updateByPrimaryKeySelective(User user);
 
-	PageModel<User> pageQuery(PageModel<User> pageModel, User user) throws Exception;
+	JsonResponse pageQuery(PageModel<User> pageModel, User user);
 
 	void deleteAndAll(User user) throws Exception;
 
@@ -55,7 +55,9 @@ public interface UserService {
 	 * @参数 @throws Exception
 	 * @return PageModel
 	 */
-	PageModel<User> selectUserList(PageModel<User> pageModel, User user, List<String> branchList) throws Exception;
+	JsonResponse selectUserList(PageModel<User> pageModel, User user);
+
+	JsonResponse apiSearchUser(PageModel<User> pageModel, User user);
 
 	/**
 	 * 
@@ -94,16 +96,7 @@ public interface UserService {
 	 */
 	JsonResponse importUsers(MultipartFile file, HttpServletRequest request) throws Exception;
 
-	/**
-	 * 
-	 * @描述 新增用户时初始化 父亲 和配偶
-	 * @作者 sj
-	 * @时间 2017年5月5日上午10:44:10
-	 * @参数 @return
-	 * @参数 @throws Exception
-	 * @return List<User>
-	 */
-	List<User> selectPnameAndMate(String familyid, List<String> branchList) throws Exception;
+	JsonResponse selectPnameAndMate(String familyid);
 
 	/**
 	 * 
@@ -290,6 +283,8 @@ public interface UserService {
 
 	JsonResponse changeUserinfos(User user);
 
+	JsonResponse addUserinfos(User user, int type);
+
 	JsonResponse getCityNoticeList(User user);
 
 	JsonResponse getCityNoticeListExt(User user);
@@ -327,5 +322,9 @@ public interface UserService {
 	String selectFamilyId(String userid);
 	//得到分支id
 	String selectBranchId(String userid);
+
+	JsonResponse getUserThreeGen(String userid);
+
+	JsonResponse getParent(String userid);
 
 }

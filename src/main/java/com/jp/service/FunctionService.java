@@ -17,7 +17,7 @@ public interface FunctionService {
 
 	List<Function> selectFunctionListByRoleidAndFamilyid(String familyid, String roleid) throws Exception;
 
-	List<Function> selectFunctionListByManagerid(String familyid, String userid);
+	List<Function> selectFunctionListByManagerid(String familyid, String userid, String ebid);
 
 	List<Function> selectFunctionListByEbid(String familyid, String userid, String ebid, String postid);
 

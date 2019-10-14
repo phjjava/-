@@ -81,7 +81,8 @@ public class LoginController {
 							// 用户信息
 							User user = userList.get(0);
 							//			userContext.setUser(user);
-							List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid());
+							List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid(),
+									null);
 							if (managers == null || managers.size() == 0) {
 								result = new Result(MsgConstants.LOGIN_NOT_ADMIN);
 								res = new JsonResponse(result);
@@ -109,7 +110,7 @@ public class LoginController {
 							res = new JsonResponse(result);
 							res.setData(user);
 						} else if (userList.size() < 5) {
-							request.getSession().setAttribute("loginUserList", userList);
+							//			request.getSession().setAttribute("loginUserList", userList);
 							result = new Result(MsgConstants.LOGIN_USER_CHOOSEFAMILY);
 							res = new JsonResponse(result);
 							res.setData(userList);
@@ -161,17 +162,17 @@ public class LoginController {
 		return res;
 	}
 
-	@ResponseBody
-	@RequestMapping(value = "tochoose", method = RequestMethod.GET)
-	public JsonResponse tochoose(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
-		response.addHeader("Access-Control-Allow-Origin", "*");
-		HttpSession session = request.getSession();
-		List<User> userList = (List<User>) session.getAttribute("loginUserList");
-		Result result = new Result(MsgConstants.RESUL_SUCCESS);
-		JsonResponse res = new JsonResponse(result);
-		res.setData(userList);
-		return res;
-	}
+	/*	@ResponseBody
+		@RequestMapping(value = "tochoose", method = RequestMethod.GET)
+		public JsonResponse tochoose(HttpServletRequest request, HttpServletResponse response) {
+			response.addHeader("Access-Control-Allow-Origin", "*");
+			HttpSession session = request.getSession();
+			List<User> userList = (List<User>) session.getAttribute("loginUserList");
+			Result result = new Result(MsgConstants.RESUL_SUCCESS);
+			JsonResponse res = new JsonResponse(result);
+			res.setData(userList);
+			return res;
+		}*/
 
 	@ResponseBody
 	@RequestMapping(value = "choose", method = RequestMethod.POST)
@@ -180,17 +181,16 @@ public class LoginController {
 		Result result = null;
 		JsonResponse res = null;
 		try {
-
 			String userid = request.getParameter("userid");
-			List<User> userList = (List<User>) request.getSession().getAttribute("loginUserList");
-			User user = null;
-			// 根据选择取出对应的用户
-			for (int i = 0; i < userList.size(); i++) {
-				if (userList.get(i).getUserid().equals(userid)) {
-					user = userList.get(i);
-				}
-			}
-
+			/*	List<User> userList = (List<User>) request.getSession().getAttribute("loginUserList");
+				User user = null;
+				// 根据选择取出对应的用户
+				for (int i = 0; i < userList.size(); i++) {
+					if (userList.get(i).getUserid().equals(userid)) {
+						user = userList.get(i);
+					}
+				}*/
+			User user = userService.selectByPrimaryKey(userid);
 			/*	
 				LoginUserInfo userContext = new LoginUserInfo();
 				// 用户信息
@@ -204,7 +204,7 @@ public class LoginController {
 			// return content.toString();
 			// }
 
-			List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid());
+			List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid(), null);
 			if (managers == null || managers.size() == 0) {
 				result = new Result(MsgConstants.LOGIN_NOT_ADMIN);
 				res = new JsonResponse(result);

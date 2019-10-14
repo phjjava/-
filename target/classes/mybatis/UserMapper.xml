@@ -1774,4 +1774,14 @@
 		WHERE pid = #{pid,jdbcType=VARCHAR} and deleteflag = 0 and `status` = 0 ORDER BY -t2.sort desc
 	</select>
 	
+	<select id="selectBrothers" parameterType="com.jp.entity.User" resultMap="BaseResultMap">
+		select * from jp_user u left join jp_userposition p on u.brotherpos = p.position
+		where u.pid = #{pid,jdbcType=VARCHAR}
+		and u.userid != #{userid,jdbcType=VARCHAR}
+		and u.deleteflag = 0 
+		and u.status = 0
+		order by -p.sort desc
+		
+	</select>
+	
 </mapper>

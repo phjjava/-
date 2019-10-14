@@ -69,24 +69,24 @@ public class FamousServiceImpl implements FamousService {
 		JsonResponse res = null;
 		Integer count = 0;
 		String userid = usercontent.getUserid();
-		if (StringTools.isEmpty(userid)) {
+		if (StringTools.trimIsEmpty(userid)) {
 			result = new Result(MsgConstants.FAMOUS_NO_USERID);
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringTools.isEmpty(usercontent.getFamilyid())) {
+		if (StringTools.trimIsEmpty(usercontent.getFamilyid())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数familyid不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringTools.isEmpty(usercontent.getSort())) {
+		if (StringTools.trimIsEmpty(usercontent.getSort())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数sort不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringTools.isEmpty(usercontent.getContent())) {
+		if (StringTools.trimIsEmpty(usercontent.getContent())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数content不能为空！");
 			res = new JsonResponse(result);
@@ -95,7 +95,7 @@ public class FamousServiceImpl implements FamousService {
 		try {
 			//当前登录人 userid
 			String currentUserId = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
-			if (StringTools.isEmpty(currentUserId)) {
+			if (StringTools.trimIsEmpty(currentUserId)) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("用户非法！");
 				res = new JsonResponse(result);

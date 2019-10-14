@@ -75,14 +75,14 @@ public class BranchController {
 	}
 
 	/**
-	 * 验证同以家族中分支名称不能相同
+	 * 验证同一家族中分支名称不能相同
 	 * @param branchname
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/validateBranchname", method = RequestMethod.POST)
-	public JsonResponse validateBranchname(String branchname) {
-		return branchService.validateBranchname(branchname);
+	public JsonResponse validateBranchname(Branch branch) {
+		return branchService.validateBranchname(branch);
 	}
 
 	/**
@@ -92,8 +92,8 @@ public class BranchController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/checkBeginer", method = RequestMethod.POST)
-	public JsonResponse checkBeginer(String beginuserid) {
-		return branchService.checkBeginer(beginuserid);
+	public JsonResponse checkBeginer(Branch branch) {
+		return branchService.checkBeginer(branch);
 	}
 
 	/**
@@ -216,8 +216,6 @@ public class BranchController {
 	@ResponseBody
 	@RequestMapping(value = "/getGenList", method = RequestMethod.GET)
 	public JsonResponse getGenList(Branch branch, HttpServletRequest request) {
-		String userid = request.getHeader("userid");
-		branch.setParentid(userid);
 		return branchService.getGenList(branch);
 	}
 
@@ -271,4 +269,42 @@ public class BranchController {
 		return branchService.getGenListOnlyExtMod(branch);
 	}
 
+	/**
+	 * 根据用户id获取所管理的分支列表（编委会权限）
+	 * 
+	 * @param branch
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getBranchsByUserid", method = RequestMethod.GET)
+	public JsonResponse getBranchsByUserid(String userid, String code, Integer pageNo, Integer pageSize) {
+		return branchService.getBranchsByUserid(userid, code, pageNo, pageSize);
+	}
+
+	/**
+	 * 获取家族管理中有效的省份信息 - 省份列表（根据编委会获取）
+	 * 
+	 * @param branch
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getEbArea", method = RequestMethod.GET)
+	public JsonResponse getEbArea(String userid) {
+		Branch branch = new Branch();
+		branch.setBeginuserid(userid);
+		return branchService.getEbArea(branch);
+	}
+
+	/**
+	 * 获取地区和分支信息 - 省份列表（根据编委会获取）
+	 * 
+	 * @param branch
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getXQAndBranch", method = RequestMethod.GET)
+	public JsonResponse getXQAndBranch(Branch entity) {
+
+		return branchService.getXQAndBranch(entity);
+	}
 }

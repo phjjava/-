@@ -4,7 +4,6 @@ package com.jp.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.security.interfaces.RSAPrivateKey;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,7 +31,6 @@ import com.jp.common.Result;
 import com.jp.dao.BranchDao;
 import com.jp.dao.SysVersionPrivilegeMapper;
 import com.jp.dao.UserDao;
-import com.jp.dao.UserbranchDao;
 import com.jp.entity.Branch;
 import com.jp.entity.BranchKey;
 import com.jp.entity.SearchComplex;
@@ -42,8 +40,6 @@ import com.jp.entity.UserClildInfo;
 import com.jp.entity.UserQuery;
 import com.jp.entity.Useralbum;
 import com.jp.entity.UseralbumKey;
-import com.jp.entity.Userbranch;
-import com.jp.entity.UserbranchQuery;
 import com.jp.entity.Usercode;
 import com.jp.entity.Useredu;
 import com.jp.entity.Userinfo;
@@ -51,7 +47,6 @@ import com.jp.entity.Userphoto;
 import com.jp.entity.UserphotoKey;
 import com.jp.entity.Userworkexp;
 import com.jp.service.BranchService;
-import com.jp.service.UserContextService;
 import com.jp.service.UserEduService;
 import com.jp.service.UserInfoService;
 import com.jp.service.UserService;
@@ -84,13 +79,9 @@ public class UserController {
 	@Autowired
 	private UserDao userDao;
 	@Autowired
-	private UserbranchDao userBranchDao;
-	@Autowired
 	private BranchDao branchDao;
 	@Autowired
 	private SysVersionPrivilegeMapper sysVersionPrivilegeMapper;
-	@Autowired
-	private UserContextService userContextService;
 
 	/**
 	 * 
@@ -351,86 +342,26 @@ public class UserController {
 	}
 
 	/**
-	 * 
-	 * @描述 用户列表的查询
-	 * @作者 sj
-	 * @时间 2017年4月28日上午9:18:58
-	 * @参数 @param pageModel
-	 * @参数 @param model
-	 * @参数 @return
-	 * @return ModelMap
+	 * 用户列表的查询
+	 * @param pageModel
+	 * @param user
+	 * @return
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse list(PageModel<User> pageModel, User user, ModelMap model) {
-		Result result = null;
-		JsonResponse res = null;
-		try {
-			//当前登录人 userid
-			String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
-			if (StringTools.isEmpty(userid)) {
-				result = new Result(MsgConstants.RESUL_FAIL);
-				result.setMsg("用户非法！");
-				res = new JsonResponse(result);
-				return res;
-			}
-			//当前登录人 familyid
-			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
-			if (StringTools.isEmpty(familyid)) {
-				result = new Result(MsgConstants.RESUL_FAIL);
-				result.setMsg("header中参数familyid为空!");
-				res = new JsonResponse(result);
-				return res;
-			}
-			UserbranchQuery ex = new UserbranchQuery();
-			ex.or().andUseridEqualTo(userid);
-			List<Userbranch> list = userBranchDao.selectByExample(ex);
-			Branch bran = new Branch();
-			for (Userbranch b : list) {
-				bran.setBranchid(b.getBranchid());
-				bran.setFamilyid(familyid);
-				bran = branchDao.selectByPrimaryKey(bran);
-				if (bran.getBranchid() != null && !"".equals(bran.getBranchid()))
-					user.setBranchid(b.getBranchid());
-
-			}
-
-			user.setFamilyid(familyid);
-			List<String> branchids = userContextService.getBranchIds(familyid, userid);
-
-			userService.selectUserList(pageModel, user, branchids);
-			if (pageModel.getList() != null) {
-				if (pageModel.getList().size() == 0) {
-					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo().toString())) {
-						pageModel.setPageNo(pageModel.getPageNo() - 1);
-						userService.selectUserList(pageModel, user, branchids);
-					}
-				}
-			}
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
-			res.setData(pageModel.getList());
-			res.setCount(pageModel.getPageInfo().getTotal());
-		} catch (Exception e) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			res = new JsonResponse(result);
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		return res;
+	public JsonResponse list(PageModel<User> pageModel, User user) {
+		return userService.pageQuery(pageModel, user);
 	}
 
 	/**
-	 * @描述 查询非超级管理员的人员
-	 * @作者 wumin
-	 * @时间 2017年5月22日下午4:34:20
-	 * @参数 @param model
-	 * @参数 @return
-	 * @return String
+	 * 查询非超级管理员的人员
+	 * @param request
+	 * @param user
+	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/selectUserItem", method = RequestMethod.POST)
-	public JsonResponse selectUserItem(HttpServletRequest request, User user, ModelMap model) {
+	public JsonResponse selectUserItem(HttpServletRequest request, User user) {
 		Result result = null;
 		JsonResponse res = null;
 		//当前登录人 familyid
@@ -459,16 +390,14 @@ public class UserController {
 	}
 
 	/**
-	 * @描述 查询所有人员
-	 * @作者 chenxiaobing
-	 * @时间 2018年8月2日下午4:34:20
-	 * @参数 @param model
-	 * @参数 @return
-	 * @return String
+	 * 查询所有人员
+	 * @param request
+	 * @param user
+	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/selectAllUser", method = RequestMethod.POST)
-	public JsonResponse selectAllUser(HttpServletRequest request, User user, ModelMap model) {
+	public JsonResponse selectAllUser(HttpServletRequest request, User user) {
 		// String gsonStr = null;
 		Result result = null;
 		JsonResponse res = null;
@@ -497,12 +426,11 @@ public class UserController {
 	}
 
 	/**
-	 * @描述 查询非超级管理员的人员
-	 * @作者 wumin
-	 * @时间 2017年5月22日下午4:34:20
-	 * @参数 @param model
-	 * @参数 @return
-	 * @return String
+	 * 查询非超级管理员的人员
+	 * @param request
+	 * @param user
+	 * @param model
+	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/selectUserItemLive", method = RequestMethod.POST)
@@ -535,18 +463,9 @@ public class UserController {
 	}
 
 	/**
-	 * 
-	 * @描述 停用用户
-	 * @作者 sj
-	 * @时间 2017年5月3日下午5:41:12
-	 * @参数 @param user
-	 * @参数 @param userInfo
-	 * @参数 @param userEdu
-	 * @参数 @param model
-	 * @参数 @param eduExpArray
-	 * @参数 @param workExpArray
-	 * @参数 @return
-	 * @return String
+	 * 停用用户
+	 * @param user
+	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
@@ -555,16 +474,10 @@ public class UserController {
 	}
 
 	/**
-	 * 
-	 * @描述 批量导入用户
-	 * @作者 sj
-	 * @时间 2017年5月1日下午2:24:07
-	 * @参数 @param user
-	 * @参数 @param userInfo
-	 * @参数 @param userEdu
-	 * @参数 @param model
-	 * @参数 @return
-	 * @return String
+	 * 批量导入用户
+	 * @param file
+	 * @param request
+	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/importUser", method = RequestMethod.POST, produces = { "application/json;charset=UTF-8" })
@@ -583,16 +496,10 @@ public class UserController {
 	}
 
 	/**
-	 * 
-	 * @描述 批量导入配偶
-	 * @作者 sj
-	 * @时间 2017年5月1日下午2:24:07
-	 * @参数 @param user
-	 * @参数 @param userInfo
-	 * @参数 @param userEdu
-	 * @参数 @param model
-	 * @参数 @return
-	 * @return String
+	 * 批量导入配偶
+	 * @param file
+	 * @param request
+	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/importUsermates", method = RequestMethod.POST, produces = {
@@ -611,58 +518,21 @@ public class UserController {
 	}
 
 	/**
-	 * @描述 新增用户初始化父亲 和 配偶
-	 * @作者 sj
-	 * @时间 2017年5月5日上午11:03:44
-	 * @参数 @param familyid
-	 * @参数 @return
-	 * @return String
+	 * 新增用户初始化父亲 和 配偶
+	 * @param familyid
+	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/selectPnameAndMate", method = RequestMethod.POST)
 	public JsonResponse selectPnameAndMate(String familyid) {
-		// String gsonStr = null;
-		Result result = null;
-		JsonResponse res = null;
-		//当前登录人 userid
-		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
-		if (StringTools.isEmpty(userid)) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("用户非法！");
-			res = new JsonResponse(result);
-			return res;
-		}
-		if (StringTools.isEmpty(familyid)) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("参数familyid为空!");
-			res = new JsonResponse(result);
-			return res;
-		}
-		try {
-			List<String> branchList = userContextService.getBranchIds(familyid, userid);
-			List<User> userList = userService.selectPnameAndMate(familyid, branchList);
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
-			res.setData(userList);
-			// gsonStr = GsonUtil.GsonString(userList);
-		} catch (Exception e) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			res = new JsonResponse(result);
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		return res;
+		return userService.selectPnameAndMate(familyid);
 	}
 
 	/**
-	 * 
-	 * @描述 待审核用户列表的查询
-	 * @作者 sj
-	 * @时间 2017年4月28日上午9:18:58
-	 * @参数 @param pageModel
-	 * @参数 @param model
-	 * @参数 @return
-	 * @return ModelMap
+	 * 待审核用户列表的查询
+	 * @param pageModel
+	 * @param user
+	 * @return
 	 */
 	@RequestMapping(value = "/listToReview", method = RequestMethod.POST)
 	@ResponseBody
@@ -703,13 +573,9 @@ public class UserController {
 	}
 
 	/**
-	 * 
-	 * @描述 通过或拒绝用户
-	 * @作者 sj
-	 * @时间 2017年5月8日下午7:46:13
-	 * @参数 @param user
-	 * @参数 @return
-	 * @return String
+	 *  通过或拒绝用户
+	 * @param user
+	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/changeStatusOfReview", method = RequestMethod.POST)
@@ -1212,12 +1078,18 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/editPassowrd")
 	public JsonResponse editPwd(String oldpassword, String password) {
-		// Result result = new Result();
 		Result result = null;
 		JsonResponse res = null;
+		String regex = "^[A-Za-z0-9]+$";
+		if (!password.matches(regex)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("密码仅限输入数字或字母!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		//当前登录人 userid
 		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
-		if (StringTools.isEmpty(userid)) {
+		if (StringTools.trimIsEmpty(userid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("用户非法！");
 			res = new JsonResponse(result);
@@ -1225,7 +1097,7 @@ public class UserController {
 		}
 		//当前登录人 familyid
 		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
-		if (StringTools.isEmpty(familyid)) {
+		if (StringTools.trimIsEmpty(familyid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("header中参数familyid为空!");
 			res = new JsonResponse(result);
@@ -1358,70 +1230,8 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/searchUser", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse searchUser(PageModel<User> pageModel, User user, ModelMap model) throws IOException {
-		Result result = null;
-		JsonResponse res = null;
-		//当前登录人 userid
-		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
-		if (StringTools.isEmpty(userid)) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("用户非法！");
-			res = new JsonResponse(result);
-			return res;
-		}
-		//当前登录人 familyid
-		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
-		if (StringTools.isEmpty(familyid)) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("header中参数familyid为空!");
-			res = new JsonResponse(result);
-			return res;
-		}
-		try {
-			UserbranchQuery ex = new UserbranchQuery();
-			ex.or().andUseridEqualTo(userid);
-			List<Userbranch> list = userBranchDao.selectByExample(ex);
-			Branch bran = new Branch();
-			for (Userbranch b : list) {
-				bran.setBranchid(b.getBranchid());
-				bran.setFamilyid(familyid);
-				bran = branchDao.selectByPrimaryKey(bran);
-				if (bran.getBranchid() != null && !"".equals(bran.getBranchid()))
-					user.setBranchid(b.getBranchid());
-			}
-			user.setFamilyid(familyid);
-			user.setStatus(0); // 用户状态默认启用
-			List<String> branchList = userContextService.getBranchIds(familyid, userid);
-			userService.selectUserList(pageModel, user, branchList);
-			if (pageModel.getList() != null) {
-				if (pageModel.getList().size() == 0) {
-					if (pageModel.getPageNo() != null && !"1".equals(pageModel.getPageNo() + "")) {
-						pageModel.setPageNo(pageModel.getPageNo() - 1);
-						userService.selectUserList(pageModel, user, branchList);
-					}
-				}
-			}
-
-			List<User> userList = new ArrayList<>();
-			// 增加address字段
-			for (Object obj : pageModel.getList()) {
-				User userAddrss = (User) obj;
-				String address = userService.getAllAddressByUserid(userAddrss.getUserid());
-				userAddrss.setAddress(address);
-				userAddrss.setBranchAllName(address + "_" + userAddrss.getBranchname());
-				userList.add(userAddrss);
-			}
-			pageModel.setList(userList);
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
-			res.setData(pageModel);
-		} catch (Exception e) {
-			result = new Result(MsgConstants.RESUL_FAIL);
-			res = new JsonResponse(result);
-			e.printStackTrace();
-			log_.error("[JPSYSTEM]", e);
-		}
-		return res;
+	public JsonResponse searchUser(PageModel<User> pageModel, User user) {
+		return userService.selectUserList(pageModel, user);
 	}
 
 	/**
@@ -1758,6 +1568,19 @@ public class UserController {
 	}
 
 	/**
+	 * 新增成员（添加兄弟、父母、配偶、子女）
+	 * 
+	 * @param user
+	 * @param type 1：添加父母，2：添加兄弟姐妹、子女，3：添加配偶
+	 * @return
+	 */
+	@RequestMapping(value = "/addUserinfos", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse addUserinfos(@RequestBody User user, int type) {
+		return userService.addUserinfos(user, type);
+	}
+
+	/**
 	 * 获取用户所在城市下的所有动态列表
 	 * 
 	 * @param user
@@ -1945,4 +1768,42 @@ public class UserController {
 		return userService.changeLoginUser(user, loginType, internetType, version);
 	}
 
+	/**
+	 * 切换家族登录（已登录得情况下）
+	 * @param user
+	 * @param loginType
+	 * @param internetType
+	 * @param version
+	 * @return
+	 */
+	@RequestMapping(value = "/getUserThreeGen", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getUserThreeGen(String userid) {
+
+		return userService.getUserThreeGen(userid);
+	}
+
+	/**
+	 * api用户检索接口
+	 * @param pageModel
+	 * @param user
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/apiSearchUser", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse apiSearchUser(PageModel<User> pageModel, User user) {
+		return userService.apiSearchUser(pageModel, user);
+	}
+
+	/**
+	 * 通过用户id查询父亲
+	 * @param userid
+	 * @return
+	 */
+	@RequestMapping(value = "/getParent", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getParent(String userid) {
+		return userService.getParent(userid);
+	}
 }

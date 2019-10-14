@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -124,7 +123,7 @@ public class BannerServiceImpl implements BannerService {
 	public JsonResponse get(String bannerid) {
 		Result result = null;
 		JsonResponse res = null;
-		if (StringUtils.isBlank(bannerid)) {
+		if (StringTools.trimIsEmpty(bannerid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerid不能为空！");
 			res = new JsonResponse(result);
@@ -152,7 +151,7 @@ public class BannerServiceImpl implements BannerService {
 	public JsonResponse changeStatus(Banner banner) {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
-		if (StringUtils.isBlank(banner.getBannerid())) {
+		if (StringTools.trimIsEmpty(banner.getBannerid())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerid不能为空！");
 			res = new JsonResponse(result);
@@ -188,37 +187,37 @@ public class BannerServiceImpl implements BannerService {
 		Result result = new Result(MsgConstants.RESUL_FAIL);
 		JsonResponse res = null;
 		Integer count = 0;
-		if (StringUtils.isBlank(banner.getBannername())) {
+		if (StringTools.trimIsEmpty(banner.getBannername())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannername不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringUtils.isBlank(banner.getBannerdesc())) {
+		if (StringTools.trimIsEmpty(banner.getBannerdesc())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerdesc不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringUtils.isBlank(banner.getBannerphoneurl())) {
+		if (StringTools.trimIsEmpty(banner.getBannerphoneurl())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerphoneurl不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringUtils.isBlank(banner.getBannerweburl())) {
+		if (StringTools.trimIsEmpty(banner.getBannerweburl())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerweburl不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringUtils.isBlank(banner.getGotype() + "")) {
+		if (StringTools.trimIsEmpty(banner.getGotype() + "")) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数gotype不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (StringUtils.isBlank(banner.getBannerurl())) {
+		if (StringTools.trimIsEmpty(banner.getBannerurl())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerurl不能为空！");
 			res = new JsonResponse(result);
@@ -226,7 +225,7 @@ public class BannerServiceImpl implements BannerService {
 		}
 		//当前登录人 userid
 		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
-		if (StringTools.isEmpty(userid)) {
+		if (StringTools.trimIsEmpty(userid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("用户非法！");
 			res = new JsonResponse(result);
@@ -234,7 +233,7 @@ public class BannerServiceImpl implements BannerService {
 		}
 		//当前登录人 familyid
 		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
-		if (StringTools.isEmpty(familyid)) {
+		if (StringTools.trimIsEmpty(familyid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("header中参数familyid为空!");
 			res = new JsonResponse(result);
@@ -285,18 +284,21 @@ public class BannerServiceImpl implements BannerService {
 	public JsonResponse batchDelete(String bannerids) {
 		Result result = null;
 		JsonResponse res = null;
-		if (StringUtils.isBlank(bannerids)) {
+		Integer status = 0;
+		if (StringTools.trimIsEmpty(bannerids)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数bannerids不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
 		try {
-			// a,b,c
-			String bannerid = bannerids.substring(0, bannerids.length());
-			String banneridArray[] = bannerid.split(",");
-			bdao.batchDelete(banneridArray);
-			result = new Result(MsgConstants.RESUL_SUCCESS);
+			String[] banneridArray = bannerids.split(",");
+			status = bdao.batchDelete(banneridArray);
+			if (status > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				return res;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			result = new Result(MsgConstants.SYS_ERROR);
@@ -314,7 +316,7 @@ public class BannerServiceImpl implements BannerService {
 		JsonResponse res = null;
 		//当前登录人 userid
 		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
-		if (StringTools.isEmpty(userid)) {
+		if (StringTools.trimIsEmpty(userid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("用户非法！");
 			res = new JsonResponse(result);
@@ -322,31 +324,34 @@ public class BannerServiceImpl implements BannerService {
 		}
 		//当前登录人 familyid
 		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
-		if (StringTools.isEmpty(familyid)) {
+		if (StringTools.trimIsEmpty(familyid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.trimIsEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringTools.trimIsEmpty(goType)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数goType不能为空!");
 			res = new JsonResponse(result);
 			return res;
 		}
 		GoTypeResult goTypeResult = null;
 		List<GoTypeResult> goTypeResultList = new ArrayList<GoTypeResult>();
 		try {
-			Integer type = userContextService.getUserManagers(userid).get(0).getEbtype();
-			List<String> branchIds = userContextService.getBranchIds(familyid, userid);
+			Integer type = userContextService.getUserManagers(userid, ebid).get(0).getEbtype();
+			List<String> branchIds = userContextService.getBranchIds(familyid, userid, ebid);
 			//动态
 			if (goType.equals("1")) {
 
-				//			if(type == 1){
-				//				branchIds.clear();//验证是否是总编委会
-				//				Branch branch = new Branch();
-				//				branch.setFamilyid(familyid);
-				//				List<Branch> branchList = branchDao.selectBranchList(branch);
-				//				if(branchList != null && branchList.size() > 0){
-				//					for (int i = 0; i < branchList.size(); i++) {
-				//						branchIds.add(branchList.get(i).getBranchid());
-				//					}
-				//				}
-				//			}
 				List<Dynamic> dynamicList = null;
 				if (type == 1) {
 					DynamicExample ex = new DynamicExample();
@@ -360,7 +365,7 @@ public class BannerServiceImpl implements BannerService {
 				if (dynamicList != null) {
 					for (int j = 0; j < dynamicList.size(); j++) {
 						String dytitle = dynamicList.get(j).getDytitle();
-						if (StringTools.notEmpty(dytitle)) {
+						if (StringTools.trimNotEmpty(dytitle)) {
 							goTypeResult = new GoTypeResult();
 							goTypeResult.setId(dynamicList.get(j).getDyid());
 							goTypeResult.setName(dytitle);
@@ -375,7 +380,7 @@ public class BannerServiceImpl implements BannerService {
 				if (list != null) {
 					for (int i = 0; i < list.size(); i++) {
 						String albumname = list.get(i).getAlbumname();
-						if (StringTools.notEmpty(albumname)) {
+						if (StringTools.trimNotEmpty(albumname)) {
 							goTypeResult = new GoTypeResult();
 							goTypeResult.setId(list.get(i).getAlbumid());
 							goTypeResult.setName(albumname);
@@ -390,7 +395,7 @@ public class BannerServiceImpl implements BannerService {
 				if (list != null) {
 					for (int i = 0; i < list.size(); i++) {
 						String eventtitle = list.get(i).getEventtitle();
-						if (StringTools.notEmpty(eventtitle)) {
+						if (StringTools.trimNotEmpty(eventtitle)) {
 							goTypeResult = new GoTypeResult();
 							goTypeResult.setId(list.get(i).getEventid());
 							goTypeResult.setName(eventtitle);
@@ -405,7 +410,7 @@ public class BannerServiceImpl implements BannerService {
 				if (list != null) {
 					for (int i = 0; i < list.size(); i++) {
 						String username = list.get(i).getUsername();
-						if (StringTools.notEmpty(username)) {
+						if (StringTools.trimNotEmpty(username)) {
 							goTypeResult = new GoTypeResult();
 							goTypeResult.setId(list.get(i).getUserid());
 							goTypeResult.setName(username);
@@ -427,7 +432,7 @@ public class BannerServiceImpl implements BannerService {
 				if (list != null) {
 					for (int i = 0; i < list.size(); i++) {
 						String introducetitle = list.get(i).getIntroducetitle();
-						if (StringTools.notEmpty(introducetitle)) {
+						if (StringTools.trimNotEmpty(introducetitle)) {
 							goTypeResult = new GoTypeResult();
 							goTypeResult.setId(list.get(i).getIntroduceid());
 							goTypeResult.setName(introducetitle);
@@ -454,7 +459,7 @@ public class BannerServiceImpl implements BannerService {
 					if (list != null) {
 						for (int i = 0; i < list.size(); i++) {
 							String noticetitle = list.get(i).getNoticetitle();
-							if (StringTools.notEmpty(noticetitle)) {
+							if (StringTools.trimNotEmpty(noticetitle)) {
 								goTypeResult = new GoTypeResult();
 								goTypeResult.setId(list.get(i).getNoticeid());
 								goTypeResult.setName(noticetitle);
@@ -476,7 +481,7 @@ public class BannerServiceImpl implements BannerService {
 				if (list != null) {
 					for (int i = 0; i < list.size(); i++) {
 						String description = list.get(i).getDescription();
-						if (StringTools.notEmpty(description)) {
+						if (StringTools.trimNotEmpty(description)) {
 							goTypeResult = new GoTypeResult();
 							goTypeResult.setId(list.get(i).getImgurl());
 							goTypeResult.setName(description);

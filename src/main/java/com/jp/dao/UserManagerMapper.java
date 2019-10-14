@@ -22,6 +22,8 @@ public interface UserManagerMapper {
 
 	List<UserManager> selectByExample(UserManagerExample example);
 
+	List<UserManager> selectManagerByUserid(@Param("userid") String userid, @Param("ebid") String ebid);
+
 	UserManager selectByPrimaryKey(String id);
 
 	int updateByExampleSelective(@Param("record") UserManager record, @Param("example") UserManagerExample example);

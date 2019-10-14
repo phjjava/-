@@ -2,8 +2,6 @@ package com.jp.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +16,6 @@ import com.jp.common.MsgConstants;
 import com.jp.common.Result;
 import com.jp.entity.Branch;
 import com.jp.service.BranchService;
-import com.jp.util.GsonUtil;
 import com.jp.util.StringTools;
 import com.jp.util.WebUtil;
 
@@ -46,32 +43,38 @@ public class CommonController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/currentBranchJson", method = RequestMethod.POST)
-	public JsonResponse currentBranchJson(HttpServletRequest request) {
+	public JsonResponse currentBranchJson() {
 		Result result = null;
 		JsonResponse res = null;
 		//当前登录人 userid
 		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
-		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
 		if (StringTools.isEmpty(userid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("用户非法！");
 			res = new JsonResponse(result);
 			return res;
 		}
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
 		if (StringTools.isEmpty(familyid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("header中参数familyid为空!");
 			res = new JsonResponse(result);
 			return res;
 		}
-		String branchJson = null;
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.isEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
-			List<Branch> branchList = branchService.selectBranchListByFamilyAndUserid(familyid, userid);
-			branchJson = GsonUtil.GsonString(branchList);
-			if (StringTools.trimIsEmpty(branchJson)) {
-				result = new Result(MsgConstants.RESUL_FAIL);
-				result.setMsg("当前用户没有分支!");
+			List<Branch> branchList = branchService.selectBranchListByFamilyAndUserid(familyid, userid, ebid);
+			if (branchList.size() > 0) {
+				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);
+				res.setData(branchList);
 				return res;
 			}
 		} catch (Exception e) {
@@ -81,9 +84,9 @@ public class CommonController {
 			res = new JsonResponse(result);
 			return res;
 		}
-		result = new Result(MsgConstants.RESUL_SUCCESS);
+		result = new Result(MsgConstants.RESUL_FAIL);
+		result.setMsg("当前用户没有分支!");
 		res = new JsonResponse(result);
-		res.setData(branchJson);
 		return res;
 	}
 

@@ -1,13 +1,25 @@
 package com.jp.entity;
 
 public class GenUserOther {
-    String username;
-    String userid;
-    Integer sex;
-    String imgurl;
-    Integer genlevel;
-    Integer livestatus;
-    public Integer getLivestatus() {
+	String username;
+	String userid;
+	Integer sex;
+	String imgurl;
+	Integer genlevel;
+	Integer livestatus;
+	String pid;
+	String brotherpos;
+	GenUserOther mate;
+
+	public String getBrotherpos() {
+		return brotherpos;
+	}
+
+	public void setBrotherpos(String brotherpos) {
+		this.brotherpos = brotherpos;
+	}
+
+	public Integer getLivestatus() {
 		return livestatus;
 	}
 
@@ -15,68 +27,60 @@ public class GenUserOther {
 		this.livestatus = livestatus;
 	}
 
-	String pid;
+	public String getPid() {
+		return pid;
+	}
 
-    GenUserOther mate;
+	public void setPid(String pid) {
+		this.pid = pid;
+	}
 
+	public GenUserOther getMate() {
+		return mate;
+	}
 
+	public void setMate(GenUserOther mate) {
+		this.mate = mate;
+	}
 
-    public String getPid() {
-        return pid;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public void setPid(String pid) {
-        this.pid = pid;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    public GenUserOther getMate() {
-        return mate;
-    }
+	public String getUserid() {
+		return userid;
+	}
 
-    public void setMate(GenUserOther mate) {
-        this.mate = mate;
-    }
+	public void setUserid(String userid) {
+		this.userid = userid;
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	public String getImgurl() {
+		return imgurl == null ? "" : imgurl;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public void setImgurl(String imgurl) {
+		this.imgurl = imgurl;
+	}
 
-    public String getUserid() {
-        return userid;
-    }
+	public Integer getSex() {
+		return sex == null ? 3 : sex;
+	}
 
-    public void setUserid(String userid) {
-        this.userid = userid;
-    }
+	public void setSex(Integer sex) {
+		this.sex = sex;
+	}
 
+	public Integer getGenlevel() {
+		return genlevel;
+	}
 
-
-    public String getImgurl() {
-        return imgurl == null ? "" : imgurl;
-    }
-
-    public void setImgurl(String imgurl) {
-        this.imgurl = imgurl;
-    }
-
-    public Integer getSex() {
-        return sex == null ? 3 : sex;
-    }
-
-    public void setSex(Integer sex) {
-        this.sex = sex;
-    }
-
-    public Integer getGenlevel() {
-        return genlevel;
-    }
-
-    public void setGenlevel(Integer genlevel) {
-        this.genlevel = genlevel;
-    }
+	public void setGenlevel(Integer genlevel) {
+		this.genlevel = genlevel;
+	}
 
 }

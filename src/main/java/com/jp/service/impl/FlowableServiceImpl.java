@@ -93,7 +93,7 @@ public class FlowableServiceImpl implements FlowableService {
 				} else {
 					//判断当前人是否为总编委会主任
 					String postname="";
-					List<UserManager> managers = userManagerService.selectManagerByUserid(userid);
+					List<UserManager> managers = userManagerService.selectManagerByUserid(userid, postname);
 					for (UserManager userManager : managers) {
 						postname=userManager.getPostname();
 					}
@@ -186,7 +186,7 @@ public class FlowableServiceImpl implements FlowableService {
 				} else {
 					//判断当前人是否为总编委会主任
 					String postname="";
-					List<UserManager> managers = userManagerService.selectManagerByUserid(userid);
+					List<UserManager> managers = userManagerService.selectManagerByUserid(userid, postname);
 					for (UserManager userManager : managers) {
 						postname=userManager.getPostname();
 					}

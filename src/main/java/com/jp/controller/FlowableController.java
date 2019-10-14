@@ -68,7 +68,6 @@ import com.jp.service.NoticeService;
 import com.jp.service.UserService;
 import com.jp.util.WebUtil;
 
-import sun.jvmstat.monitor.Variability;
 
 @Controller
 @RequestMapping("expense")

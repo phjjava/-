@@ -20,28 +20,31 @@ import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.dao.BranchDao;
+import com.jp.dao.DynamicMapper;
+import com.jp.dao.EditorialBoardMapper;
+import com.jp.dao.NoticeMapper;
 import com.jp.dao.SysFamilyDao;
 import com.jp.dao.SysVersionPrivilegeMapper;
 import com.jp.dao.UserDao;
 import com.jp.dao.UserManagerMapper;
-import com.jp.dao.UserbranchDao;
 import com.jp.entity.Branch;
 import com.jp.entity.BranchAreaCity;
 import com.jp.entity.BranchCityBranch;
 import com.jp.entity.BranchKey;
 import com.jp.entity.BranchQuery;
 import com.jp.entity.BranchValidArea;
+import com.jp.entity.Dynamic;
+import com.jp.entity.DynamicExample;
 import com.jp.entity.GenUser;
 import com.jp.entity.GenUserOther;
 import com.jp.entity.GenUserVO;
+import com.jp.entity.Notice;
+import com.jp.entity.NoticeExample;
 import com.jp.entity.SysFamily;
 import com.jp.entity.SysVersionPrivilege;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
-import com.jp.entity.UserManagerExample;
 import com.jp.entity.UserQuery;
-import com.jp.entity.Userbranch;
-import com.jp.entity.UserbranchQuery;
 import com.jp.service.BranchService;
 import com.jp.service.UserContextService;
 import com.jp.util.StringTools;
@@ -64,9 +67,13 @@ public class BranchServiceImpl implements BranchService {
 	@Autowired
 	private SysVersionPrivilegeMapper sysVersionPrivilegeMapper;
 	@Autowired
-	private UserbranchDao userBranchDao;
-	@Autowired
 	private UserContextService userContextService;
+	@Autowired
+	private EditorialBoardMapper editorialBoardMapper;
+	@Autowired
+	private DynamicMapper dynamicMapper;
+	@Autowired
+	private NoticeMapper noticeMapper;
 
 	/**
 	 * 从起始人按父子关系，递归更新分支用户（包括配偶）的分支属性
@@ -125,32 +132,29 @@ public class BranchServiceImpl implements BranchService {
 				res = new JsonResponse(result);
 				return res;
 			}
-			UserbranchQuery userbranchQuery = new UserbranchQuery();
-			userbranchQuery.or().andUseridEqualTo(userid);
-			List<Userbranch> userbranchList = userBranchDao.selectByExample(userbranchQuery);
-			BranchKey key = new BranchKey();
-			for (Userbranch b : userbranchList) {
-				key.setBranchid(b.getBranchid());
-				key.setFamilyid(familyid);
-				Branch bran = branchDao.selectByPrimaryKey(key);
-				if (bran.getBranchid() != null && !"".equals(bran.getBranchid()))
-					branch.setBranchid(b.getBranchid());
+			//当前登录人所管理的编委会id
+			String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+			if (StringTools.isEmpty(ebid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("header中参数ebid为空!");
+				res = new JsonResponse(result);
+				return res;
 			}
+			String code = editorialBoardMapper.selectCodeByEbid(ebid);
+			String[] codeList = code.split(",");
 			branch.setFamilyid(familyid);
-
-			UserManagerExample example = new UserManagerExample();
-			example.or().andUseridEqualTo(userid);
-			example.setOrderByClause("ebtype desc,ismanager desc");
-			List<UserManager> managers = userManagerMapper.selectByExample(example);
+			UserManager manager = userContextService.getUserManagers(userid, ebid).get(0);
 			List<Branch> branchList = new ArrayList<>();
-			for (UserManager manager : managers) {
-				PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-				if (manager.getEbtype() == 1) {
-					branchList = branchDao.selectBranchListByFamilyAndUserid(familyid, null, branch.getBranchname());
-					break;
+			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			if (manager.getEbtype() == 1) {
+				branchList = branchDao.selectBranchListByFamilyAndUserid(branch.getStatus(), familyid,
+						branch.getBranchname());
+			} else {
+				//branchList = branchDao.getBranchsByFamilyAndUserid(familyid, userid, branch.getBranchname());
+				if (codeList.length > 1) {
+					branchList = branchDao.getBranchListByFamilyAndCodes(familyid, codeList, branch.getBranchname());
 				} else {
-					branchList = branchDao.getBranchsByFamilyAndUserid(familyid, userid, branch.getBranchname());
-					break;
+					branchList = branchDao.getBranchListByFamilyAndCode(familyid, code, branch.getBranchname());
 				}
 			}
 			UserQuery userQuery = new UserQuery();
@@ -201,12 +205,44 @@ public class BranchServiceImpl implements BranchService {
 			return res;
 		}
 		try {
-			if (StringTools.notEmpty(branch.getBranchid())) {// 修改
+			String branchid = branch.getBranchid();
+			String branchname = branch.getBranchname();
+			String beginuserid = branch.getBeginuserid();
+			//验证同一家族中分支名称不能相同
+			JsonResponse validateRes = validateBranchname(branch);
+			if (validateRes.getCode() != 0) {
+				return validateRes;
+			}
+			//检查发起人是否已经发起过其他分支
+			JsonResponse checkBeginer = checkBeginer(branch);
+			if (checkBeginer.getCode() != 0) {
+				return checkBeginer;
+			}
+			if (StringTools.notEmpty(branchid)) {// 修改
 				branch.setUpdateid(userid);
 				branch.setUpdatetime(new Date());
+				branch.setFamilyid(familyid);
 				count = branchDao.updateByPrimaryKeySelective(branch);
 				if (count > 0) {
-					updateUserBranch(branch.getBeginuserid(), branch.getBranchid(), branch.getBranchname());
+					updateUserBranch(beginuserid, branchid, branchname);
+					//同步用户分支名称
+					UserQuery uq = new UserQuery();
+					uq.or().andBranchidEqualTo(branchid);
+					User user = new User();
+					user.setBranchname(branchname);
+					userDao.updateByExampleSelective(user, uq);
+					//同步资讯分支名称
+					DynamicExample de = new DynamicExample();
+					de.or().andBranchidEqualTo(branchid);
+					Dynamic dynamic = new Dynamic();
+					dynamic.setBranchname(branchname);
+					dynamicMapper.updateByExampleSelective(dynamic, de);
+					//同步公告分支名称
+					NoticeExample ne = new NoticeExample();
+					ne.or().andBranchidEqualTo(branchid);
+					Notice notice = new Notice();
+					notice.setBranchname(branchname);
+					noticeMapper.updateByExampleSelective(notice, ne);
 				}
 			} else {// 新增
 				boolean flag = checkFamilyBranchNumber(1, familyid);
@@ -217,7 +253,7 @@ public class BranchServiceImpl implements BranchService {
 					branch.setCreateid(userid);
 					count = branchDao.insertSelective(branch);
 					if (count > 0) {
-						updateUserBranch(branch.getBeginuserid(), branch.getBranchid(), branch.getBranchname());
+						updateUserBranch(beginuserid, branch.getBranchid(), branch.getBranchname());
 					}
 				} else {
 					result = new Result(MsgConstants.BRANCH_SAVE_OUTMAX);
@@ -244,7 +280,8 @@ public class BranchServiceImpl implements BranchService {
 
 	/**
 	 * 检查新增分支是否超过了家族版本限制
-	 * @param count
+	 * @param count  新增分支的数量
+	 * @param familyid 家族id
 	 * @return
 	 */
 	public boolean checkFamilyBranchNumber(int count, String familyid) {
@@ -325,10 +362,18 @@ public class BranchServiceImpl implements BranchService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.isEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			branch.setFamilyid(familyid);
-			List<UserManager> userManager = userContextService.getUserManagers(userid);
-			List<String> branchIds = userContextService.getBranchIds(familyid, userid);
+			List<UserManager> userManager = userContextService.getUserManagers(userid, ebid);
+			List<String> branchIds = userContextService.getBranchIds(familyid, userid, ebid);
 			List<Branch> list = new ArrayList<>();
 			for (UserManager um : userManager) {
 				if (um.getEbtype() == 1) {
@@ -365,27 +410,45 @@ public class BranchServiceImpl implements BranchService {
 	}
 
 	@Override
-	public List<Branch> selectBranchListByFamilyAndUserid(String familyid, String userid) {
-		// List<Branch> branchs =null;
+	public List<Branch> selectBranchListByFamilyAndUserid(String familyid, String userid, String ebid) {
+		//ebid为null时可能会查询多条（一人管理多个编委会），web端需要切换编委会ebid必传（肯定是单条）
+		List<UserManager> managers = userContextService.getUserManagers(userid, ebid);
 		List<Branch> rtnlist = new ArrayList<Branch>();
-		UserManagerExample example = new UserManagerExample();
-		example.or().andUseridEqualTo(userid);
-		example.setOrderByClause("ebtype desc,ismanager desc");
-		List<UserManager> managers = userManagerMapper.selectByExample(example);
-		// List<String> managerids =new ArrayList<String>();
-		for (UserManager manager : managers) {
-			// branchs = new ArrayList<Branch>();
-			// 总编委会查看全部
-			if (manager.getEbtype() == 1) {
-				rtnlist = branchDao.selectBranchListByFamilyAndUserid(familyid, null, null);
-				break;
+
+		if (StringTools.trimIsEmpty(ebid)) {//app端不需要切换编委会id
+			//统计管理地区的编码
+			List<String> codeList = new ArrayList<String>();
+			for (UserManager um : managers) {
+				if (um.getEbtype() == 1) {
+					rtnlist = branchDao.selectBranchListByFamily(familyid);
+					return rtnlist;
+				}
+				String areacode = editorialBoardMapper.selectCodeByEbid(um.getEbid());
+				String[] codes = areacode.split(",");
+				for (String str : codes) {
+					if (!codeList.contains(str)) {
+						codeList.add(str);
+					}
+				}
 			}
-			rtnlist = branchDao.getBranchsByFamilyAndUserid(familyid, userid, null);
-			break;
+			String[] codeArray = codeList.toArray(new String[codeList.size()]);
+			rtnlist = branchDao.getBranchListByFamilyAndCodes(familyid, codeArray, null);
+		} else {
+			UserManager userManager = managers.get(0);
+			String code = editorialBoardMapper.selectCodeByEbid(ebid);
+			String[] codeArray = code.split(",");
+			// 总编委会查看全部
+			if (userManager.getEbtype() == 1) {
+				rtnlist = branchDao.selectBranchListByFamily(familyid);
+			} else {
+				//	rtnlist = branchDao.getBranchsByFamilyAndUserid(familyid, userid, null);
+				if (codeArray.length > 1) {
+					rtnlist = branchDao.getBranchListByFamilyAndCodes(familyid, codeArray, null);
+				} else {
+					rtnlist = branchDao.getBranchListByFamilyAndCode(familyid, code, null);
+				}
+			}
 		}
-		// List<Branch> branchs =
-		// branchDao.selectBranchListByFamilyAndManagerids(familyid, managerids);
-		// branchDao.selectBranchListByFamilyAndUserid(familyid, userid);
 		return rtnlist;
 	}
 
@@ -412,72 +475,82 @@ public class BranchServiceImpl implements BranchService {
 	}
 
 	@Override
-	public JsonResponse validateBranchname(String branchname) {
-		Result result = null;
+	public JsonResponse validateBranchname(Branch branch) {
+		Result result = new Result(MsgConstants.RESUL_SUCCESS); // 默认通过验证
 		JsonResponse res = null;
 		//当前登录人 familyid
 		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
-		if (StringTools.isEmpty(familyid)) {
+		String branchname = branch.getBranchname().trim();
+		if (StringTools.isEmpty(branchname)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("header中参数familyid为空!");
+			result.setMsg("参数branchname不能为空!");
 			res = new JsonResponse(result);
 			return res;
 		}
-		String branchName = StringTools.trimNotEmpty(branchname) ? branchname.trim() : null;
 		try {
 			BranchQuery example = new BranchQuery();
-			example.or().andBranchnameEqualTo(branchName).andFamilyidEqualTo(familyid);
-			List<Branch> selectRt = branchDao.selectByExample(example);
-			if (selectRt != null && selectRt.size() > 0) {
-				result = new Result(MsgConstants.BRANCH_VALIDATA_NAME);
-				res = new JsonResponse(result);
-				res.setData(false);
-				return res;
+			example.or().andBranchnameEqualTo(branchname).andFamilyidEqualTo(familyid);
+			List<Branch> branchList = branchDao.selectByExample(example);
+			String branchid = "";
+			if (StringTools.trimNotEmpty(branch.getBranchid())) {
+				for (int i = 0; i < branchList.size(); i++) {
+					//编辑时要去除自己本身
+					if (!branchList.get(i).getBranchid().equals(branch.getBranchid())) {
+						branchid += branchList.get(i).getBranchid() + ",";
+					}
+				}
+				if (StringTools.trimNotEmpty(branchid)) {
+					result = new Result(MsgConstants.BRANCH_VALIDATA_NAME);
+				}
+			} else {
+				if (branchList.size() > 0) {
+					result = new Result(MsgConstants.BRANCH_VALIDATA_NAME);
+				}
 			}
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
-			res.setData(true);
-			return res;
 		} catch (Exception e) {
 			log_.error("[PLMERROR:]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			res.setData(false);
-			return res;
 		}
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
-	public JsonResponse checkBeginer(String beginuserid) {
-		Result result = null;
+	public JsonResponse checkBeginer(Branch branch) {
+		Result result = new Result(MsgConstants.RESUL_SUCCESS); // 默认通过验证
 		JsonResponse res = null;
-		if (StringUtils.isBlank(beginuserid)) {
+		String beginuserid = branch.getBeginuserid();
+		if (StringTools.isEmpty(beginuserid)) {
 			result = new Result(MsgConstants.BRANCH_NO_BEGINERID);
 			res = new JsonResponse(result);
-			res.setData(false);
 			return res;
 		}
 		try {
 			BranchQuery example = new BranchQuery();
 			example.or().andBeginuseridEqualTo(beginuserid);
-			List<Branch> selectRt = branchDao.selectByExample(example);
-			if (selectRt != null && selectRt.size() > 0) {
-				result = new Result(MsgConstants.BRANCH_CHECK_BEGINER);
-				res = new JsonResponse(result);
-				res.setData(false);
-				return res;
+			List<Branch> branchList = branchDao.selectByExample(example);
+			String branchid = "";
+			if (StringTools.trimNotEmpty(branch.getBranchid())) {
+				for (int i = 0; i < branchList.size(); i++) {
+					//编辑时要去除自己本身
+					if (!branchList.get(i).getBranchid().equals(branch.getBranchid())) {
+						branchid += branchList.get(i).getBranchid() + ",";
+					}
+				}
+				if (StringTools.trimNotEmpty(branchid)) {
+					result = new Result(MsgConstants.BRANCH_CHECK_BEGINER);
+				}
+			} else {
+				if (branchList.size() > 0) {
+					result = new Result(MsgConstants.BRANCH_CHECK_BEGINER);
+				}
 			}
-			result = new Result(MsgConstants.RESUL_SUCCESS);
-			res = new JsonResponse(result);
-			res.setData(true);
-			return res;
 		} catch (Exception e) {
 			log_.error("[PLMERROR:]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
-			res = new JsonResponse(result);
-			res.setData(false);
-			return res;
 		}
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	/**
@@ -824,6 +897,14 @@ public class BranchServiceImpl implements BranchService {
 		Result result = null;
 		JsonResponse res = null;
 		try {
+			String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+			if (StringTools.isEmpty(userid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("用户非法！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			entity.setParentid(userid);
 			if (entity.getFamilyid() == null || "".equals(entity.getFamilyid())) {
 				result = new Result(MsgConstants.FAMILYID_IS_NULL);
 				res = new JsonResponse(result);
@@ -881,6 +962,7 @@ public class BranchServiceImpl implements BranchService {
 			genUser.setUserid(gen_user.getUserid());
 			genUser.setUsername(gen_user.getUsername());
 			genUser.setLivestatus(gen_user.getLivestatus());
+			genUser.setBrotherpos(gen_user.getBrotherpos());
 			// 初始化配偶实例
 			GenUser mateuser = new GenUser();
 			mateuser.setGenlevel(mate_user.getGenlevel());
@@ -888,7 +970,7 @@ public class BranchServiceImpl implements BranchService {
 			mateuser.setSex(mate_user.getSex());
 			mateuser.setUserid(mate_user.getUserid());
 			mateuser.setUsername(mate_user.getUsername());
-			genUser.setLivestatus(gen_user.getLivestatus());
+			mateuser.setLivestatus(gen_user.getLivestatus());
 
 			// 初始化起始节点
 			GenUserVO genUserVO = new GenUserVO();
@@ -942,7 +1024,7 @@ public class BranchServiceImpl implements BranchService {
 			}
 			User mate_user = new User();
 			User gen_user = users.get(0);
-			if (gen_user.getGenlevel() == null || "".equals(gen_user.getGenlevel() + "")) {
+			if (gen_user.getGenlevel() == null) {
 				result = new Result(MsgConstants.GENLEVEL_IS_NULL);
 				res = new JsonResponse(result);
 				return res;
@@ -955,6 +1037,7 @@ public class BranchServiceImpl implements BranchService {
 			genUserOther.setUserid(gen_user.getUserid());
 			genUserOther.setUsername(gen_user.getUsername());
 			genUserOther.setPid(gen_user.getPid());
+			genUserOther.setBrotherpos(gen_user.getBrotherpos());
 
 			// 初始化配偶实例
 			if (StringUtils.isNotBlank(gen_user.getMateid())) {
@@ -1240,6 +1323,7 @@ public class BranchServiceImpl implements BranchService {
 			gen_User.setUserid(user.getUserid());
 			gen_User.setUsername(user.getUsername());
 			gen_User.setLivestatus(user.getLivestatus());
+			gen_User.setBrotherpos(user.getBrotherpos());
 			// 初始孩子配偶实例
 			GenUser mate_user = new GenUser();
 			if (mateuser != null) {
@@ -1287,6 +1371,7 @@ public class BranchServiceImpl implements BranchService {
 			gen_UserOther.setUserid(user.getUserid());
 			gen_UserOther.setUsername(user.getUsername());
 			gen_UserOther.setPid(user.getPid());
+			gen_UserOther.setBrotherpos(user.getBrotherpos());
 
 			// 初始孩子配偶实例
 			GenUserOther mate_user_other = new GenUserOther();
@@ -1344,8 +1429,8 @@ public class BranchServiceImpl implements BranchService {
 	 */
 	public User getUserUpto5Mod(User entity) {
 		// 没有世系属性
-		if (entity.getGenlevel() == null || "".equals(entity.getGenlevel())
-				|| entity.getPid() == null | "".equals(entity.getPid()) || (entity.getGenlevel() - 1) % 5 == 0)
+		if (entity.getGenlevel() == null || entity.getPid() == null | "".equals(entity.getPid())
+				|| (entity.getGenlevel() - 1) % 5 == 0)
 			return entity;
 		// 世系不能被5整除
 		else {
@@ -1497,6 +1582,301 @@ public class BranchServiceImpl implements BranchService {
 	public Branch selectbyEditor(String userid) {
 		// TODO Auto-generated method stub
 		return branchDao.selectbyEditor(userid);
+	}
+
+	@Override
+	public JsonResponse getBranchsByUserid(String userid, String code, Integer pageNo, Integer pageSize) {
+		Result result = null;
+		JsonResponse res = null;
+		if (StringUtils.isBlank(userid)) {
+			result = new Result(1, "用户userid为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (pageNo == null || pageSize == null) {
+			result = new Result(1, "分页参数为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		User user = userDao.selectByPrimaryKey(userid);
+		if (user == null || user.getDeleteflag() == 1 || user.getStatus() != 0) {
+			result = new Result(ConstantUtils.RESULT_FAIL, "当前用户不存在");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//查询所属编委会
+		List<UserManager> managers = userManagerMapper.selectMnangers(userid);
+		//统计管理地区的编码
+		List<String> codeList = new ArrayList<String>();
+
+		boolean flag = true;
+		//根据地区编码查询分支
+		for (UserManager manager : managers) {
+			flag = false;
+			if (manager.getEbtype() == 1) {
+				///branchValidAreas = branchDao.selectValidArea(user.getFamilyid());
+				flag = true;
+				break;
+			}
+			String areacode = editorialBoardMapper.selectCodeByEbid(manager.getEbid());
+			String[] codes = areacode.split(",");
+			for (String str : codes) {
+				if (!codeList.contains(str)) {
+					codeList.add(str);
+				}
+			}
+
+		}
+		List<Branch> branchs = new ArrayList<Branch>();
+		PageHelper.startPage(pageNo, pageSize);
+		String[] code1 = {};
+		if (code != null)
+			code1 = code.split(",");
+		if (code != null && !"".equals(code) && flag) {
+			//总编委会按照地区筛选获取
+			branchs = branchDao.getBranchListByFamilyAndCodes(user.getFamilyid(), code1, null);
+		} else if (code != null && !"".equals(code) && flag == false) {
+			//分 编委会筛选分支
+			if (codeList.contains(code)) {
+				//如果有权限管理则查询
+				branchs = branchDao.getBranchListByFamilyAndCodes(user.getFamilyid(), code1, null);
+			} else {
+				result = new Result(MsgConstants.NO_DATA);
+				res = new JsonResponse(result);
+				return res;
+			}
+		} else if (flag) {
+			branchs = branchDao.selectBranchListByFamilyAndUserid(0, user.getFamilyid(), null);
+		} else {
+			String[] strs = codeList.toArray(new String[codeList.size()]);
+			branchs = branchDao.getBranchListByFamilyAndCodes(user.getFamilyid(), strs, null);
+		}
+		if (branchs != null) {
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(branchs);
+			res.setCount(new PageInfo<Branch>(branchs).getTotal());
+			return res;
+		} else {
+			result = new Result(MsgConstants.NO_DATA);
+			res = new JsonResponse(result);
+			return res;
+		}
+
+	}
+
+	@Override
+	public JsonResponse getEbArea(Branch branch) {
+		Result result = null;
+		JsonResponse res = null;
+		if (StringUtils.isBlank(branch.getBeginuserid())) {
+			result = new Result(1, "用户userid为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		String userid = branch.getBeginuserid();
+		User user = userDao.selectByPrimaryKey(userid);
+		if (user == null || user.getDeleteflag() == 1 || user.getStatus() != 0) {
+			result = new Result(ConstantUtils.RESULT_FAIL, "当前用户不存在");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//查询所属编委会
+		List<UserManager> managers = userManagerMapper.selectMnangers(userid);
+		if (managers == null || managers.size() < 1) {
+			result = new Result(ConstantUtils.RESULT_FAIL, "当前用户无编委会权限");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//统计管理地区的编码
+		List<String> codeList = new ArrayList<String>();
+		//地区集合
+		List<BranchValidArea> branchValidAreas = new ArrayList<BranchValidArea>();
+
+		//根据地区编码查询分支
+		for (UserManager manager : managers) {
+			//flag = false ;
+			if (manager.getEbtype() == 1) {
+				branchValidAreas = branchDao.selectValidArea(user.getFamilyid());
+				List<BranchAreaCity> branchAreaCities = new ArrayList<BranchAreaCity>();
+				for (BranchValidArea branchValidArea : branchValidAreas) {
+					Map<String, String> map = new HashMap<String, String>();
+					map.put("familyid", user.getFamilyid());
+					map.put("areacode", branchValidArea.getAreacode());
+					List<BranchValidArea> branchValidAreas2 = branchDao.selectValidCity(map);
+					BranchAreaCity branchAreaCity = new BranchAreaCity();
+					branchAreaCity.setAreacode(branchValidArea.getAreacode());
+					branchAreaCity.setAreaname(branchValidArea.getAreaname());
+					branchAreaCity.setCitys(branchValidAreas2);
+					branchAreaCities.add(branchAreaCity);
+				}
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(branchAreaCities);
+				return res;
+			}
+			String areacode = editorialBoardMapper.selectCodeByEbid(manager.getEbid());
+			String[] codes = areacode.split(",");
+			for (String str : codes) {
+				if (!codeList.contains(str)) {
+					codeList.add(str);
+				}
+			}
+
+		}
+		List<Branch> branchs = new ArrayList<Branch>();
+		//if(flag == false) {
+		//			branchs = branchDao.selectBranchListByFamilyAndUserid(0, user.getFamilyid(),null);
+		//		}else{
+		branchs = branchDao.getBranchListByFamilyAndCodes(user.getFamilyid(), codeList.toArray(new String[] {}), null);
+		//}
+		List<BranchAreaCity> area = new ArrayList<BranchAreaCity>();
+		List<BranchValidArea> citys = new ArrayList<BranchValidArea>();
+		for (Branch bra : branchs) {
+			BranchAreaCity a = new BranchAreaCity();
+			a.setAreacode(bra.getAreacode());
+			a.setAreaname(bra.getArea());
+			if (area.contains(a)) {
+				BranchValidArea c = new BranchAreaCity();
+				c.setAreacode(bra.getCitycode());
+				c.setAreaname(bra.getCityname());
+				for (int i = 0; i < area.size(); i++) {
+					if (a.equals(area.get(i))) {
+						citys = area.get(i).getCitys();
+						if (!citys.contains(c)) {
+							citys.add(c);
+						}
+						area.get(i).setCitys(citys);
+					}
+				}
+			} else {
+				area.add(a);
+				BranchValidArea b = new BranchAreaCity();
+				b.setAreacode(bra.getCitycode());
+				b.setAreaname(bra.getCityname());
+				citys.add(b);
+				a.setCitys(citys);
+			}
+		}
+
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		res.setData(area);
+		return res;
+	}
+
+	@Override
+	public JsonResponse getXQAndBranch(Branch entity) {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			if (entity.getCitycode() == null || "".equals(entity.getCitycode())) {
+				result = new Result(MsgConstants.CITYCODE_IS_NULL);
+				res = new JsonResponse(result);
+				return res;
+			}
+			if ("".equals(entity.getFamilyid()) || entity.getFamilyid() == null) {
+				result = new Result(MsgConstants.FAMILYID_IS_NULL);
+				res = new JsonResponse(result);
+				return res;
+			}
+			//查询当前所有的县区
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("familyid", entity.getFamilyid());
+			map.put("citycode", entity.getCitycode());
+			List<BranchValidArea> branchValidAreas = branchDao.selectValidXQ(map);
+			if (branchValidAreas.size() == 0) {
+				result = new Result(MsgConstants.AREA_IS_NULL);
+				res = new JsonResponse(result);
+				return res;
+			}
+
+			String userid = entity.getBeginuserid();
+			//User user =userDao.selectByPrimaryKey(userid);
+			List<UserManager> managers = userManagerMapper.selectMnangers(userid);
+			if (managers == null || managers.size() < 1) {
+				result = new Result(ConstantUtils.RESULT_FAIL, "当前用户无编委会权限");
+				res = new JsonResponse(result);
+				return res;
+			}
+			//地区及分支
+			List<BranchCityBranch> branchCityBranchs = new ArrayList<BranchCityBranch>();
+			//统计管理地区的编码
+			List<String> codeList = new ArrayList<String>();
+			//根据地区编码查询分支
+			for (UserManager manager : managers) {
+				//flag = false ;
+				if (manager.getEbtype() == 1) {
+
+					for (BranchValidArea branchValidArea : branchValidAreas) {
+						Map<String, String> map2 = new HashMap<String, String>();
+						map2.put("familyid", entity.getFamilyid());
+						map2.put("xcode", branchValidArea.getAreacode());
+						List<Branch> branchs = branchDao.selectBranchByXQ(map2);
+						BranchCityBranch branchCityBranch = new BranchCityBranch();
+						branchCityBranch.setAreacode(branchValidArea.getAreacode());
+						branchCityBranch.setAreaname(branchValidArea.getAreaname());
+						branchCityBranch.setBranchs(branchs);
+						branchCityBranchs.add(branchCityBranch);
+					}
+					result = new Result(MsgConstants.RESUL_SUCCESS);
+					res = new JsonResponse(result);
+					res.setData(branchCityBranchs);
+					return res;
+				}
+				String areacode = editorialBoardMapper.selectCodeByEbid(manager.getEbid());
+				String[] codes = areacode.split(",");
+				for (String str : codes) {
+					if (!codeList.contains(str)) {
+						codeList.add(str);
+					}
+				}
+
+			}
+			List<Branch> branchs = branchDao.getBranchListByFamilyAndCodes(entity.getFamilyid(),
+					codeList.toArray(new String[] {}), null);
+			//查询条件
+			Map<String, String> map3 = new HashMap<String, String>();
+			map3.put("familyid", entity.getFamilyid());
+			boolean flag = false;
+			for (int i = 0; i < branchValidAreas.size(); i++) {
+				flag = true;
+				BranchValidArea branchValidArea = branchValidAreas.get(i);
+				for (Branch branch : branchs) {
+					//flag = false;
+					if (branchValidArea.getAreacode().equals(branch.getXcode())) {
+						flag = false;
+						break;
+					}
+				}
+				if (flag) {
+					branchValidAreas.remove(i);
+					i = i - 1;
+					continue;
+				}
+
+				map3.put("xcode", branchValidArea.getAreacode());
+				List<Branch> branchs1 = branchDao.selectBranchByXQ(map3);
+				BranchCityBranch branchCityBranch = new BranchCityBranch();
+				branchCityBranch.setAreacode(branchValidArea.getAreacode());
+				branchCityBranch.setAreaname(branchValidArea.getAreaname());
+				branchCityBranch.setBranchs(branchs1);
+				branchCityBranchs.add(branchCityBranch);
+			}
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(branchCityBranchs);
+			return res;
+
+			//result = new Result(MsgConstants.RESUL_SUCCESS);
+			//res = new JsonResponse(result);
+			//res.setData(branchCityBranchs);
+		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			log_.error("[BranchServiceImpl---Error:]", e);
+		}
+		return res;
 	}
 
 }

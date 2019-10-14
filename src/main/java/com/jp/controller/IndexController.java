@@ -3,26 +3,23 @@ package com.jp.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jp.common.ConstantUtils;
 import com.jp.common.JsonResponse;
-import com.jp.common.LoginUserInfo;
 import com.jp.common.MsgConstants;
 import com.jp.common.Result;
 import com.jp.entity.Function;
 import com.jp.entity.Indexcount;
 import com.jp.entity.UserManager;
 import com.jp.service.FamilyService;
+import com.jp.service.FunctionService;
 import com.jp.service.UserContextService;
 import com.jp.util.StringTools;
 import com.jp.util.WebUtil;
@@ -36,6 +33,8 @@ public class IndexController {
 	private FamilyService familyService;
 	@Autowired
 	private UserContextService userContextService;
+	@Autowired
+	private FunctionService functionService;
 
 	/**
 	 * 初始化菜单与场馆
@@ -45,7 +44,7 @@ public class IndexController {
 	 */
 	@RequestMapping(value = "/init", method = RequestMethod.GET)
 	@ResponseBody
-	public JsonResponse initIndex(HttpServletRequest request, ModelMap modelMap) {
+	public JsonResponse initIndex() {
 		Result result = null;
 		JsonResponse res = null;
 		//当前登录人 userid
@@ -64,44 +63,28 @@ public class IndexController {
 			res = new JsonResponse(result);
 			return res;
 		}
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.isEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		List<Function> functions = null;//所有菜单
 		List<Function> menuFunctions = null;
-		/*List<Function> parentFunctions = new ArrayList<Function>();//父节点
-		List<Function> childFunctions = null;//子节点
-		Map<String, List<Function>> childFunctionsMap = new HashMap<String, List<Function>>();*///key 父节点id value 子节点list
 
 		try {
-			LoginUserInfo userInfo = (LoginUserInfo) request.getSession().getAttribute("userContext");
-			if (userInfo != null) {
-				functions = userInfo.getFunctionList();
-				menuFunctions = list2Tree(functions);
-				/*for (Function function : functions) {
-					//遍历出所有父节点
-					if("00000".equals(function.getParentid())){
-						parentFunctions.add(function);//存储父节点
-						//通过父节点找到对应所有子节点
-						childFunctions = new ArrayList<Function>();
-						for (Function childFunction : functions) {
-							if (function.getFunctionid().equals(childFunction.getParentid())) {
-								childFunctions.add(childFunction);//存储子节点
-							}
-						}
-						childFunctionsMap.put(function.getFunctionid(), childFunctions);//父子关系
-					}
-				}*/
-			}
-			List<String> branchids = userContextService.getBranchIds(familyid, userid);
-			List<UserManager> userManager = userContextService.getUserManagers(userid);
+			functions = functionService.selectFunctionListByManagerid(familyid, userid, ebid);
+			menuFunctions = list2Tree(functions);
+			List<String> branchids = userContextService.getBranchIds(familyid, userid, ebid);
+			List<UserManager> userManagers = userContextService.getUserManagers(userid, ebid);
+			UserManager userManager = userManagers.get(0);
 			Indexcount countIndex = new Indexcount();
-			for (UserManager um : userManager) {
-				if (um.getEbtype() == 1) {
-					countIndex = familyService.countIndex(familyid, null);
-					break;
-				} else {
-					countIndex = familyService.countIndex(familyid, branchids);
-					break;
-				}
-
+			if (userManager.getEbtype() == 1) {
+				countIndex = familyService.countIndex(familyid, null);
+			} else {
+				countIndex = familyService.countIndex(familyid, branchids);
 			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
