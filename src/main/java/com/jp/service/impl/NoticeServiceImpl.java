@@ -227,9 +227,10 @@ public class NoticeServiceImpl implements NoticeService {
 		try {
 			String userId = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
 			String familyId = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+			User user=userMapper.selectByPrimaryKey(userId);
 			if (StringTools.trimNotEmpty(notice.getNoticeid())) {
-				notice.setUpdateid(userid);
-				notice.setFamilyid(familyid);
+				notice.setUpdateid(userId);
+				notice.setFamilyid(familyId);
 				if (notice.getNoticetype() == 0) {
 					notice.setBranchid("0");
 				}
@@ -282,15 +283,15 @@ public class NoticeServiceImpl implements NoticeService {
 				 
 				//判断流程是否全部通过全部通过后，新增公告	//以下是未增加审批流源代码
 				notice.setNoticeid(noticeid);
-				notice.setCreateid(userid);
+				notice.setCreateid(userId);
 				notice.setCreatename(user.getUsername());
-				notice.setFamilyid(familyid);
+				notice.setFamilyid(familyId);
 				if (notice.getNoticetype() == 0) {
 					notice.setBranchid("0");
 				}
 				Date insertDate = new Date();
 				notice.setCreatetime(insertDate);
-				notice.setUpdateid(userid);
+				notice.setUpdateid(userId);
 				notice.setUpdatetime(insertDate);
 				notice.setDeleteflag(ConstantUtils.DELETE_FALSE);
 				notice.setExaminestatus(0);//0:审核中 1:通过 2:驳回
