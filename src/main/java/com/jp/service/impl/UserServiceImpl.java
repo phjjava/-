@@ -841,9 +841,6 @@ public class UserServiceImpl implements UserService {
 			int totalRows = xssfSheet.getLastRowNum();
 			boolean flag = checkFamilyUserNumber(totalRows - 1, familyid);
 			if (flag == false) {
-				/*
-				 * result.setStatus(2); result.setMsg("导入用户数量超过版本最大用户限制!");
-				 */
 				result = new Result(MsgConstants.USER_SAVE_OUTMAX);
 				res = new JsonResponse(result);
 				return res;
@@ -1048,9 +1045,6 @@ public class UserServiceImpl implements UserService {
 			// 判断家族人数是否超出当前家族容纳人数上限
 			boolean flag = checkFamilyUserNumber(lastRowNum - 1, familyid);
 			if (flag == false) {
-				/*
-				 * result.setStatus(2); result.setMsg("导入用户数量超过版本最大用户限制!");
-				 */
 				result = new Result(MsgConstants.USER_SAVE_OUTMAX);
 				res = new JsonResponse(result);
 				return res;
@@ -2100,7 +2094,7 @@ public class UserServiceImpl implements UserService {
 					userMmateUpdate.setGenlevel(user1.getGenlevel());
 					userMmateUpdate.setMatename(user1.getUsername());
 					userMmateUpdate.setPhone(phone);
-					userMmateUpdate.setIsMarry(1);
+					userMmateUpdate.setIsMarry(0);
 					userMmateUpdate.setPid(user1.getPid());
 					userMmateUpdate.setPname(user1.getPname());
 					System.out.println(userMmateUpdate.getBranchname());
@@ -2133,7 +2127,7 @@ public class UserServiceImpl implements UserService {
 				} else {
 					// 新增用户配偶信息,修改配偶保存逻辑，配偶信息作为主用户存到user表里，jp_usermates单独的用户配偶表弃用
 					boolean flag = checkFamilyUserNumber(1, familyid);
-					if (flag == true) {
+					if (flag) {
 						String phone = user.getPhone();
 						User userMmate = new User();
 						userMmate.setUserid(userid);
@@ -2156,7 +2150,7 @@ public class UserServiceImpl implements UserService {
 						userMmate.setUsername(user1.getMatename());
 						userMmate.setSex(user.getSex());
 						userMmate.setDeleteflag(0);
-						userMmate.setIsMarry(1);
+						userMmate.setIsMarry(0);
 						userMmate.setPid(user1.getPid());
 						userMmate.setPname(user1.getPname());
 						userMmate.setPinyinfirst(PinyinUtil.getPinYinFirstChar(user.getMatename()));
@@ -2181,7 +2175,7 @@ public class UserServiceImpl implements UserService {
 							result = new Result(MsgConstants.USER_SAVE_HAVEREPEAT);
 						} else {
 							userDao.insertSelective(userMmate);
-							user1.setIsMarry(1);
+							user1.setIsMarry(0);
 							user1.setMateid(userid);
 							user1.setMatename(user.getMatename());
 							user1.setMatetypeStr(user.getMatetypeStr());
@@ -2951,6 +2945,12 @@ public class UserServiceImpl implements UserService {
 		return place;
 	}
 
+	/**
+	 * 检查新增家族成员人数是否超过了家族版本限制
+	 * @param importCount
+	 * @param familyid
+	 * @return
+	 */
 	public boolean checkFamilyUserNumber(int importCount, String familyid) {
 		boolean checkResult = false;
 		Integer priValue = 0; // 最多容纳家族人数
@@ -4772,11 +4772,11 @@ public class UserServiceImpl implements UserService {
 				// 新增工作经历
 				if (userEdu.getEduid() == null || userEdu.getEduid().equals("")) {
 					Useredu userEdu2 = new Useredu();
+					userEdu2.setEduid(UUIDUtils.getUUID());
 					userEdu2.setUserid(entity.getUserid());
 					userEdu2.setUniversity(userEdu.getUniversity());
 					userEdu2.setMajor(userEdu.getMajor());
 					userEdu2.setDegree(userEdu.getDegree());
-					userEdu2.setEduid(UUIDUtils.getUUID());
 					userEdu2.setDatefrom(userEdu.getDatefrom());
 					userEdu2.setDateto(userEdu.getDateto());
 					userEdu2.setIssecret(userEdu.getIssecret());
@@ -4793,7 +4793,7 @@ public class UserServiceImpl implements UserService {
 					userWorkexp2.setUserid(entity.getUserid());
 					userWorkexp2.setCompany(userWorkexp.getCompany());
 					userWorkexp2.setDatefrom(userWorkexp.getDatefrom());
-					userWorkexp2.setDateto(userWorkexp2.getDateto());
+					userWorkexp2.setDateto(userWorkexp.getDateto());
 					userWorkexp2.setIssecret(userWorkexp.getIssecret());
 					userWorkexp2.setPosition(userWorkexp.getPosition());
 					userWorkexp2.setWorkcontent(userWorkexp.getWorkcontent());
@@ -4827,7 +4827,22 @@ public class UserServiceImpl implements UserService {
 		JsonResponse res = null;
 		//当前登录人 userid
 		String loginUserid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		boolean flag = checkFamilyUserNumber(1, familyid);
+		if (flag == false) {
+			result = new Result(MsgConstants.USER_SAVE_OUTMAX);
+			res = new JsonResponse(result);
+			return res;
+		}
 		int status = 0;
+		//判断是否为演示家族账号
 		JsonResponse demoUser = checkDemoUser();
 		if (demoUser.getCode() == 1) {
 			return demoUser;
@@ -4904,6 +4919,7 @@ public class UserServiceImpl implements UserService {
 					return res;
 				}
 				User genUser = new User();
+				genUser.setIsMarry(0);
 				genUser.setUserid(user.getMateid());
 				genUser.setMateid(userid);
 				genUser.setMatename(user.getUsername());
@@ -4915,6 +4931,7 @@ public class UserServiceImpl implements UserService {
 				user.setIsdirect(0);
 				// 配偶默认为非亲生
 				user.setIsborn(0);
+				user.setIsMarry(0);
 				user.setMateid(mateid);
 				user.setMatename(mateUser.getUsername());
 				user.setPname(mateUser.getUsername());
@@ -6135,7 +6152,8 @@ public class UserServiceImpl implements UserService {
 			res.setData(pUser);
 			return res;
 		}
-		result = new Result(MsgConstants.RESUL_FAIL);
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		result.setMsg("所查询的用户没有父亲信息！");
 		res = new JsonResponse(result);
 		return res;
 	}
