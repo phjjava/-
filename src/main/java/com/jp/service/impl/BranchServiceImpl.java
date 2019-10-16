@@ -897,6 +897,14 @@ public class BranchServiceImpl implements BranchService {
 		Result result = null;
 		JsonResponse res = null;
 		try {
+			String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+			if (StringTools.isEmpty(userid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("用户非法！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			entity.setParentid(userid);
 			if (entity.getFamilyid() == null || "".equals(entity.getFamilyid())) {
 				result = new Result(MsgConstants.FAMILYID_IS_NULL);
 				res = new JsonResponse(result);
@@ -954,6 +962,7 @@ public class BranchServiceImpl implements BranchService {
 			genUser.setUserid(gen_user.getUserid());
 			genUser.setUsername(gen_user.getUsername());
 			genUser.setLivestatus(gen_user.getLivestatus());
+			genUser.setBrotherpos(gen_user.getBrotherpos());
 			// 初始化配偶实例
 			GenUser mateuser = new GenUser();
 			mateuser.setGenlevel(mate_user.getGenlevel());
@@ -961,7 +970,7 @@ public class BranchServiceImpl implements BranchService {
 			mateuser.setSex(mate_user.getSex());
 			mateuser.setUserid(mate_user.getUserid());
 			mateuser.setUsername(mate_user.getUsername());
-			genUser.setLivestatus(gen_user.getLivestatus());
+			mateuser.setLivestatus(gen_user.getLivestatus());
 
 			// 初始化起始节点
 			GenUserVO genUserVO = new GenUserVO();
@@ -1015,7 +1024,7 @@ public class BranchServiceImpl implements BranchService {
 			}
 			User mate_user = new User();
 			User gen_user = users.get(0);
-			if (gen_user.getGenlevel() == null || "".equals(gen_user.getGenlevel() + "")) {
+			if (gen_user.getGenlevel() == null) {
 				result = new Result(MsgConstants.GENLEVEL_IS_NULL);
 				res = new JsonResponse(result);
 				return res;
@@ -1028,6 +1037,7 @@ public class BranchServiceImpl implements BranchService {
 			genUserOther.setUserid(gen_user.getUserid());
 			genUserOther.setUsername(gen_user.getUsername());
 			genUserOther.setPid(gen_user.getPid());
+			genUserOther.setBrotherpos(gen_user.getBrotherpos());
 
 			// 初始化配偶实例
 			if (StringUtils.isNotBlank(gen_user.getMateid())) {
@@ -1313,6 +1323,7 @@ public class BranchServiceImpl implements BranchService {
 			gen_User.setUserid(user.getUserid());
 			gen_User.setUsername(user.getUsername());
 			gen_User.setLivestatus(user.getLivestatus());
+			gen_User.setBrotherpos(user.getBrotherpos());
 			// 初始孩子配偶实例
 			GenUser mate_user = new GenUser();
 			if (mateuser != null) {
@@ -1360,6 +1371,7 @@ public class BranchServiceImpl implements BranchService {
 			gen_UserOther.setUserid(user.getUserid());
 			gen_UserOther.setUsername(user.getUsername());
 			gen_UserOther.setPid(user.getPid());
+			gen_UserOther.setBrotherpos(user.getBrotherpos());
 
 			// 初始孩子配偶实例
 			GenUserOther mate_user_other = new GenUserOther();

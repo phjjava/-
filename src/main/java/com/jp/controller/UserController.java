@@ -1568,6 +1568,19 @@ public class UserController {
 	}
 
 	/**
+	 * 新增成员（添加兄弟、父母、配偶、子女）
+	 * 
+	 * @param user
+	 * @param type 1：添加父母，2：添加兄弟姐妹、子女，3：添加配偶
+	 * @return
+	 */
+	@RequestMapping(value = "/addUserinfos", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse addUserinfos(@RequestBody User user, int type) {
+		return userService.addUserinfos(user, type);
+	}
+
+	/**
 	 * 获取用户所在城市下的所有动态列表
 	 * 
 	 * @param user
@@ -1783,4 +1796,14 @@ public class UserController {
 		return userService.apiSearchUser(pageModel, user);
 	}
 
+	/**
+	 * 通过用户id查询父亲
+	 * @param userid
+	 * @return
+	 */
+	@RequestMapping(value = "/getParent", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse getParent(String userid) {
+		return userService.getParent(userid);
+	}
 }
