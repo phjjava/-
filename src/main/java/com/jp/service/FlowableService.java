@@ -15,6 +15,10 @@ public interface FlowableService {
 	//查询公告内容
 	Notice selectNotice(String noticeid);
 	UserManager deploynewFour(String string);
+	//查询总编委会名称
+	String selectEbname(String userid);
+	//查询所有审批人人名
+	String selectUsername(String string);
 	
 
 }

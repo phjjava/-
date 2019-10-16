@@ -314,7 +314,6 @@ public class FlowableServiceImpl implements FlowableService {
 									List<UserManager> list = userManagerMapper.selectbyEditorEbname(editorialBoardThree.getId());
 									return list.get(0);
 								} else {
-									System.out.println("未找到对应的编委会");
 									return null;
 								}
 							}
@@ -330,6 +329,23 @@ public class FlowableServiceImpl implements FlowableService {
 	public Notice selectNotice(String noticeid) {
 		// TODO Auto-generated method stub
 		return noticeMapper.selectNotice(noticeid);
+	}
+	/**
+	 * 查询总编委会名称
+	 */
+	@Override
+	public String selectEbname(String userid) {
+		// TODO Auto-generated method stub
+		String familyId = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		return userManagerMapper.selectEbname(userid,familyId);
+	}
+	/**
+	 * 查询所有审批人名
+	 */
+	@Override
+	public String selectUsername(String string) {
+		// TODO Auto-generated method stub
+		return userService.selectUsername(string);
 	}
 
 }

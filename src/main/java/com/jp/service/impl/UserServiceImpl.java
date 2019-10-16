@@ -5466,4 +5466,10 @@ public class UserServiceImpl implements UserService {
 		
 		return userDao.selectBranchId(userid);
 	}
+
+	@Override
+	public String selectUsername(String string) {
+		// TODO Auto-generated method stub
+		return userDao.selectUsername(string);
+	}
 }

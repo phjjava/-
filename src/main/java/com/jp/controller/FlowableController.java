@@ -8,13 +8,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.configuration.interpol.ExprLookup.Variable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.flowable.bpmn.model.BpmnModel;
@@ -32,20 +32,14 @@ import org.flowable.engine.RepositoryService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
 import org.flowable.engine.history.HistoricActivityInstance;
-import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntity;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.engine.task.Comment;
-import org.flowable.identitylink.api.IdentityLink;
+import org.flowable.identitylink.api.history.HistoricIdentityLink;
 import org.flowable.image.ProcessDiagramGenerator;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.history.HistoricTaskInstance;
-import org.flowable.variable.api.history.HistoricVariableInstance;
-import org.flowable.variable.api.history.HistoricVariableInstanceQuery;
-import org.flowable.variable.api.persistence.entity.VariableInstance;
-import org.flowable.variable.service.impl.persistence.entity.HistoricVariableInstanceEntity;
-import org.flowable.variable.service.impl.persistence.entity.VariableInstanceEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,22 +47,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jp.common.ConstantUtils;
-import com.jp.common.CurrentSystemUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
-import com.jp.entity.Banner;
 import com.jp.entity.HttpApprovalHistory;
 import com.jp.entity.Notice;
-import com.jp.entity.SysUser;
 import com.jp.entity.UserManager;
 import com.jp.service.FlowableService;
 import com.jp.service.NoticeService;
 import com.jp.service.UserService;
 import com.jp.util.WebUtil;
 
-import sun.jvmstat.monitor.Variability;
 
 @Controller
 @RequestMapping("expense")
@@ -194,8 +184,9 @@ public class FlowableController {
 		    FlowNode flowNode = (FlowNode) bpmnModel.getFlowElement(crruentActivityId);
 		    // 输出连线
 		    List<SequenceFlow> outFlows = flowNode.getOutgoingFlows();
+		    FlowElement sourceFlowElement=null;
 		    for (SequenceFlow sequenceFlow : outFlows) {
-		            FlowElement sourceFlowElement = sequenceFlow.getSourceFlowElement();
+		    	sourceFlowElement= sequenceFlow.getSourceFlowElement();
 		            if(sourceFlowElement.getName().equals("总编委会成员")) {
 		            	//执行修改公告状态码
 		            	String examinestatus="1";
@@ -213,11 +204,21 @@ public class FlowableController {
 				res = new JsonResponse(result);
 				return res;
 		}
-		// 由于流程用户上下文对象是线程独立的，所以要在需要的位置设置，要保证设置和获取操作在同一个线程中
+		  //查询该条审批公告
+		  Notice notice=flowableService.selectNotice(noticeid);
+		  String ebname="";
+		 //判断节点所在位置将该用户编委会放入记录表
+		  if(sourceFlowElement.getName().equals("总编委会成员")) {
+			  //查询所属总编委会
+			  ebname=flowableService.selectEbname(notice.getCreateid());
+		  }else if(sourceFlowElement.getName().equals("分编委会")) {
+			  UserManager deploynewFour = flowableService.deploynewFour(notice.getCreateid());
+			  ebname=deploynewFour.getEbname();
+		  }
 	        Authentication.setAuthenticatedUserId(userid);// 批注人的名称
 	        // 添加批注信息
 	        processEngine.getTaskService().addComment(taskId, processInstanceId,
-	        		"通过" + ":" + content+":"+imgurl);// comment为批注内容
+	        		"通过" + ":" + content+":"+imgurl+":"+ebname);// comment为批注内容
 		  //通过审核
 		  HashMap<String, Object> map = new HashMap<>();
 		  map.put("outcome", "通过");
@@ -240,11 +241,35 @@ public class FlowableController {
 		//获取流程实例id
 		Task processInstance = processEngine.getTaskService().createTaskQuery().taskId(taskId).list().get(0);
 		String processInstanceId=processInstance.getProcessInstanceId();
+		Task tasknew = processEngine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
+		ExecutionEntity ee = (ExecutionEntity) processEngine.getRuntimeService().createExecutionQuery()
+		            .executionId(tasknew.getExecutionId()).singleResult();
+		    // 当前审批节点
+		    String crruentActivityId = ee.getActivityId();
+		    BpmnModel bpmnModel = processEngine.getRepositoryService().getBpmnModel(tasknew.getProcessDefinitionId());
+		    FlowNode flowNode = (FlowNode) bpmnModel.getFlowElement(crruentActivityId);
+		    // 输出连线
+		    List<SequenceFlow> outFlows = flowNode.getOutgoingFlows();
+		    FlowElement sourceFlowElement=null;
+		    for (SequenceFlow sequenceFlow : outFlows) {
+		    	sourceFlowElement= sequenceFlow.getSourceFlowElement();
+		    }
+		 //查询该条审批公告
+		  Notice notice=flowableService.selectNotice(noticeid);
+		  String ebname="";
+		 //判断节点所在位置将该用户编委会放入记录表
+		  if(sourceFlowElement.getName().equals("总编委会成员")) {
+			  //查询所属总编委会
+			  ebname=flowableService.selectEbname(notice.getCreateid());
+		  }else if(sourceFlowElement.getName().equals("分编委会")) {
+			  UserManager deploynewFour = flowableService.deploynewFour(notice.getCreateid());
+			  ebname=deploynewFour.getEbname();
+		  }
 		//向flowable历史记录表commit中添加数据(查看记录时查询所需数据)
         Authentication.setAuthenticatedUserId(userid);// 批注人的名称
         // 添加批注信息
         processEngine.getTaskService().addComment(taskId, processInstanceId,
-        		"驳回" + ":" + content);// comment为批注内容
+        		"驳回" + ":" + content+":"+ebname);// comment为批注内容   content建议   ebname编委会名
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("outcome", "驳回");
 		taskService.complete(taskId, map);
@@ -323,12 +348,13 @@ public class FlowableController {
 		//查询审批公告(创建人,创建日期,标题)
 	  Notice notice=flowableService.selectNotice(noticeid);
 	  //获取当前人所在的总编委会
-	  UserManager nodenameover=flowableService.deploynewFour(notice.getCreateid());
-	  notice.setLeard(nodenameover.getEbname());//放入编委会名称
+	  String nodenameover = flowableService.selectEbname(notice.getCreateid());
+	  notice.setLeard(nodenameover);//放入编委会名称
 	  List<HttpApprovalHistory> httpApprovalHistoryList = new ArrayList<HttpApprovalHistory>();
 	   List<Comment> list =getProcessComments(taskId); 
+	   HttpApprovalHistory httpApprovalHistory=null;
 	   for (Comment comment : list) {
-			   HttpApprovalHistory httpApprovalHistory = new HttpApprovalHistory();
+			   httpApprovalHistory = new HttpApprovalHistory();
 			   SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			   httpApprovalHistory.setApprovalTime(dateFormat.format(comment.getTime()));
 			   httpApprovalHistory
@@ -337,20 +363,83 @@ public class FlowableController {
 			  String agree = str[0];
 			  String approvalOpinion=str[1];
 			  String imgUrl=str[2];
+			  String editorial=str[3];
 			  //查询审批人所属编委会
-			  UserManager editorial=flowableService.deploynewFour(comment.getUserId());
+			  //UserManager editorial=flowableService.deploynewFour(notice.getCreateid());
 			  //String approvalOpinion = comment.getFullMessage().substring(2);
 			  httpApprovalHistory.setAgree(agree);
 			  httpApprovalHistory.setApprovalOpinion(approvalOpinion);
 			  httpApprovalHistory.setImgurl(imgUrl);
-			  httpApprovalHistory.setEditorial(editorial.getEbname());
+			  httpApprovalHistory.setEditorial(editorial);
 			  httpApprovalHistoryList.add(httpApprovalHistory); 
 			  notice.setRecord(httpApprovalHistoryList);
 		  } 
-	   result = new Result(MsgConstants.RESUL_SUCCESS);
-		res = new JsonResponse(result);
-		res.setData(notice);
-		return res;
+	   String username="";
+	   //下一级待审核人信息
+	  ListIterator<HistoricIdentityLink> listIterator = historyService.getHistoricIdentityLinksForTask(taskId).listIterator();
+	  while(listIterator.hasNext()) {
+		  HistoricIdentityLink nextname = listIterator.next();
+		  username = username+","+nextname.getUserId();
+	  }
+	  //截取去除第一个逗号
+	  String userid= username.substring(1);
+	  String[] split = userid.split(",");
+	 //获取当前任务节点：
+	  Task task = processEngine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
+	  if(null!=task) {
+	    ExecutionEntity ee = (ExecutionEntity) processEngine.getRuntimeService().createExecutionQuery()
+	            .executionId(task.getExecutionId()).singleResult();
+	    // 查询前审批节点
+	    String crruentActivityId = ee.getActivityId();
+	    BpmnModel bpmnModel = processEngine.getRepositoryService().getBpmnModel(task.getProcessDefinitionId());
+	    FlowNode flowNode = (FlowNode) bpmnModel.getFlowElement(crruentActivityId);
+	    // 输出连线
+	    List<SequenceFlow> outFlows = flowNode.getOutgoingFlows();
+	    FlowElement sourceFlowElement=null;
+	    for (SequenceFlow sequenceFlow : outFlows) {
+	    	sourceFlowElement = sequenceFlow.getSourceFlowElement();
+	    }
+	  
+	  //当前审批节点
+	    System.out.println("sourceFlowElement.getName()="+sourceFlowElement.getName());
+	    String name="";
+        if ("总编委会成员".equals(sourceFlowElement.getName())) {
+               //下一节点为总编委会,查询名称
+        	String ebname=flowableService.selectEbname(split[0]);//编委会名
+        		//用户表中查询该用户的姓名
+        	
+        	for (int i = 0; i < split.length; i++) {
+        		name=name+","+flowableService.selectUsername(split[i]);
+			}
+            String nameSplit=name.substring(6);//人名
+            httpApprovalHistory = new HttpApprovalHistory();
+            httpApprovalHistory.setEditorial(ebname);
+            httpApprovalHistory.setAgree("待审核");
+            httpApprovalHistory.setApprovalUserName(nameSplit);
+            httpApprovalHistoryList.add(httpApprovalHistory); 
+            notice.setRecord(httpApprovalHistoryList);
+        }else{
+        	if(task!=null) {
+        		 UserManager namenode=flowableService.deploynewFour(notice.getCreateid());
+            	 String ebname=namenode.getEbname();
+             	for (int i = 0; i < split.length; i++) {
+             		name=name+","+flowableService.selectUsername(split[i]);
+     			}
+                String nameSplit=name.substring(6);//人名
+                httpApprovalHistory = new HttpApprovalHistory();
+                httpApprovalHistory.setEditorial(ebname);//设置编委会名称
+                httpApprovalHistory.setAgree("待审核");//审核状态
+                httpApprovalHistory.setApprovalUserName(nameSplit);//待审批人名字（多人）
+                httpApprovalHistoryList.add(httpApprovalHistory); //将数据放入集合
+                notice.setRecord(httpApprovalHistoryList);
+        	}
+        	
+        }
+	  }
+	        result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(notice);
+			return res;
 	}
 	 
 
@@ -403,8 +492,6 @@ public class FlowableController {
  		//获取bpmnModel对象
  		BpmnModel model1 = repositoryService.getBpmnModel(processDefinitionId);
  	//	BpmnModel model1 = new BpmnJsonConverter().convertToBpmnModel(modelNode);
- 		//由于我们这里仅仅定义了一个Process 所以获取集合中的第一个就可以
- 		//Process对象封装了全部的节点、连线、以及关口等信息。拿到这个对象就能够为所欲为了。
  		org.flowable.bpmn.model.Process process = model1.getProcesses().get(0);
  		//获取全部的FlowElement（流元素）信息
  		Collection<FlowElement> flowElements = process.getFlowElements();

@@ -428,4 +428,8 @@
 	<select id="selectbyEditorOverOne" resultType="com.jp.entity.UserManager" parameterType="java.lang.String">
 		select userid,username,ismanager from jp_user_manager where familyid=#{family,jdbcType=VARCHAR} and ebtype=1 and ismanager=1
 	</select>
+	<!-- 查询总编委名称 -->
+	<select id="selectEbname" resultType="java.lang.String" parameterType="java.lang.String">
+		select ebname from jp_user_manager where familyid=#{familyId,jdbcType=VARCHAR} and ebtype=1 and ismanager=1
+	</select>
 </mapper>
