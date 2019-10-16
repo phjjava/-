@@ -131,6 +131,8 @@ public class FlowableController {
 	@RequestMapping(value = "/aleady", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse aleady(PageModel<Notice> pageModel, String userid, Notice notice,String noticeid) {//String noticeid无用
+		Result result = null;
+		JsonResponse res = null;
 		  //调用对应方法,返回的数据为分编委会人员userid值 
 		String userIdNew=flowableService.deploynew(noticeid);
 		  //调用对应方法,返回总编委会所有成员userid 
@@ -154,7 +156,10 @@ public class FlowableController {
 		 if(overCount!=0) {
 			 return noticeService.selectAleadyNotice(list,pageModel,notice,familyid);
 		 }else {
-			 return null;
+			 result = new Result(MsgConstants.TO_ALERDY);
+				result.setMsg("无已审核！");
+				res = new JsonResponse(result);
+				return res;
 		 }
 		
 	}
@@ -235,7 +240,7 @@ public class FlowableController {
 
 	@ResponseBody
 	@RequestMapping(value = "/reject",method=RequestMethod.POST)
-	public JsonResponse reject(String taskId,String noticeid,String userid,String content,String title) {
+	public JsonResponse reject(String taskId,String noticeid,String userid,String content,String title,String imgurl) {
 		Result result = null;
 		JsonResponse res = null;
 		//获取流程实例id
@@ -269,7 +274,7 @@ public class FlowableController {
         Authentication.setAuthenticatedUserId(userid);// 批注人的名称
         // 添加批注信息
         processEngine.getTaskService().addComment(taskId, processInstanceId,
-        		"驳回" + ":" + content+":"+ebname);// comment为批注内容   content建议   ebname编委会名
+        		"驳回" + ":" + content+":"+imgurl+":"+ebname);// comment为批注内容   content建议   ebname编委会名
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("outcome", "驳回");
 		taskService.complete(taskId, map);
@@ -431,7 +436,7 @@ public class FlowableController {
                 httpApprovalHistory.setAgree("待审核");//审核状态
                 httpApprovalHistory.setApprovalUserName(nameSplit);//待审批人名字（多人）
                 httpApprovalHistoryList.add(httpApprovalHistory); //将数据放入集合
-                notice.setRecord(httpApprovalHistoryList);
+                notice.setRecord(httpApprovalHistoryList);//添加进notice对象中
         	}
         	
         }
