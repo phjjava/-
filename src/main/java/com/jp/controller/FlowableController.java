@@ -241,11 +241,35 @@ public class FlowableController {
 		//获取流程实例id
 		Task processInstance = processEngine.getTaskService().createTaskQuery().taskId(taskId).list().get(0);
 		String processInstanceId=processInstance.getProcessInstanceId();
+		Task tasknew = processEngine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
+		ExecutionEntity ee = (ExecutionEntity) processEngine.getRuntimeService().createExecutionQuery()
+		            .executionId(tasknew.getExecutionId()).singleResult();
+		    // 当前审批节点
+		    String crruentActivityId = ee.getActivityId();
+		    BpmnModel bpmnModel = processEngine.getRepositoryService().getBpmnModel(tasknew.getProcessDefinitionId());
+		    FlowNode flowNode = (FlowNode) bpmnModel.getFlowElement(crruentActivityId);
+		    // 输出连线
+		    List<SequenceFlow> outFlows = flowNode.getOutgoingFlows();
+		    FlowElement sourceFlowElement=null;
+		    for (SequenceFlow sequenceFlow : outFlows) {
+		    	sourceFlowElement= sequenceFlow.getSourceFlowElement();
+		    }
+		 //查询该条审批公告
+		  Notice notice=flowableService.selectNotice(noticeid);
+		  String ebname="";
+		 //判断节点所在位置将该用户编委会放入记录表
+		  if(sourceFlowElement.getName().equals("总编委会成员")) {
+			  //查询所属总编委会
+			  ebname=flowableService.selectEbname(notice.getCreateid());
+		  }else if(sourceFlowElement.getName().equals("分编委会")) {
+			  UserManager deploynewFour = flowableService.deploynewFour(notice.getCreateid());
+			  ebname=deploynewFour.getEbname();
+		  }
 		//向flowable历史记录表commit中添加数据(查看记录时查询所需数据)
         Authentication.setAuthenticatedUserId(userid);// 批注人的名称
         // 添加批注信息
         processEngine.getTaskService().addComment(taskId, processInstanceId,
-        		"驳回" + ":" + content);// comment为批注内容
+        		"驳回" + ":" + content+":"+ebname);// comment为批注内容   content建议   ebname编委会名
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("outcome", "驳回");
 		taskService.complete(taskId, map);
