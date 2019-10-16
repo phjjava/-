@@ -436,12 +436,49 @@ public class NoticeServiceImpl implements NoticeService {
 		}
 		int status = 0;
 		try {
-			User user = userMapper.selectByPrimaryKey(entity.getCreateid());
+			//生成公告id
+			String uuid = UUIDUtils.getUUID();
+			//部署流程文件
+			  RepositoryService  repositoryService = processEngine.getRepositoryService(); 
+			  Deployment deployment = repositoryService.createDeployment().addClasspathResource("ExpenseProcessNotice.bpmn20.xml") .deploy(); 
+			//获取用户已经部署好的流程
+			  ProcessDefinition processDefinition =repositoryService.createProcessDefinitionQuery().deploymentId(deployment.getId()) .singleResult();
+			  System.out.println("Found process definition : " +processDefinition.getName());
+			//启动审批流程
+			HashMap<String, Object> map = new HashMap<>();
+			 //调用对应方法,返回的数据为分编委会人员userid值
+			 String  userIdNew=flowableService.deploynew(uuid);
+			 //调用对应方法,返回总编委会所有成员userid
+			 String  userIdNewTwo=flowableService.deploynewTwo(uuid);
+			 //调用对应方法,返回总编委会主任userid
+			 //String  userIdNewThree=flowableService.deploynewThree();
+			
+			 map.put("noticeid", uuid);//放入公告id
+			 map.put("title", entity.getNoticetitle());//放入公告标题
+		     map.put("content", entity.getNoticecontent());//放入公告内容
+		   //判断该家族是否含有分编委会(有则设置为true，没有设置false)
+			 if("未找到对应的编委会"==userIdNew) {
+				 	map.put("outcome", "false");
+				}else if("跳过"==userIdNew){
+					map.put("outcome", "跳过");//总编委主任发起情况
+				}else {
+					map.put("outcome", "true");
+				}
+			User user = userMapper.selectByPrimaryKey(entity.getCreateid());//未加审批原码
+	        map.put("taskUser", entity.getCreateid());
+	        map.put("userOneIds", userIdNew);//设置候选人
+	        map.put("userTwoIds", userIdNewTwo);//设置候选人
+	        //map.put("userThreeIds", userIdNewThree);//设置候选人
+			ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("myProcess",map);//启动流程
+			System.out.println("流程创建成功Id为:"+processInstance.getId());
+			
+			
+			//未加审批原码
 			BranchKey branchKey = new BranchKey();
 			branchKey.setBranchid(user.getBranchid());
 			branchKey.setFamilyid(user.getFamilyid());
 			Branch branch = branchMapper.selectByPrimaryKey(branchKey);
-			String uuid = UUIDUtils.getUUID();
+			entity.setExaminestatus(0);//0:审核中 1:通过 2:驳回
 			entity.setNoticeid(uuid);
 			entity.setDeleteflag(0);
 			entity.setCreatetime(new Date());
@@ -732,8 +769,8 @@ public class NoticeServiceImpl implements NoticeService {
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
 		List<Notice> list = noticeMapper.selectExamine(pageModel,noticeid);
-		System.out.println("list="+list);
 		res.setData(list);
+		res.setCount(list.size());
 		return res;
 	}
 
@@ -767,8 +804,10 @@ public class NoticeServiceImpl implements NoticeService {
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
 		List<Notice> noticelist = noticeMapper.selectAleadyNotice(pageModel,list,familyid);
+		System.out.println("noticelist.size()="+noticelist.size());
 		System.out.println("noticelist="+noticelist);
 		res.setData(noticelist);
+		res.setCount(noticelist.size());
 		return res;
 	}
 
