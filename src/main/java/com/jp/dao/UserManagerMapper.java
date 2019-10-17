@@ -51,4 +51,6 @@ public interface UserManagerMapper {
 	List<UserManager> selectbyEditorOverOne(String family);
 	//查询所在编委名称
 	List<UserManager> selectbyEditorEbname(String id);
+	//查询对应总编委会名称
+	String selectEbname(@Param("userid")String userid, @Param("familyId")String familyId);
 }

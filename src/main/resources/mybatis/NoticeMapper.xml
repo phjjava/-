@@ -658,10 +658,19 @@
 	from jp_notice where noticeid in (${noticeid})
       order by createtime
   </select>
+  <!-- 查询当前人待审核公告条数 -->
+  <select id="selectExamineCount" parameterType="java.lang.String" resultType="java.lang.String">
+  	select count(*) from jp_notice where noticeid in (${noticeid}) order by createtime
+  </select>
   <!-- 查询当前人已审核公告 -->
   <select id="selectAleadyNotice" parameterType="java.lang.String" resultType="com.jp.entity.Notice">
   		select noticeid,branchid,familyid,noticetype,noticetitle,deleteflag,createid,createtime,updateid,updatetime,createname,imgurl,branchname,type,noticecontent,taskid,examinestatus
   		from jp_notice where familyid =#{familyid} and examinestatus in ('1','2')
+  </select>
+  <!-- 查询当前人已审核公告条数 -->
+  <select id="selectAleadyCount" parameterType="java.lang.String" resultType="java.lang.String">
+  		select count(*) from jp_notice where familyid =#{familyid} and examinestatus in ('1','2')
+  		
   </select>
   <update id="updateByExampleNew" parameterType="java.lang.String">
   		update jp_notice set taskid =#{taskid} where noticeid=#{variable}

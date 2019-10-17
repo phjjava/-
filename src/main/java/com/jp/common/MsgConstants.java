@@ -63,6 +63,6 @@ public class MsgConstants {
 	public static final Result MOMBER_RECORD = new Result(6004, "未找到对应的充值记录");
 
 	public static final Result TO_EXAMIN = new Result(7001, "未找到对应的待审核记录");
-
+	public static final Result TO_ALERDY = new Result(7002, "未找到对应的已审核记录");
 
 }

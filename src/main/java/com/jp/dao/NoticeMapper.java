@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.jp.common.JsonResponse;
 import com.jp.common.PageModel;
 import com.jp.entity.Notice;
 import com.jp.entity.NoticeExample;
@@ -70,5 +71,9 @@ public interface NoticeMapper {
 	List<Notice> selectAleadyNotice(@Param(value="pageModel")PageModel<Notice> pageModel, @Param(value="list")List<String> list, @Param(value="familyid")String familyid);
 	//查询公告发起人以及发起日期
 	Notice selectNotice(String noticeid);
+	//查询当前人待审核公告条数
+	String selectExamineCount(@Param(value="noticeid")String noticeid);
+	//查询当前人已审核公告条数
+	String selectAleadyCount(@Param(value="familyid")String familyid);
 
 }
