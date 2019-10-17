@@ -223,4 +223,6 @@ public interface UserDao {
 
 	List<User> selectBrothers(User user);
 
+	List<User> selectBrothersEx(User user);
+
 }
