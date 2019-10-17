@@ -71,6 +71,7 @@ import com.jp.entity.BranchphotoExample;
 import com.jp.entity.Dynamic;
 import com.jp.entity.DynamicVO;
 import com.jp.entity.EditorialBoard;
+import com.jp.entity.Function;
 import com.jp.entity.GenUser;
 import com.jp.entity.GenUserVO;
 import com.jp.entity.LoginThird;
@@ -105,6 +106,7 @@ import com.jp.entity.Userphoto;
 import com.jp.entity.Userworkexp;
 import com.jp.entity.UserworkexpQuery;
 import com.jp.service.DynamicService;
+import com.jp.service.FunctionService;
 import com.jp.service.NoticeService;
 import com.jp.service.UserContextService;
 import com.jp.service.UserService;
@@ -171,6 +173,8 @@ public class UserServiceImpl implements UserService {
 	private BranchphotoMapper branchPhotoMapper;
 	@Autowired
 	private UserManagerMapper userManagerMapper;
+	@Autowired
+	private FunctionService functionService;
 	@Autowired
 	private UserContextService userContextService;
 
@@ -4859,9 +4863,9 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		String userid = UUIDUtils.getUUID();
 		try {
 			Userinfo userInfo = user.getUserInfo();
-			String userid = UUIDUtils.getUUID();
 			if (type == 1) {//添加父母
 				//特别注意：此处的userid是孩子的（例：给张三添加父母，userid是张三的）;user对象的内容信息还是父母的
 				if (StringTools.trimIsEmpty(user.getUserid())) {
@@ -4871,6 +4875,11 @@ public class UserServiceImpl implements UserService {
 					return res;
 				}
 				User childUser = userDao.selectByPrimaryKey(user.getUserid());
+				childUser.setPid(userid);
+				childUser.setPname(user.getUsername());
+				//修改当前节点用户的父亲信息
+				userDao.updateByPrimaryKeySelective(childUser);
+
 				Integer genlevel = childUser.getGenlevel();
 				if (genlevel != null) {
 					if (genlevel == 1) {
@@ -4897,7 +4906,6 @@ public class UserServiceImpl implements UserService {
 					return res;
 				}
 				User pUser = userDao.selectByPrimaryKey(user.getPid());
-				user.setUserid(userid);
 				if (pUser.getGenlevel() != null) {
 					user.setGenlevel(pUser.getGenlevel() + 1);
 				}
@@ -4918,14 +4926,12 @@ public class UserServiceImpl implements UserService {
 					res = new JsonResponse(result);
 					return res;
 				}
-				User genUser = new User();
-				genUser.setIsMarry(0);
-				genUser.setUserid(user.getMateid());
-				genUser.setMateid(userid);
-				genUser.setMatename(user.getUsername());
-				//修改直系成员的配偶信息
-				userDao.updateByPrimaryKeySelective(genUser);
 				User mateUser = userDao.selectByPrimaryKey(mateid);
+				mateUser.setIsMarry(0);
+				mateUser.setMateid(userid);
+				mateUser.setMatename(user.getUsername());
+				//修改直系成员的配偶信息
+				userDao.updateByPrimaryKeySelective(mateUser);
 				user.setGenlevel(mateUser.getGenlevel());
 				// 配偶默认为非直系
 				user.setIsdirect(0);
@@ -4934,7 +4940,8 @@ public class UserServiceImpl implements UserService {
 				user.setIsMarry(0);
 				user.setMateid(mateid);
 				user.setMatename(mateUser.getUsername());
-				user.setPname(mateUser.getUsername());
+				user.setPid(mateUser.getPid());
+				user.setPname(mateUser.getPname());
 				user.setFamilyid(mateUser.getFamilyid());
 				user.setFamilyname(mateUser.getFamilyname());
 				user.setBranchid(mateUser.getBranchid());
@@ -4947,8 +4954,8 @@ public class UserServiceImpl implements UserService {
 			}
 			// 默认为在世
 			user.setLivestatus(0);
-			// 状态为待审核
-			user.setStatus(1);
+			// 管理员添加用户默认直接通过，不走审核
+			user.setStatus(0);
 			// 默认没有删除
 			user.setDeleteflag(0);
 			user.setPinyinfirst(PinyinUtil.getPinYinFirstChar(user.getUsername()));
@@ -5020,6 +5027,7 @@ public class UserServiceImpl implements UserService {
 		if (status > 0) {
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
+			res.setData(userid);
 			return res;
 		}
 		result = new Result(MsgConstants.RESUL_FAIL);
@@ -6156,5 +6164,71 @@ public class UserServiceImpl implements UserService {
 		result.setMsg("所查询的用户没有父亲信息！");
 		res = new JsonResponse(result);
 		return res;
+	}
+
+	@Override
+	public JsonResponse authFamilyFunction() {
+		Result result = null;
+		JsonResponse res = null;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		try {
+			List<UserManager> managers = userManagerMapper.selectMnangers(userid);
+			if (managers.size() < 1) {
+				result = new Result(MsgConstants.LOGIN_NOT_ADMIN);
+				res = new JsonResponse(result);
+				return res;
+			}
+			Map<String, Boolean> map = new HashMap<>();
+			map.put("BRANCH", false);//分支管理
+			map.put("USER", false);//成员管理
+			map.put("REVIEW", false);//子女管理
+			map.put("NOTICE", false);//公告管理
+			map.put("DYNAMIC", false);//资讯管理
+			List<Function> functions = functionService.selectFunctionListByManagerid(familyid, userid, null);
+			if (functions.size() < 1) {//是管理员，但是没有菜单权限时
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(map);
+				return res;
+			}
+			for (Function fun : functions) {
+				String code = fun.getCode();
+				if ("BRANCH".equals(code)) {
+					map.put("BRANCH", true);
+				} else if ("USER".equals(code)) {
+					map.put("USER", true);
+				} else if ("REVIEW".equals(code)) {
+					map.put("REVIEW", true);
+				} else if ("NOTICE".equals(code)) {
+					map.put("NOTICE", true);
+				} else if ("DYNAMIC".equals(fun.getCode())) {
+					map.put("DYNAMIC", true);
+				}
+			}
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(map);
+			return res;
+		} catch (Exception e) {
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			log_.error("[PLMERROR:]", e);
+			return res;
+		}
 	}
 }

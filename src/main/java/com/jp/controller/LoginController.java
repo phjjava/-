@@ -83,7 +83,7 @@ public class LoginController {
 							//			userContext.setUser(user);
 							List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid(),
 									null);
-							if (managers == null || managers.size() == 0) {
+							if (managers.size() == 0) {
 								result = new Result(MsgConstants.LOGIN_NOT_ADMIN);
 								res = new JsonResponse(result);
 								return res;

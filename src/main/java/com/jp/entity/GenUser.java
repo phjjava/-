@@ -9,6 +9,24 @@ public class GenUser {
 	private Integer genlevel;
 	private Integer livestatus;
 	private String brotherpos;
+	private String branchid;
+	private String branchname;
+
+	public String getBranchid() {
+		return branchid;
+	}
+
+	public void setBranchid(String branchid) {
+		this.branchid = branchid;
+	}
+
+	public String getBranchname() {
+		return branchname;
+	}
+
+	public void setBranchname(String branchname) {
+		this.branchname = branchname;
+	}
 
 	public String getBrotherpos() {
 		return brotherpos;

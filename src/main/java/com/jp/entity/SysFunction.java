@@ -52,6 +52,10 @@ public class SysFunction implements Serializable {
 	 * 描述
 	 */
 	private String description;
+	/**
+	 * 菜单标识码
+	 */
+	private String code;
 
 	/**
 	 * 
@@ -178,12 +182,20 @@ public class SysFunction implements Serializable {
 		this.isfunctionid = isfunctionid;
 	}
 
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
 	@Override
 	public String toString() {
 		return "SysFunction [functionid=" + functionid + ", functionname=" + functionname + ", parentid=" + parentid
 				+ ", functionurl=" + functionurl + ", createid=" + createid + ", createtime=" + createtime
 				+ ", updatetime=" + updatetime + ", updateid=" + updateid + ", icon=" + icon + ", status=" + status
-				+ ", sort=" + sort + ", description=" + description + ", isfunctionid=" + isfunctionid + ", childList="
-				+ childList + "]";
+				+ ", sort=" + sort + ", description=" + description + ", code=" + code + ", isfunctionid="
+				+ isfunctionid + ", childList=" + childList + "]";
 	}
 }
