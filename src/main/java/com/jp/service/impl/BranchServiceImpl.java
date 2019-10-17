@@ -1625,6 +1625,12 @@ public class BranchServiceImpl implements BranchService {
 		}
 		return;
 	}
+	//测试审批
+	@Override
+	public Branch selectbyEditor(String userid) {
+		// TODO Auto-generated method stub
+		return branchDao.selectbyEditor(userid);
+	}
 
 	@Override
 	public JsonResponse getBranchsByUserid(String userid, String code, Integer pageNo, Integer pageSize) {
@@ -1648,10 +1654,15 @@ public class BranchServiceImpl implements BranchService {
 		}
 		//查询所属编委会
 		List<UserManager> managers = userManagerMapper.selectMnangers(userid);
+		if(managers == null || managers.size()<1) {
+			result = new Result(ConstantUtils.RESULT_FAIL, "当前用户无管理权限");
+			res = new JsonResponse(result);
+			return res;
+		}
 		//统计管理地区的编码
 		List<String> codeList = new ArrayList<String>();
 
-		boolean flag = true;
+		boolean flag = false;
 		//根据地区编码查询分支
 		for (UserManager manager : managers) {
 			flag = false;

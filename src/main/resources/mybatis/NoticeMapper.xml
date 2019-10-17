@@ -27,8 +27,10 @@
 		<result column="branchname" property="branchname"
 			jdbcType="VARCHAR" />
 		<result column="type" property="type" jdbcType="INTEGER" />
-	</resultMap>
-	<resultMap id="ResultMapWithBLOBs"
+		<result column="examinestatus" property="examinestatus" jdbcType="INTEGER" />
+		<result column="taskid" property="taskid" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs"
 		type="com.jp.entity.Notice" extends="BaseResultMap">
 		<result column="noticecontent" property="noticecontent"
 			jdbcType="LONGVARCHAR" />
@@ -104,7 +106,7 @@
 			noticeid, branchid, familyid, noticetype, noticetitle,
 			noticecontent,deleteflag, createid, createtime,
 			updateid, updatetime,
-			createname, imgurl, branchname, type
+			createname, imgurl, branchname, type,examinestatus,taskid
 		</if>
 		<if test="fields != null">
 			${fields}
@@ -242,6 +244,9 @@
 			<if test="noticecontent != null">
 				noticecontent,
 			</if>
+			<if test="examinestatus != null">
+				examinestatus,
+			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="noticeid != null">
@@ -288,6 +293,9 @@
 			</if>
 			<if test="noticecontent != null">
 				#{noticecontent,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="examinestatus != null">
+				#{examinestatus,jdbcType=INTEGER},
 			</if>
 		</trim>
 	</insert>
@@ -348,6 +356,10 @@
 				noticecontent =
 				#{record.noticecontent,jdbcType=LONGVARCHAR},
 			</if>
+			<if test="record.examinestatus != null">
+				examinestatus =
+				#{record.examinestatus,jdbcType=INTEGER},
+			</if>
 		</set>
 		<if test="_parameter != null">
 			<include refid="Update_By_Example_Where_Clause" />
@@ -383,6 +395,8 @@
 		#{record.type,jdbcType=INTEGER},
 		noticecontent =
 		#{record.noticecontent,jdbcType=LONGVARCHAR}
+		examinestatus =
+		#{record.examinestatus,jdbcType=INTEGER}
 		<if test="_parameter != null">
 			<include refid="Update_By_Example_Where_Clause" />
 		</if>
@@ -465,6 +479,9 @@
 			<if test="noticecontent != null">
 				noticecontent = #{noticecontent,jdbcType=LONGVARCHAR},
 			</if>
+			<if test="examinestatus != null">
+				examinestatus = #{examinestatus,jdbcType=INTEGER},
+			</if>
 		</set>
 		where noticeid = #{noticeid,jdbcType=VARCHAR}
 	</update>
@@ -495,6 +512,8 @@
 		#{type,jdbcType=INTEGER},
 		noticecontent =
 		#{noticecontent,jdbcType=LONGVARCHAR}
+		examinestatus =
+		#{examinestatus,jdbcType=INTEGER}
 		where noticeid =
 		#{noticeid,jdbcType=VARCHAR}
 	</update>
@@ -632,5 +651,36 @@
 	  	<if test="count != null and start != null" >
 			limit ${start},${count}
 		</if>
+  </select>
+  <!-- 查询当前人待审核公告 -->
+  <select id="selectExamine" parameterType="java.lang.String" resultType="com.jp.entity.Notice">
+	select noticeid,branchid,familyid,noticetype,noticetitle,deleteflag,createid,createtime,updateid,updatetime,createname,imgurl,branchname,type,noticecontent,taskid,examinestatus
+	from jp_notice where noticeid in (${noticeid})
+      order by createtime
+  </select>
+  <!-- 查询当前人待审核公告条数 -->
+  <select id="selectExamineCount" parameterType="java.lang.String" resultType="java.lang.String">
+  	select count(*) from jp_notice where noticeid in (${noticeid}) order by createtime
+  </select>
+  <!-- 查询当前人已审核公告 -->
+  <select id="selectAleadyNotice" parameterType="java.lang.String" resultType="com.jp.entity.Notice">
+  		select noticeid,branchid,familyid,noticetype,noticetitle,deleteflag,createid,createtime,updateid,updatetime,createname,imgurl,branchname,type,noticecontent,taskid,examinestatus
+  		from jp_notice where familyid =#{familyid} and examinestatus in ('1','2')
+  </select>
+  <!-- 查询当前人已审核公告条数 -->
+  <select id="selectAleadyCount" parameterType="java.lang.String" resultType="java.lang.String">
+  		select count(*) from jp_notice where familyid =#{familyid} and examinestatus in ('1','2')
+  		
+  </select>
+  <update id="updateByExampleNew" parameterType="java.lang.String">
+  		update jp_notice set taskid =#{taskid} where noticeid=#{variable}
+  </update>
+  <update id="updateNoticeExamin" parameterType="java.lang.String">
+  		update jp_notice set examinestatus =#{examinestatus} where noticeid=#{noticeid}
+  </update>
+  <!-- 公告发起人 发起日期 -->
+  <select id="selectNotice" parameterType="java.lang.String" resultType="com.jp.entity.Notice">
+  		select noticeid,branchid,familyid,noticetype,noticetitle,deleteflag,createid,createtime,updateid,updatetime,createname,imgurl,branchname,type,noticecontent,taskid,examinestatus
+  		from jp_notice where noticeid=#{noticeid}
   </select>
 </mapper>

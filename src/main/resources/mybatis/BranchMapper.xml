@@ -896,4 +896,9 @@
 		select citycode,cityname from jp_branch where
 		familyid=#{familyid,jdbcType=VARCHAR} group by citycode,cityname
 	</select>
+	<!-- 查询当前用户分支 -->
+	<select id="selectbyEditor" resultType="com.jp.entity.Branch" parameterType="java.lang.String">
+		select beginname,branchname,areacode,citycode,xcode from jp_branch where branchid=#{branchid,jdbcType=VARCHAR}
+		
+	</select>
 </mapper>
