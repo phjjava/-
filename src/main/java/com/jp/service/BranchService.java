@@ -66,9 +66,12 @@ public interface BranchService {
 
 	JsonResponse getGenListOnlyExt(Branch entity);
 
+	Branch selectbyEditor(String userid);
+
 	JsonResponse getBranchsByUserid(String userid, String code, Integer pageNo, Integer pageSize);
 
 	JsonResponse getEbArea(Branch branch);
 
 	JsonResponse getXQAndBranch(Branch entity);
+
 }

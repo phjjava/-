@@ -318,6 +318,12 @@ public interface UserService {
 	JsonResponse checkDemoUser();
 
 	String getAllAddressByUserid(String userid);
+	
+	String selectFamilyId(String userid);
+	//得到分支id
+	String selectBranchId(String userid);
+	//审批人名
+	String selectUsername(String string);
 
 	JsonResponse getUserThreeGen(String userid);
 

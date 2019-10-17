@@ -130,11 +130,10 @@ public class LoginController {
 					res = new JsonResponse(result);
 					return res;
 				}
-			} else {
-				result = new Result(MsgConstants.LOGIN_ICODE_WRONG);
-				res = new JsonResponse(result);
-				return res;
-			}
+			
+			 } else { result = new Result(MsgConstants.LOGIN_ICODE_WRONG); res = new
+			  JsonResponse(result); return res; }
+			 
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[HNFZ_ERROR登录系统失败:]", e);

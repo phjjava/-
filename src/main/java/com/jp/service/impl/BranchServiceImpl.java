@@ -1577,6 +1577,12 @@ public class BranchServiceImpl implements BranchService {
 		}
 		return;
 	}
+	//测试审批
+	@Override
+	public Branch selectbyEditor(String userid) {
+		// TODO Auto-generated method stub
+		return branchDao.selectbyEditor(userid);
+	}
 
 	@Override
 	public JsonResponse getBranchsByUserid(String userid, String code, Integer pageNo, Integer pageSize) {
