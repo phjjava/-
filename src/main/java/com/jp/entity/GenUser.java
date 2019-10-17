@@ -9,6 +9,15 @@ public class GenUser {
 	private Integer genlevel;
 	private Integer livestatus;
 	private String brotherpos;
+	private String status;//是否可编辑 1是0否
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 	public String getBrotherpos() {
 		return brotherpos;
