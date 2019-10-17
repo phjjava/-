@@ -770,7 +770,6 @@ public class NoticeServiceImpl implements NoticeService {
 		res = new JsonResponse(result);
 		List<Notice> list = noticeMapper.selectExamine(pageModel,noticeid);
 		res.setData(list);
-		res.setCount(list.size());
 		return res;
 	}
 
@@ -804,11 +803,22 @@ public class NoticeServiceImpl implements NoticeService {
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
 		List<Notice> noticelist = noticeMapper.selectAleadyNotice(pageModel,list,familyid);
-		System.out.println("noticelist.size()="+noticelist.size());
-		System.out.println("noticelist="+noticelist);
 		res.setData(noticelist);
-		res.setCount(noticelist.size());
 		return res;
+	}
+	/**
+	 * 个人待审核公告条数
+	 */
+	@Override
+	public String selectExamineCount(String noticeid) {
+		// TODO Auto-generated method stub
+		return noticeMapper.selectExamineCount(noticeid);
+	}
+
+	@Override
+	public String selectAleadyCount(String familyid) {
+		// TODO Auto-generated method stub
+		return noticeMapper.selectAleadyCount(familyid);
 	}
 
 }
