@@ -15,8 +15,11 @@ import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
+import com.jp.dao.FunctionDao;
+import com.jp.dao.FunctionRoleMapper;
 import com.jp.dao.SysFunctionDao;
 import com.jp.dao.SysVersionDao;
+import com.jp.entity.FunctionRoleExample;
 import com.jp.entity.SysFunction;
 import com.jp.entity.SysFunctionQuery;
 import com.jp.entity.SysFunctionQuery.Criteria;
@@ -34,6 +37,10 @@ public class SysFunctionServiceImpl implements SysFunctionService {
 	private SysFunctionDao sysFunctionDao;
 	@Autowired
 	private SysVersionDao sysVersionDao;
+	@Autowired
+	private FunctionDao functionDao;
+	@Autowired
+	private FunctionRoleMapper functionRoleMapper;
 
 	@Override
 	public JsonResponse pageQuery(PageModel<SysFunction> pageModel, SysFunction sysFunction) {
@@ -194,6 +201,11 @@ public class SysFunctionServiceImpl implements SysFunctionService {
 		}
 		try {
 			status = sysFunctionDao.deleteByPrimaryKey(functionid);
+			//级联删除家族菜单,和管理员菜单数据
+			functionDao.deleteByPrimaryKey(functionid);
+			FunctionRoleExample fre = new FunctionRoleExample();
+			fre.or().andFunctionidEqualTo(functionid);
+			functionRoleMapper.deleteByExample(fre);
 			if (status > 0) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);
@@ -245,21 +257,27 @@ public class SysFunctionServiceImpl implements SysFunctionService {
 		Result result = null;
 		JsonResponse res = null;
 		int status = 0;
-		if (sysFunction.getFunctionname() == null || "".equals(sysFunction.getFunctionname())) {
+		if (StringTools.trimIsEmpty(sysFunction.getFunctionname())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数functionname不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (sysFunction.getFunctionurl() == null || "".equals(sysFunction.getFunctionurl())) {
+		if (StringTools.trimIsEmpty(sysFunction.getFunctionurl())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数functionurl不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (sysFunction.getSort() == null || "".equals(sysFunction.getSort() + "")) {
+		if (sysFunction.getSort() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数sort不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringTools.trimIsEmpty(sysFunction.getCode())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数code不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}

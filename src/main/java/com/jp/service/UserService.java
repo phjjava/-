@@ -329,4 +329,6 @@ public interface UserService {
 
 	JsonResponse getParent(String userid);
 
+	JsonResponse authFamilyFunction();
+
 }

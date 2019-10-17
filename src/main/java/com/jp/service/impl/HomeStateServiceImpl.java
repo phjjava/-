@@ -14,7 +14,6 @@ import com.jp.common.Result;
 import com.jp.dao.HomeStateMapper;
 import com.jp.entity.HomeState;
 import com.jp.service.HomeStateService;
-import com.jp.service.UserService;
 import com.jp.util.WebUtil;
 
 /**
@@ -32,8 +31,6 @@ public class HomeStateServiceImpl extends ServiceImpl<HomeStateMapper, HomeState
 
 	@Autowired
 	private HomeStateMapper homeStateMapper;
-	@Autowired
-	private UserService userService;
 
 	@Override
 	public JsonResponse queryHomeState(HomeState homeState) {

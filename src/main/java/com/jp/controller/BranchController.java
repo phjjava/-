@@ -208,7 +208,7 @@ public class BranchController {
 	}
 
 	/**
-	 * 获取指定分支的世系表（结构化数据列表） - 获取指定分支的世系表 (iOS 用)（层次结构数据）
+	 * 获取指定分支的世系表 - 用户世系表 (层次结构数据+递归查询- iOS用)
 	 * 
 	 * @param branch
 	 * @return
@@ -220,7 +220,7 @@ public class BranchController {
 	}
 
 	/**
-	 * 获取指定分支的世系表（仅列表：递归） - 获取指定分支的世系表（列表数据+递归查询）
+	 * 获取指定分支的世系表 - 用户世系表（列表数据+递归查询 -Android用）
 	 * 
 	 * @param branch
 	 * @return

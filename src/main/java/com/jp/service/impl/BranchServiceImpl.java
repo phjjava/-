@@ -963,19 +963,24 @@ public class BranchServiceImpl implements BranchService {
 			genUser.setUsername(gen_user.getUsername());
 			genUser.setLivestatus(gen_user.getLivestatus());
 			genUser.setBrotherpos(gen_user.getBrotherpos());
-			// 初始化配偶实例
-			GenUser mateuser = new GenUser();
-			mateuser.setGenlevel(mate_user.getGenlevel());
-			mateuser.setImgurl(mate_user.getImgurl());
-			mateuser.setSex(mate_user.getSex());
-			mateuser.setUserid(mate_user.getUserid());
-			mateuser.setUsername(mate_user.getUsername());
-			mateuser.setLivestatus(gen_user.getLivestatus());
-
-			// 初始化起始节点
+			genUser.setBranchid(gen_user.getBranchid());
+			genUser.setBranchname(gen_user.getBranchname());
 			GenUserVO genUserVO = new GenUserVO();
+			if (mate_user != null) {
+				// 初始化配偶实例
+				GenUser mateuser = new GenUser();
+				mateuser.setGenlevel(gen_user.getGenlevel());
+				mateuser.setImgurl(mate_user.getImgurl());
+				mateuser.setSex(mate_user.getSex());
+				mateuser.setUserid(mate_user.getUserid());
+				mateuser.setUsername(mate_user.getUsername());
+				mateuser.setLivestatus(mate_user.getLivestatus());
+				mateuser.setBranchid(mate_user.getBranchid());
+				mateuser.setBranchname(mate_user.getBranchname());
+				genUserVO.setMateuser(mateuser);
+			}
+			// 初始化起始节点
 			genUserVO.setUser(genUser);
-			genUserVO.setMateuser(mateuser);
 
 			getUserListFromGenUser(genUserVO, gen_user.getGenlevel());
 			result = new Result(MsgConstants.RESUL_SUCCESS);
@@ -1038,7 +1043,8 @@ public class BranchServiceImpl implements BranchService {
 			genUserOther.setUsername(gen_user.getUsername());
 			genUserOther.setPid(gen_user.getPid());
 			genUserOther.setBrotherpos(gen_user.getBrotherpos());
-
+			genUserOther.setBranchid(gen_user.getBranchid());
+			genUserOther.setBranchname(gen_user.getBranchname());
 			// 初始化配偶实例
 			if (StringUtils.isNotBlank(gen_user.getMateid())) {
 				UserQuery userExample1 = new UserQuery();
@@ -1046,20 +1052,19 @@ public class BranchServiceImpl implements BranchService {
 				List<User> users2 = userDao.selectByExample(userExample1);
 				if (users2.size() > 0) {
 					mate_user = users2.get(0);
+					GenUserOther mateuser = new GenUserOther();
+					mateuser.setGenlevel(gen_user.getGenlevel());
+					mateuser.setImgurl(mate_user.getImgurl());
+					mateuser.setSex(mate_user.getSex());
+					mateuser.setUserid(mate_user.getUserid());
+					mateuser.setUsername(mate_user.getUsername());
+					mateuser.setLivestatus(mate_user.getLivestatus());
+					mateuser.setBranchid(mate_user.getBranchid());
+					mateuser.setBranchname(mate_user.getBranchname());
+					genUserOther.setMate(mateuser);
 				}
 			}
 
-			GenUserOther mateuser = new GenUserOther();
-			mateuser.setGenlevel(mate_user.getGenlevel());
-			mateuser.setImgurl(mate_user.getImgurl());
-			mateuser.setSex(mate_user.getSex());
-			mateuser.setUserid(mate_user.getUserid());
-			mateuser.setUsername(mate_user.getUsername());
-			if (mate_user.getLivestatus() != null) {
-				mateuser.setLivestatus(mate_user.getLivestatus());
-			}
-			mateuser.setLivestatus(mate_user.getLivestatus());
-			genUserOther.setMate(mateuser);
 			List<GenUserOther> genUserOthers = new ArrayList<GenUserOther>();
 			genUserOthers.add(genUserOther);
 
@@ -1087,22 +1092,19 @@ public class BranchServiceImpl implements BranchService {
 				res = new JsonResponse(result);
 				return res;
 			}
-			if (entity.getStatus() == null || "".equals(entity.getStatus() + "")) {
+			if (entity.getStatus() == null) {
 				result = new Result(MsgConstants.STATUS_IS_NULL);
 				res = new JsonResponse(result);
 				return res;
 			}
 			User user = userDao.selectByPrimaryKey(entity.getParentid());
-			User mate_user = new User();
-			user.setPid(user.getPid());
 			// 获取向上几世的节点实例
 			User gen_user = getUserUptoTop(user, user.getGenlevel(), entity.getStatus());
 			List<GenUserOther> genUserOthers = new ArrayList<GenUserOther>();
 			if (gen_user != null) {
 				// 初始化起始人实例
 				GenUserOther genUserOther = new GenUserOther();
-				if (gen_user.getLivestatus() != null)
-					genUserOther.setLivestatus(Integer.valueOf(gen_user.getLivestatus()));
+				genUserOther.setLivestatus(gen_user.getLivestatus());
 				genUserOther.setGenlevel(gen_user.getGenlevel());
 				genUserOther.setImgurl(gen_user.getImgurl());
 				genUserOther.setSex(gen_user.getSex());
@@ -1111,29 +1113,27 @@ public class BranchServiceImpl implements BranchService {
 				genUserOther.setPid(gen_user.getPid());
 
 				// 初始化配偶实例
-				if (gen_user.getMateid() == null || "".equals(gen_user.getMateid())) {
-					// 不存在配偶的情况
-				} else {
+				if (StringTools.notEmpty(gen_user.getMateid())) {
 					UserQuery userExample = new UserQuery();
 					userExample.or().andUseridEqualTo(gen_user.getMateid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
 					List<User> users2 = userDao.selectByExample(userExample);
 					if (users2.size() > 0) {
-						mate_user = users2.get(0);
+						User mate_user = users2.get(0);
+						GenUserOther mateuser = new GenUserOther();
+						mateuser.setLivestatus(mate_user.getLivestatus());
+						mateuser.setGenlevel(gen_user.getGenlevel());
+						mateuser.setImgurl(mate_user.getImgurl());
+						mateuser.setSex(mate_user.getSex());
+						mateuser.setUserid(mate_user.getUserid());
+						mateuser.setUsername(mate_user.getUsername());
+						genUserOther.setMate(mateuser);
 					}
 				}
-				GenUserOther mateuser = new GenUserOther();
-				if (mate_user.getLivestatus() != null)
-					mateuser.setLivestatus(Integer.valueOf(mate_user.getLivestatus()));
-				mateuser.setGenlevel(mate_user.getGenlevel());
-				mateuser.setImgurl(mate_user.getImgurl());
-				mateuser.setSex(mate_user.getSex());
-				mateuser.setUserid(mate_user.getUserid());
-				mateuser.setUsername(mate_user.getUsername());
-				genUserOther.setMate(mateuser);
 
 				genUserOthers.add(genUserOther);
 
-				getUserListOnlyFromGenUser(genUserOther, genUserOther.getGenlevel(), genUserOthers);
+				getUserListCurrentToGenUser(genUserOther, entity.getParentid(), genUserOther.getGenlevel(),
+						genUserOthers);
 			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
@@ -1144,6 +1144,58 @@ public class BranchServiceImpl implements BranchService {
 			log_.error("[BranchServiceImpl---Error:]", e);
 		}
 		return res;
+	}
+
+	/**
+	 * 从根向下查询五代
+	 * @param entity
+	 * @param genlevel
+	 * @param genUserOthers
+	 */
+	public void getUserListCurrentToGenUser(GenUserOther entity, String CurrentId, int genlevel,
+			List<GenUserOther> genUserOthers) {
+		// 查询孩子列表
+		String userid = entity.getUserid();
+		List<User> users = userDao.selectChildren(userid);
+		for (User user : users) {
+			// 初始孩子实例
+			GenUserOther gen_UserOther = new GenUserOther();
+			gen_UserOther.setLivestatus(user.getLivestatus());
+			gen_UserOther.setGenlevel(user.getGenlevel());
+			gen_UserOther.setImgurl(user.getImgurl());
+			gen_UserOther.setSex(user.getSex());
+			gen_UserOther.setUserid(user.getUserid());
+			gen_UserOther.setUsername(user.getUsername());
+			gen_UserOther.setPid(user.getPid());
+			gen_UserOther.setBrotherpos(user.getBrotherpos());
+			gen_UserOther.setBranchid(user.getBranchid());
+			gen_UserOther.setBranchname(user.getBranchname());
+			// 获取孩子配偶
+			if (StringTools.notEmpty(user.getMateid())) {
+				UserQuery uq = new UserQuery();
+				uq.or().andUseridEqualTo(user.getMateid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
+				List<User> users2 = userDao.selectByExample(uq);
+				if (users2.size() > 0) {
+					User mateuser = users2.get(0);
+					// 初始孩子配偶实例
+					GenUserOther mate_user_other = new GenUserOther();
+					mate_user_other.setLivestatus(mateuser.getLivestatus());
+					mate_user_other.setGenlevel(user.getGenlevel());
+					mate_user_other.setImgurl(mateuser.getImgurl());
+					mate_user_other.setSex(mateuser.getSex());
+					mate_user_other.setUserid(mateuser.getUserid());
+					mate_user_other.setUsername(mateuser.getUsername());
+					mate_user_other.setBranchid(user.getBranchid());
+					mate_user_other.setBranchname(user.getBranchname());
+					gen_UserOther.setMate(mate_user_other);
+				}
+			}
+			genUserOthers.add(gen_UserOther);
+			if (CurrentId.equals(gen_UserOther.getUserid())) {
+				return;
+			}
+			getUserListCurrentToGenUser(gen_UserOther, CurrentId, genlevel, genUserOthers);
+		}
 	}
 
 	@Override
@@ -1217,26 +1269,22 @@ public class BranchServiceImpl implements BranchService {
 			genUserSelf.setPid(gen_user.getPid());
 			// 初始化配偶实例
 			User self_mate = new User();
-			if (gen_user.getMateid() == null || "".equals(gen_user.getMateid())) {
-				// 不存在配偶的情况
-			} else {
+			if (StringTools.notEmpty(gen_user.getMateid())) {
 				UserQuery userExample1 = new UserQuery();
 				userExample1.or().andUseridEqualTo(gen_user.getMateid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
 				List<User> users3 = userDao.selectByExample(userExample1);
 				if (users3.size() > 0) {
 					self_mate = users3.get(0);
+					GenUserOther self_mate_user = new GenUserOther();
+					self_mate_user.setLivestatus(self_mate.getLivestatus());
+					self_mate_user.setGenlevel(gen_user.getGenlevel());
+					self_mate_user.setImgurl(self_mate.getImgurl());
+					self_mate_user.setSex(self_mate.getSex());
+					self_mate_user.setUserid(self_mate.getUserid());
+					self_mate_user.setUsername(self_mate.getUsername());
+					genUserSelf.setMate(self_mate_user);
 				}
 			}
-			GenUserOther self_mate_user = new GenUserOther();
-			if (self_mate.getLivestatus() != null) {
-				self_mate_user.setLivestatus(self_mate.getLivestatus());
-			}
-			self_mate_user.setGenlevel(self_mate.getGenlevel());
-			self_mate_user.setImgurl(self_mate.getImgurl());
-			self_mate_user.setSex(self_mate.getSex());
-			self_mate_user.setUserid(self_mate.getUserid());
-			self_mate_user.setUsername(self_mate.getUsername());
-			genUserSelf.setMate(self_mate_user);
 			genUserOthers.add(genUserSelf);
 			// 先增加自己
 
@@ -1244,8 +1292,7 @@ public class BranchServiceImpl implements BranchService {
 				User mate_user = new User();
 				// 初始化起始人实例
 				GenUserOther genUserOther = new GenUserOther();
-				if (user.getLivestatus() != null)
-					genUserOther.setLivestatus(Integer.valueOf(user.getLivestatus()));
+				genUserOther.setLivestatus(user.getLivestatus());
 				genUserOther.setGenlevel(user.getGenlevel());
 				genUserOther.setImgurl(user.getImgurl());
 				genUserOther.setSex(user.getSex());
@@ -1254,26 +1301,22 @@ public class BranchServiceImpl implements BranchService {
 				genUserOther.setPid(user.getPid());
 
 				// 初始化配偶实例
-				if (user.getMateid() == null || "".equals(user.getMateid())) {
-					// 不存在配偶的情况
-				} else {
+				if (StringTools.notEmpty(user.getMateid())) {
 					UserQuery userExample1 = new UserQuery();
 					userExample1.or().andUseridEqualTo(user.getMateid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
 					List<User> users3 = userDao.selectByExample(userExample1);
 					if (users3.size() > 0) {
 						mate_user = users3.get(0);
+						GenUserOther mateuser = new GenUserOther();
+						mateuser.setLivestatus(mate_user.getLivestatus());
+						mateuser.setGenlevel(user.getGenlevel());
+						mateuser.setImgurl(mate_user.getImgurl());
+						mateuser.setSex(mate_user.getSex());
+						mateuser.setUserid(mate_user.getUserid());
+						mateuser.setUsername(mate_user.getUsername());
+						genUserOther.setMate(mateuser);
 					}
 				}
-				GenUserOther mateuser = new GenUserOther();
-				if (mate_user.getLivestatus() != null) {
-					mateuser.setLivestatus(mate_user.getLivestatus());
-				}
-				mateuser.setGenlevel(mate_user.getGenlevel());
-				mateuser.setImgurl(mate_user.getImgurl());
-				mateuser.setSex(mate_user.getSex());
-				mateuser.setUserid(mate_user.getUserid());
-				mateuser.setUsername(mate_user.getUsername());
-				genUserOther.setMate(mateuser);
 				genUserOthers.add(genUserOther);
 			}
 
@@ -1324,15 +1367,19 @@ public class BranchServiceImpl implements BranchService {
 			gen_User.setUsername(user.getUsername());
 			gen_User.setLivestatus(user.getLivestatus());
 			gen_User.setBrotherpos(user.getBrotherpos());
+			gen_User.setBranchid(user.getBranchid());
+			gen_User.setBranchname(user.getBranchname());
 			// 初始孩子配偶实例
 			GenUser mate_user = new GenUser();
 			if (mateuser != null) {
-				mate_user.setGenlevel(mateuser.getGenlevel());
+				mate_user.setGenlevel(user.getGenlevel());
 				mate_user.setImgurl(mateuser.getImgurl());
 				mate_user.setSex(mateuser.getSex());
 				mate_user.setUserid(mateuser.getUserid());
 				mate_user.setUsername(mateuser.getUsername());
 				mate_user.setLivestatus(mateuser.getLivestatus());
+				mate_user.setBranchid(mateuser.getBranchid());
+				mate_user.setBranchname(mateuser.getBranchname());
 			}
 			GenUserVO genUserVO = new GenUserVO();
 			genUserVO.setUser(gen_User);
@@ -1372,12 +1419,14 @@ public class BranchServiceImpl implements BranchService {
 			gen_UserOther.setUsername(user.getUsername());
 			gen_UserOther.setPid(user.getPid());
 			gen_UserOther.setBrotherpos(user.getBrotherpos());
+			gen_UserOther.setBranchid(user.getBranchid());
+			gen_UserOther.setBranchname(user.getBranchname());
 
 			// 初始孩子配偶实例
 			GenUserOther mate_user_other = new GenUserOther();
 			if (mateuser != null) {
 				mate_user_other.setLivestatus(mateuser.getLivestatus());
-				mate_user_other.setGenlevel(mateuser.getGenlevel());
+				mate_user_other.setGenlevel(user.getGenlevel());
 				mate_user_other.setImgurl(mateuser.getImgurl());
 				mate_user_other.setSex(mateuser.getSex());
 				mate_user_other.setUserid(mateuser.getUserid());
@@ -1393,30 +1442,31 @@ public class BranchServiceImpl implements BranchService {
 	 * 获取当前用户向上几代的根节点：如果超出指定几代查不到则返回最顶级实例。
 	 * 
 	 * @author 李鹏 17-04-07
-	 * @param entity：当前用户实例
-	 * @param iUserLevel
-	 *            ：当前用户的世代
-	 * @param iLevel：向上几代
+	 * @param currentUser ：当前用户实例
+	 * @param currentGenlevel ：当前用户的世代
+	 * @param count ：向上几代
 	 * @return
 	 */
-	public User getUserUptoTop(User entity, int iUserLevel, int iLevel) {
+	public User getUserUptoTop(User currentUser, int currentGenlevel, int count) {
 		User pUser = new User();
-		// 父用户
-		if (entity.getPid() == null || "".equals(entity.getPid()))
-			return entity;
-		else {
+		// 父用户		
+		if (currentUser.getPid() == null || "".equals(currentUser.getPid())) {
+			return currentUser;
+		} else {
 			UserQuery userExample = new UserQuery();
 			userExample.or().andDeleteflagEqualTo(0).andStatusEqualTo(0).andIsdirectEqualTo(1)
-					.andUseridEqualTo(entity.getPid());
+					.andUseridEqualTo(currentUser.getPid());
 			List<User> users = userDao.selectByExample(userExample);
 			if (users.size() > 0) {
 				pUser = users.get(0);
-				if (Math.abs(pUser.getGenlevel() - iUserLevel) >= iLevel)
+				if (Math.abs(pUser.getGenlevel() - currentGenlevel) >= count) {
 					return pUser;
-				else
-					pUser = getUserUptoTop(pUser, iUserLevel, iLevel);
-			} else
-				return entity;
+				} else {
+					pUser = getUserUptoTop(pUser, currentGenlevel, count);
+				}
+			} else {
+				return currentUser;
+			}
 		}
 		return pUser;
 	}
@@ -1470,23 +1520,21 @@ public class BranchServiceImpl implements BranchService {
 
 			User mate_user = new User();
 			// 初始化配偶实例
-			if (gen_user.getMateid() == null || "".equals(gen_user.getMateid())) {
-				// 不存在配偶的情况
-			} else {
+			if (StringTools.notEmpty(gen_user.getMateid())) {
 				UserQuery userExample = new UserQuery();
 				userExample.or().andUseridEqualTo(gen_user.getMateid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
 				List<User> users2 = userDao.selectByExample(userExample);
 				if (users2.size() > 0) {
 					mate_user = users2.get(0);
+					GenUserOther mateuser = new GenUserOther();
+					mateuser.setGenlevel(gen_user.getGenlevel());
+					mateuser.setImgurl(mate_user.getImgurl());
+					mateuser.setSex(mate_user.getSex());
+					mateuser.setUserid(mate_user.getUserid());
+					mateuser.setUsername(mate_user.getUsername());
+					genUserOther.setMate(mateuser);
 				}
 			}
-			GenUserOther mateuser = new GenUserOther();
-			mateuser.setGenlevel(mate_user.getGenlevel());
-			mateuser.setImgurl(mate_user.getImgurl());
-			mateuser.setSex(mate_user.getSex());
-			mateuser.setUserid(mate_user.getUserid());
-			mateuser.setUsername(mate_user.getUsername());
-			genUserOther.setMate(mateuser);
 
 			List<GenUserOther> genVirtualUsers = new ArrayList<GenUserOther>();
 			// 虚构上级部分节点
@@ -1565,7 +1613,7 @@ public class BranchServiceImpl implements BranchService {
 			// 初始孩子配偶实例
 			GenUserOther mate_user_other = new GenUserOther();
 			if (mateuser != null) {
-				mate_user_other.setGenlevel(mateuser.getGenlevel());
+				mate_user_other.setGenlevel(user.getGenlevel());
 				mate_user_other.setImgurl(mateuser.getImgurl());
 				mate_user_other.setSex(mateuser.getSex());
 				mate_user_other.setUserid(mateuser.getUserid());

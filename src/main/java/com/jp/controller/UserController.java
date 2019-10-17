@@ -164,17 +164,11 @@ public class UserController {
 	}
 
 	/**
-	 * 
-	 * @描述 去新增修改界面
-	 * @作者 sj
-	 * @时间 2017年5月1日下午2:24:07
-	 * @参数 @param user
-	 * @参数 @param userInfo
-	 * @参数 @param userEdu
-	 * @参数 @param model
-	 * @参数 @return
-	 * @return String
+	 * 编辑回显
+	 * @param request
+	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/edit", method = RequestMethod.GET)
 	@ResponseBody
 	public JsonResponse editUser(HttpServletRequest request) {
@@ -1806,4 +1800,15 @@ public class UserController {
 	public JsonResponse getParent(String userid) {
 		return userService.getParent(userid);
 	}
+
+	/**
+	 * 验证登录用户是否有家族管理的菜单权限
+	 * @return
+	 */
+	@RequestMapping(value = "/authFamilyFunction", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse authFamilyFunction() {
+		return userService.authFamilyFunction();
+	}
+
 }
