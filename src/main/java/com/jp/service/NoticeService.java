@@ -44,4 +44,8 @@ public interface NoticeService {
 	void updateNoticeExamin(String noticeid, String examinestatus);
 	//查询已经审核的公告列表
 	JsonResponse selectAleadyNotice(List<String> list, PageModel<Notice> pageModel, Notice notice, String familyid);
+	//审批查询当前人待审核公告条数
+	String selectExamineCount(String noticeid);
+	//已审批查询当前人待审核公告条数
+	String selectAleadyCount(String familyid);
 }

@@ -87,7 +87,42 @@ public class FlowableController {
 	@Autowired
 	private NoticeService noticeService;
 	private final Logger log_ = LogManager.getLogger(FlowableController.class);
-
+	/**
+	 *  查看组中当前待审核任务条数
+	 */
+	@RequestMapping(value = "/deployCount", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse deployCount() {
+		Result result = null;
+		JsonResponse res = null;
+		// 根据登录userId查询当前登录人所有待审核
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		List<Task> list = processEngine.getTaskService()//
+				.createTaskQuery()//
+				.taskCandidateUser(userid)// 指定组中的人任务查询
+				.list();
+		String noticenew = "";
+		String tiskid="";
+		// 遍历待处理任务,查询出公告信息
+			for (Task task : list) {
+				tiskid = task.getId();
+				String variable = (String) runtimeService.getVariable(task.getProcessInstanceId(), "noticeid");
+				noticenew = noticenew + "," + "'" + variable + "'";
+				//将得到taskid存入对应的公告
+				noticeService.updateNoticeTask(variable,tiskid);
+			}
+			String noticeid = noticenew.substring(1);// 截取拼接字符
+			String count = noticeService.selectExamineCount(noticeid);
+			String countaleady=noticeService.selectAleadyCount(familyid);
+			Map<String,String> map=new HashMap<String,String>();
+			map.put("waitnumber", count);
+			map.put("aleadynumber", countaleady);
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(map);
+			return res;
+	}
 	/**
 	 * 查看组中当前待审核任务
 	 */
