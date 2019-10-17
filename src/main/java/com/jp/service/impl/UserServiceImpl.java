@@ -104,6 +104,7 @@ import com.jp.entity.Usermates;
 import com.jp.entity.Userphoto;
 import com.jp.entity.Userworkexp;
 import com.jp.entity.UserworkexpQuery;
+import com.jp.service.BranchService;
 import com.jp.service.DynamicService;
 import com.jp.service.NoticeService;
 import com.jp.service.UserContextService;
@@ -173,6 +174,8 @@ public class UserServiceImpl implements UserService {
 	private UserManagerMapper userManagerMapper;
 	@Autowired
 	private UserContextService userContextService;
+	@Autowired
+	private BranchService branchService;
 
 	// 导入用户时重复的用户
 	private ArrayList<String> userStringList;
@@ -5973,7 +5976,9 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
-
+		//当前审批（登录）用户
+		String applyUserid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		User applyUser = userDao.selectByPrimaryKey(applyUserid);
 		//获取当前用户信息
 		User user = userDao.selectByPrimaryKey(userid);
 		//当前用户配偶信息
@@ -5988,6 +5993,7 @@ public class UserServiceImpl implements UserService {
 			genU.setImgurl(user.getImgurl());
 			genU.setGenlevel(user.getGenlevel());
 			genU.setBrotherpos(user.getBrotherpos());
+			genU.setStatus("1");
 		}
 		//构造当前用户配偶信息
 		GenUser genM = new GenUser();
@@ -5999,6 +6005,7 @@ public class UserServiceImpl implements UserService {
 			genM.setImgurl(mateUser.getImgurl());
 			genM.setGenlevel(mateUser.getGenlevel());
 			genM.setBrotherpos(mateUser.getBrotherpos());
+			genM.setStatus("1");
 		}
 		//构造当前用户和配偶信息
 		GenUserVO genUser = new GenUserVO();
@@ -6019,6 +6026,14 @@ public class UserServiceImpl implements UserService {
 			genpU.setImgurl(puser.getImgurl());
 			genpU.setGenlevel(puser.getGenlevel());
 			genpU.setBrotherpos(puser.getBrotherpos());
+			genpU.setStatus("1");
+			if(user.getBranchid()!=null && !user.getBranchid().equals(puser.getBranchid())) {
+				JsonResponse js = branchService.getBranchsByUserid(applyUserid, puser.getBranchid(), 0, 1);
+				List<Branch> branchs = (List<Branch>)js.getData();
+				if(branchs==null || branchs.size()<1) {
+					genpU.setStatus("0");
+				}
+			}
 		}
 		//构造母亲
 		GenUser genpM = new GenUser();
@@ -6038,7 +6053,7 @@ public class UserServiceImpl implements UserService {
 
 		//获取兄弟姊妹
 		List<GenUserVO> bsVos = new ArrayList<GenUserVO>();
-		List<User> bsList = userDao.selectBrothers(user);
+		List<User> bsList = userDao.selectBrothersEx(user);
 		if (bsList != null && bsList.size() > 0) {
 			for (User bsu : bsList) {
 				User mateBsu = userDao.selectByPrimaryKey(bsu.getMateid());
@@ -6051,6 +6066,15 @@ public class UserServiceImpl implements UserService {
 					genBs.setLivestatus(bsu.getLivestatus());
 					genBs.setImgurl(bsu.getImgurl());
 					genBs.setGenlevel(bsu.getGenlevel());
+					genBs.setBrotherpos(bsu.getBrotherpos());
+					genBs.setStatus("1");
+					if(user.getBranchid()!=null && !user.getBranchid().equals(bsu.getBranchid())) {
+						JsonResponse js = branchService.getBranchsByUserid(applyUserid, bsu.getBranchid(), 0, 1);
+						List<Branch> branchs = (List<Branch>)js.getData();
+						if(branchs==null || branchs.size()<1) {
+							genBs.setStatus("0");
+						}
+					}
 				}
 
 				GenUser genBsM = new GenUser();
@@ -6067,50 +6091,66 @@ public class UserServiceImpl implements UserService {
 				bsGenUser.setUser(genBs);
 				bsGenUser.setMateuser(genBsM);
 
+				if(bsu.getSex()==1) {
+					//获取子女
+					List<GenUserVO> chlVos = new ArrayList<GenUserVO>();
+					List<User> childrenList = userDao.selectChildren(bsu.getUserid());
+					if (childrenList != null && childrenList.size() > 0) {
+						for (User u : childrenList) {
+							User chlM = userDao.selectByPrimaryKey(u.getMateid());
+
+							GenUser genChl = new GenUser();
+							if (u != null) {
+								genChl.setUsername(u.getUsername());
+								genChl.setUserid(u.getUserid());
+								genChl.setSex(u.getSex());
+								genChl.setLivestatus(u.getLivestatus());
+								genChl.setImgurl(u.getImgurl());
+								genChl.setGenlevel(u.getGenlevel());
+								genChl.setBrotherpos(u.getBrotherpos());
+								genChl.setStatus("1");
+								if(user.getBranchid()!=null && !user.getBranchid().equals(u.getBranchid())) {
+									JsonResponse js = branchService.getBranchsByUserid(applyUserid, u.getBranchid(), 0, 1);
+									List<Branch> branchs = (List<Branch>)js.getData();
+									if(branchs==null || branchs.size()<1) {
+										genChl.setStatus("0");
+									}
+								}
+							}
+
+							GenUser genChlM = new GenUser();
+							if (chlM != null) {
+								genChlM.setUsername(chlM.getUsername());
+								genChlM.setUserid(chlM.getUserid());
+								genChlM.setSex(chlM.getSex());
+								genChlM.setLivestatus(chlM.getLivestatus());
+								genChlM.setImgurl(chlM.getImgurl());
+								genChlM.setGenlevel(chlM.getGenlevel());
+							}
+							
+
+							GenUserVO chlGenUser = new GenUserVO();
+							chlGenUser.setUser(genChl);
+							chlGenUser.setMateuser(genChlM);
+
+							chlVos.add(chlGenUser);
+						}
+					}
+					
+					bsGenUser.setChildren(chlVos);
+				}
+				
 				bsVos.add(bsGenUser);
 			}
 		}
 
-		//获取子女
-		List<GenUserVO> chlVos = new ArrayList<GenUserVO>();
-		List<User> childrenList = userDao.selectChildren(userid);
-		if (childrenList != null && childrenList.size() > 0) {
-			for (User u : childrenList) {
-				User chlM = userDao.selectByPrimaryKey(u.getMateid());
-
-				GenUser genChl = new GenUser();
-				if (u != null) {
-					genChl.setUsername(u.getUsername());
-					genChl.setUserid(u.getUserid());
-					genChl.setSex(u.getSex());
-					genChl.setLivestatus(u.getLivestatus());
-					genChl.setImgurl(u.getImgurl());
-					genChl.setGenlevel(u.getGenlevel());
-				}
-
-				GenUser genBsM = new GenUser();
-				if (chlM != null) {
-					genBsM.setUsername(chlM.getUsername());
-					genBsM.setUserid(chlM.getUserid());
-					genBsM.setSex(chlM.getSex());
-					genBsM.setLivestatus(chlM.getLivestatus());
-					genBsM.setImgurl(chlM.getImgurl());
-					genBsM.setGenlevel(chlM.getGenlevel());
-				}
-
-				GenUserVO chlGenUser = new GenUserVO();
-				chlGenUser.setUser(genChl);
-				chlGenUser.setMateuser(genBsM);
-
-				chlVos.add(chlGenUser);
-			}
-		}
+		
 		//将数据封装到map中返回
 		Map<String, Object> rtnMap = new HashMap<String, Object>();
-		rtnMap.put("genUser", genUser);
+//		rtnMap.put("genUser", genUser);
 		rtnMap.put("pGenUser", pGenUser);
 		rtnMap.put("bsGenUserList", bsVos);
-		rtnMap.put("childrenList", chlVos);
+//		rtnMap.put("childrenList", chlVos);
 		result = new Result(MsgConstants.RESUL_SUCCESS);
 		res = new JsonResponse(result);
 		res.setData(rtnMap);
