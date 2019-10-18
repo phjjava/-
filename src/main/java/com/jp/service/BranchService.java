@@ -64,6 +64,8 @@ public interface BranchService {
 
 	JsonResponse getGenListToTop(Branch entity);
 
+	JsonResponse getGenListToCount(Branch entity);
+
 	JsonResponse getGenListOnlyExt(Branch entity);
 
 	Branch selectbyEditor(String userid);

@@ -246,7 +246,7 @@ public class BranchController {
 	}
 
 	/**
-	 * 向上查找指定的几代 - 追根溯源指定分支的世系表（追根溯源-列表结构）
+	 * 向上查找指定的几代 - 追根溯源指定分支的世系表（列表结构 -Android用）
 	 * 
 	 * @param branch
 	 * @return
@@ -255,6 +255,18 @@ public class BranchController {
 	@RequestMapping(value = "/getGenListToTop", method = RequestMethod.GET)
 	public JsonResponse getGenListToTop(Branch branch) {
 		return branchService.getGenListToTop(branch);
+	}
+
+	/**
+	 * 向上查找指定的几代 - 追根溯源指定分支的世系表（层级结构 -ios用）
+	 * 
+	 * @param branch
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getGenListToCount", method = RequestMethod.GET)
+	public JsonResponse getGenListToCount(Branch branch) {
+		return branchService.getGenListToCount(branch);
 	}
 
 	/**
