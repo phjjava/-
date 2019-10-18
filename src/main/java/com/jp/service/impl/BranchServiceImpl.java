@@ -1033,6 +1033,7 @@ public class BranchServiceImpl implements BranchService {
 			}
 			// 初始化起始人实例
 			GenUserOther genUserOther = new GenUserOther();
+			genUserOther.setLivestatus(gen_user.getLivestatus());
 			genUserOther.setGenlevel(gen_user.getGenlevel());
 			genUserOther.setImgurl(gen_user.getImgurl());
 			genUserOther.setSex(gen_user.getSex());
@@ -1053,6 +1054,7 @@ public class BranchServiceImpl implements BranchService {
 					mateuser.setGenlevel(gen_user.getGenlevel());
 					mateuser.setImgurl(mate_user.getImgurl());
 					mateuser.setSex(mate_user.getSex());
+					mateuser.setPid(gen_user.getPid());
 					mateuser.setUserid(mate_user.getUserid());
 					mateuser.setUsername(mate_user.getUsername());
 					mateuser.setLivestatus(mate_user.getLivestatus());
@@ -1107,6 +1109,9 @@ public class BranchServiceImpl implements BranchService {
 				genUserOther.setUserid(gen_user.getUserid());
 				genUserOther.setUsername(gen_user.getUsername());
 				genUserOther.setPid(gen_user.getPid());
+				genUserOther.setBrotherpos(gen_user.getBrotherpos());
+				genUserOther.setBranchid(gen_user.getBranchid());
+				genUserOther.setBranchname(gen_user.getBranchname());
 
 				// 初始化配偶实例
 				if (StringTools.notEmpty(gen_user.getMateid())) {
@@ -1122,12 +1127,13 @@ public class BranchServiceImpl implements BranchService {
 						mateuser.setSex(mate_user.getSex());
 						mateuser.setUserid(mate_user.getUserid());
 						mateuser.setUsername(mate_user.getUsername());
+						mateuser.setPid(gen_user.getPid());
+						mateuser.setBranchid(gen_user.getBranchid());
+						mateuser.setBranchname(gen_user.getBranchname());
 						genUserOther.setMate(mateuser);
 					}
 				}
-
 				genUserOthers.add(genUserOther);
-
 				getUserListCurrentToGenUser(genUserOther, entity.getParentid(), genUserOthers);
 			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
@@ -1247,6 +1253,7 @@ public class BranchServiceImpl implements BranchService {
 					mate_user_other.setSex(mateuser.getSex());
 					mate_user_other.setUserid(mateuser.getUserid());
 					mate_user_other.setUsername(mateuser.getUsername());
+					mate_user_other.setPid(user.getPid());
 					mate_user_other.setBranchid(user.getBranchid());
 					mate_user_other.setBranchname(user.getBranchname());
 					gen_UserOther.setMate(mate_user_other);
