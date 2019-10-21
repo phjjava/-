@@ -1224,6 +1224,9 @@ public class BranchServiceImpl implements BranchService {
 	public void getUserListCurrentToGenUser(GenUserOther entity, String currentId, List<GenUserOther> genUserOthers) {
 		// 查询孩子列表
 		String userid = entity.getUserid();
+		if (currentId.equals(userid)) {
+			return;
+		}
 		List<User> users = userDao.selectChildren(userid);
 		for (User user : users) {
 			// 初始孩子实例
@@ -1409,6 +1412,9 @@ public class BranchServiceImpl implements BranchService {
 	 */
 	public void getUserListFromGenUser(GenUserVO entity, String currentId) {
 		String userid = entity.getUser().getUserid();
+		if (currentId.equals(userid)) {
+			return;
+		}
 		/*UserQuery userExample = new UserQuery();
 		userExample.or().andPidEqualTo(userid).andDeleteflagEqualTo(0).andStatusEqualTo(0);
 		List<User> users = userDao.selectByExample(userExample);*/

@@ -4883,7 +4883,14 @@ public class UserServiceImpl implements UserService {
 				childUser.setPname(user.getUsername());
 				//修改当前节点用户的父亲信息
 				userDao.updateByPrimaryKeySelective(childUser);
-
+				//给当前节点（例：张三老婆）添加父亲信息
+				if (StringTools.trimNotEmpty(childUser.getMateid())) {
+					User childUserMate = new User();
+					childUserMate.setUserid(childUser.getMateid());
+					childUserMate.setPid(userid);
+					childUserMate.setPname(user.getUsername());
+					userDao.updateByPrimaryKeySelective(childUserMate);
+				}
 				Integer genlevel = childUser.getGenlevel();
 				if (genlevel != null) {
 					if (genlevel == 1) {
