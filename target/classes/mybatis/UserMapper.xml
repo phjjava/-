@@ -1064,8 +1064,8 @@
 		IFNULL(uc.readcount ,0) readcount from jp_user u LEFT OUTER
 		JOIN jp_usercontent uc on
 		u.userid=uc.userid
-		where uc.userid is not null and uc.familyid=
-		#{familyid,jdbcType=VARCHAR}
+		where uc.userid is not null and u.`status`=0 and u.deleteflag=0 and u.isdirect=1
+		and uc.familyid=#{familyid,jdbcType=VARCHAR}
 		<if test="username != null and username != ''">
 			and u.username like CONCAT('%', CONCAT(#{username}), '%')
 		</if>
