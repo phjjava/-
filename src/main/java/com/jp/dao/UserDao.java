@@ -228,4 +228,6 @@ public interface UserDao {
 
 	List<User> selectBrothersEx(User user);
 
+	User selectByPrimaryKeyEx(String mateid);
+
 }

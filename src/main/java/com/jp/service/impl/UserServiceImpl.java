@@ -6004,11 +6004,11 @@ public class UserServiceImpl implements UserService {
 		}
 		//当前审批（登录）用户
 		String applyUserid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
-		User applyUser = userDao.selectByPrimaryKey(applyUserid);
+//		User applyUser = userDao.selectByPrimaryKey(applyUserid);
 		//获取当前用户信息
-		User user = userDao.selectByPrimaryKey(userid);
+		User user = userDao.selectByPrimaryKeyEx(userid);
 		//当前用户配偶信息
-		User mateUser = userDao.selectByPrimaryKey(user.getMateid());
+		User mateUser = userDao.selectByPrimaryKeyEx(user.getMateid());
 		//构造返回当前用户信息
 		GenUser genU = new GenUser();
 		if (user != null) {
@@ -6039,12 +6039,14 @@ public class UserServiceImpl implements UserService {
 		genUser.setMateuser(genM);
 
 		//当前用户父亲信息
-		User puser = userDao.selectByPrimaryKey(user.getPid());
+		User puser = userDao.selectByPrimaryKeyEx(user.getPid());
+		
 		//当前用户母亲信息
-		User pMateUser = userDao.selectByPrimaryKey(puser.getMateid());
+		User pMateUser = new User();
 		//构造父亲
 		GenUser genpU = new GenUser();
 		if (puser != null) {
+			pMateUser = userDao.selectByPrimaryKeyEx(puser.getMateid());
 			genpU.setUsername(puser.getUsername());
 			genpU.setUserid(puser.getUserid());
 			genpU.setSex(puser.getSex());
@@ -6082,7 +6084,7 @@ public class UserServiceImpl implements UserService {
 		List<User> bsList = userDao.selectBrothersEx(user);
 		if (bsList != null && bsList.size() > 0) {
 			for (User bsu : bsList) {
-				User mateBsu = userDao.selectByPrimaryKey(bsu.getMateid());
+				User mateBsu = userDao.selectByPrimaryKeyEx(bsu.getMateid());
 
 				GenUser genBs = new GenUser();
 				if (bsu != null) {
@@ -6123,7 +6125,7 @@ public class UserServiceImpl implements UserService {
 					List<User> childrenList = userDao.selectChildren(bsu.getUserid());
 					if (childrenList != null && childrenList.size() > 0) {
 						for (User u : childrenList) {
-							User chlM = userDao.selectByPrimaryKey(u.getMateid());
+							User chlM = userDao.selectByPrimaryKeyEx(u.getMateid());
 
 							GenUser genChl = new GenUser();
 							if (u != null) {

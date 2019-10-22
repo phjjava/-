@@ -264,7 +264,7 @@ public class NoticeServiceImpl implements NoticeService {
 				res = new JsonResponse(result);
 				return res;
 			}
-			if (StringTools.trimIsEmpty(notice.getNoticeid())) {
+			if (StringTools.trimNotEmpty(notice.getNoticeid())) {
 				notice.setUpdateid(userId);
 				notice.setFamilyid(familyId);
 
