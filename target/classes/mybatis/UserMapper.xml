@@ -1792,11 +1792,25 @@
 	
 	<select id="selectBrothersEx" parameterType="com.jp.entity.User" resultMap="BaseResultMap">
 		select * from jp_user u left join jp_userposition p on u.brotherpos = p.position
-		where u.pid = #{pid,jdbcType=VARCHAR}
-		and u.deleteflag = 0 
+		where u.deleteflag = 0 
+		<if test="pid != null and pid !='' ">
+			and u.pid = #{pid,jdbcType=VARCHAR}
+		</if>
+		<if test="pid == null or pid =='' ">
+			and u.userid = #{userid,jdbcType=VARCHAR}
+		</if>
 		and u.status = 0
 		order by -p.sort desc
 		
 	</select>
+	<select id="selectByPrimaryKeyEx" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		userid,sex,livestatus,phone,usedname,createtime,updatetime,createid,updateid,remarkelse,branchid,pid,brotherpos,password,logintime,sessionid,familyid,status,deleteflag,imgurl,username,idcard,isborn,dietime,fixplace,isdirect,genlevel,familyname,pinyinFirst,pinyinFull,pname,mateid,matename,matetypeStr,branchname,ismarry
+		from jp_user
+		where userid = #{userid,jdbcType=VARCHAR}
+		and deleteflag = 0
+	</select>
+	
 	
 </mapper>
