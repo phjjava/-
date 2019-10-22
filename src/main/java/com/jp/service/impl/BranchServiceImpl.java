@@ -895,7 +895,7 @@ public class BranchServiceImpl implements BranchService {
 	}
 
 	@Override
-	public JsonResponse getGenList(Branch entity) {
+	public JsonResponse getGenList(Branch entity, String isManager) {
 		Result result = null;
 		JsonResponse res = null;
 		try {
@@ -980,7 +980,11 @@ public class BranchServiceImpl implements BranchService {
 					genUserVO.setMateuser(mateuser);
 				}
 			}
-			getUserListFromGenUser(genUserVO, null);
+			if (StringTools.trimIsEmpty(isManager)) {//普通用户
+				getGenUserHierarchical(genUserVO, null);
+			} else {
+				getGenUserHierarchicalAdmin(genUserVO, null);
+			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(genUserVO);
@@ -993,7 +997,7 @@ public class BranchServiceImpl implements BranchService {
 	}
 
 	@Override
-	public JsonResponse getGenListOnly(Branch entity) {
+	public JsonResponse getGenListOnly(Branch entity, String isManager) {
 		Result result = null;
 		JsonResponse res = null;
 		try {
@@ -1066,8 +1070,11 @@ public class BranchServiceImpl implements BranchService {
 			List<GenUserOther> genUserOthers = new ArrayList<GenUserOther>();
 			genUserOthers.add(genUserOther);
 
-			getUserListCurrentToGenUser(genUserOther, null, genUserOthers);
-
+			if (StringTools.trimIsEmpty(isManager)) {//token为空，普通用户调用status（=0）
+				getGenUserList(genUserOther, null, genUserOthers);
+			} else {//管理员可以看到正常用户和已拒绝的status（0,3）
+				getGenUserListAdmin(genUserOther, null, genUserOthers);
+			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(genUserOthers);
@@ -1080,7 +1087,7 @@ public class BranchServiceImpl implements BranchService {
 	}
 
 	@Override
-	public JsonResponse getGenListToTop(Branch entity) {
+	public JsonResponse getGenListToTop(Branch entity, String isManager) {
 		Result result = null;
 		JsonResponse res = null;
 		try {
@@ -1134,7 +1141,11 @@ public class BranchServiceImpl implements BranchService {
 					}
 				}
 				genUserOthers.add(genUserOther);
-				getUserListCurrentToGenUser(genUserOther, entity.getParentid(), genUserOthers);
+				if (StringTools.trimIsEmpty(isManager)) {//token为空，普通用户调用status（=0）
+					getGenUserList(genUserOther, entity.getParentid(), genUserOthers);
+				} else {//管理员可以看到正常用户和已拒绝的status（0,3）
+					getGenUserListAdmin(genUserOther, entity.getParentid(), genUserOthers);
+				}
 			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
@@ -1148,7 +1159,7 @@ public class BranchServiceImpl implements BranchService {
 	}
 
 	@Override
-	public JsonResponse getGenListToCount(Branch entity) {
+	public JsonResponse getGenListToCount(Branch entity, String isManager) {
 		Result result = null;
 		JsonResponse res = null;
 		try {
@@ -1202,7 +1213,11 @@ public class BranchServiceImpl implements BranchService {
 						genUserVO.setMateuser(mateuser);
 					}
 				}
-				getUserListFromGenUser(genUserVO, entity.getParentid());
+				if (StringTools.trimIsEmpty(isManager)) {
+					getGenUserHierarchical(genUserVO, entity.getParentid());
+				} else {
+					getGenUserHierarchicalAdmin(genUserVO, entity.getParentid());
+				}
 			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
@@ -1216,12 +1231,12 @@ public class BranchServiceImpl implements BranchService {
 	}
 
 	/**
-	 * 从根向下查询五代
+	 * 从根向下递归查询后代子女
 	 * @param entity
 	 * @param genlevel
 	 * @param genUserOthers
 	 */
-	public void getUserListCurrentToGenUser(GenUserOther entity, String currentId, List<GenUserOther> genUserOthers) {
+	public void getGenUserList(GenUserOther entity, String currentId, List<GenUserOther> genUserOthers) {
 		// 查询孩子列表
 		String userid = entity.getUserid();
 		if (currentId.equals(userid)) {
@@ -1266,7 +1281,62 @@ public class BranchServiceImpl implements BranchService {
 			if (currentId != null && currentId.equals(user.getUserid())) {
 				return;
 			}
-			getUserListCurrentToGenUser(gen_UserOther, currentId, genUserOthers);
+			getGenUserList(gen_UserOther, currentId, genUserOthers);
+		}
+	}
+
+	/**
+	 * 从根向下递归查询后代子女(管理员登录-status 0,3)
+	 * @param entity
+	 * @param genlevel
+	 * @param genUserOthers
+	 */
+	public void getGenUserListAdmin(GenUserOther entity, String currentId, List<GenUserOther> genUserOthers) {
+		// 查询孩子列表
+		String userid = entity.getUserid();
+		if (currentId.equals(userid)) {
+			return;
+		}
+		List<User> users = userDao.selectChildrenByAdmin(userid);
+		for (User user : users) {
+			// 初始孩子实例
+			GenUserOther gen_UserOther = new GenUserOther();
+			gen_UserOther.setLivestatus(user.getLivestatus());
+			gen_UserOther.setGenlevel(user.getGenlevel());
+			gen_UserOther.setImgurl(user.getImgurl());
+			gen_UserOther.setSex(user.getSex());
+			gen_UserOther.setUserid(user.getUserid());
+			gen_UserOther.setUsername(user.getUsername());
+			gen_UserOther.setPid(user.getPid());
+			gen_UserOther.setBrotherpos(user.getBrotherpos());
+			gen_UserOther.setBranchid(user.getBranchid());
+			gen_UserOther.setBranchname(user.getBranchname());
+			// 获取孩子配偶
+			if (StringTools.notEmpty(user.getMateid())) {
+				UserQuery uq = new UserQuery();
+				uq.or().andUseridEqualTo(user.getMateid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
+				List<User> users2 = userDao.selectByExample(uq);
+				if (users2.size() > 0) {
+					User mateuser = users2.get(0);
+					// 初始孩子配偶实例
+					GenUserOther mate_user_other = new GenUserOther();
+					mate_user_other.setLivestatus(mateuser.getLivestatus());
+					mate_user_other.setGenlevel(user.getGenlevel());
+					mate_user_other.setImgurl(mateuser.getImgurl());
+					mate_user_other.setSex(mateuser.getSex());
+					mate_user_other.setUserid(mateuser.getUserid());
+					mate_user_other.setUsername(mateuser.getUsername());
+					mate_user_other.setPid(user.getPid());
+					mate_user_other.setBranchid(user.getBranchid());
+					mate_user_other.setBranchname(user.getBranchname());
+					gen_UserOther.setMate(mate_user_other);
+				}
+			}
+			genUserOthers.add(gen_UserOther);
+			if (currentId != null && currentId.equals(user.getUserid())) {
+				return;
+			}
+			getGenUserListAdmin(gen_UserOther, currentId, genUserOthers);
 		}
 	}
 
@@ -1404,20 +1474,17 @@ public class BranchServiceImpl implements BranchService {
 	}
 
 	/**
-	 * 递归从起始人查询世系表
+	 * 递归从起始人查询世系表(普通用户)
 	 * 
 	 * @param entity:起始人
 	 * @param level：递归的层级
 	 * @return
 	 */
-	public void getUserListFromGenUser(GenUserVO entity, String currentId) {
+	public void getGenUserHierarchical(GenUserVO entity, String currentId) {
 		String userid = entity.getUser().getUserid();
 		if (currentId.equals(userid)) {
 			return;
 		}
-		/*UserQuery userExample = new UserQuery();
-		userExample.or().andPidEqualTo(userid).andDeleteflagEqualTo(0).andStatusEqualTo(0);
-		List<User> users = userDao.selectByExample(userExample);*/
 		// 查询孩子列表
 		List<User> users = userDao.selectChildren(userid);
 		List<GenUserVO> genUserVOs = new ArrayList<GenUserVO>();
@@ -1460,7 +1527,65 @@ public class BranchServiceImpl implements BranchService {
 			if (currentId != null && currentId.equals(user.getUserid())) {
 				return;
 			}
-			getUserListFromGenUser(genUserVO, currentId);
+			getGenUserHierarchical(genUserVO, currentId);
+		}
+	}
+
+	/**
+	 * 递归从起始人查询世系表(管理员登录)
+	 * 
+	 * @param entity:起始人
+	 * @param level：递归的层级
+	 * @return
+	 */
+	public void getGenUserHierarchicalAdmin(GenUserVO entity, String currentId) {
+		String userid = entity.getUser().getUserid();
+		if (currentId.equals(userid)) {
+			return;
+		}
+		// 查询孩子列表
+		List<User> users = userDao.selectChildrenByAdmin(userid);
+		List<GenUserVO> genUserVOs = new ArrayList<GenUserVO>();
+		for (User user : users) {
+			GenUserVO genUserVO = new GenUserVO();
+			// 初始孩子实例
+			GenUser gen_User = new GenUser();
+			gen_User.setGenlevel(user.getGenlevel());
+			gen_User.setImgurl(user.getImgurl());
+			gen_User.setSex(user.getSex());
+			gen_User.setUserid(user.getUserid());
+			gen_User.setUsername(user.getUsername());
+			gen_User.setLivestatus(user.getLivestatus());
+			gen_User.setBrotherpos(user.getBrotherpos());
+			gen_User.setBranchid(user.getBranchid());
+			gen_User.setBranchname(user.getBranchname());
+			genUserVO.setUser(gen_User);
+			// 获取配偶
+			if (StringUtils.isNotBlank(user.getMateid())) {
+				UserQuery userExample1 = new UserQuery();
+				userExample1.or().andUseridEqualTo(user.getMateid()).andDeleteflagEqualTo(0).andStatusEqualTo(0);
+				List<User> users2 = userDao.selectByExample(userExample1);
+				if (users2.size() > 0) {
+					User mateuser = users2.get(0);
+					// 初始孩子配偶实例
+					GenUser mate_user = new GenUser();
+					mate_user.setGenlevel(user.getGenlevel());
+					mate_user.setImgurl(mateuser.getImgurl());
+					mate_user.setSex(mateuser.getSex());
+					mate_user.setUserid(mateuser.getUserid());
+					mate_user.setUsername(mateuser.getUsername());
+					mate_user.setLivestatus(mateuser.getLivestatus());
+					mate_user.setBranchid(user.getBranchid());
+					mate_user.setBranchname(user.getBranchname());
+					genUserVO.setMateuser(mate_user);
+				}
+			}
+			genUserVOs.add(genUserVO);
+			entity.setChildren(genUserVOs);
+			if (currentId != null && currentId.equals(user.getUserid())) {
+				return;
+			}
+			getGenUserHierarchicalAdmin(genUserVO, currentId);
 		}
 	}
 

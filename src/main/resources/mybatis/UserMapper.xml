@@ -1773,6 +1773,12 @@
 		LEFT JOIN jp_userposition t2 ON t1.brotherpos = t2.position
 		WHERE pid = #{pid,jdbcType=VARCHAR} and deleteflag = 0 and `status` = 0 ORDER BY -t2.sort desc
 	</select>
+	<select id="selectChildrenByAdmin" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		SELECT t1.* FROM jp_user t1
+		LEFT JOIN jp_userposition t2 ON t1.brotherpos = t2.position
+		WHERE pid = #{pid,jdbcType=VARCHAR} and deleteflag = 0 and `status` in (0,3) ORDER BY -t2.sort desc
+	</select>
 	
 	<select id="selectBrothers" parameterType="com.jp.entity.User" resultMap="BaseResultMap">
 		select * from jp_user u left join jp_userposition p on u.brotherpos = p.position
