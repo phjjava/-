@@ -915,20 +915,18 @@ public class UserController {
 		try {
 			user.setFamilyid(familyid);
 			List<User> userList = userService.validatePhone(user);
-			String userid = "";
-			if (StringTools.trimNotEmpty(user.getUserid())) {
+			if (userList.size() == 0) {
+				res = new JsonResponse(result);
+				return res;
+			}
+			if (StringTools.notEmpty(user.getUserid())) {
 				for (int i = 0; i < userList.size(); i++) {
 					if (!userList.get(i).getUserid().equals(user.getUserid())) {
-						userid += userList.get(i).getUserid() + ",";
+						result = new Result(MsgConstants.USER_PHONE_REPEAT);
 					}
 				}
-				if (StringTools.trimNotEmpty(userid)) {
-					result = new Result(MsgConstants.USER_PHONE_REPEAT);
-				}
 			} else {
-				if (userList != null && userList.size() > 0) {
-					result = new Result(MsgConstants.USER_PHONE_REPEAT);
-				}
+				result = new Result(MsgConstants.USER_PHONE_REPEAT);
 			}
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);

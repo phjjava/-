@@ -738,7 +738,7 @@ public class UserServiceImpl implements UserService {
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (user.getStatus() == null || "".equals(user.getStatus() + "")) {
+		if (user.getStatus() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数status不能为空！");
 			res = new JsonResponse(result);
@@ -747,12 +747,14 @@ public class UserServiceImpl implements UserService {
 		try {
 			User dbuser = userDao.selectByPrimaryKey(user.getUserid());
 			if (user.getStatus() == ConstantUtils.USER_STATUS_OK) {
-				List<User> list = userDao.selectByPhoneAndStatus(dbuser.getPhone());
-				if (list.size() >= 2) {
-					result = new Result(MsgConstants.RESUL_FAIL);
-					result.setMsg("该用户已经关联两个家族，不能加入新的家族了");
-					res = new JsonResponse(result);
-					return res;
+				if (StringTools.trimNotEmpty(dbuser.getPhone())) {
+					List<User> list = userDao.selectByPhoneAndStatus(dbuser.getPhone());
+					if (list.size() >= 2) {
+						result = new Result(MsgConstants.RESUL_FAIL);
+						result.setMsg("该用户已经关联两个家族，不能加入新的家族了");
+						res = new JsonResponse(result);
+						return res;
+					}
 				}
 			}
 			user.setUpdateid(WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID));
@@ -4883,7 +4885,14 @@ public class UserServiceImpl implements UserService {
 				childUser.setPname(user.getUsername());
 				//修改当前节点用户的父亲信息
 				userDao.updateByPrimaryKeySelective(childUser);
-
+				//给当前节点（例：张三老婆）添加父亲信息
+				if (StringTools.trimNotEmpty(childUser.getMateid())) {
+					User childUserMate = new User();
+					childUserMate.setUserid(childUser.getMateid());
+					childUserMate.setPid(userid);
+					childUserMate.setPname(user.getUsername());
+					userDao.updateByPrimaryKeySelective(childUserMate);
+				}
 				Integer genlevel = childUser.getGenlevel();
 				if (genlevel != null) {
 					if (genlevel == 1) {
@@ -4944,8 +4953,6 @@ public class UserServiceImpl implements UserService {
 				user.setIsMarry(0);
 				user.setMateid(mateid);
 				user.setMatename(mateUser.getUsername());
-				user.setPid(mateUser.getPid());
-				user.setPname(mateUser.getPname());
 				user.setFamilyid(mateUser.getFamilyid());
 				user.setFamilyname(mateUser.getFamilyname());
 				user.setBranchid(mateUser.getBranchid());

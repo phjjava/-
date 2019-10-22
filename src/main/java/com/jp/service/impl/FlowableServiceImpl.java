@@ -195,7 +195,15 @@ public class FlowableServiceImpl implements FlowableService {
 						noticeMapper.updateNoticeExamin(noticeid,examinestatus);
 						return "跳过";
 					}else {
-						return "未找到对应的编委会";
+						
+						// 查询总编委会成员
+						List<UserManager> listTwo = userManagerMapper.selectbyEditorOver(familyId);
+						String userIdNew = "";
+						for (UserManager manger : listTwo) {
+							userIdNew = userIdNew + "," + manger.getUserid();
+						}
+						userIdNew.substring(1);
+						return userIdNew;
 					}
 				}
 			}

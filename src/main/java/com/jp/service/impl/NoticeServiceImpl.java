@@ -312,7 +312,9 @@ public class NoticeServiceImpl implements NoticeService {
 						map.put("outcome", "true");
 					}
 		        map.put("taskUser", userId);
-		        map.put("userOneIds", userIdNew);//设置候选人
+		        if(!"未找到对应的编委会".equals(userIdNew)) {
+		        	map.put("userOneIds", userIdNew);//设置候选人
+		        }
 		        map.put("userTwoIds", userIdNewTwo);//设置候选人
 		        //map.put("userThreeIds", userIdNewThree);//设置候选人
 				ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("myProcess",map);//启动流程
@@ -503,7 +505,9 @@ public class NoticeServiceImpl implements NoticeService {
 				}
 			User user = userMapper.selectByPrimaryKey(entity.getCreateid());//未加审批原码
 	        map.put("taskUser", entity.getCreateid());
-	        map.put("userOneIds", userIdNew);//设置候选人
+	        if(!"未找到对应的编委会".equals(userIdNew)) {
+	        	map.put("userOneIds", userIdNew);//设置候选人
+	        }
 	        map.put("userTwoIds", userIdNewTwo);//设置候选人
 	        //map.put("userThreeIds", userIdNewThree);//设置候选人
 			ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("myProcess",map);//启动流程

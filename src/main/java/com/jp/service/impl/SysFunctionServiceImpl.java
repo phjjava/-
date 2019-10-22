@@ -19,6 +19,7 @@ import com.jp.dao.FunctionDao;
 import com.jp.dao.FunctionRoleMapper;
 import com.jp.dao.SysFunctionDao;
 import com.jp.dao.SysVersionDao;
+import com.jp.entity.Function;
 import com.jp.entity.FunctionRoleExample;
 import com.jp.entity.SysFunction;
 import com.jp.entity.SysFunctionQuery;
@@ -282,10 +283,25 @@ public class SysFunctionServiceImpl implements SysFunctionService {
 			return res;
 		}
 		try {
+			if (!checkFunCode(sysFunction)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("菜单标识码code不能有重复！");
+				res = new JsonResponse(result);
+				return res;
+			}
 			if (StringTools.notEmpty(sysFunction.getFunctionid())) {//修改
 				sysFunction.setUpdateid("sys_admin");
 				sysFunction.setUpdatetime(new Date());
 				status = sysFunctionDao.updateByPrimaryKeySelective(sysFunction);
+				//修改家族菜单表
+				Function fun = new Function();
+				fun.setFunctionid(sysFunction.getFunctionid());
+				fun.setFunctionname(sysFunction.getFunctionname());
+				fun.setFunctionurl(sysFunction.getFunctionurl());
+				fun.setDescription(sysFunction.getDescription());
+				fun.setSort(sysFunction.getSort());
+				fun.setCode(sysFunction.getCode());
+				functionDao.updateByPrimaryKeySelective(fun);
 			} else {//新增
 				sysFunction.setCreateid("sys_admin");
 				sysFunction.setCreatetime(new Date());
@@ -309,5 +325,28 @@ public class SysFunctionServiceImpl implements SysFunctionService {
 		result = new Result(MsgConstants.RESUL_FAIL);
 		res = new JsonResponse(result);
 		return res;
+	}
+
+	/**
+	 * 验证菜单标识码code不能有重复
+	 * @param code
+	 * @return
+	 */
+	public Boolean checkFunCode(SysFunction sysFunction) {
+		//true为通过验证，没有重复code
+		SysFunction dbSysFunction = sysFunctionDao.selectByCode(sysFunction.getCode());
+		if (dbSysFunction == null) {
+			return true;
+		}
+		if (StringTools.notEmpty(sysFunction.getFunctionid())) {
+			//编辑时要去除自身
+			if (!sysFunction.getFunctionid().equals(dbSysFunction.getFunctionid())) {
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			return false;
+		}
 	}
 }
