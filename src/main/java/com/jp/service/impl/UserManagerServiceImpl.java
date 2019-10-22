@@ -72,7 +72,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 			example.or().andUseridEqualTo(userid);
 			example.setOrderByClause("ismanager desc,ebtype desc");
 			List<UserManager> managers = userManagerMapper.selectByExample(example);
-			if (managers == null || managers.size() == 0) {
+			if (managers.size() == 0) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				res = new JsonResponse(result);
 				return res;
