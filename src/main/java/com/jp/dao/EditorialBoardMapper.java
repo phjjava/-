@@ -32,13 +32,21 @@ public interface EditorialBoardMapper {
 
 	int updateByExample(@Param("record") EditorialBoard record, @Param("example") EditorialBoardExample example);
 
-	int updateByPrimaryKeySelective(EditorialBoard record);
 
-	int updateByPrimaryKey(EditorialBoard record);
+    int updateByPrimaryKey(EditorialBoard record);
+    //根据分支区域  城市  县城code值查询编委会
+	EditorialBoard selectbyEditor(@Param("areacode")String areacode, @Param("citycode")String citycode, @Param("xcode")String xcode, @Param("familyId")String familyId);
+
+	EditorialBoard selectbyEditorTwo(@Param("areacode")String areacode, @Param("citycode")String citycode, @Param("xcode")String xcode,@Param("familyId")String familyId);
+
+	EditorialBoard selectbyEditorThree(@Param("areacode")String areacode, @Param("citycode")String citycode, @Param("xcode")String xcode,@Param("familyId")String familyId);
+
+	int updateByPrimaryKeySelective(EditorialBoard record);
 
 	@Select("SELECT `code` cityCode,`level`,`name` cityName,parent_id pid FROM `jp_city` WHERE `code` = #{code}")
 	Map<String, Object> selectCityByCode(@Param("code") String code);
 
 	@Select("SELECT * FROM `jp_city` WHERE `id` = #{id}")
 	Map<String, Object> selectCityById(@Param("id") String id);
+
 }

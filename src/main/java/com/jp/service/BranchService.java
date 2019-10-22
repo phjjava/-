@@ -58,17 +58,22 @@ public interface BranchService {
 
 	JsonResponse getBranchOfXQ(Branch entity);
 
-	JsonResponse getGenList(Branch entity);
+	JsonResponse getGenList(Branch entity, String isManager);
 
-	JsonResponse getGenListOnly(Branch entity);
+	JsonResponse getGenListOnly(Branch entity, String isManager);
 
-	JsonResponse getGenListToTop(Branch entity);
+	JsonResponse getGenListToTop(Branch entity, String isManager);
+
+	JsonResponse getGenListToCount(Branch entity, String isManager);
 
 	JsonResponse getGenListOnlyExt(Branch entity);
+
+	Branch selectbyEditor(String userid);
 
 	JsonResponse getBranchsByUserid(String userid, String code, Integer pageNo, Integer pageSize);
 
 	JsonResponse getEbArea(Branch branch);
 
 	JsonResponse getXQAndBranch(Branch entity);
+
 }

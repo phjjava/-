@@ -10,6 +10,7 @@
     <result column="sort" property="sort" jdbcType="INTEGER" />
     <result column="familyid" property="familyid" jdbcType="VARCHAR" />
     <result column="icon" property="icon" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -71,7 +72,7 @@
   </sql>
   <sql id="Base_Column_List" >
     <if test="fields == null" >
-      functionid, functionname, parentid, functionurl, description, sort, familyid, icon
+      functionid, functionname, parentid, functionurl, description, sort, familyid, icon,code
     </if>
     <if test="fields != null" >
       ${fields}
@@ -96,7 +97,7 @@
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
-    functionid,functionname,parentid,functionurl,description,sort,familyid,icon
+    functionid,functionname,parentid,functionurl,description,sort,familyid,icon,code
     from jp_function
     where functionid = #{functionid,jdbcType=VARCHAR} and familyid = #{familyid,jdbcType=VARCHAR}
   </select>
@@ -113,10 +114,10 @@
   <insert id="insert" parameterType="com.jp.entity.Function" >
     insert into jp_function (functionid, functionname, parentid, 
       functionurl, description, sort, 
-      familyid, icon)
+      familyid, icon,code)
     values (#{functionid,jdbcType=VARCHAR}, #{functionname,jdbcType=VARCHAR}, #{parentid,jdbcType=VARCHAR}, 
       #{functionurl,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}, 
-      #{familyid,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR})
+      #{familyid,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.jp.entity.Function" >
     insert into jp_function
@@ -145,6 +146,9 @@
       <if test="icon != null" >
         icon,
       </if>
+      <if test="code != null" >
+        code,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="functionid != null" >
@@ -170,6 +174,9 @@
       </if>
       <if test="icon != null" >
         #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="code != null" >
+        #{code,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -206,6 +213,9 @@
       <if test="record.icon != null" >
         icon = #{record.icon,jdbcType=VARCHAR},
       </if>
+      <if test="record.code != null" >
+        code = #{record.code,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -220,7 +230,8 @@
       description = #{record.description,jdbcType=VARCHAR},
       sort = #{record.sort,jdbcType=INTEGER},
       familyid = #{record.familyid,jdbcType=VARCHAR},
-      icon = #{record.icon,jdbcType=VARCHAR}
+      icon = #{record.icon,jdbcType=VARCHAR},
+      code = #{record.code,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -249,6 +260,9 @@
       <if test="icon != null" >
         icon = #{icon,jdbcType=VARCHAR},
       </if>
+      <if test="code != null" >
+        code = #{code,jdbcType=VARCHAR},
+      </if>
     </set>
     where functionid = #{functionid,jdbcType=VARCHAR}
   </update>
@@ -260,14 +274,15 @@
       description = #{description,jdbcType=VARCHAR},
       sort = #{sort,jdbcType=INTEGER},
       familyid = #{familyid,jdbcType=VARCHAR},
-      icon = #{icon,jdbcType=VARCHAR}
+      icon = #{icon,jdbcType=VARCHAR},
+      code = #{code,jdbcType=VARCHAR}
     where functionid = #{functionid,jdbcType=VARCHAR}
   </update>
   <!-- 根据角色id查询 功能列表 -->
   <select id="selectFunctionListByRoleid" resultType="com.jp.entity.Function">
   	select 
 	fk.functionid, functionname, parentid, functionurl,    
-	 icon, sort, description,func_role.functionid as isfunctionid
+	 icon,fk.code, sort, description,func_role.functionid as isfunctionid
 	from jp_function fk
 	left join jp_func_role func_role on fk.functionid = func_role.functionid
 	<if test="roleid != null" >
@@ -283,7 +298,7 @@
   <select id="selectFunctionListByEbid" resultType="com.jp.entity.Function">
   	select 
 	fk.functionid, functionname, parentid, functionurl,    
-	 icon, sort, description,func_role.functionid as isfunctionid
+	 icon, fk.code,sort, description,func_role.functionid as isfunctionid
 	from jp_function fk
 	left join jp_function_role func_role on fk.functionid = func_role.functionid
 	where fk.familyid = #{familyid}
@@ -305,7 +320,7 @@
    <!-- 根据角色id与家族id查询 功能列表 -->
   <select id="selectFunctionListByRoleidAndFamilyid" resultType="com.jp.entity.Function">
   	select DISTINCT
-	`function`.functionid, functionname, parentid, functionurl, icon, sort, description
+	`function`.functionid, functionname, parentid, functionurl, icon,code, sort, description
 	from jp_function `function`
 	inner join jp_func_role func_role on `function`.functionid = func_role.functionid
 	where `function`.familyid = #{familyid,jdbcType=VARCHAR}
@@ -316,7 +331,7 @@
   </select>
   
   <select id="selectFunctionByUserid" resultType="com.jp.entity.Function">
-  	select DISTINCT f.functionid,f.functionname,f.parentid,f.functionurl,f.icon,f.sort,f.description
+  	select DISTINCT f.functionid,f.functionname,f.parentid,f.functionurl,f.icon,f.sort,f.description,f.code
   	from jp_function f
   	inner join jp_function_role m on f.functionid = m.functionid 
   	where f.familyid =  #{familyid,jdbcType=VARCHAR}
@@ -326,12 +341,14 @@
     order by f.sort desc
   </select>
   <select id="selectFunctionByUseridAndEbid" resultType="com.jp.entity.Function">
-  	select DISTINCT f.functionid,f.functionname,f.parentid,f.functionurl,f.icon,f.sort,f.description
+  	select DISTINCT f.functionid,f.functionname,f.parentid,f.functionurl,f.icon,f.sort,f.description,f.code
   	from jp_function f
   	inner join jp_function_role m on f.functionid = m.functionid 
   	where f.familyid = #{familyid,jdbcType=VARCHAR}
   	and m.userid = #{userid,jdbcType=VARCHAR}
-	and m.ebid = #{ebid,jdbcType=VARCHAR}
+  	<if test="ebid != null" >
+        and m.ebid = #{ebid,jdbcType=VARCHAR}
+    </if>
  	order by f.sort desc
   </select>
 </mapper>

@@ -1064,8 +1064,8 @@
 		IFNULL(uc.readcount ,0) readcount from jp_user u LEFT OUTER
 		JOIN jp_usercontent uc on
 		u.userid=uc.userid
-		where uc.userid is not null and uc.familyid=
-		#{familyid,jdbcType=VARCHAR}
+		where uc.userid is not null and u.`status`=0 and u.deleteflag=0 and u.isdirect=1
+		and uc.familyid=#{familyid,jdbcType=VARCHAR}
 		<if test="username != null and username != ''">
 			and u.username like CONCAT('%', CONCAT(#{username}), '%')
 		</if>
@@ -1773,6 +1773,12 @@
 		LEFT JOIN jp_userposition t2 ON t1.brotherpos = t2.position
 		WHERE pid = #{pid,jdbcType=VARCHAR} and deleteflag = 0 and `status` = 0 ORDER BY -t2.sort desc
 	</select>
+	<select id="selectChildrenByAdmin" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		SELECT t1.* FROM jp_user t1
+		LEFT JOIN jp_userposition t2 ON t1.brotherpos = t2.position
+		WHERE pid = #{pid,jdbcType=VARCHAR} and deleteflag = 0 and `status` in (0,3) ORDER BY -t2.sort desc
+	</select>
 	
 	<select id="selectBrothers" parameterType="com.jp.entity.User" resultMap="BaseResultMap">
 		select * from jp_user u left join jp_userposition p on u.brotherpos = p.position
@@ -1786,11 +1792,25 @@
 	
 	<select id="selectBrothersEx" parameterType="com.jp.entity.User" resultMap="BaseResultMap">
 		select * from jp_user u left join jp_userposition p on u.brotherpos = p.position
-		where u.pid = #{pid,jdbcType=VARCHAR}
-		and u.deleteflag = 0 
+		where u.deleteflag = 0 
+		<if test="pid != null and pid !='' ">
+			and u.pid = #{pid,jdbcType=VARCHAR}
+		</if>
+		<if test="pid == null or pid =='' ">
+			and u.userid = #{userid,jdbcType=VARCHAR}
+		</if>
 		and u.status = 0
 		order by -p.sort desc
 		
 	</select>
+	<select id="selectByPrimaryKeyEx" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		userid,sex,livestatus,phone,usedname,createtime,updatetime,createid,updateid,remarkelse,branchid,pid,brotherpos,password,logintime,sessionid,familyid,status,deleteflag,imgurl,username,idcard,isborn,dietime,fixplace,isdirect,genlevel,familyname,pinyinFirst,pinyinFull,pname,mateid,matename,matetypeStr,branchname,ismarry
+		from jp_user
+		where userid = #{userid,jdbcType=VARCHAR}
+		and deleteflag = 0
+	</select>
+	
 	
 </mapper>

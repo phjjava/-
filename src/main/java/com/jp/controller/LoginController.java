@@ -83,7 +83,7 @@ public class LoginController {
 							//			userContext.setUser(user);
 							List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid(),
 									null);
-							if (managers == null || managers.size() == 0) {
+							if (managers.size() == 0) {
 								result = new Result(MsgConstants.LOGIN_NOT_ADMIN);
 								res = new JsonResponse(result);
 								return res;
@@ -130,11 +130,10 @@ public class LoginController {
 					res = new JsonResponse(result);
 					return res;
 				}
-			} else {
-				result = new Result(MsgConstants.LOGIN_ICODE_WRONG);
-				res = new JsonResponse(result);
-				return res;
-			}
+			
+			 } else { result = new Result(MsgConstants.LOGIN_ICODE_WRONG); res = new
+			  JsonResponse(result); return res; }
+			 
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[HNFZ_ERROR登录系统失败:]", e);

@@ -1,15 +1,33 @@
 package com.jp.entity;
 
 public class GenUserOther {
-	String username;
-	String userid;
-	Integer sex;
-	String imgurl;
-	Integer genlevel;
-	Integer livestatus;
-	String pid;
-	String brotherpos;
-	GenUserOther mate;
+	private String username;
+	private String userid;
+	private Integer sex;
+	private String imgurl;
+	private Integer genlevel;
+	private Integer livestatus;
+	private String pid;
+	private String brotherpos;
+	private String branchname;
+	private String branchid;
+	private GenUserOther mate;
+
+	public String getBranchname() {
+		return branchname;
+	}
+
+	public void setBranchname(String branchname) {
+		this.branchname = branchname;
+	}
+
+	public String getBranchid() {
+		return branchid;
+	}
+
+	public void setBranchid(String branchid) {
+		this.branchid = branchid;
+	}
 
 	public String getBrotherpos() {
 		return brotherpos;

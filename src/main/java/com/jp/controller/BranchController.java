@@ -208,27 +208,29 @@ public class BranchController {
 	}
 
 	/**
-	 * 获取指定分支的世系表（结构化数据列表） - 获取指定分支的世系表 (iOS 用)（层次结构数据）
+	 * 获取指定分支的世系表 - 用户世系表 (层次结构数据+递归查询- iOS用)
 	 * 
 	 * @param branch
+	 * @param isManager 不为空则为管理员
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/getGenList", method = RequestMethod.GET)
-	public JsonResponse getGenList(Branch branch, HttpServletRequest request) {
-		return branchService.getGenList(branch);
+	public JsonResponse getGenList(Branch branch, String isManager) {
+		return branchService.getGenList(branch, isManager);
 	}
 
 	/**
-	 * 获取指定分支的世系表（仅列表：递归） - 获取指定分支的世系表（列表数据+递归查询）
+	 * 获取指定分支的世系表 - 用户世系表（列表数据+递归查询 -Android用）
 	 * 
 	 * @param branch
+	 * @param isManager 不为空则为管理员
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/getGenListOnly", method = RequestMethod.GET)
-	public JsonResponse getGenListOnly(Branch branch) {
-		return branchService.getGenListOnly(branch);
+	public JsonResponse getGenListOnly(Branch branch, String isManager) {
+		return branchService.getGenListOnly(branch, isManager);
 	}
 
 	/**
@@ -246,15 +248,29 @@ public class BranchController {
 	}
 
 	/**
-	 * 向上查找指定的几代 - 追根溯源指定分支的世系表（追根溯源-列表结构）
+	 * 向上查找指定的几代 - 追根溯源指定分支的世系表（列表结构 -Android用）
 	 * 
 	 * @param branch
+	 * @param isManager 不为空则为管理员
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/getGenListToTop", method = RequestMethod.GET)
-	public JsonResponse getGenListToTop(Branch branch) {
-		return branchService.getGenListToTop(branch);
+	public JsonResponse getGenListToTop(Branch branch, String isManager) {
+		return branchService.getGenListToTop(branch, isManager);
+	}
+
+	/**
+	 * 向上查找指定的几代 - 追根溯源指定分支的世系表（层级结构 -ios用）
+	 * 
+	 * @param branch
+	 * @param isManager 不为空则为管理员
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getGenListToCount", method = RequestMethod.GET)
+	public JsonResponse getGenListToCount(Branch branch, String isManager) {
+		return branchService.getGenListToCount(branch, isManager);
 	}
 
 	/**

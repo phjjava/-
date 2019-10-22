@@ -164,17 +164,11 @@ public class UserController {
 	}
 
 	/**
-	 * 
-	 * @描述 去新增修改界面
-	 * @作者 sj
-	 * @时间 2017年5月1日下午2:24:07
-	 * @参数 @param user
-	 * @参数 @param userInfo
-	 * @参数 @param userEdu
-	 * @参数 @param model
-	 * @参数 @return
-	 * @return String
+	 * 编辑回显
+	 * @param request
+	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/edit", method = RequestMethod.GET)
 	@ResponseBody
 	public JsonResponse editUser(HttpServletRequest request) {
@@ -921,20 +915,18 @@ public class UserController {
 		try {
 			user.setFamilyid(familyid);
 			List<User> userList = userService.validatePhone(user);
-			String userid = "";
-			if (StringTools.trimNotEmpty(user.getUserid())) {
+			if (userList.size() == 0) {
+				res = new JsonResponse(result);
+				return res;
+			}
+			if (StringTools.notEmpty(user.getUserid())) {
 				for (int i = 0; i < userList.size(); i++) {
 					if (!userList.get(i).getUserid().equals(user.getUserid())) {
-						userid += userList.get(i).getUserid() + ",";
+						result = new Result(MsgConstants.USER_PHONE_REPEAT);
 					}
 				}
-				if (StringTools.trimNotEmpty(userid)) {
-					result = new Result(MsgConstants.USER_PHONE_REPEAT);
-				}
 			} else {
-				if (userList != null && userList.size() > 0) {
-					result = new Result(MsgConstants.USER_PHONE_REPEAT);
-				}
+				result = new Result(MsgConstants.USER_PHONE_REPEAT);
 			}
 		} catch (Exception e) {
 			result = new Result(MsgConstants.RESUL_FAIL);
@@ -1806,4 +1798,15 @@ public class UserController {
 	public JsonResponse getParent(String userid) {
 		return userService.getParent(userid);
 	}
+
+	/**
+	 * 验证登录用户是否有家族管理的菜单权限
+	 * @return
+	 */
+	@RequestMapping(value = "/authFamilyFunction", method = RequestMethod.GET)
+	@ResponseBody
+	public JsonResponse authFamilyFunction() {
+		return userService.authFamilyFunction();
+	}
+
 }

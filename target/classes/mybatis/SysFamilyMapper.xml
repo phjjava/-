@@ -326,12 +326,10 @@
   </select>
   <insert id="insertFunction">
       insert into jp_function (functionid, functionname, parentid, 
-      functionurl, description, sort, icon,familyid) select 
-
-      functionid, functionname, parentid, 
-      functionurl, description, sort, icon,#{familyid,jdbcType=VARCHAR}
-
-     from jp_sys_function where functionid in(select functionid from jp_sys_func_version where versionid = #{versionid,jdbcType=VARCHAR})
+      functionurl, description, sort, icon,familyid,code) 
+      select functionid, functionname, parentid, 
+      functionurl, description, sort, icon,#{familyid,jdbcType=VARCHAR},code
+      from jp_sys_function where functionid in(select functionid from jp_sys_func_version where versionid = #{versionid,jdbcType=VARCHAR})
   </insert>
   <delete id="deleteFunction">
       delete from  jp_function  where familyid = #{familyid,jdbcType=VARCHAR}
