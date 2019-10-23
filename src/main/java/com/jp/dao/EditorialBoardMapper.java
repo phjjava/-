@@ -32,14 +32,17 @@ public interface EditorialBoardMapper {
 
 	int updateByExample(@Param("record") EditorialBoard record, @Param("example") EditorialBoardExample example);
 
+	int updateByPrimaryKey(EditorialBoard record);
 
-    int updateByPrimaryKey(EditorialBoard record);
-    //根据分支区域  城市  县城code值查询编委会
-	EditorialBoard selectbyEditor(@Param("areacode")String areacode, @Param("citycode")String citycode, @Param("xcode")String xcode, @Param("familyId")String familyId);
+	//根据分支区域  城市  县城code值查询编委会
+	EditorialBoard selectbyEditor(@Param("areacode") String areacode, @Param("citycode") String citycode,
+			@Param("xcode") String xcode, @Param("familyId") String familyId);
 
-	EditorialBoard selectbyEditorTwo(@Param("areacode")String areacode, @Param("citycode")String citycode, @Param("xcode")String xcode,@Param("familyId")String familyId);
+	EditorialBoard selectbyEditorTwo(@Param("areacode") String areacode, @Param("citycode") String citycode,
+			@Param("xcode") String xcode, @Param("familyId") String familyId);
 
-	EditorialBoard selectbyEditorThree(@Param("areacode")String areacode, @Param("citycode")String citycode, @Param("xcode")String xcode,@Param("familyId")String familyId);
+	EditorialBoard selectbyEditorThree(@Param("areacode") String areacode, @Param("citycode") String citycode,
+			@Param("xcode") String xcode, @Param("familyId") String familyId);
 
 	int updateByPrimaryKeySelective(EditorialBoard record);
 
@@ -49,4 +52,9 @@ public interface EditorialBoardMapper {
 	@Select("SELECT * FROM `jp_city` WHERE `id` = #{id}")
 	Map<String, Object> selectCityById(@Param("id") String id);
 
+	@Select("SELECT * FROM `jp_city` WHERE `parent_id` = #{id}")
+	List<Map<String, Object>> selectCityByPid(@Param("id") String id);
+
+	@Select("SELECT id FROM `jp_city` WHERE `code` = #{code}")
+	String selectCityIdByCode(@Param("code") String code);
 }

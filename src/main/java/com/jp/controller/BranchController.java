@@ -208,19 +208,6 @@ public class BranchController {
 	}
 
 	/**
-	 * 获取指定分支的世系表 - 用户世系表 (层次结构数据+递归查询- iOS用)
-	 * 
-	 * @param branch
-	 * @param isManager 不为空则为管理员
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/getGenList", method = RequestMethod.GET)
-	public JsonResponse getGenList(Branch branch, String isManager) {
-		return branchService.getGenList(branch, isManager);
-	}
-
-	/**
 	 * 获取指定分支的世系表 - 用户世系表（列表数据+递归查询 -Android用）
 	 * 
 	 * @param branch
@@ -231,20 +218,6 @@ public class BranchController {
 	@RequestMapping(value = "/getGenListOnly", method = RequestMethod.GET)
 	public JsonResponse getGenListOnly(Branch branch, String isManager) {
 		return branchService.getGenListOnly(branch, isManager);
-	}
-
-	/**
-	 * 获取指定分支的世系表（仅列表：无递归） - 获取指定分支的世系表(Android用)（列表数据+批量查询）
-	 * 
-	 * @param branch
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/getGenListOnlyExt", method = RequestMethod.GET)
-	public JsonResponse getGenListOnlyExt(Branch branch, HttpServletRequest request) {
-		String userid = request.getHeader("userid");
-		branch.setParentid(userid);
-		return branchService.getGenListOnlyExt(branch);
 	}
 
 	/**
@@ -261,6 +234,18 @@ public class BranchController {
 	}
 
 	/**
+	 * 获取指定分支的世系表 - 用户世系表 (层次结构数据+递归查询- iOS用)
+	 * @param branch
+	 * @param isManager 不为空则为管理员
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getGenList", method = RequestMethod.GET)
+	public JsonResponse getGenList(Branch branch, String isManager) {
+		return branchService.getGenList(branch, isManager);
+	}
+
+	/**
 	 * 向上查找指定的几代 - 追根溯源指定分支的世系表（层级结构 -ios用）
 	 * 
 	 * @param branch
@@ -271,6 +256,20 @@ public class BranchController {
 	@RequestMapping(value = "/getGenListToCount", method = RequestMethod.GET)
 	public JsonResponse getGenListToCount(Branch branch, String isManager) {
 		return branchService.getGenListToCount(branch, isManager);
+	}
+
+	/**
+	 * 获取指定分支的世系表（仅列表：无递归） - 获取指定分支的世系表(Android用)（列表数据+批量查询）
+	 * 
+	 * @param branch
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getGenListOnlyExt", method = RequestMethod.GET)
+	public JsonResponse getGenListOnlyExt(Branch branch, HttpServletRequest request) {
+		String userid = request.getHeader("userid");
+		branch.setParentid(userid);
+		return branchService.getGenListOnlyExt(branch);
 	}
 
 	/**
