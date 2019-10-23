@@ -21,6 +21,8 @@ import com.jp.dao.BranchDao;
 import com.jp.dao.EditorialBoardMapper;
 import com.jp.dao.FunctionRoleMapper;
 import com.jp.dao.UserManagerMapper;
+import com.jp.entity.Branch;
+import com.jp.entity.BranchKey;
 import com.jp.entity.EditorialBoard;
 import com.jp.entity.EditorialBoardExample;
 import com.jp.entity.FunctionRoleExample;
@@ -313,6 +315,40 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 			return res;
 		}
 		try {
+			List<String> codeList = new ArrayList<>();
+			String codeStr = eb.getCode();
+			String[] codeArr = codeStr.split(",");
+			for (String code : codeArr) {
+				if (code.length() > 10) {//分支范围的编委会
+					//		Map<String, Object> map = branchMapper.selectByBranchid(code);
+					BranchKey key = new BranchKey();
+					key.setBranchid(code);
+					key.setFamilyid(familyid);
+					Branch branch = branchMapper.selectByPrimaryKey(key);
+					if (branch != null) {
+						List<String> blist = new ArrayList<>();
+						blist.add(branch.getAreacode());
+						blist.add(branch.getCitycode());
+						blist.add(branch.getXcode());
+						codeList.addAll(blist);
+					}
+				} else {//省市区管辖范围
+					String cityid = editorialBoardMapper.selectCityIdByCode(code);
+					List<String> clist = new ArrayList<>();
+					clist.add(code);
+					if (cityid != null) {
+						getAllCodeList(clist, cityid);
+					}
+					codeList.addAll(clist);
+				}
+			}
+			long count = codeList.stream().distinct().count();
+			if (count < codeList.size()) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("管辖范围有重复，或地区、分支有所属关系，请检查后重试！");
+				res = new JsonResponse(result);
+				return res;
+			}
 			if (StringTools.notEmpty(eb.getId())) {// 修改
 				status = editorialBoardMapper.updateByPrimaryKeySelective(eb);
 				//同步管理员中的编委会名称
@@ -342,6 +378,19 @@ public class EditorialBoardServiceImpl implements EditorialBoardService {
 		result = new Result(MsgConstants.RESUL_FAIL);
 		res = new JsonResponse(result);
 		return res;
+	}
+
+	/**
+	 * 递归查询管辖范围的所有code码
+	 * @param clist
+	 * @param id
+	 */
+	public void getAllCodeList(List<String> clist, String id) {
+		List<Map<String, Object>> cityList = editorialBoardMapper.selectCityByPid(id);
+		for (Map<String, Object> map : cityList) {
+			clist.add(map.get("code").toString());
+			getAllCodeList(clist, map.get("id").toString());
+		}
 	}
 
 }
