@@ -300,6 +300,7 @@ public class FlowableController {
 		 //判断节点所在位置将该用户编委会放入记录表
 		  if(sourceFlowElement.getName().equals("总编委会成员")) {
 			  //查询所属总编委会
+			  
 			  ebname=flowableService.selectEbname(notice.getCreateid());
 		  }else if(sourceFlowElement.getName().equals("分编委会")) {
 			  UserManager deploynewFour = flowableService.deploynewFour(notice.getCreateid());
