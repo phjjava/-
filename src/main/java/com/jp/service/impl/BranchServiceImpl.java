@@ -1000,11 +1000,11 @@ public class BranchServiceImpl implements BranchService {
 	 * 从根向下递归查询后代子女(指定查询几代结束) ios层级结构-普通用户
 	 * 
 	 * @param entity 起始人
-	 * @param genlevel 起始人世系（向上几代的节点世系）
-	 * @param count 向下查询世系数，向下几代
+	 * @param value 向下查询世系数，向下几代
+	 * @param count 计数器，递归终止条件
 	 * @return
 	 */
-	public void getGenUserHierarchical(GenUserVO entity, Integer genlevel, Integer count) {
+	public void getGenUserHierarchical(GenUserVO entity, Integer value, Integer count) {
 		String userid = entity.getUser().getUserid();
 		// 查询孩子列表
 		List<User> users = userDao.selectChildren(userid);
@@ -1045,23 +1045,21 @@ public class BranchServiceImpl implements BranchService {
 			}
 			genUserVOs.add(genUserVO);
 			entity.setChildren(genUserVOs);
-			if (count != null && user.getGenlevel() != null) {
-				if (Math.abs(user.getGenlevel() - genlevel) >= count) {
-					return;
-				}
+			if (count != null && ++count >= value) {
+				return;
 			}
-			getGenUserHierarchical(genUserVO, genlevel, count);
+			getGenUserHierarchical(genUserVO, value, count);
 		}
 	}
 
 	/**
 	 * 从根向下递归查询后代子女(指定查询几代结束) ios层级结构-管理员
 	 * @param entity 起始人
-	 * @param genlevel 起始人世系（向上几代的节点世系）
-	 * @param count 向下查询世系数，向下几代
+	 * @param value 向下查询世系数，向下几代
+	 * @param count 计数器，递归终止条件
 	 * @return
 	 */
-	public void getGenUserHierarchicalAdmin(GenUserVO entity, Integer genlevel, Integer count) {
+	public void getGenUserHierarchicalAdmin(GenUserVO entity, Integer value, Integer count) {
 		String userid = entity.getUser().getUserid();
 		// 查询孩子列表
 		List<User> users = userDao.selectChildrenByAdmin(userid);
@@ -1102,12 +1100,10 @@ public class BranchServiceImpl implements BranchService {
 			}
 			genUserVOs.add(genUserVO);
 			entity.setChildren(genUserVOs);
-			if (count != null && user.getGenlevel() != null) {
-				if (Math.abs(user.getGenlevel() - genlevel) >= count) {
-					return;
-				}
+			if (count != null && ++count >= value) {
+				return;
 			}
-			getGenUserHierarchicalAdmin(genUserVO, genlevel, count);
+			getGenUserHierarchicalAdmin(genUserVO, value, count);
 		}
 	}
 
@@ -1186,9 +1182,9 @@ public class BranchServiceImpl implements BranchService {
 			genUserOthers.add(genUserOther);
 
 			if (StringTools.trimIsEmpty(isManager)) {//token为空，普通用户调用status（=0）
-				getGenUserList(genUserOther, null, null, genUserOthers);
+				getGenUserList(genUserOther, genUserOthers, null, null);
 			} else {//管理员可以看到正常用户和已拒绝的status（0,3）
-				getGenUserListAdmin(genUserOther, null, null, genUserOthers);
+				getGenUserListAdmin(genUserOther, genUserOthers, null, null);
 			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
@@ -1204,11 +1200,11 @@ public class BranchServiceImpl implements BranchService {
 	/**
 	 * 从根向下递归查询后代子女(指定查询几代结束) Android列表结构-普通用户
 	 * @param entity
-	 * @param genlevel 起始人世系（向上几代的节点世系）
-	 * @param count 向下查询世系数，向下几代
 	 * @param genUserOthers
+	 * @param value 向下查询世系数，向下几代
+	 * @param count 计数器，递归结束条件
 	 */
-	public void getGenUserList(GenUserOther entity, Integer genlevel, Integer count, List<GenUserOther> genUserOthers) {
+	public void getGenUserList(GenUserOther entity, List<GenUserOther> genUserOthers, Integer value, Integer count) {
 		// 查询孩子列表
 		String userid = entity.getUserid();
 		List<User> users = userDao.selectChildren(userid);
@@ -1247,24 +1243,23 @@ public class BranchServiceImpl implements BranchService {
 				}
 			}
 			genUserOthers.add(gen_UserOther);
-			if (count != null && user.getGenlevel() != null) {
-				if (Math.abs(user.getGenlevel() - genlevel) >= count) {
-					return;
-				}
+			if (count != null && ++count >= value) {
+				return;
 			}
-			getGenUserList(gen_UserOther, genlevel, count, genUserOthers);
+			getGenUserList(gen_UserOther, genUserOthers, value, count);
 		}
 	}
 
 	/**
 	 * 从根向下递归查询后代子女(指定查询几代结束) Android列表结构-管理员-status 0,3
 	 * @param entity
-	 * @param genlevel 起始人世系（向上几代的节点世系）
-	 * @param count 向下查询世系数，向下几代
 	 * @param genUserOthers
+	 * @param value 向下查询世系数，向下几代
+	 * @param count 计数器，递归结束条件
 	 */
-	public void getGenUserListAdmin(GenUserOther entity, Integer genlevel, Integer count,
-			List<GenUserOther> genUserOthers) {
+	public void getGenUserListAdmin(GenUserOther entity, List<GenUserOther> genUserOthers, Integer value,
+			Integer count) {
+
 		// 查询孩子列表
 		String userid = entity.getUserid();
 		List<User> users = userDao.selectChildrenByAdmin(userid);
@@ -1303,12 +1298,10 @@ public class BranchServiceImpl implements BranchService {
 				}
 			}
 			genUserOthers.add(gen_UserOther);
-			if (count != null && user.getGenlevel() != null) {
-				if (Math.abs(user.getGenlevel() - genlevel) >= count) {
-					return;
-				}
+			if (count != null && ++count >= value) {
+				return;
 			}
-			getGenUserListAdmin(gen_UserOther, genlevel, count, genUserOthers);
+			getGenUserListAdmin(gen_UserOther, genUserOthers, value, count);
 		}
 	}
 
@@ -1330,7 +1323,9 @@ public class BranchServiceImpl implements BranchService {
 			}
 			User user = userDao.selectByPrimaryKey(entity.getParentid());
 			// 获取向上几世的节点实例
-			User gen_user = getUserUptoTop(user, user.getGenlevel(), entity.getStatus());
+			Integer count = 0;//计数器，递归终止条件
+			Integer value = entity.getStatus();
+			User gen_user = getGenUserByCount(user, value, count);
 			List<GenUserOther> genUserOthers = new ArrayList<GenUserOther>();
 			if (gen_user != null) {
 				// 初始化起始人实例
@@ -1367,10 +1362,11 @@ public class BranchServiceImpl implements BranchService {
 					}
 				}
 				genUserOthers.add(genUserOther);
+				count = 0;
 				if (StringTools.trimIsEmpty(isManager)) {//token为空，普通用户调用status（=0）
-					getGenUserList(genUserOther, gen_user.getGenlevel(), entity.getStatus(), genUserOthers);
+					getGenUserList(genUserOther, genUserOthers, value, count);
 				} else {//管理员可以看到正常用户和已拒绝的status（0,3）
-					getGenUserListAdmin(genUserOther, gen_user.getGenlevel(), entity.getStatus(), genUserOthers);
+					getGenUserListAdmin(genUserOther, genUserOthers, value, count);
 				}
 			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
@@ -1402,7 +1398,9 @@ public class BranchServiceImpl implements BranchService {
 			}
 			User user = userDao.selectByPrimaryKey(entity.getParentid());
 			// 获取向上几世的节点实例
-			User gen_user = getUserUptoTop(user, user.getGenlevel(), entity.getStatus());
+			int count = 0;//计数器，递归终止条件
+			Integer value = entity.getStatus();
+			User gen_user = getGenUserByCount(user, value, count);
 			GenUserVO genUserVO = new GenUserVO();
 			if (gen_user != null) {
 				// 初始化起始人实例
@@ -1439,10 +1437,11 @@ public class BranchServiceImpl implements BranchService {
 						genUserVO.setMateuser(mateuser);
 					}
 				}
+				count = 0;
 				if (StringTools.trimIsEmpty(isManager)) {
-					getGenUserHierarchical(genUserVO, gen_user.getGenlevel(), entity.getStatus());
+					getGenUserHierarchical(genUserVO, value, count);
 				} else {
-					getGenUserHierarchicalAdmin(genUserVO, gen_user.getGenlevel(), entity.getStatus());
+					getGenUserHierarchicalAdmin(genUserVO, value, count);
 				}
 			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
@@ -1481,6 +1480,39 @@ public class BranchServiceImpl implements BranchService {
 					return pUser;
 				} else {
 					pUser = getUserUptoTop(pUser, currentGenlevel, count);
+				}
+			} else {
+				return currentUser;
+			}
+		}
+		return pUser;
+	}
+
+	/**
+	 * 获取当前用户向上几代的根节点：如果超出指定几代查不到则返回最顶级实例。
+	 * 
+	 * @author phj 19-10-24
+	 * @param currentUser ：当前用户实例
+	 * @param value ：当前用户的世代
+	 * @param count ：计数器，递归终止条件
+	 * @return
+	 */
+	public User getGenUserByCount(User currentUser, Integer value, int count) {
+		User pUser = new User();
+		// 父用户		
+		if (currentUser.getPid() == null || "".equals(currentUser.getPid())) {
+			return currentUser;
+		} else {
+			UserQuery userExample = new UserQuery();
+			userExample.or().andDeleteflagEqualTo(0).andStatusEqualTo(0).andIsdirectEqualTo(1)
+					.andUseridEqualTo(currentUser.getPid());
+			List<User> users = userDao.selectByExample(userExample);
+			if (users.size() > 0) {
+				pUser = users.get(0);
+				if (++count >= value) {
+					return pUser;
+				} else {
+					pUser = getGenUserByCount(pUser, value, count);
 				}
 			} else {
 				return currentUser;
