@@ -169,7 +169,7 @@ public interface UserDao {
 
 	//根据用户家族id查询该家族的分支数
 	@Select("select IFNULL(max(genlevel),0) as genlevel from jp_user where familyid =#{familyid}")
-	int getUserFamilyid(@Param("familyid") String familyid);
+	Integer getUserFamilyid(@Param("familyid") String familyid);
 
 	/**
 	* 根据家族id 家族名 世系代数 查找用户
