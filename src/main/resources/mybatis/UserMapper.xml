@@ -1799,7 +1799,7 @@
 		<if test="pid == null or pid =='' ">
 			and u.userid = #{userid,jdbcType=VARCHAR}
 		</if>
-		and u.status = 0
+		and u.status in (0,3)
 		order by -p.sort desc
 		
 	</select>

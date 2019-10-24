@@ -6014,6 +6014,12 @@ public class UserServiceImpl implements UserService {
 //		User applyUser = userDao.selectByPrimaryKey(applyUserid);
 		//获取当前用户信息
 		User user = userDao.selectByPrimaryKeyEx(userid);
+		if(user == null) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("当前用户不存在！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		//当前用户配偶信息
 		User mateUser = userDao.selectByPrimaryKeyEx(user.getMateid());
 		//构造返回当前用户信息
@@ -6028,6 +6034,9 @@ public class UserServiceImpl implements UserService {
 			genU.setBrotherpos(user.getBrotherpos());
 			genU.setStatus("1");
 		}
+			
+		
+		
 		//构造当前用户配偶信息
 		GenUser genM = new GenUser();
 		if (mateUser != null) {
