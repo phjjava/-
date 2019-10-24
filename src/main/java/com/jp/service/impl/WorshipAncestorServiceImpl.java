@@ -1,27 +1,5 @@
 package com.jp.service.impl;
 
-import com.github.pagehelper.PageHelper;
-import com.jp.common.ConstantUtils;
-import com.jp.common.JsonResponse;
-import com.jp.common.MsgConstants;
-import com.jp.common.Result;
-import com.jp.dao.UserDao;
-import com.jp.dao.WorshipAncestorMapper;
-import com.jp.dao.WorshipOblationMapper;
-import com.jp.dao.WorshipOblationTypeMapper;
-import com.jp.entity.User;
-import com.jp.entity.UserQuery;
-import com.jp.entity.Worship;
-import com.jp.entity.WorshipAncestor;
-import com.jp.entity.WorshipAncestorVO;
-import com.jp.entity.WorshipOblation;
-import com.jp.entity.WorshipOblationType;
-import com.jp.entity.WorshipOblationTypeExample;
-import com.jp.entity.WorshipVO;
-import com.jp.service.WorshipAncestorService;
-import com.jp.util.UUIDUtils;
-import com.jp.util.WebUtil;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +10,26 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageHelper;
+import com.jp.common.ConstantUtils;
+import com.jp.common.JsonResponse;
+import com.jp.common.MsgConstants;
+import com.jp.common.Result;
+import com.jp.dao.UserDao;
+import com.jp.dao.WorshipAncestorMapper;
+import com.jp.dao.WorshipOblationMapper;
+import com.jp.dao.WorshipOblationTypeMapper;
+import com.jp.entity.User;
+import com.jp.entity.WorshipAncestor;
+import com.jp.entity.WorshipAncestorVO;
+import com.jp.entity.WorshipOblation;
+import com.jp.entity.WorshipOblationType;
+import com.jp.entity.WorshipOblationTypeExample;
+import com.jp.service.UserService;
+import com.jp.service.WorshipAncestorService;
+import com.jp.util.UUIDUtils;
+import com.jp.util.WebUtil;
+
 /**
  * <p>
  *  服务实现类
@@ -41,8 +39,8 @@ import org.springframework.stereotype.Service;
  * @since 2019-07-19
  */
 @Service
-public class WorshipAncestorServiceImpl  implements WorshipAncestorService {
-	
+public class WorshipAncestorServiceImpl implements WorshipAncestorService {
+
 	private final Logger log_ = LogManager.getLogger(WorshipAncestorServiceImpl.class);
 
 	@Resource
@@ -53,36 +51,42 @@ public class WorshipAncestorServiceImpl  implements WorshipAncestorService {
 	private WorshipOblationTypeMapper oblationTypeMapper;
 	@Resource
 	private UserDao userDao;
-	
+	@Resource
+	private UserService userService;
+
 	@Override
 	public JsonResponse worshipAncestor(WorshipAncestor entity) {
 		Result result = null;
 		JsonResponse res = null;
 		try {
+			JsonResponse demoUser = userService.checkDemoUser();
+			if (demoUser.getCode() == 1) {
+				return demoUser;
+			}
 			if (entity.getWorshipid() == null || "".equals(entity.getWorshipid())) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数worishipid不能为空！");
 				res = new JsonResponse(result);
 				return res;
 			}
-//			if (entity.getCreateid() == null || "".equals(entity.getCreateid())) {
-//				result = new Result(MsgConstants.RESUL_FAIL);
-//				result.setMsg("当前用户createid不能为空！");
-//				res = new JsonResponse(result);
-//				return res;
-//			}
+			//			if (entity.getCreateid() == null || "".equals(entity.getCreateid())) {
+			//				result = new Result(MsgConstants.RESUL_FAIL);
+			//				result.setMsg("当前用户createid不能为空！");
+			//				res = new JsonResponse(result);
+			//				return res;
+			//			}
 			if (entity.getOblationid() == null || "".equals(entity.getOblationid())) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数oblationid不能为空！");
 				res = new JsonResponse(result);
 				return res;
 			}
-//			if (entity.getFamilyid() == null || "".equals(entity.getFamilyid())) {
-//				result = new Result(MsgConstants.RESUL_FAIL);
-//				result.setMsg("参数familyid不能为空！");
-//				res = new JsonResponse(result);
-//				return res;
-//			}
+			//			if (entity.getFamilyid() == null || "".equals(entity.getFamilyid())) {
+			//				result = new Result(MsgConstants.RESUL_FAIL);
+			//				result.setMsg("参数familyid不能为空！");
+			//				res = new JsonResponse(result);
+			//				return res;
+			//			}
 			if (entity.getWorshipname() == null || "".equals(entity.getWorshipname())) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("参数worshipname不能为空！");
@@ -102,7 +106,7 @@ public class WorshipAncestorServiceImpl  implements WorshipAncestorService {
 			entity.setOblation(oblation.getOblation());
 			entity.setOblationtype(oblation.getOblationtype());
 			entity.setOblationtypeid(oblation.getOblationtypeid());
-			User createuser = userDao.selectByPrimaryKey(createid);			
+			User createuser = userDao.selectByPrimaryKey(createid);
 			entity.setCreatename(createuser.getUsername());
 			int status = worshipAncestorMapper.insertSelective(entity);
 			if (status > 0) {
@@ -136,7 +140,7 @@ public class WorshipAncestorServiceImpl  implements WorshipAncestorService {
 			//获取请求头中的数据 familyid createid
 			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
 			PageHelper.startPage(start, count);
-			worships = worshipAncestorMapper.selectByWorshipid(entity.getWorshipid(),familyid);
+			worships = worshipAncestorMapper.selectByWorshipid(entity.getWorshipid(), familyid);
 		} catch (Exception e) {
 			log_.error("[getWorshipAncestors方法---异常:]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
@@ -171,7 +175,7 @@ public class WorshipAncestorServiceImpl  implements WorshipAncestorService {
 			 * ConstantUtils.DELETE_FALSE); example.setOrderByClause("createtime desc");
 			 * worships = worshipMapper.selectByExample(example);
 			 */
-			worships = worshipAncestorMapper.selectByWorshipidAndCreateid(entity.getWorshipid(),familyid,createid);
+			worships = worshipAncestorMapper.selectByWorshipidAndCreateid(entity.getWorshipid(), familyid, createid);
 		} catch (Exception e) {
 			log_.error("[getMyWorshipAncestors方法---异常:]", e);
 			result = new Result(MsgConstants.SYS_ERROR);
@@ -196,18 +200,19 @@ public class WorshipAncestorServiceImpl  implements WorshipAncestorService {
 				res = new JsonResponse(result);
 				return res;
 			}
-			
+
 			//获取请求头中的数据 familyid createid
 			String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
 			worshipVo = new WorshipAncestorVO();
-			
+
 			WorshipOblationTypeExample example1 = new WorshipOblationTypeExample();
 			example1.or().andDeleteflagEqualTo(ConstantUtils.DELETE_FALSE);
 			List<WorshipOblationType> types = oblationTypeMapper.selectByExample(example1);
 			List<WorshipAncestor> rtnlist = new ArrayList<>();
 			for (WorshipOblationType type : types) {
-				List<WorshipAncestor> worships = worshipAncestorMapper.selectNoTimeOutByType(familyid,entity.getWorshipid(),type.getId());
-				
+				List<WorshipAncestor> worships = worshipAncestorMapper.selectNoTimeOutByType(familyid,
+						entity.getWorshipid(), type.getId());
+
 				rtnlist.addAll(worships);
 			}
 

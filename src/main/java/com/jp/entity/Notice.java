@@ -3,6 +3,7 @@ package com.jp.entity;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public class Notice implements Serializable {
 	private String noticeid;
@@ -40,6 +41,47 @@ public class Notice implements Serializable {
 	private Integer type;
 
 	private String noticecontent;
+	//审核状态字段
+	private Integer examinestatus;
+	//流程taskid字段
+	private String taskid;
+	//存放编委会名称
+	private String leard;
+	
+
+	public String getLeard() {
+		return leard;
+	}
+
+	public void setLeard(String leard) {
+		this.leard = leard;
+	}
+
+	private List<HttpApprovalHistory> record;
+
+	public List<HttpApprovalHistory> getRecord() {
+		return record;
+	}
+
+	public List<HttpApprovalHistory> setRecord(List<HttpApprovalHistory> httpApprovalHistoryList) {
+		return this.record = httpApprovalHistoryList;
+	}
+
+	public String getTaskid() {
+		return taskid;
+	}
+
+	public void setTaskid(String taskid) {
+		this.taskid = taskid;
+	}
+
+	public Integer getExaminestatus() {
+		return examinestatus;
+	}
+
+	public void setExaminestatus(Integer examinestatus) {
+		this.examinestatus = examinestatus;
+	}
 
 	/**
 	 * 用于存储复选栏分支id,可存多个用逗号间隔

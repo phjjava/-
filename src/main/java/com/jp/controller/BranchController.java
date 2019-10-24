@@ -70,19 +70,19 @@ public class BranchController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/initBranch", method = RequestMethod.POST)
-	public JsonResponse selectBranch(Branch branch) {
-		return branchService.initBranch(branch);
+	public JsonResponse selectBranch(PageModel<Branch> pageModel, Branch branch) {
+		return branchService.initBranch(pageModel, branch);
 	}
 
 	/**
-	 * 验证同以家族中分支名称不能相同
+	 * 验证同一家族中分支名称不能相同
 	 * @param branchname
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/validateBranchname", method = RequestMethod.POST)
-	public JsonResponse validateBranchname(String branchname) {
-		return branchService.validateBranchname(branchname);
+	public JsonResponse validateBranchname(Branch branch) {
+		return branchService.validateBranchname(branch);
 	}
 
 	/**
@@ -92,8 +92,8 @@ public class BranchController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/checkBeginer", method = RequestMethod.POST)
-	public JsonResponse checkBeginer(String beginuserid) {
-		return branchService.checkBeginer(beginuserid);
+	public JsonResponse checkBeginer(Branch branch) {
+		return branchService.checkBeginer(branch);
 	}
 
 	/**
@@ -208,29 +208,54 @@ public class BranchController {
 	}
 
 	/**
-	 * 获取指定分支的世系表（结构化数据列表） - 获取指定分支的世系表 (iOS 用)（层次结构数据）
+	 * 获取指定分支的世系表 - 用户世系表（列表数据+递归查询 -Android用）
 	 * 
 	 * @param branch
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/getGenList", method = RequestMethod.GET)
-	public JsonResponse getGenList(Branch branch, HttpServletRequest request) {
-		String userid = request.getHeader("userid");
-		branch.setParentid(userid);
-		return branchService.getGenList(branch);
-	}
-
-	/**
-	 * 获取指定分支的世系表（仅列表：递归） - 获取指定分支的世系表（列表数据+递归查询）
-	 * 
-	 * @param branch
+	 * @param isManager 不为空则为管理员
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/getGenListOnly", method = RequestMethod.GET)
-	public JsonResponse getGenListOnly(Branch branch) {
-		return branchService.getGenListOnly(branch);
+	public JsonResponse getGenListOnly(Branch branch, String isManager) {
+		return branchService.getGenListOnly(branch, isManager);
+	}
+
+	/**
+	 * 向上查找指定的几代 - 追根溯源指定分支的世系表（列表结构 -Android用）
+	 * 
+	 * @param branch
+	 * @param isManager 不为空则为管理员
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getGenListToTop", method = RequestMethod.GET)
+	public JsonResponse getGenListToTop(Branch branch, String isManager) {
+		return branchService.getGenListToTop(branch, isManager);
+	}
+
+	/**
+	 * 获取指定分支的世系表 - 用户世系表 (层次结构数据+递归查询- iOS用)
+	 * @param branch
+	 * @param isManager 不为空则为管理员
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getGenList", method = RequestMethod.GET)
+	public JsonResponse getGenList(Branch branch, String isManager) {
+		return branchService.getGenList(branch, isManager);
+	}
+
+	/**
+	 * 向上查找指定的几代 - 追根溯源指定分支的世系表（层级结构 -ios用）
+	 * 
+	 * @param branch
+	 * @param isManager 不为空则为管理员
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getGenListToCount", method = RequestMethod.GET)
+	public JsonResponse getGenListToCount(Branch branch, String isManager) {
+		return branchService.getGenListToCount(branch, isManager);
 	}
 
 	/**
@@ -248,18 +273,6 @@ public class BranchController {
 	}
 
 	/**
-	 * 向上查找指定的几代 - 追根溯源指定分支的世系表（追根溯源-列表结构）
-	 * 
-	 * @param branch
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/getGenListToTop", method = RequestMethod.GET)
-	public JsonResponse getGenListToTop(Branch branch) {
-		return branchService.getGenListToTop(branch);
-	}
-
-	/**
 	 * 五世一展示，从当前节点向上查到第一个被5整除的世系根节点，向下查到第一个被5整除的世系 - 追根溯源指定分支的世系表（追根溯源--五世一表）
 	 * 
 	 * @param branch
@@ -271,4 +284,42 @@ public class BranchController {
 		return branchService.getGenListOnlyExtMod(branch);
 	}
 
+	/**
+	 * 根据用户id获取所管理的分支列表（编委会权限）
+	 * 
+	 * @param branch
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getBranchsByUserid", method = RequestMethod.GET)
+	public JsonResponse getBranchsByUserid(String userid, String code, Integer pageNo, Integer pageSize) {
+		return branchService.getBranchsByUserid(userid, code, pageNo, pageSize);
+	}
+
+	/**
+	 * 获取家族管理中有效的省份信息 - 省份列表（根据编委会获取）
+	 * 
+	 * @param branch
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getEbArea", method = RequestMethod.GET)
+	public JsonResponse getEbArea(String userid) {
+		Branch branch = new Branch();
+		branch.setBeginuserid(userid);
+		return branchService.getEbArea(branch);
+	}
+
+	/**
+	 * 获取地区和分支信息 - 省份列表（根据编委会获取）
+	 * 
+	 * @param branch
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/getXQAndBranch", method = RequestMethod.GET)
+	public JsonResponse getXQAndBranch(Branch entity) {
+
+		return branchService.getXQAndBranch(entity);
+	}
 }

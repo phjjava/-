@@ -26,7 +26,6 @@
 	<!-- 自动扫描 service -->
 	<context:component-scan base-package="com.jp.service" />
 	
-	
 	<!-- 引入配置文件 -->
 	<bean id="propertyPlaceholderConfigurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -110,7 +109,18 @@
        	 	<mvc:exclude-mapping path="/system/intemplateDetail/apiFindOne"/>	<!-- 章节详情 -->
        	 	<mvc:exclude-mapping path="/system/intemplateDetail/apiFindList"/>	<!-- 章节目录 -->
        	 	<mvc:exclude-mapping path="/system/intemplate/apilist"/>	<!-- 模板书列表 -->
-       	 	
+       	 	<mvc:exclude-mapping path="/system/famousperson/apilist"/>	<!-- 名人家谱列表 -->
+       	 	<mvc:exclude-mapping path="/system/famousperson/get"/>	<!-- 名人家谱回显 -->
+       	 	<!-- <mvc:exclude-mapping path="/expense/deploy"/>	测试审批
+       	 	<mvc:exclude-mapping path="/expense/add"/>	测试审批
+       	 	<mvc:exclude-mapping path="/expense/list"/>	测试审批
+       	 	<mvc:exclude-mapping path="/expense/reject"/>	测试审批
+       	 	<mvc:exclude-mapping path="/expense/apply"/>	测试审批
+       	 	<mvc:exclude-mapping path="/expense/processDiagram"/>	测试审批
+       	 	<mvc:exclude-mapping path="/notice/save"/>	测试审批
+       	 	<mvc:exclude-mapping path="/expense/aleady"/>	测试审批
+       	 	<mvc:exclude-mapping path="/expense/details"/>	测试审批
+       	 	<mvc:exclude-mapping path="/expense/listnew"/>	测试审批 -->
        	 	
        	 	<mvc:exclude-mapping path="/user/loginB"/>	<!-- H5登录 -->
        	 	<mvc:exclude-mapping path="/platform/getPlatform"/>	<!-- 获取版本号 -->
@@ -163,6 +173,6 @@
 	        </bean>  
 	    </mvc:message-converters>  
 	</mvc:annotation-driven>  
-    
-    
+    <!-- 配置flowable -->
+    <import resource="classpath:flowable.cfg.xml"/>
 </beans>

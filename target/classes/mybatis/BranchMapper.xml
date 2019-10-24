@@ -521,6 +521,76 @@
 		#{familyid,jdbcType=VARCHAR}
 	</select>
 
+	<select id="getBranchListByFamilyAndCodes" resultType="com.jp.entity.Branch">
+		SELECT * FROM jp_branch WHERE familyid = #{familyid,jdbcType=VARCHAR} 
+		AND areacode in 
+		<foreach collection="codeList" item="item" index="index" open="(" separator="," close=")">
+			#{item,jdbcType=VARCHAR}
+	    </foreach>
+		<if test="branchname != null">
+			and branchname like binary CONCAT('%',
+			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
+		</if>
+		UNION All
+		SELECT * FROM jp_branch WHERE familyid = #{familyid,jdbcType=VARCHAR} 
+		AND citycode in 
+		<foreach collection="codeList" item="item" index="index" open="(" separator="," close=")">
+			#{item,jdbcType=VARCHAR}
+	    </foreach>
+		<if test="branchname != null">
+			and branchname like binary CONCAT('%',
+			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
+		</if>
+		UNION All
+		SELECT * FROM jp_branch WHERE familyid = #{familyid,jdbcType=VARCHAR} 
+		AND xcode in 
+		<foreach collection="codeList" item="item" index="index" open="(" separator="," close=")">
+			#{item,jdbcType=VARCHAR}
+	    </foreach>
+		<if test="branchname != null">
+			and branchname like binary CONCAT('%',CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
+		</if>
+		UNION All
+		SELECT * FROM jp_branch WHERE familyid = #{familyid,jdbcType=VARCHAR} 
+		AND branchid in 
+		<foreach collection="codeList" item="item" index="index" open="(" separator="," close=")">
+			#{item,jdbcType=VARCHAR}
+	    </foreach>
+		<if test="branchname != null">
+			and branchname like binary CONCAT('%',
+			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
+		</if>
+	</select>
+	<select id="getBranchListByFamilyAndCode" resultType="com.jp.entity.Branch">
+		SELECT * FROM jp_branch WHERE familyid = #{familyid,jdbcType=VARCHAR} 
+		AND areacode = #{code,jdbcType=VARCHAR}
+		<if test="branchname != null">
+			and branchname like binary CONCAT('%',
+			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
+		</if>
+		UNION All
+		SELECT * FROM jp_branch WHERE familyid = #{familyid,jdbcType=VARCHAR} 
+		AND citycode = #{code,jdbcType=VARCHAR}
+		<if test="branchname != null">
+			and branchname like binary CONCAT('%',
+			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
+		</if>
+		UNION All
+		SELECT * FROM jp_branch WHERE familyid = #{familyid,jdbcType=VARCHAR} 
+		AND xcode = #{code,jdbcType=VARCHAR}
+		<if test="branchname != null">
+			and branchname like binary CONCAT('%',
+			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
+		</if>
+		UNION All
+		SELECT * FROM jp_branch WHERE familyid = #{familyid,jdbcType=VARCHAR} 
+		AND branchid = #{code,jdbcType=VARCHAR}
+		<if test="branchname != null">
+			and branchname like binary CONCAT('%',
+			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
+		</if>
+	</select>
+		
 	<select id="getBranchsByFamilyAndUserid"
 		resultType="com.jp.entity.Branch">
 		SELECT	b.*
@@ -535,7 +605,7 @@
 			and b.branchname like binary CONCAT('%',
 			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
 		</if>
-		UNION
+		UNION All
 		SELECT
 		b.*
 		FROM
@@ -550,7 +620,7 @@
 			and b.branchname like binary CONCAT('%',
 			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
 		</if>
-		UNION
+		UNION All
 		SELECT
 		b.*
 		FROM
@@ -564,7 +634,7 @@
 			and b.branchname like binary CONCAT('%',
 			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
 		</if>
-		UNION
+		UNION All
 		SELECT
 		b.*
 		FROM
@@ -582,78 +652,65 @@
 	</select>
 
 
-	<select id="selectBranchList"
-		parameterType="com.jp.entity.Branch" resultType="com.jp.entity.Branch">
-		select
-		DISTINCT a.*,(SELECT
-		count(*)
-		FROM
-		jp_user
-		WHERE
-		branchid =
-		a.branchid
-		AND familyid = #{familyid,jdbcType=VARCHAR}
-		AND
-		deleteflag = 0
-		AND `status` = 0) usercount
-		from
-		jp_branch a right
-		join jp_user b on a.branchid=b.branchid where
-		a.familyid = #{familyid,jdbcType=VARCHAR}
-		and a.status=0
+	<select id="selectBranchList" resultType="com.jp.entity.Branch">
+<!-- 		select
+		DISTINCT a.*,
+		(SELECT	count(*) FROM jp_user
+		WHERE branchid = a.branchid	AND familyid = #{familyid,jdbcType=VARCHAR}
+		AND	deleteflag = 0 AND `status` = 0) usercount
+		from jp_branch a 
+		right join jp_user b on a.branchid=b.branchid 
+		where a.familyid = #{familyid,jdbcType=VARCHAR}
+		and a.status=0 -->
+		
+		select a.*,
+		(SELECT	count(*) FROM jp_user
+		WHERE branchid = a.branchid	AND familyid = #{branch.familyid,jdbcType=VARCHAR}
+		AND	deleteflag = 0 AND `status` = 0) usercount
+		from jp_branch a where status = 0 AND familyid = #{branch.familyid,jdbcType=VARCHAR} 
 		<!-- 
-		SELECT
-		branch.*, (
-		SELECT
-		count(*)
-		FROM
-		jp_user
-		WHERE
-		branchid =
-		branch.branchid
+		SELECT branch.*, (
+		SELECT count(*)	FROM jp_user WHERE branchid = branch.branchid
 		AND familyid = #{familyid,jdbcType=VARCHAR}
-		AND
-		deleteflag = 0
-		AND `status` = 0
-		) usercount
-		FROM
-		jp_branch branch
-		WHERE
-		branch.status=0
-
-		and
-		familyid = #{familyid,jdbcType=VARCHAR} -->
-		<if test="branchid != null and branchid != ''">
-			and a.branchid = #{branchid,jdbcType=VARCHAR}
+		AND	deleteflag = 0	AND `status` = 0) usercount
+		FROM jp_branch branch
+		WHERE branch.status=0 and familyid = #{familyid,jdbcType=VARCHAR} -->
+		<if test="branch.branchid != null and branchid != ''">
+			and a.branchid = #{branch.branchid,jdbcType=VARCHAR}
 		</if>
-
-		<if test="branchname != null and branchname != ''">
-			and a.branchname like binary CONCAT('%',
-			CONCAT(#{branchname}), '%')
+		<if test="list != null">
+			and a.branchid in 
+			<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+		    </foreach>
+     	</if>
+		<if test="branch.branchname != null and branch.branchname != ''">
+			and a.branchname like binary CONCAT('%',CONCAT(#{branch.branchname}),'%')
 		</if>
-		ORDER BY
-		sort DESC
+		ORDER BY sort DESC
 		<!-- <if test="sortOrder != null"> order by ${sortOrder} ${sortType} </if> -->
 	</select>
+	
+	<select id="selectBranchListByFamily" resultType="com.jp.entity.Branch">
+		select	branchid, familyid, branchname,
+		status, area, areacode, beginuserid,
+		beginname, parentid, sort, citycode,
+		cityname, xcode, xname,address
+		from jp_branch 
+		where `status` = 0 AND familyid = #{familyid,jdbcType=VARCHAR}
+	</select>
+	
 	<select id="selectBranchListByFamilyAndUserid"
 		resultType="com.jp.entity.Branch">
-		select distinct
-		branch.branchid, branch.familyid, branch.branchname,
-		branch.status, branch.area,	branch.areacode, branch.beginuserid,
-		branch.beginname, branch.parentid, branch.sort, branch.citycode,
-		branch.cityname, branch.xcode, branch.xname,branch.address
-		from jp_branch branch
-		left join jp_userbranch userbranch on branch.branchid =	userbranch.branchid
-		where 1=1 and 'status'=0
-		<if test="familyid != null">
-			and branch.familyid = #{familyid,jdbcType=VARCHAR}
-		</if>
-		<if test="userid != null">
-			and userbranch.userid = #{userid,jdbcType=VARCHAR}
+		select branchid, familyid, branchname,status, area,areacode, beginuserid,
+		beginname, parentid, sort, citycode,cityname, xcode, xname,address
+		from jp_branch 
+		where familyid = #{familyid,jdbcType=VARCHAR}
+		<if test="status != null">
+			and status = #{status,jdbcType=VARCHAR}
 		</if>
 		<if test="branchname != null">
-			and branch.branchname like binary CONCAT('%',
-			CONCAT(#{branchname,jdbcType=VARCHAR}), '%')
+			and branchname like binary CONCAT('%',CONCAT(#{branchname,jdbcType=VARCHAR}),'%')
 		</if>
 	</select>
 
@@ -752,11 +809,12 @@
 
 	<select id="selectBranchByXQ" resultType="com.jp.entity.Branch"
 		parameterType="map">
-		select * from jp_branch
-		where status=0
-		and familyid =
-		#{familyid,jdbcType=VARCHAR}
+		SELECT t1.* ,t2.genlevel FROM jp_branch t1
+		LEFT JOIN jp_user t2 
+		ON  t1.beginuserid = t2.userid
+		where t1.status=0	and t1.familyid = #{familyid,jdbcType=VARCHAR}
 		and xcode= #{xcode,jdbcType=VARCHAR}
+		ORDER BY -genlevel DESC
 	</select>
 
 	<select id="selectBranchByCitycode"
@@ -778,24 +836,25 @@
 	<select id="selectBranchidsByCitycode" resultType="String">
 		select
 		branchid from jp_branch where familyid=#{familyid,jdbcType=VARCHAR}
-		and areacode=#{code,jdbcType=VARCHAR} and `status`=0
+		and citycode=#{code,jdbcType=VARCHAR} and `status`=0
 	</select>
 
 	<select id="selectBranchidsByQxcode" resultType="String">
 		select branchid
 		from jp_branch where familyid=#{familyid,jdbcType=VARCHAR}
 		and
-		areacode=#{code,jdbcType=VARCHAR} and `status`=0
+		xcode=#{code,jdbcType=VARCHAR} and `status`=0
 	</select>
 	<select id="selectCityByFamilyid"
 		resultType="com.jp.entity.BranchEditorBoard" parameterType="String">
 		select
 		DISTINCT a.branchid,a.citycode as areacode,a.cityname as areaname
-		from
-		jp_branch a right
+		from 
+		jp_branch a WHERE `status` = 0 AND familyid = #{familyid}
+		<!-- jp_branch a right
 		join jp_user b on a.branchid=b.branchid where
 		a.familyid = #{familyid} and
-		a.status=0
+		a.status=0 -->
 	</select>
 	<select id="selectBranchByCity" resultType="String"
 		parameterType="Map">
@@ -835,5 +894,10 @@
 		parameterType="String">
 		select citycode,cityname from jp_branch where
 		familyid=#{familyid,jdbcType=VARCHAR} group by citycode,cityname
+	</select>
+	<!-- 查询当前用户分支 -->
+	<select id="selectbyEditor" resultType="com.jp.entity.Branch" parameterType="java.lang.String">
+		select beginname,branchname,areacode,citycode,xcode from jp_branch where branchid=#{branchid,jdbcType=VARCHAR}
+		
 	</select>
 </mapper>

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jp.common.ConstantUtils;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
@@ -31,8 +30,10 @@ import com.jp.entity.BranchphotoExample;
 import com.jp.entity.PhotosVO;
 import com.jp.entity.UserManager;
 import com.jp.service.BranchalbumService;
+import com.jp.service.UserContextService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
+import com.jp.util.WebUtil;
 
 @Service
 public class BranchalbumServiceImpl implements BranchalbumService {
@@ -45,28 +46,53 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	private BranchphotoMapper photodao;
 	@Autowired
 	private BranchDao branchDao;
+	@Autowired
+	private UserContextService userContextService;
 
 	@Override
 	public JsonResponse pageQuery(PageModel<Branchalbum> pageModel, Branchalbum branchalbum) {
 		Result result = null;
 		JsonResponse res = null;
-		if (pageModel.getPageNo() == null || "".equals(pageModel.getPageNo() + "")) {
+		if (pageModel.getPageNo() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("分页参数pageNo不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (pageModel.getPageSize() == null || "".equals(pageModel.getPageSize() + "")) {
+		if (pageModel.getPageSize() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("分页参数pageSize不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.isEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			// 当前登录人所管理的branchids
-			List<UserManager> managers = CurrentUserContext.getCurrentUserManager();
-			String familyid = CurrentUserContext.getCurrentFamilyId();
-			List<String> branchList = CurrentUserContext.getCurrentBranchIds();
+			List<UserManager> managers = userContextService.getUserManagers(userid, ebid);
+			List<String> branchIds = userContextService.getBranchIds(familyid, userid, ebid);
 			List<Branchalbum> list = new ArrayList<Branchalbum>();
 			for (UserManager m : managers) {
 				BranchalbumExample example = new BranchalbumExample();
@@ -78,25 +104,24 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 				if (StringTools.trimNotEmpty(branchalbum.getDeleteflag())) {
 					criteria.andDeleteflagEqualTo(branchalbum.getDeleteflag());
 				}
-				example.setOrderByClause("createtime DESC");
+				example.setOrderByClause("sort asc");
 				PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
 				if (m.getEbtype() == 1) {
 					criteria.andFamilyidEqualTo(familyid);
 					list = badao.selectByExample(example);
 					break;
 				} else {
-					criteria.andBranchidIn(branchList);
+					if (branchIds.size() < 1) {
+						result = new Result(MsgConstants.RESUL_FAIL);
+						result.setMsg("您的账号当前没有分支");
+						res = new JsonResponse(result);
+						return res;
+					}
+					criteria.andBranchidIn(branchIds);
 					list = badao.selectBranchAlbumMangeList(example);
+					break;
 				}
 			}
-			// if (branchList!=null&&branchList.size()>0) {
-			// criteria.andBranchidIn(branchList);
-			// }else{
-			// return pageModel;
-			// }
-
-			// List<Branchalbum> list = badao.selectByBranchIds(branchList);
-			// badao.selectBranchAlbumMangeList()\
 			BranchphotoExample example1 = new BranchphotoExample();
 			BranchKey key = new BranchKey();
 			for (Branchalbum al : list) {
@@ -170,18 +195,34 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	public JsonResponse mergeBranchAlbum(Branchalbum branchalbum) {
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		int status = 0;
 		String ablumId = "";
 		try {
 			if (StringTools.trimNotEmpty(branchalbum.getAlbumid())) {
 				branchalbum.setUpdatetime(new Date());
-				branchalbum.setUpdateid(CurrentUserContext.getCurrentUserId());
+				branchalbum.setUpdateid(userid);
 				BranchalbumExample query = new BranchalbumExample();
 				query.or().andAlbumidEqualTo(branchalbum.getAlbumid());
 				if (!StringTools.trimNotEmpty(branchalbum.getBranchid())) {
 					branchalbum.setBranchid("0");
 				}
-				branchalbum.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				branchalbum.setFamilyid(familyid);
 				status = badao.updateByExampleSelective(branchalbum, query);
 				// badao.updateByPrimaryKeySelective(branchalbum);
 			} else {
@@ -191,10 +232,10 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 				ablumId = UUIDUtils.getUUID();
 				branchalbum.setAlbumid(ablumId);
 				branchalbum.setCreatetime(new Date());
-				branchalbum.setCreateid(CurrentUserContext.getCurrentUserId());
+				branchalbum.setCreateid(userid);
 				branchalbum.setUpdatetime(new Date());
-				branchalbum.setUpdateid(CurrentUserContext.getCurrentUserId());
-				branchalbum.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				branchalbum.setUpdateid(userid);
+				branchalbum.setFamilyid(familyid);
 				// 0未删除
 				branchalbum.setDeleteflag(0);
 				status = badao.insertSelective(branchalbum);
@@ -219,6 +260,14 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 	public JsonResponse insertBranchPhoto(List<Branchphoto> userPhotoList) {
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			for (Branchphoto bp : userPhotoList) {
 				if (bp.getImgid() == null || "".equals(bp.getImgid())) {
@@ -255,7 +304,7 @@ public class BranchalbumServiceImpl implements BranchalbumService {
 					return res;
 				}
 				bp.setCreatetime(new Date());
-				bp.setCreateid(CurrentUserContext.getCurrentUserId());
+				bp.setCreateid(userid);
 				bp.setDeleteflag(0);
 			}
 			int status = photodao.insertBranchPhoto(userPhotoList);

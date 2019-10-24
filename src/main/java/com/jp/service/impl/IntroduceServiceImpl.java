@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jp.common.ConstantUtils;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
@@ -30,6 +29,7 @@ import com.jp.entity.IntroduceQuery.Criteria;
 import com.jp.service.IntroduceService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
+import com.jp.util.WebUtil;
 
 @Service
 public class IntroduceServiceImpl implements IntroduceService {
@@ -40,9 +40,11 @@ public class IntroduceServiceImpl implements IntroduceService {
 
 	@Override
 	public PageModel<Introduce> pageQuery(PageModel<Introduce> pageModel, Introduce introduce) throws Exception {
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
 		IntroduceQuery iq = new IntroduceQuery();
 		Criteria criteria = iq.createCriteria();
-		criteria.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+		criteria.andFamilyidEqualTo(familyid);
 		// criteria.andFamilyidEqualTo(introduce.getFamilyid());
 		introduce.setDeleteflag(0);
 		if (StringTools.trimNotEmpty(introduce.getDeleteflag())) {
@@ -77,6 +79,22 @@ public class IntroduceServiceImpl implements IntroduceService {
 	public JsonResponse saveIntroduce(HttpServletRequest request, Introduce introduce) {
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		int status = 0;
 		// 编辑
 		try {
@@ -84,15 +102,15 @@ public class IntroduceServiceImpl implements IntroduceService {
 				request.setCharacterEncoding("UTF-8");
 			}
 			if (StringTools.trimNotEmpty(introduce.getIntroduceid())) {
-				introduce.setUpdateid(CurrentUserContext.getCurrentUserId());
+				introduce.setUpdateid(userid);
 				introduce.setUpdatetime(new Date());
 				status = itdao.updateByPrimaryKeySelective(introduce);
 			} else {
 				// 新增
 				String introduceid = UUIDUtils.getUUID();
 				introduce.setIntroduceid(introduceid);
-				introduce.setCreateid(CurrentUserContext.getCurrentUserId());
-				introduce.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				introduce.setCreateid(userid);
+				introduce.setFamilyid(familyid);
 				introduce.setDeleteflag(0);
 				Date insertDate = new Date();
 				introduce.setCreatetime(insertDate);
@@ -238,8 +256,11 @@ public class IntroduceServiceImpl implements IntroduceService {
 					params.put("type", "JX");
 				}
 				Introduce introduce = itdao.getIntroduceByType(params);
-				index.setParam1(introduce.getIntroduceid());
-				index.setParam2(introduce.getSort() + "");
+				if (introduce != null) {
+					index.setParam1(introduce.getIntroduceid());
+					index.setParam2(introduce.getSort() + "");
+				}
+
 			}
 
 			result = new Result(MsgConstants.RESUL_SUCCESS);

@@ -23,9 +23,6 @@ import com.jp.util.GsonUtil;
  */
 public class CurrentUserContext implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private static final Logger log_ = LogManager.getLogger(LoginUserInfo.class);
 
@@ -43,7 +40,7 @@ public class CurrentUserContext implements Serializable {
 					.getRequest();
 			HttpSession session = request.getSession();
 			userContext = (LoginUserInfo) session.getAttribute("userContext");
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[HNFZERROR-获取登录用户信息失败：]", e);

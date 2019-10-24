@@ -10,10 +10,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.druid.util.StringUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jp.common.CurrentUserContext;
+import com.jp.common.ConstantUtils;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
@@ -30,6 +29,7 @@ import com.jp.entity.UserManagerExample;
 import com.jp.service.UserManagerService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
+import com.jp.util.WebUtil;
 
 @Service
 public class UserManagerServiceImpl implements UserManagerService {
@@ -44,43 +44,78 @@ public class UserManagerServiceImpl implements UserManagerService {
 	private PostMapper postMapper;
 
 	@Override
-	public PageModel<UserManager> pageQuery(PageModel<UserManager> pageModel, UserManager entity) throws Exception {
-		UserManagerExample example = new UserManagerExample();
-		example.or().andUseridEqualTo(entity.getUserid());
-		example.setOrderByClause("ismanager desc,ebtype desc");
-		List<UserManager> managers = userManagerMapper.selectByExample(example);
-		if (managers == null || managers.size() == 0) {
-			return pageModel;
-		}
-		Map<String, Object> params = new HashMap<String, Object>();
-		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		List<UserManager> list = new ArrayList<UserManager>();
-		// List<UserManager> rtnlist = new ArrayList<UserManager>();
-		for (UserManager manager : managers) {
-			example.clear();
-			example.setOrderByClause("-sort desc");
-			// 不查询自己
-			params.put("id", manager.getId());
-			if (!StringUtils.isEmpty(entity.getUsername())) {
-				params.put("username", entity.getUsername());
+	public JsonResponse pageQuery(PageModel<UserManager> pageModel, UserManager entity) {
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			if (pageModel.getPageNo() == null) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("分页参数pageNo不能为空！");
+				res = new JsonResponse(result);
+				return res;
 			}
-			if (!StringUtils.isEmpty(entity.getEbid())) {
+			if (pageModel.getPageSize() == null) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("分页参数pageSize不能为空！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			//当前登录人 userid
+			String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+			if (StringTools.isEmpty(userid)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("用户非法！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			UserManagerExample example = new UserManagerExample();
+			example.or().andUseridEqualTo(userid);
+			example.setOrderByClause("ismanager desc,ebtype desc");
+			List<UserManager> managers = userManagerMapper.selectByExample(example);
+			if (managers.size() == 0) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				res = new JsonResponse(result);
+				return res;
+			}
+			Map<String, Object> params = new HashMap<String, Object>();
+			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+			List<UserManager> list = new ArrayList<UserManager>();
+			for (UserManager manager : managers) {
+				example.clear();
+				example.setOrderByClause("-sort desc");
+				// 不查询自己
+				params.put("id", manager.getId());
+				if (StringTools.trimNotEmpty(entity.getUsername())) {
+					params.put("username", entity.getUsername());
+				}
+				if (StringTools.trimNotEmpty(entity.getEbid())) {
+					params.put("ebid", entity.getEbid());
+				}
+				if (manager.getEbtype() == 1) {
+					// 总编委会查询所有
+					params.put("familyid", manager.getFamilyid());
+					break;
+				}
 				params.put("ebid", entity.getEbid());
 			}
-			if (manager.getEbtype() == 1) {
-				// 总编委会查询所有
-				params.put("familyid", manager.getFamilyid());
-				break;
+			list = userManagerMapper.selectByParams(params);
+			if (list != null) {
+				pageModel.setList(list);
+				pageModel.setPageInfo(new PageInfo<UserManager>(list));
+				result = new Result(MsgConstants.RESUL_SUCCESS);
+				res = new JsonResponse(result);
+				res.setData(pageModel);
+				return res;
 			}
-			params.put("ebid", entity.getEbid());
-
+		} catch (Exception e) {
+			log_.error("[pageQuery方法---异常:]", e);
+			result = new Result(MsgConstants.SYS_ERROR);
+			res = new JsonResponse(result);
+			return res;
 		}
-		list = userManagerMapper.selectByParams(params);
-
-		pageModel.setList(list);
-		pageModel.setPageInfo(new PageInfo<UserManager>(list));
-
-		return pageModel;
+		result = new Result(MsgConstants.RESUL_FAIL);
+		res = new JsonResponse(result);
+		return res;
 	}
 
 	@Override
@@ -131,11 +166,15 @@ public class UserManagerServiceImpl implements UserManagerService {
 	}
 
 	@Override
-	public List<UserManager> selectManagerByUserid(String userid) {
-		UserManagerExample example = new UserManagerExample();
+	public List<UserManager> selectManagerByUserid(String userid, String ebid) {
+		/*UserManagerExample example = new UserManagerExample();
 		example.or().andUseridEqualTo(userid);
 		example.setOrderByClause("ebtype desc,ismanager desc");
-		return userManagerMapper.selectByExample(example);
+		return userManagerMapper.selectByExample(example);*/
+		if (StringTools.trimIsEmpty(userid)) {
+			return null;
+		}
+		return userManagerMapper.selectManagerByUserid(userid, ebid);
 	}
 
 	@Override
@@ -146,9 +185,17 @@ public class UserManagerServiceImpl implements UserManagerService {
 	}
 
 	@Override
-	public JsonResponse getPost(int type, String familyid) {
+	public JsonResponse getPost(int type) {
 		Result result = null;
 		JsonResponse res = null;
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		List<Post> allPost = null;
 		PostExample example = new PostExample();
 		if (type == 1) {
@@ -211,8 +258,16 @@ public class UserManagerServiceImpl implements UserManagerService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
-			entity.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			entity.setFamilyid(familyid);
 			FunctionRoleExample example = new FunctionRoleExample();
 			example.or().andUseridEqualTo(entity.getUserid()).andEbidEqualTo(entity.getEbid())
 					.andPostidEqualTo(entity.getPostid());
@@ -220,7 +275,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 			if (functionRole != null && functionRole.size() != 0) {
 				// 先把原有的《角色功能》删除
 				status = functionRoleMapper.deleteByExample(example);
-				if (status == 0) {
+				if (status < 1) {
 					result = new Result(MsgConstants.RESUL_FAIL);
 					result.setMsg("角色功能删除失败！");
 					res = new JsonResponse(result);
@@ -230,7 +285,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 			// 把新授权或编辑的《角色功能》添加
 			status = functionRoleMapper.insertBatch(entity.getUserid(), functionids, entity.getEbid(),
 					entity.getPostid());
-			if (status == 0) {
+			if (status < 1) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("角色功能添加失败！");
 				res = new JsonResponse(result);

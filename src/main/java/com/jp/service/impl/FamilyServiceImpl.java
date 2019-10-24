@@ -13,7 +13,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
@@ -54,13 +53,12 @@ import com.jp.entity.UserQuery;
 import com.jp.entity.Userinfo;
 import com.jp.entity.Version;
 import com.jp.service.FamilyService;
+import com.jp.util.JedisUtil;
 import com.jp.util.MD5Util;
 import com.jp.util.PinyinUtil;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 import com.jp.util.WebUtil;
-
-import redis.clients.jedis.Jedis;
 
 @Service
 public class FamilyServiceImpl implements FamilyService {
@@ -91,12 +89,6 @@ public class FamilyServiceImpl implements FamilyService {
 	private PostMapper postMapper;
 	@Resource
 	private BranchDao branchMapper;
-	@Value("${redis.ip}")
-	private String redisIp;
-	@Value("${redis.port}")
-	private Integer redisPort;
-	@Value("${redis.password}")
-	private String redisPassword;
 
 	@Override
 	public JsonResponse merge(User user, Userinfo userInfo, SysFamily family) {
@@ -140,8 +132,8 @@ public class FamilyServiceImpl implements FamilyService {
 		}
 		SimpleDateFormat sdfd = new SimpleDateFormat("yyy-MM-dd");
 		try {
-			if (StringTools.trimNotEmpty(family.getFamilyid())) {
-
+			String familyid1 = family.getFamilyid();
+			if (StringTools.trimNotEmpty(familyid1)) {
 				user.setUpdatetime(new Date());
 				// 重置密码 根据手机号来截取
 				family.setUpdatetime(sdfd.parse(sdfd.format(new Date())));
@@ -149,6 +141,12 @@ public class FamilyServiceImpl implements FamilyService {
 				//family.setFamilycode(PinyinUtil.getPinyinFull(family.getFamilyname()));
 				user.setPassword(MD5Util.string2MD5(user.getPhone().substring(user.getPhone().length() - 6)));
 				userDao.updateByPrimaryKeySelective(user);
+				//同步所有家族成员的家族名称
+				UserQuery uq = new UserQuery();
+				uq.or().andFamilyidEqualTo(familyid1);
+				User userName = new User();
+				userName.setFamilyname(family.getFamilyname());
+				userDao.updateByExampleSelective(userName, uq);
 				UserManager userManager = new UserManager();
 				userManager.setUsername(user.getUsername());
 				UserManagerExample ume = new UserManagerExample();
@@ -156,8 +154,8 @@ public class FamilyServiceImpl implements FamilyService {
 				userManagerMapper.updateByExampleSelective(userManager, ume);
 				// userInfoDao.updateByPrimaryKeySelective(userInfo);
 				sysFamilyDao.updateByPrimaryKeySelective(family);
-				sysFamilyDao.deleteFunction(family.getFamilyid());
-				sysFamilyDao.insertFunction(family.getFamilyid(), family.getVersion());
+				sysFamilyDao.deleteFunction(familyid1);
+				sysFamilyDao.insertFunction(familyid1, family.getVersion());
 
 			} else {
 				UserQuery userQuery = new UserQuery();
@@ -415,6 +413,12 @@ public class FamilyServiceImpl implements FamilyService {
 				res = new JsonResponse(result);
 				return res;
 			}
+			if ("18647740001".equals(user.getPhone())) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("不可编辑！");
+				res = new JsonResponse(result);
+				return res;
+			}
 			String username = user.getUsername();
 			Branch branch = user.getBranch();
 			if (family.getFamilyid() != null && !family.getFamilyid().equals("")) {
@@ -624,6 +628,12 @@ public class FamilyServiceImpl implements FamilyService {
 			res = new JsonResponse(result);
 			return res;
 		}
+		if ("18647740001".equals(user.getPhone())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("不可编辑！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		if (user.getFamilyname() == null || "".equals(user.getFamilyname())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("参数familyname不能为空！");
@@ -674,21 +684,7 @@ public class FamilyServiceImpl implements FamilyService {
 				res = new JsonResponse(result);
 				return res;
 			}
-			Jedis jedis = new Jedis(redisIp, redisPort);
-			String token1 = "";
-			try {
-				//账号验证
-				if (StringTools.notEmpty(redisPassword)) {
-					jedis.auth(redisPassword);
-				}
-				jedis.select(3);
-				token1 = jedis.get(user.getPhone());
-				jedis.del(user.getPhone());
-			} finally {
-				if (jedis != null) {
-					jedis.close();
-				}
-			}
+			String token1 = JedisUtil.queryString(user.getPhone());
 			if (token1 == null || "".equals(token1)) {
 				result = new Result(MsgConstants.RESUL_FAIL);
 				result.setMsg("请先去注册！");
@@ -729,6 +725,7 @@ public class FamilyServiceImpl implements FamilyService {
 			user.setSex(1);
 			user.setStatus(0);
 			user.setIsdirect(1);
+			user.setGenlevel(1);//默认为1世
 			user.setDeleteflag(0);
 			user.setLivestatus(0);
 			user.setCreatetime(new Date());

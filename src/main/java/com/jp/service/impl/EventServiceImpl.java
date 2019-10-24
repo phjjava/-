@@ -14,22 +14,25 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jp.common.CurrentUserContext;
+import com.jp.common.ConstantUtils;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
 import com.jp.dao.EventDao;
 import com.jp.dao.EventreadDao;
+import com.jp.dao.UserDao;
 import com.jp.entity.Event;
 import com.jp.entity.EventQuery;
 import com.jp.entity.EventQuery.Criteria;
 import com.jp.entity.EventVO;
 import com.jp.entity.Eventread;
 import com.jp.entity.EventreadQuery;
+import com.jp.entity.User;
 import com.jp.service.EventService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
+import com.jp.util.WebUtil;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -40,11 +43,15 @@ public class EventServiceImpl implements EventService {
 	private EventDao edao;
 	@Autowired
 	private EventreadDao erdao;
+	@Autowired
+	private UserDao userDao;
 
 	@Override
 	public PageModel<Event> pageQuery(PageModel<Event> pageModel, Event event) throws Exception {
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
 		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-		event.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+		event.setFamilyid(familyid);
 		List<Event> list = edao.selecteventread(event);
 		pageModel.setList(list);
 		pageModel.setPageInfo(new PageInfo<Event>(list));
@@ -79,19 +86,48 @@ public class EventServiceImpl implements EventService {
 		Result result = null;
 		JsonResponse res = null;
 		int status = 0;
+		if (StringTools.trimIsEmpty(event.getEventtitle())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数eventtitle不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringTools.trimIsEmpty(event.getEventcontent())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数eventcontent不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.trimIsEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.trimIsEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		User user = userDao.selectByPrimaryKey(userid);
 		try {
 			if (StringTools.trimNotEmpty(event.getEventid())) {
-				event.setUpdateid(CurrentUserContext.getCurrentUserId());
+				event.setUpdateid(userid);
 				event.setUpdatetime(new Date());
 				status = edao.updateByPrimaryKeySelective(event);
 			} else {
 				String eventid = UUIDUtils.getUUID();
 				event.setEventid(eventid);
-				event.setCreateid(CurrentUserContext.getCurrentUserId());
-				event.setCreatename(CurrentUserContext.getCurrentUserName());
+				event.setCreateid(userid);
+				event.setCreatename(user.getUsername());
 				event.setType(1);
 				event.setDeleteflag(0);
-				event.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				event.setFamilyid(familyid);
 				Date insertDate = new Date();
 				event.setCreatetime(insertDate);
 				status = edao.insertSelective(event);

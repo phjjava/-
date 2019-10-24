@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.jp.common.ConstantUtils;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.Result;
 import com.jp.dao.HomeStateMapper;
 import com.jp.entity.HomeState;
 import com.jp.service.HomeStateService;
+import com.jp.util.WebUtil;
 
 /**
  * <p>
@@ -34,16 +36,18 @@ public class HomeStateServiceImpl extends ServiceImpl<HomeStateMapper, HomeState
 	public JsonResponse queryHomeState(HomeState homeState) {
 		Result result = null;
 		JsonResponse res = null;
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		homeState.setUserid(userid);
 		// 参数校验
-		if (StringUtils.isBlank(homeState.getUserid())) {
+		if (StringUtils.isBlank(userid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("参数userid不能为空！");
+			result.setMsg("非法登录！");
 			res = new JsonResponse(result);
 			return res;
 		}
 		try {
 			// 获取当前用户自定义首页设置
-			HomeState state = homeStateMapper.selectByUserid(homeState.getUserid());
+			HomeState state = homeStateMapper.selectByUserid(userid);
 			if (state == null) {// 给用户设置默认开启
 				homeState.setBannerStatus(1);
 				homeState.setSynopsisStatus(1);
@@ -51,7 +55,7 @@ public class HomeStateServiceImpl extends ServiceImpl<HomeStateMapper, HomeState
 				homeState.setNoticeStatus(1);
 				homeState.setXingStatus(1);
 				homeStateMapper.insertHomeState(homeState);
-				state = homeStateMapper.selectByUserid(homeState.getUserid());
+				state = homeStateMapper.selectByUserid(userid);
 			}
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
@@ -69,13 +73,15 @@ public class HomeStateServiceImpl extends ServiceImpl<HomeStateMapper, HomeState
 	public JsonResponse editHomeState(HomeState homeState) {
 		Result result = null;
 		JsonResponse res = null;
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
 		// 参数校验
-		if (StringUtils.isBlank(homeState.getUserid())) {
+		if (StringUtils.isBlank(userid)) {
 			result = new Result(MsgConstants.RESUL_FAIL);
-			result.setMsg("参数userid不能为空！");
+			result.setMsg("非法登录！");
 			res = new JsonResponse(result);
 			return res;
 		}
+		homeState.setUserid(userid);
 		try {
 			int count = homeStateMapper.updateByUseridSelective(homeState);
 			if (count > 0) {

@@ -15,7 +15,6 @@ import com.jp.entity.Function;
 import com.jp.entity.FunctionQuery;
 import com.jp.entity.FunctionQuery.Criteria;
 import com.jp.entity.UserManager;
-import com.jp.entity.UserManagerExample;
 import com.jp.service.FunctionService;
 import com.jp.util.StringTools;
 
@@ -75,21 +74,17 @@ public class FunctionServiceImpl implements FunctionService {
 	}
 
 	@Override
-	public List<Function> selectFunctionListByManagerid(String familyid, String userid) {
-		UserManagerExample example = new UserManagerExample();
-		example.or().andUseridEqualTo(userid);
-		example.setOrderByClause("ebtype desc,ismanager desc");
-		List<UserManager> managers = userManagerMapper.selectByExample(example);
+	public List<Function> selectFunctionListByManagerid(String familyid, String userid, String ebid) {
+		List<UserManager> managers = userManagerMapper.selectManagerByUserid(userid, ebid);
+		UserManager userManager = managers.get(0);
 		List<Function> rtnlist = new ArrayList<Function>();
-		for (UserManager manager : managers) {
-			//总编委会主任查询所有的菜单
-			if (manager.getIsmanager() == 1 && manager.getEbtype() == 1) {
-				rtnlist = functionDao.selectFunctionListByRoleid(familyid, null);
-				return rtnlist;
-			}
-			rtnlist = functionDao.selectFunctionByUserid(familyid, userid);
+		//总编委会主任查询所有的菜单
+		if (userManager.getIsmanager() == 1 && userManager.getEbtype() == 1) {
+			rtnlist = functionDao.selectFunctionListByRoleid(familyid, null);
+		} else {
+			//	rtnlist = functionDao.selectFunctionByUserid(familyid, userid);
+			rtnlist = functionDao.selectFunctionByUseridAndEbid(familyid, userid, ebid);
 		}
-
 		return rtnlist;
 	}
 

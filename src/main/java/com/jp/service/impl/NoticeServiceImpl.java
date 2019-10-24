@@ -2,13 +2,27 @@ package com.jp.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import org.apache.ibatis.annotations.Param;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.flowable.engine.ProcessEngine;
+import org.flowable.engine.RepositoryService;
+import org.flowable.engine.RuntimeService;
+import org.flowable.engine.TaskService;
+import org.flowable.engine.history.HistoricActivityInstance;
+import org.flowable.engine.repository.Deployment;
+import org.flowable.engine.repository.ProcessDefinition;
+import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -16,19 +30,25 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jp.common.ConstantUtils;
-import com.jp.common.CurrentUserContext;
 import com.jp.common.JsonResponse;
 import com.jp.common.MsgConstants;
 import com.jp.common.PageModel;
 import com.jp.common.Result;
+import com.jp.controller.FlowableController;
 import com.jp.dao.BranchDao;
 import com.jp.dao.NoticeMapper;
 import com.jp.dao.NoticefileDao;
 import com.jp.dao.NoticereadDao;
 import com.jp.dao.NoticetopDao;
 import com.jp.dao.UserDao;
+import com.jp.entity.Banner;
+import com.jp.entity.BannerQuery;
 import com.jp.entity.Branch;
 import com.jp.entity.BranchKey;
+import com.jp.entity.EditorialBoard;
+import com.jp.entity.EditorialBoardExample;
+import com.jp.entity.InstructionTemplateQuery;
+import com.jp.entity.JpXing;
 import com.jp.entity.Notice;
 import com.jp.entity.NoticeDetailVO;
 import com.jp.entity.NoticeExample;
@@ -42,7 +62,10 @@ import com.jp.entity.Noticetop;
 import com.jp.entity.NoticetopQuery;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
+import com.jp.service.FlowableService;
 import com.jp.service.NoticeService;
+import com.jp.service.UserContextService;
+import com.jp.service.UserService;
 import com.jp.util.StringTools;
 import com.jp.util.UUIDUtils;
 import com.jp.util.WebUtil;
@@ -62,29 +85,67 @@ public class NoticeServiceImpl implements NoticeService {
 	@Autowired
 	private UserDao userMapper;
 	@Autowired
+	private UserService userService;
+	@Autowired
 	private BranchDao branchMapper;
+	//审批流有关
+	@Autowired
+    private RuntimeService runtimeService;
+	@Autowired
+    private TaskService taskService;
+	@Autowired
+    private RepositoryService repositoryService;
+	@Autowired
+    private ProcessEngine processEngine;
+	@Autowired
+	private FlowableService flowableService;
+	@Autowired
+	private UserContextService userContextService;
 
 	@Override
 	public JsonResponse pageQuery(PageModel<NoticeVO> pageModel, Notice notice) {
 		Result result = null;
 		JsonResponse res = null;
-		if (pageModel.getPageNo() == null || "".equals(pageModel.getPageNo() + "")) {
+		if (pageModel.getPageNo() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("分页参数pageNo不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-		if (pageModel.getPageSize() == null || "".equals(pageModel.getPageSize() + "")) {
+		if (pageModel.getPageSize() == null) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("分页参数pageSize不能为空！");
 			res = new JsonResponse(result);
 			return res;
 		}
-
+		//当前登录人 userid
+		String userid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+		if (StringTools.isEmpty(userid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("用户非法！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+		if (StringTools.isEmpty(familyid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数familyid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
+		//当前登录人所管理的编委会id
+		String ebid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_EBID);
+		if (StringTools.isEmpty(ebid)) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("header中参数ebid为空!");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
 			NoticeExample nq = new NoticeExample();
 			Criteria criteria = nq.or();
-			criteria.andFamilyidEqualTo(CurrentUserContext.getCurrentFamilyId());
+			criteria.andFamilyidEqualTo(familyid);
 			if (StringTools.trimNotEmpty(notice.getType())) {
 				criteria.andTypeEqualTo(notice.getType());
 			}
@@ -94,24 +155,27 @@ public class NoticeServiceImpl implements NoticeService {
 			if (StringTools.trimNotEmpty(notice.getDeleteflag())) {
 				criteria.andDeleteflagEqualTo(notice.getDeleteflag());
 			}
-			List<UserManager> managers = CurrentUserContext.getCurrentUserManager();
+			List<UserManager> managers = userContextService.getUserManagers(userid, ebid);
 			UserManager manager = managers.get(0);
 
-			List<String> currentBranchIds = CurrentUserContext.getCurrentBranchIds();
-			if (manager.getEbtype() == 1) {// 验证是否是总编委会主任
-				currentBranchIds.add("0");
-			}
-			if (currentBranchIds != null && currentBranchIds.size() > 0) {
-				criteria.andBranchidIn(currentBranchIds);
-			} else {
-				result = new Result(MsgConstants.RESUL_FAIL);
-				result.setMsg("您的账号当前没有分支");
-				res = new JsonResponse(result);
-				return res;
-			}
-			nq.setOrderByClause("createtime DESC");
+			List<String> branchIds = userContextService.getBranchIds(familyid, userid, ebid);
 			PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
-			List<NoticeVO> list = noticeMapper.selectNoticeMangeList(nq);
+			List<NoticeVO> list = new ArrayList<>();
+			if (manager.getEbtype() == 1) {// 验证是否是总编委会主任
+				//	currentBranchIds.add("0");
+				nq.setOrderByClause("createtime DESC");
+				list = noticeMapper.selectNoticeMangeList(nq);
+			} else {
+				if (branchIds.size() < 1) {
+					result = new Result(MsgConstants.RESUL_FAIL);
+					result.setMsg("您的账号当前没有分支");
+					res = new JsonResponse(result);
+					return res;
+				}
+				criteria.andBranchidIn(branchIds);
+				nq.setOrderByClause("createtime DESC");
+				list = noticeMapper.selectNoticeMangeList(nq);
+			}
 			if (list != null) {
 				result = new Result(MsgConstants.RESUL_SUCCESS);
 				res = new JsonResponse(result);
@@ -132,12 +196,14 @@ public class NoticeServiceImpl implements NoticeService {
 
 	@Override
 	public Notice get(String noticeid) throws Exception {
+		//当前登录人 familyid
+		String familyid = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		Notice notice = noticeMapper.selectByPrimaryKey(noticeid);
 		if (notice != null) {
 			BranchKey key = new BranchKey();
 			key.setBranchid(notice.getBranchid());
-			key.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+			key.setFamilyid(familyid);
 			Branch branch = branchMapper.selectByPrimaryKey(key);
 			if (branch != null) {
 				notice.setBranchnamePlus(branch.getArea() + "_" + branch.getCityname() + "_" + branch.getXname() + "_"
@@ -166,10 +232,42 @@ public class NoticeServiceImpl implements NoticeService {
 		Result result = null;
 		JsonResponse res = null;
 		int status = 0;
+		if (StringTools.trimIsEmpty(notice.getNoticetitle())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数noticetitle不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
+		if (StringTools.trimIsEmpty(notice.getNoticetype())) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			result.setMsg("参数noticetype不能为空！");
+			res = new JsonResponse(result);
+			return res;
+		}
 		try {
+
+			String userId = WebUtil.getHeaderInfo(ConstantUtils.HEADER_USERID);
+			String familyId = WebUtil.getHeaderInfo(ConstantUtils.HEADER_FAMILYID);
+			User user=userMapper.selectByPrimaryKey(userId);
+			
+
+			if (StringTools.trimIsEmpty(userId)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("用户非法！");
+				res = new JsonResponse(result);
+				return res;
+			}
+			
+			if (StringTools.trimIsEmpty(familyId)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("header中参数familyid为空!");
+				res = new JsonResponse(result);
+				return res;
+			}
 			if (StringTools.trimNotEmpty(notice.getNoticeid())) {
-				notice.setUpdateid(CurrentUserContext.getCurrentUserId());
-				notice.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				notice.setUpdateid(userId);
+				notice.setFamilyid(familyId);
+
 				if (notice.getNoticetype() == 0) {
 					notice.setBranchid("0");
 				}
@@ -184,20 +282,58 @@ public class NoticeServiceImpl implements NoticeService {
 					status = saveNoticetop(notice, notice.getNoticeid());
 				}
 			} else {
+
+				//生成公告id
 				String noticeid = UUIDUtils.getUUID();
-				notice.setType(1);
+				//部署流程文件
+				  RepositoryService  repositoryService = processEngine.getRepositoryService(); 
+				  Deployment deployment = repositoryService.createDeployment().addClasspathResource("ExpenseProcessNotice.bpmn20.xml") .deploy(); 
+				//获取用户已经部署好的流程
+				  ProcessDefinition processDefinition =repositoryService.createProcessDefinitionQuery().deploymentId(deployment.getId()) .singleResult();
+				  System.out.println("Found process definition : " +processDefinition.getName());
+				//启动审批流程
+				HashMap<String, Object> map = new HashMap<>();
+				 //调用对应方法,返回的数据为分编委会人员userid值
+				 String  userIdNew=flowableService.deploynew(noticeid);
+				 //调用对应方法,返回总编委会所有成员userid
+				 String  userIdNewTwo=flowableService.deploynewTwo(noticeid);
+				 //调用对应方法,返回总编委会主任userid
+				 //String  userIdNewThree=flowableService.deploynewThree();
+				
+				 map.put("noticeid", noticeid);//放入公告id
+				 map.put("title", notice.getNoticetitle());//放入公告标题
+			     map.put("content", notice.getNoticecontent());//放入公告内容
+			   //判断该家族是否含有分编委会(有则设置为true，没有设置false)
+				 if("未找到对应的编委会"==userIdNew) {
+					 	map.put("outcome", "false");
+					}else if("跳过"==userIdNew){
+						map.put("outcome", "跳过");//总编委主任发起情况
+					}else {
+						map.put("outcome", "true");
+					}
+		        map.put("taskUser", userId);
+		        if(!"未找到对应的编委会".equals(userIdNew)) {
+		        	map.put("userOneIds", userIdNew);//设置候选人
+		        }
+		        map.put("userTwoIds", userIdNewTwo);//设置候选人
+		        //map.put("userThreeIds", userIdNewThree);//设置候选人
+				ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("myProcess",map);//启动流程
+				System.out.println("流程创建成功Id为:"+processInstance.getId());
+				 
+				//判断流程是否全部通过全部通过后，新增公告	//以下是未增加审批流源代码
 				notice.setNoticeid(noticeid);
-				notice.setCreateid(CurrentUserContext.getCurrentUserId());
-				notice.setCreatename(CurrentUserContext.getCurrentUserName());
-				notice.setFamilyid(CurrentUserContext.getCurrentFamilyId());
+				notice.setCreateid(userId);
+				notice.setCreatename(user.getUsername());
+				notice.setFamilyid(familyId);
 				if (notice.getNoticetype() == 0) {
 					notice.setBranchid("0");
 				}
 				Date insertDate = new Date();
 				notice.setCreatetime(insertDate);
-				notice.setUpdateid(CurrentUserContext.getCurrentUserId());
+				notice.setUpdateid(userId);
 				notice.setUpdatetime(insertDate);
 				notice.setDeleteflag(ConstantUtils.DELETE_FALSE);
+				notice.setExaminestatus(0);//0:审核中 1:通过 2:驳回
 				if (notice.getCreatetimeStr() != null) {
 					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 					notice.setCreatetime(formatter.parse(notice.getCreatetimeStr()));
@@ -309,6 +445,10 @@ public class NoticeServiceImpl implements NoticeService {
 	public JsonResponse sendNotice(Notice entity) {
 		Result result = null;
 		JsonResponse res = null;
+		JsonResponse demoUser = userService.checkDemoUser();
+		if (demoUser.getCode() == 1) {
+			return demoUser;
+		}
 		if (entity.getNoticetitle() == null || "".equals(entity.getNoticetitle())) {
 			result = new Result(MsgConstants.RESUL_FAIL);
 			result.setMsg("缺少公告标题参数");
@@ -335,12 +475,51 @@ public class NoticeServiceImpl implements NoticeService {
 		}
 		int status = 0;
 		try {
-			User user = userMapper.selectByPrimaryKey(entity.getCreateid());
+			//生成公告id
+			String uuid = UUIDUtils.getUUID();
+			//部署流程文件
+			  RepositoryService  repositoryService = processEngine.getRepositoryService(); 
+			  Deployment deployment = repositoryService.createDeployment().addClasspathResource("ExpenseProcessNotice.bpmn20.xml") .deploy(); 
+			//获取用户已经部署好的流程
+			  ProcessDefinition processDefinition =repositoryService.createProcessDefinitionQuery().deploymentId(deployment.getId()) .singleResult();
+			  System.out.println("Found process definition : " +processDefinition.getName());
+			//启动审批流程
+			HashMap<String, Object> map = new HashMap<>();
+			 //调用对应方法,返回的数据为分编委会人员userid值
+			 String  userIdNew=flowableService.deploynew(uuid);
+			 //调用对应方法,返回总编委会所有成员userid
+			 String  userIdNewTwo=flowableService.deploynewTwo(uuid);
+			 //调用对应方法,返回总编委会主任userid
+			 //String  userIdNewThree=flowableService.deploynewThree();
+			
+			 map.put("noticeid", uuid);//放入公告id
+			 map.put("title", entity.getNoticetitle());//放入公告标题
+		     map.put("content", entity.getNoticecontent());//放入公告内容
+		   //判断该家族是否含有分编委会(有则设置为true，没有设置false)
+			 if("未找到对应的编委会"==userIdNew) {
+				 	map.put("outcome", "false");
+				}else if("跳过"==userIdNew){
+					map.put("outcome", "跳过");//总编委主任发起情况
+				}else {
+					map.put("outcome", "true");
+				}
+			User user = userMapper.selectByPrimaryKey(entity.getCreateid());//未加审批原码
+	        map.put("taskUser", entity.getCreateid());
+	        if(!"未找到对应的编委会".equals(userIdNew)) {
+	        	map.put("userOneIds", userIdNew);//设置候选人
+	        }
+	        map.put("userTwoIds", userIdNewTwo);//设置候选人
+	        //map.put("userThreeIds", userIdNewThree);//设置候选人
+			ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("myProcess",map);//启动流程
+			System.out.println("流程创建成功Id为:"+processInstance.getId());
+			
+			
+			//未加审批原码
 			BranchKey branchKey = new BranchKey();
 			branchKey.setBranchid(user.getBranchid());
 			branchKey.setFamilyid(user.getFamilyid());
 			Branch branch = branchMapper.selectByPrimaryKey(branchKey);
-			String uuid = UUIDUtils.getUUID();
+			entity.setExaminestatus(0);//0:审核中 1:通过 2:驳回
 			entity.setNoticeid(uuid);
 			entity.setDeleteflag(0);
 			entity.setCreatetime(new Date());
@@ -611,4 +790,76 @@ public class NoticeServiceImpl implements NoticeService {
 		res = new JsonResponse(result);
 		return res;
 	}
+	/**
+	 * 查询当前人待审核公告
+	 */
+	@Override
+	public JsonResponse selectExamine(PageModel<Notice> pageModel,String noticeid,Notice notice) {
+		System.out.println("进入NoticeService方法");
+		// TODO Auto-generated method stub
+		JsonResponse res = null;
+		Result result = null;
+		InstructionTemplateQuery iq = new InstructionTemplateQuery();
+		com.jp.entity.InstructionTemplateQuery.Criteria criteria = iq.createCriteria();
+		notice.setDeleteflag(0);
+		if (StringTools.trimNotEmpty(notice.getDeleteflag())) {
+			criteria.andDeleteflagEqualTo(notice.getDeleteflag());
+		}
+		iq.setOrderByClause("createtime");
+		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		List<Notice> list = noticeMapper.selectExamine(pageModel,noticeid);
+		res.setData(list);
+		return res;
+	}
+
+	@Override
+	public void updateNoticeTask(String variable, String taskid) {
+		// TODO Auto-generated method stub
+		noticeMapper.updateByExampleNew(variable, taskid);
+	}
+
+	@Override
+	public void updateNoticeExamin(String noticeid, String examinestatus) {
+		// TODO Auto-generated method stub
+		noticeMapper.updateNoticeExamin(noticeid,examinestatus);
+	}
+	/**
+	 * 查询已经审核的公告列表
+	 */
+	@Override
+	public JsonResponse selectAleadyNotice(List<String> list, PageModel<Notice> pageModel, Notice notice,String familyid) {
+		// TODO Auto-generated method stub
+		JsonResponse res = null;
+		Result result = null;
+		InstructionTemplateQuery iq = new InstructionTemplateQuery();
+		com.jp.entity.InstructionTemplateQuery.Criteria criteria = iq.createCriteria();
+		notice.setDeleteflag(0);
+		if (StringTools.trimNotEmpty(notice.getDeleteflag())) {
+			criteria.andDeleteflagEqualTo(notice.getDeleteflag());
+		}
+		iq.setOrderByClause("createtime");
+		PageHelper.startPage(pageModel.getPageNo(), pageModel.getPageSize());
+		result = new Result(MsgConstants.RESUL_SUCCESS);
+		res = new JsonResponse(result);
+		List<Notice> noticelist = noticeMapper.selectAleadyNotice(pageModel,list,familyid);
+		res.setData(noticelist);
+		return res;
+	}
+	/**
+	 * 个人待审核公告条数
+	 */
+	@Override
+	public String selectExamineCount(String noticeid) {
+		// TODO Auto-generated method stub
+		return noticeMapper.selectExamineCount(noticeid);
+	}
+
+	@Override
+	public String selectAleadyCount(String familyid) {
+		// TODO Auto-generated method stub
+		return noticeMapper.selectAleadyCount(familyid);
+	}
+
 }

@@ -1,7 +1,5 @@
 package com.jp.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,17 +17,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jp.common.JsonResponse;
-import com.jp.common.LoginUserInfo;
 import com.jp.common.MsgConstants;
 import com.jp.common.Result;
-import com.jp.dao.UserDao;
-import com.jp.entity.Branch;
-import com.jp.entity.Function;
 import com.jp.entity.User;
 import com.jp.entity.UserManager;
-import com.jp.service.BranchService;
-import com.jp.service.FunctionService;
-import com.jp.service.RoleService;
 import com.jp.service.UserManagerService;
 import com.jp.service.UserService;
 import com.jp.util.MD5Util;
@@ -45,15 +36,7 @@ public class LoginController {
 	@Autowired
 	private UserService userService;
 	@Autowired
-	private RoleService roleService;
-	@Autowired
-	private FunctionService functionService;
-	@Autowired
-	private BranchService branchService;
-	@Autowired
 	private UserManagerService userManagerService;
-	@Autowired
-	private UserDao userMapper;
 
 	/**
 	 * @描述 登录
@@ -75,9 +58,7 @@ public class LoginController {
 
 		Result result = null;
 		JsonResponse res = null;
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
-
 			String phone = request.getParameter("phone");
 			String password = request.getParameter("password");
 			String inputCode = request.getParameter("code");
@@ -96,72 +77,40 @@ public class LoginController {
 					if (userList != null && userList.size() > 0) {
 
 						if (userList.size() == 1) {
-							LoginUserInfo userContext = new LoginUserInfo();
+							//			LoginUserInfo userContext = new LoginUserInfo();
 							// 用户信息
 							User user = userList.get(0);
-							userContext.setUser(user);
-
-							// Role role = roleService.selectRoleByUserid(user.getFamilyid(),
-							// user.getUserid());
-							List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid());
-							if (managers == null || managers.size() == 0) {
+							//			userContext.setUser(user);
+							List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid(),
+									null);
+							if (managers.size() == 0) {
 								result = new Result(MsgConstants.LOGIN_NOT_ADMIN);
 								res = new JsonResponse(result);
 								return res;
 							}
-							// userContext.setRole(role);
-							// userContext.setUsermanager(manager);
-							List<Function> functionList = functionService
-									.selectFunctionListByManagerid(user.getFamilyid(), user.getUserid());
-							List<Branch> branchList = branchService
-									.selectBranchListByFamilyAndUserid(user.getFamilyid(), user.getUserid());
-							// if(manager.getIsmanager() == 1 && manager.getEbtype() == 1 ){
-							// //获取该家族所有功能权限
-							//// functionList =
-							// functionService.selectFunctionListByRoleid(user.getFamilyid(), null);
-							//// branchList =
-							// branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(), null);
-							// functionList =
-							// functionService.selectFunctionListByManagerid(user.getFamilyid(), null);
-							// branchList =
-							// branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(), null);
-							// }else{
-							// //functionList =
-							// functionService.selectFunctionListByRoleidAndFamilyid(user.getFamilyid(),
-							// role.getRoleid());
-							// //branchList =
-							// branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(),
-							// user.getUserid());
-							// functionList =
-							// functionService.selectFunctionListByManagerid(user.getFamilyid(),
-							// user.getUserid());
-							// branchList =
-							// branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(),
-							// user.getUserid());
-							// }
+							/*	List<Function> functionList = functionService.selectFunctionListByManagerid(user.getFamilyid(), user.getUserid());
+							List<Branch> branchList = branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(), user.getUserid());
 							userContext.setUsermanagers(managers);
 							userContext.setFunctionList(functionList);
 							userContext.setBranchList(branchList);
 							if (branchList == null) {
 								branchList = new ArrayList<Branch>();
-							}
+							}*/
 							if (user.getSessionid() == null) {
 								// 重置sessionid到数据库
 								user.setSessionid(UUIDUtils.getUUID());
 							}
+							user.setUserManager(managers.get(0));
 							// 记录登陆时间
 							user.setLogintime(new Date());
-							userMapper.updateByPrimaryKeySelective(user);
+							userService.updateByPrimaryKeySelective(user);
 							// 保存session作用域
-							request.getSession().setAttribute("userContext", userContext);
-
+							//		request.getSession().setAttribute("userContext", userContext);
 							result = new Result(MsgConstants.RESUL_SUCCESS);
 							res = new JsonResponse(result);
 							res.setData(user);
 						} else if (userList.size() < 5) {
-
-							request.getSession().setAttribute("loginUserList", userList);
-
+							//			request.getSession().setAttribute("loginUserList", userList);
 							result = new Result(MsgConstants.LOGIN_USER_CHOOSEFAMILY);
 							res = new JsonResponse(result);
 							res.setData(userList);
@@ -181,11 +130,10 @@ public class LoginController {
 					res = new JsonResponse(result);
 					return res;
 				}
-			} else {
-				result = new Result(MsgConstants.LOGIN_ICODE_WRONG);
-				res = new JsonResponse(result);
-				return res;
-			}
+			
+			 } else { result = new Result(MsgConstants.LOGIN_ICODE_WRONG); res = new
+			  JsonResponse(result); return res; }
+			 
 		} catch (Exception e) {
 			e.printStackTrace();
 			log_.error("[HNFZ_ERROR登录系统失败:]", e);
@@ -200,7 +148,6 @@ public class LoginController {
 	@RequestMapping(value = "/manager", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, ModelMap model) {
 
-		// model.put("menushow", "true");
 		return "redirect:/index/init";
 	}
 
@@ -215,17 +162,17 @@ public class LoginController {
 		return res;
 	}
 
-	@ResponseBody
-	@RequestMapping(value = "tochoose", method = RequestMethod.GET)
-	public JsonResponse tochoose(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
-		response.addHeader("Access-Control-Allow-Origin", "*");
-		HttpSession session = request.getSession();
-		List<User> userList = (List<User>) session.getAttribute("loginUserList");
-		Result result = new Result(MsgConstants.RESUL_SUCCESS);
-		JsonResponse res = new JsonResponse(result);
-		res.setData(userList);
-		return res;
-	}
+	/*	@ResponseBody
+		@RequestMapping(value = "tochoose", method = RequestMethod.GET)
+		public JsonResponse tochoose(HttpServletRequest request, HttpServletResponse response) {
+			response.addHeader("Access-Control-Allow-Origin", "*");
+			HttpSession session = request.getSession();
+			List<User> userList = (List<User>) session.getAttribute("loginUserList");
+			Result result = new Result(MsgConstants.RESUL_SUCCESS);
+			JsonResponse res = new JsonResponse(result);
+			res.setData(userList);
+			return res;
+		}*/
 
 	@ResponseBody
 	@RequestMapping(value = "choose", method = RequestMethod.POST)
@@ -234,22 +181,21 @@ public class LoginController {
 		Result result = null;
 		JsonResponse res = null;
 		try {
-
 			String userid = request.getParameter("userid");
-			List<User> userList = (List<User>) request.getSession().getAttribute("loginUserList");
-			User user = null;
-			// 根据选择取出对应的用户
-			for (int i = 0; i < userList.size(); i++) {
-				if (userList.get(i).getUserid().equals(userid)) {
-					user = userList.get(i);
-				}
-			}
-
-			// 验证用户名、密码是否正确
-			LoginUserInfo userContext = new LoginUserInfo();
-			// 用户信息
-			userContext.setUser(user);
-
+			/*	List<User> userList = (List<User>) request.getSession().getAttribute("loginUserList");
+				User user = null;
+				// 根据选择取出对应的用户
+				for (int i = 0; i < userList.size(); i++) {
+					if (userList.get(i).getUserid().equals(userid)) {
+						user = userList.get(i);
+					}
+				}*/
+			User user = userService.selectByPrimaryKey(userid);
+			/*	
+				LoginUserInfo userContext = new LoginUserInfo();
+				// 用户信息
+				userContext.setUser(user);
+			*/
 			// Role role = roleService.selectRoleByUserid(user.getFamilyid(),
 			// user.getUserid());
 			//
@@ -258,19 +204,18 @@ public class LoginController {
 			// return content.toString();
 			// }
 
-			List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid());
+			List<UserManager> managers = userManagerService.selectManagerByUserid(user.getUserid(), null);
 			if (managers == null || managers.size() == 0) {
 				result = new Result(MsgConstants.LOGIN_NOT_ADMIN);
 				res = new JsonResponse(result);
 				return res;
-				// return content.toString();
 			}
 			// userContext.setRole(role);
 			// userContext.setUsermanager(manager);
-			List<Function> functionList = functionService.selectFunctionListByManagerid(user.getFamilyid(),
+			/*List<Function> functionList = functionService.selectFunctionListByManagerid(user.getFamilyid(),
 					user.getUserid());
 			List<Branch> branchList = branchService.selectBranchListByFamilyAndUserid(user.getFamilyid(),
-					user.getUserid());
+					user.getUserid());*/
 
 			// userContext.setRole(role);
 			// List<Function> functionList = null;
@@ -290,23 +235,23 @@ public class LoginController {
 			// functionService.selectFunctionListByRoleidAndFamilyid(user.getFamilyid(),
 			// role.getRoleid());
 			// }
-			userContext.setUsermanagers(managers);
+			/*	userContext.setUsermanagers(managers);
 			userContext.setFunctionList(functionList);
 			if (branchList == null) {
 				branchList = new ArrayList<Branch>();
 			}
-			userContext.setBranchList(branchList);
+			userContext.setBranchList(branchList);*/
 			// 创建session
-			HttpSession session = request.getSession();
 			if (user.getSessionid() == null) {
 				// 重置sessionid到数据库
 				user.setSessionid(UUIDUtils.getUUID());
 			}
+			user.setUserManager(managers.get(0));
 			// 记录登陆时间
 			user.setLogintime(new Date());
-			userMapper.updateByPrimaryKeySelective(user);
+			userService.updateByPrimaryKeySelective(user);
 			// 保存session作用域
-			session.setAttribute("userContext", userContext);
+			//	session.setAttribute("userContext", userContext);
 			result = new Result(MsgConstants.RESUL_SUCCESS);
 			res = new JsonResponse(result);
 			res.setData(user);

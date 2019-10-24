@@ -26,6 +26,10 @@ public interface UserDao {
 
 	List<User> selectByExample(UserQuery example);
 
+	List<User> selectChildren(@Param("pid") String pid);
+
+	List<User> selectChildrenByAdmin(@Param("pid") String pid);
+
 	User selectByPrimaryKey(String userid);
 
 	int updateByExampleSelective(@Param("record") User record, @Param("example") UserQuery example);
@@ -48,7 +52,7 @@ public interface UserDao {
 
 	int updateAleardyUser(@Param("list") List<User> userList);
 
-	List<User> selecUserListToReview(User user);
+	List<User> selecUserListToReview(@Param("user") User user, @Param("list") List<String> branchids);
 
 	List<Usercontent> selectUserContentList(Usercontent usercontent);
 
@@ -150,12 +154,16 @@ public interface UserDao {
 	@Select("select*from jp_user where status = 0  and deleteflag = 0 and familyid is not null and phone = #{phone}")
 	List<User> selectByPhoneAndStatus(@Param("phone") String phone);
 
-	@Select("select*from jp_user where status =2 and deleteflag = 0 and familyid is not null and phone = #{phone} and familyid = #{familyid}")
-	List<User> selectByPhoneToStatus(@Param("phone") String phone, @Param("familyid") String familyid);
+	@Select("select count(1) from jp_user where status =2 and deleteflag = 0 and familyid is not null and phone = #{phone} and familyid = #{familyid}")
+	Integer selectByPhoneToStatus(@Param("phone") String phone, @Param("familyid") String familyid);
 
 	int countBranch(Map<String, String> totalparams);
 
+	int countBranch2(@Param("familyid") String familyid);
+
 	List<User> selectUserByAreaCode(Map<String, String> params);
+
+	Integer selectCountByAreaCode(Map<String, String> params);
 
 	int searchComplexCount(SearchComplex searchComplex);
 
@@ -190,5 +198,41 @@ public interface UserDao {
 	 */
 	User selectByPrimaryKey1(String userid);
 
-	
+
+	/**
+	 * 演示账号
+	 * @return
+	 */
+	@Select("select userid from jp_user where status =0 and deleteflag = 0 and phone = '18647740001' ")
+	List<String> selectDemoUserid();
+
+	/**
+	 * 当前登录人的手机号
+	 * @param userid
+	 * @return
+	 */
+	@Select("select phone from jp_user where userid = #{userid}")
+	String selectUserPhone(@Param("userid") String userid);
+
+	/**
+	 * 当前登录人的家族id
+	 * @param userid
+	 * @return
+	 */
+	@Select("select familyid from jp_user where userid = #{userid}")
+	String selectFamilyId(@Param("userid") String userid);
+
+	@Select("select branchid from jp_user where userid = #{userid}")
+	String selectBranchId(@Param("userid") String userid);
+
+	@Select("select username from jp_user where userid = #{userid}")
+	String selectUsername(@Param("userid") String userid);
+
+	List<User> selectBrothers(User user);
+
+	List<User> selectBrothersEx(User user);
+
+	User selectByPrimaryKeyEx(String mateid);
+
+
 }

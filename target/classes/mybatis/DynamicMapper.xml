@@ -467,7 +467,8 @@
      <if test="dynamic.type != null" >
         and dy.type = #{dynamic.type,jdbcType=VARCHAR}
      </if>
-    <foreach collection="list" item="item" index="index" open="and dy.branchid in (" separator="," close=")">
+     and dy.branchid in 
+    <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
 		#{item}
 	</foreach>
   </select>
@@ -484,7 +485,7 @@
   
   <select id="selectReadOfManager" parameterType="com.jp.entity.Dynamic" resultType="com.jp.entity.Dynamic">
       SELECT
-	  dyread.readNum,
+	  IFNULL(dyread.readNum,0) readNum ,
 	  dy.dyid, dy.dytype, dy. branchid, dy. dytitle, dy. deleteflag, dy. imgurl, dy. branchname, 
 	  dy. createid, dy. createtime, dy. updateid, dy. updatetime, dy. createname, dy. type, dy.dycontent
        FROM

@@ -2,6 +2,7 @@ package com.jp.entity;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public class EditorialBoard implements Serializable {
 	/**
@@ -49,6 +50,15 @@ public class EditorialBoard implements Serializable {
 	private List<Post> posts;
 
 	List<UserManager> userManager;
+	List<Map<String, Object>> cityList;
+
+	public List<Map<String, Object>> getCityList() {
+		return cityList;
+	}
+
+	public void setCityList(List<Map<String, Object>> cityList) {
+		this.cityList = cityList;
+	}
 
 	public List<Post> getPosts() {
 		return posts;
@@ -135,6 +145,7 @@ public class EditorialBoard implements Serializable {
 	@Override
 	public String toString() {
 		return "EditorialBoard [id=" + id + ", name=" + name + ", type=" + type + ", code=" + code + ", codetype="
-				+ codetype + ", familyid=" + familyid + ", eddesc=" + eddesc + ", sort=" + sort + "]";
+				+ codetype + ", familyid=" + familyid + ", eddesc=" + eddesc + ", sort=" + sort + ", posts=" + posts
+				+ ", userManager=" + userManager + ", cityList=" + cityList + "]";
 	}
 }

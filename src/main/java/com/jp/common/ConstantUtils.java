@@ -26,7 +26,7 @@ public class ConstantUtils implements Serializable {
 	public static final String JIAPU_AVATAR_UPLOAD_URL = res.getString("jiapu.avatar.upload.url");
 	public static final String JIAPU_AVATAR_DOWNLOAD_URL = res.getString("jiapu.avatar.download.url");
 	public static final String JIAPU_IP = res.getString("jiapu.ip");
-*/
+	*/
 	// avatar
 	/**
 	 * 删除状态
@@ -75,6 +75,7 @@ public class ConstantUtils implements Serializable {
 	public static String HEADER_SESSIONID = "sessionid";// sessionid
 	public static String HEADER_USERID = "userid";// 用户id
 	public static String HEADER_FAMILYID = "familyid";// 家族id
+	public static String HEADER_EBID = "ebid";// 编委会id
 	public static String HEADER_LOGINTYPE = "logintype";// 登录类型
 	public static String HEADER_PHONETYPE = "phonetype";// 手机型号
 	public static String HEADER_VERSION = "version";// 版本号

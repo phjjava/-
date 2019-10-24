@@ -448,5 +448,55 @@ public class GlobalSearchServiceImpl implements GlobalSearchService {
 		return branchids;
 		
 	}
+	
+	@Override
+	public JsonResponse searchMoreUserContentVOsNew(GlobalSearch entity, HttpServletRequest request, String username) {
+		// TODO Auto-generated method stub
+		Result result = null;
+		JsonResponse res = null;
+		try {
+			String familyid = request.getHeader("familyid");
+			/*if (username == null || "".equals(username)) {
+				result = new Result(MsgConstants.RESUL_FAIL);
+				result.setMsg("缺少查询关键字！");
+				res = new JsonResponse(result);
+				return res;
+			}*/
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("familyid", familyid);
+			map.put("username", username);
+			if (entity.getStart() != null && entity.getCount() != null) {
+				map.put("start", entity.getStart().toString());
+				map.put("count", entity.getCount().toString());
+			}
+			// 查询人物志
+			List<UserContentVO> userContentVOs = userContentDao.searchtUserContentNew(map);
+			// 截取内容，保证预览的速度
+			for (UserContentVO userContentVO : userContentVOs) {
+				if (userContentVO.getContent() != null || !"".equals(userContentVO.getContent())) {
+					String content = userContentVO.getContent();
+					if (content != null && content.length() > 0) {
+						// 去除html标签
+						content = content.replaceAll("</?[^>]+>", "");
+						content = content.replaceAll("\\s*|\t|\r|\n", "");
+						content = content.replaceAll("&nbsp;", " ");
+						// 截取1/10长度 截取70个字
+						if (content.length() > 70)
+							content = content.substring(0, 70);
+						userContentVO.setContent(content);
+					}
+				}
+			}
+
+			result = new Result(MsgConstants.RESUL_SUCCESS);
+			res = new JsonResponse(result);
+			res.setData(userContentVOs);
+		} catch (Exception e) {
+			result = new Result(MsgConstants.RESUL_FAIL);
+			res = new JsonResponse(result);
+			e.printStackTrace();
+		}
+		return res;
+	}
 
 }

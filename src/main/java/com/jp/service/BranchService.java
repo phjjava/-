@@ -16,7 +16,7 @@ public interface BranchService {
 
 	JsonResponse changeStatus(Branch branch);
 
-	JsonResponse initBranch(Branch branch);
+	JsonResponse initBranch(PageModel<Branch> pageModel, Branch branch);
 
 	/**
 	 * @描述 根据家族id userid 查询权限 无userid查询当前家族所有分支
@@ -28,11 +28,11 @@ public interface BranchService {
 	 * @参数 @throws Exception
 	 * @return List<Branch>
 	 */
-	List<Branch> selectBranchListByFamilyAndUserid(String familyid, String userid) throws Exception;
+	List<Branch> selectBranchListByFamilyAndUserid(String familyid, String userid, String ebid);
 
-	JsonResponse validateBranchname(String branchname);
+	JsonResponse validateBranchname(Branch branch);
 
-	JsonResponse checkBeginer(String beginuserid);
+	JsonResponse checkBeginer(Branch branch);
 
 	/**
 	* 以下方法用于api
@@ -58,11 +58,22 @@ public interface BranchService {
 
 	JsonResponse getBranchOfXQ(Branch entity);
 
-	JsonResponse getGenList(Branch entity);
+	JsonResponse getGenList(Branch entity, String isManager);
 
-	JsonResponse getGenListOnly(Branch entity);
+	JsonResponse getGenListOnly(Branch entity, String isManager);
 
-	JsonResponse getGenListToTop(Branch entity);
+	JsonResponse getGenListToTop(Branch entity, String isManager);
+
+	JsonResponse getGenListToCount(Branch entity, String isManager);
 
 	JsonResponse getGenListOnlyExt(Branch entity);
+
+	Branch selectbyEditor(String userid);
+
+	JsonResponse getBranchsByUserid(String userid, String code, Integer pageNo, Integer pageSize);
+
+	JsonResponse getEbArea(Branch branch);
+
+	JsonResponse getXQAndBranch(Branch entity);
+
 }
